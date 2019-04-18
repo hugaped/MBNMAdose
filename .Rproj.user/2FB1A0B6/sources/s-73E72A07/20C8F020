@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555404861238.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "20C8F020",
+    "lastKnownWriteTime" : 3180141808686473843,
+    "last_content_update" : 1555404861238,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "4418B4F6",
+        "caption" : "HF2PPITT",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=HF2PPITT&cache_key=4418B4F6",
+        "displayedObservations" : 182,
+        "environment" : "",
+        "object" : "HF2PPITT",
+        "preview" : 0,
+        "totalObservations" : 182,
+        "variables" : 12
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}

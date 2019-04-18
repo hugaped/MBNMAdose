@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1554664360788.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "975B57CD",
+    "lastKnownWriteTime" : 1555432452,
+    "last_content_update" : 1555432452431,
+    "path" : "~/MBNMA/MBNMA R Package/Dose/MBNMAdose/R/run.functions.R",
+    "project_path" : "R/run.functions.R",
+    "properties" : {
+        "cursorPosition" : "27,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

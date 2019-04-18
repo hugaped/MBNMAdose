@@ -1,0 +1,29 @@
+# Functions for running MBNMA models
+# Author: Hugo Pedder
+# Date created: 2019-04-07
+
+MBNMA.run <- function(network, parameters.to.save=NULL,
+                      fun="linear", user.fun=NULL,
+                      #model.file=NULL,
+                      beta.1="ind",
+                      beta.2=NULL,
+                      beta.3=NULL,
+                      UME=FALSE,
+                      pd="pv", parallel=TRUE,
+                      priors=NULL,
+                      likelihood=NULL,
+                      arg.params=NULL, ...
+) {
+  if (is.null(likelihood)) {
+    if (all(c("r", "N") %in% names(network$data.ab))) {
+      likelihood <- "binomial"
+      message("`likelihood` not specified - automatically assigning binomial")
+    } else if (all(c("y", "se") %in% names(network$data.ab))) {
+      likelihood <- "normal"
+      message("`likelihood` not specified - automatically assigning normal")
+    }
+  }
+
+  # Add a check for fun to ensure it's length==1 or length==length(network$agents)
+
+}
