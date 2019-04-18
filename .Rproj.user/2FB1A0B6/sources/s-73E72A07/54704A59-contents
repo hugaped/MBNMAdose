@@ -14,7 +14,18 @@ devtools::use_data(HF2PPITT)
 
 network <- MBNMA.network(HF2PPITT)
 
-beta.2 = "rel", "common", "random", 5
+test1 <- MBNMA.run(network, fun="linear",
+                   beta.1="rel",
+                   method="common",
+                   n.iter=7000
+                   )
+
+test1 <- MBNMA.run(network, fun="exponential",
+                   beta.1="rel",
+                   method="common",
+                   n.iter=7000
+)
+
 
 test1 <- MBNMA.run(network,
                    fun="emax",

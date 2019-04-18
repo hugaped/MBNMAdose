@@ -398,35 +398,35 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("^d\\.", model.params[i], "\\[k\\] ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
-    } else if (grepl(paste0("^d\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
-      if (grepl(paste0("^beta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
+    } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
+      if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
         parameters.to.save <- append(parameters.to.save, paste0("beta.", model.params[i]))
       }
     }
-    if (grepl(paste0("^sd\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nsd\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.", model.params[i]))
     }
-    if (grepl(paste0("^sd\\.beta.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("\\\nsd\\.beta.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd\\.beta\\.", model.params[i]))
     }
-    if (grepl(paste0("^D\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nD\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
     }
-    if (grepl(paste0("^sd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nsd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.D.", model.params[i]))
     }
-    if (grepl(paste0("^BETA\\.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("\\\nBETA\\.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("BETA.", model.params[i]))
     }
-    if (grepl(paste0("^sd\\.BETA\\.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("\\\nsd\\.BETA\\.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.BETA.", model.params[i]))
     }
   }
 
   for (i in 1:4) {
-    if (grepl(paste0("^d\\.", i, " ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nd\\.", i, " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", i))
     }
   }
@@ -439,7 +439,7 @@ gen.parameters.to.save <- function(model.params, model) {
   }
 
   # For MBNMAdose
-  if (grepl("^sd ~", model)==TRUE) {
+  if (grepl("\\\nsd ~", model)==TRUE) {
     parameters.to.save <- append(parameters.to.save, "sd")
   }
 
