@@ -16,30 +16,32 @@ network <- MBNMA.network(HF2PPITT)
 
 beta.2 = "rel", "common", "random", 5
 
-
 test1 <- MBNMA.run(network,
-                  fun="emax",
-                  beta.1=list(pool="rel", method="common"),
-                  beta.2=list(pool="const", method="common"),
-                  n.iter=10000
-                  )
+                   fun="emax",
+                   beta.1="rel",
+                   beta.2="common",
+                   method="common",
+                   n.iter=10000
+)
 
 test2 <- MBNMA.run(network,
                   fun="emax",
-                  beta.1=list(pool="rel", method="common"),
-                  beta.2=list(pool="const", method="random"),
-                  n.iter=10000
+                  beta.1="rel",
+                  beta.2="random",
+                  method="common",
+                  n.iter=1000
 )
 
 test3 <- MBNMA.run(network,
                   fun="linear",
-                  beta.1=list(pool="rel", method="common"),
+                  beta.1="rel",
+                  method="common",
                   n.iter=10000
 )
 
 test4 <- MBNMA.run(network,
                    fun="emax",
-                   beta.1=list(pool="rel", method="common"),
-                   beta.2=list(pool="rel", method="random"),
+                   beta.1="rel",
+                   beta.2="random",
                    n.iter=10000
 )

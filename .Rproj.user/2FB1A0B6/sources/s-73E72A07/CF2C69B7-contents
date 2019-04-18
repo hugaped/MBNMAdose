@@ -23,8 +23,9 @@
 #'   class.effect=list("beta.1"="random")
 #'   )
 MBNMA.write <- function(fun="linear", user.fun=NULL,
-                        beta.1=list(pool="rel", method="common"),
+                        beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
+                        method="common",
                         class.effect=list(),
                         likelihood="binomial", link=NULL
                         ) {
@@ -47,6 +48,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
 
   write.check(fun=fun, user.fun=user.fun,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+              method=method,
               class.effect=class.effect)
 
   model <- write.model()
@@ -60,7 +62,8 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
   model <- write.likelihood(model, likelihood=likelihood, link=link)
 
   # Add treatment effects
-  model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, class.effect=class.effect)
+  model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                      method=method, class.effect=class.effect)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -234,6 +237,7 @@ write.check <- function(fun="linear", user.fun=NULL,
                         beta.1=list(pool="rel", method="common"),
                         beta.2=NULL,
                         beta.3=NULL,
+                        method="common",
                         UME=FALSE,
                         class.effect=list()) {
   parameters <- c("beta.1", "beta.2", "beta.3")
@@ -250,7 +254,8 @@ write.check <- function(fun="linear", user.fun=NULL,
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=c("none", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(fun, choices=c("none", "monotonic", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check betas
@@ -258,19 +263,22 @@ write.check <- function(fun="linear", user.fun=NULL,
   for (i in 1:3) {
     betaparam <- get(paste0("beta.", i))
     if (!is.null(betaparam)) {
-      if (!identical(sort(names(betaparam)), sort(c("pool", "method")))) {
-        stop("`pool` and `method` must both be specified for each dose-response parameter")
+      if (!(betaparam %in% c("rel", "common", "random") | is.numeric(betaparam))) {
+        paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value")
       }
-
-      if (!(betaparam$pool %in% c("rel", "const"))) {
-        stop(paste0("beta.", i, ": `pool` can take either `rel` or `const`"))
-      }
-      if (!(betaparam$method %in% c("common", "random") | is.numeric(betaparam$method))) {
-        stop(paste0("beta.", i, ": `method` can take either `common`, `random` or a numeric value if `pool`=`const`"))
-      }
-      if (is.numeric(betaparam$method) & betaparam$pool!="const") {
-        stop(paste0("beta.", i, ": `method` can only take a numeric value if `pool`=`const`"))
-      }
+      # if (!identical(sort(names(betaparam)), sort(c("pool", "method")))) {
+      #   stop("`pool` and `method` must both be specified for each dose-response parameter")
+      # }
+      #
+      # if (!(betaparam$pool %in% c("rel", "const"))) {
+      #   stop(paste0("beta.", i, ": `pool` can take either `rel` or `const`"))
+      # }
+      # if (!(betaparam$method %in% c("common", "random") | is.numeric(betaparam$method))) {
+      #   stop(paste0("beta.", i, ": `method` can take either `common`, `random` or a numeric value if `pool`=`const`"))
+      # }
+      # if (is.numeric(betaparam$method) & betaparam$pool!="const") {
+      #   stop(paste0("beta.", i, ": `method` can only take a numeric value if `pool`=`const`"))
+      # }
     }
   }
 
@@ -322,6 +330,12 @@ write.check <- function(fun="linear", user.fun=NULL,
     if (!all(names(class.effect) %in% inclparams)) {
       stop("`class.effect` must be a list with element names corresponding to beta parameters")
     }
+    for (i in seq_along(class.effect)) {
+      if (get(names(class.effect)[i])!="rel") {
+        stop("Class effects can only be assigned to beta parameters modelled using relative effects (`rel`)")
+      }
+    }
+
     if (!all(class.effect %in% c("common", "random"))) {
       stop("`class.effect` elements must be either `common` or `random`")
     }
@@ -523,6 +537,7 @@ write.beta.vars <- function() {
 #' @examples
 write.beta <- function(model,
                        beta.1, beta.2=NULL, beta.3=NULL,
+                       method="common",
                        class.effect=list()
 ) {
 
@@ -532,6 +547,20 @@ write.beta <- function(model,
   vars <- write.beta.vars()
 
   # Add to model
+  # Add deltas and everything
+  if (method %in% c("common", "random")) {
+    model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["delta.ref"]], "\\2"), model)
+    if (method=="common") {
+      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.fe"]], "\\2"), model)
+    } else if (method=="random") {
+      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.re"]], "\\2"), model)
+      model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["multiarm"]], "\\2"), model)
+      model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[["sd.prior"]], "\\2"), model)
+    } else {
+      stop(paste0("beta.", i, ": `method` must take either `common` or `random` if `pool`=`rel`"))
+    }
+  }
+
   for (i in 1:3) {
     # If a beta parameter has relative effects for indirect evidence calculation
     if (!is.null(get(paste0("beta.", i)))) {
@@ -542,24 +571,11 @@ write.beta <- function(model,
       # Add zero for s.beta reference
       model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[[paste("s.beta", i, "ref", sep=".")]], "\\2"), model)
 
+
       # RELATIVE BETA PARAMETERS
-      if (betaparam$pool=="rel") {
-        # Add deltas and everything
-        if (is.numeric(betaparam$method)) {
-          stop(paste0("beta.", i, ": `method` must take either `common` or `random` if `pool`=`rel`"))
-        } else if (is.character(betaparam$method)) {
-          model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["delta.ref"]], "\\2"), model)
-          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
-          if (betaparam$method=="common") {
-            model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.fe"]], "\\2"), model)
-          } else if (betaparam$method=="random") {
-            model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.re"]], "\\2"), model)
-            model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["multiarm"]], "\\2"), model)
-            model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[["sd.prior"]], "\\2"), model)
-          } else {
-            stop(paste0("beta.", i, ": `method` must take either `common` or `random` if `pool`=`rel`"))
-          }
-        }
+      if (betaparam=="rel") {
+        # Convert s.beta to d.
+        model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
 
         # Add priors / class effects for d
         if (betaname %in% names(class.effect)) {
@@ -576,25 +592,41 @@ write.beta <- function(model,
 
 
       # CONSTANT BETA PARAMETERS
-      } else if (betaparam$pool=="const") {
-        if (is.numeric(betaparam$method)) {
-          model <- gsub(inserts[["insert.end"]],
-          paste0("\\1\nd.", i, "[agent[i,k]] <- ", betaparam$method, "\n\\2"),
-          model)
-        } else if (is.character(betaparam$method)) {
-          model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta", i, sep=".")]], "\\2"), model)
-          if (betaparam$method=="common") {
-            model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.fe", i, sep=".")]], "\\2"), model)
-          } else if (betaparam$method=="random") {
-            model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.re", i, sep=".")]], "\\2"), model)
-            model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta.sd.prior", i, sep=".")]], "\\2"), model)
-          } else {
-            stop(paste0("beta.", i, ": `method` must take either `common`, `random` or be assigned a numeric value"))
-          }
+      } else if (betaparam %in% c("common", "random")) {
+        model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta", i, sep=".")]], "\\2"), model)
+        if (betaparam=="common") {
+          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.fe", i, sep=".")]], "\\2"), model)
+        } else if (betaparam=="random") {
+          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.re", i, sep=".")]], "\\2"), model)
+          model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta.sd.prior", i, sep=".")]], "\\2"), model)
         }
+      } else if (is.numeric(betaparam)) {
+        model <- gsub(inserts[["insert.end"]],
+                      paste0("\\1\nd.", i, "[agent[i,k]] <- ", betaparam$method, "\n\\2"),
+                      model)
       } else {
-        stop(paste0("beta.", i, ": `pool` must take either `rel` or `const`"))
+        stop(paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value"))
       }
+
+      # } else if (betaparam$pool=="const") {
+      #   if (is.numeric(betaparam$method)) {
+      #     model <- gsub(inserts[["insert.end"]],
+      #     paste0("\\1\nd.", i, "[agent[i,k]] <- ", betaparam$method, "\n\\2"),
+      #     model)
+      #   } else if (is.character(betaparam$method)) {
+      #     model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta", i, sep=".")]], "\\2"), model)
+      #     if (betaparam$method=="common") {
+      #       model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.fe", i, sep=".")]], "\\2"), model)
+      #     } else if (betaparam$method=="random") {
+      #       model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.re", i, sep=".")]], "\\2"), model)
+      #       model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta.sd.prior", i, sep=".")]], "\\2"), model)
+      #     } else {
+      #       stop(paste0("beta.", i, ": `method` must take either `common`, `random` or be assigned a numeric value"))
+      #     }
+      #   }
+      # } else {
+      #   stop(paste0("beta.", i, ": `pool` must take either `rel` or `const`"))
+      # }
     }
   }
 

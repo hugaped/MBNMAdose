@@ -21,12 +21,12 @@
 #'   to overwrite the JAGS model that is automatically written based on the
 #'   specified options. Useful when ammending priors using replace.prior()
 #'
-#' @param beta.1 A list with named elements `pool` and `method` that refers to
-#' dose-response parameter(s) specified within the dose-response function (see details).
-#' @param beta.2 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
-#' @param beta.3 A list with named elements `pool` and `method` that refers to
-#' time-course parameter(s) specified within the time-course function (see details).
+#' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param beta.2 Refers to dose-parameter(s) specified within the dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @param class.effect A list of named strings that determines which dose-response
 #'   parameters to model with a class effect and what that effect should be
@@ -130,8 +130,9 @@
 MBNMA.run <- function(network, parameters.to.save=NULL,
                       fun="linear", user.fun=NULL,
                       model.file=NULL,
-                      beta.1=list(pool="rel", method="common"),
+                      beta.1="rel",
                       beta.2=NULL, beta.3=NULL,
+                      method="common",
                       class.effect=list(),
                       pd="pv", parallel=TRUE,
                       likelihood=NULL, link=NULL,
@@ -195,11 +196,16 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
 
 
     names(class.effect) <- fun.params
+  } else if (is.null(arg.params)) {
+    wrap.params <- list(beta.1, beta.2, beta.3)
+    wrap.params <- which(sapply(wrap.params,
+                                is.character))
   }
 
   if (is.null(model.file)) {
     model <- MBNMA.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                         method=method,
                          class.effect=class.effect,
                          likelihood=likelihood, link=link
     )
@@ -215,14 +221,6 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
     warning("All parameter specifications (dose-response parameters, class effects, priors, etc.) are being overwritten by `model.file`")
     model <- model.file
   }
-
-  if (is.null(arg.params)) {
-    wrap.params <- which(sapply(list(beta.1$method, beta.2$method, beta.3$method),
-                                is.character))
-  } else {
-    # Add wrapper code
-  }
-
 
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
@@ -289,6 +287,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                     "jagscode"=model,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
+                    "method"=method,
                     "class.effect"=class.effect,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
@@ -399,35 +398,35 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("d\\.", model.params[i], "\\[k\\] ~"), model)==TRUE) {
+    if (grepl(paste0("^d\\.", model.params[i], "\\[k\\] ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
-    } else if (grepl(paste0("d\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
-      if (grepl(paste0("beta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
+    } else if (grepl(paste0("^d\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
+      if (grepl(paste0("^beta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
         parameters.to.save <- append(parameters.to.save, paste0("beta.", model.params[i]))
       }
     }
-    if (grepl(paste0("sd\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("^sd\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.", model.params[i]))
     }
-    if (grepl(paste0("sd\\.beta.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("^sd\\.beta.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd\\.beta\\.", model.params[i]))
     }
-    if (grepl(paste0("D\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("^D\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
     }
-    if (grepl(paste0("sd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("^sd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.D.", model.params[i]))
     }
-    if (grepl(paste0("BETA\\.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("^BETA\\.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("BETA.", model.params[i]))
     }
-    if (grepl(paste0("sd\\.BETA\\.", model.params[i]), model)==TRUE) {
+    if (grepl(paste0("^sd\\.BETA\\.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.BETA.", model.params[i]))
     }
   }
 
   for (i in 1:4) {
-    if (grepl(paste0("d\\.", i, " ~"), model)==TRUE) {
+    if (grepl(paste0("^d\\.", i, " ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", i))
     }
   }
@@ -440,7 +439,7 @@ gen.parameters.to.save <- function(model.params, model) {
   }
 
   # For MBNMAdose
-  if (grepl("sd ~", model)==TRUE) {
+  if (grepl("^sd ~", model)==TRUE) {
     parameters.to.save <- append(parameters.to.save, "sd")
   }
 
