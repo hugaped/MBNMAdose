@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1555603411815.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2582373026",
+    "id" : "85E53559",
+    "lastKnownWriteTime" : 1555692474,
+    "last_content_update" : 1555692474416,
+    "path" : "~/MBNMA/MBNMA R Package/Dose/MBNMAdose/R/plot.functions.R",
+    "project_path" : "R/plot.functions.R",
+    "properties" : {
+        "cursorPosition" : "85,43",
+        "scrollLine" : "75",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

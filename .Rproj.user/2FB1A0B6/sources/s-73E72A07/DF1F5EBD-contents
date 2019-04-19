@@ -442,3 +442,81 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   return(datalist)
 
 }
+
+
+
+
+
+
+
+#' Identify unique comparisons within a network (identical to MBNMAtime)
+#'
+#' Identify unique contrasts within a network that make up all the head-to-head comparisons. Repetitions
+#' of the same treatment comparison are grouped together.
+#'
+#' @param data A data frame containing variables `studyID` and `treatment` (as numeric codes) that
+#' indicate which treatments are used in which studies.
+#'
+#' @return A data frame of unique comparisons in which each row represents a different comparison.
+#' `t1` and `t2` indicate the treatment codes that make up the comparison. `nr` indicates the number
+#' of times the given comparison is made within the network.
+#'
+#' If there is only a single observation for each study within the dataset (i.e. as for standard
+#' network meta-analysis) `nr` will represent the number of studies that compare treatments `t1` and
+#' `t2`.
+#'
+#' If there are multiple observations for each study within the dataset (as in time-course MBNMA)
+#' `nr` will represent the number of time points in the dataset in which treatments `t1` and `t2` are
+#' compared.
+#'
+#' @examples
+#' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
+#'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
+#'   )
+#'
+#' # Identify comparisons informed by direct and indirect evidence
+#' MBNMA.comparisons(data)
+#' @export
+MBNMA.comparisons <- function(data)
+{
+  # Assert checks
+  checkmate::assertDataFrame(data)
+
+  if (all(names(data) %in% c("studyID", "treatment") != TRUE)) {
+    stop("data must contain variables 'studyID' and 'treatment'")
+  }
+
+  t1 <- vector()
+  t2 <- vector()
+
+  for (i in seq_along(data[["studyID"]])) {
+
+    k <- i+1
+
+    while (k<=nrow(data) &
+           data[["studyID"]][k] == data[["studyID"]][i] &
+           !is.null(data[["studyID"]][k])) {
+
+      # Ensures ordering of t1 to t2 is lowest to highest
+      t <- sort(c(data[["treatment"]][i], data[["treatment"]][k]))
+
+      t1 <- append(t1, t[1])
+      t2 <- append(t2, t[2])
+
+      k <- k+1
+    }
+
+  }
+
+  comparisons <- data.frame("t1"=t1, "t2"=t2)
+
+  comparisons <- comparisons %>%
+    dplyr::group_by(t1, t2) %>%
+    dplyr::mutate(nr=n())
+
+  comparisons <- unique(comparisons)
+  comparisons <- dplyr::arrange(comparisons, t1, t2)
+
+  return(comparisons)
+
+}

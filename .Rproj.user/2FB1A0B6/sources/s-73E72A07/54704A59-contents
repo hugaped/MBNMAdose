@@ -20,39 +20,68 @@ test1 <- MBNMA.run(network, fun="linear",
                    n.iter=7000
                    )
 
-test1 <- MBNMA.run(network, fun="exponential",
+test2 <- MBNMA.run(network, fun="exponential",
                    beta.1="rel",
                    method="common",
                    n.iter=7000
 )
 
+test3 <- MBNMA.run(network, fun="emax",
+                   beta.1="rel",
+                   beta.2="rel",
+                   method="common",
+                   n.iter=7000
+)
 
-test1 <- MBNMA.run(network,
-                   fun="emax",
+test4 <- MBNMA.run(network, fun="emax",
                    beta.1="rel",
                    beta.2="common",
                    method="common",
-                   n.iter=10000
+                   n.iter=7000
 )
 
-test2 <- MBNMA.run(network,
-                  fun="emax",
-                  beta.1="rel",
-                  beta.2="random",
-                  method="common",
-                  n.iter=1000
+test5 <- MBNMA.run(network, fun="emax",
+                   beta.1="common",
+                   beta.2="rel",
+                   method="common",
+                   n.iter=7000
 )
 
-test3 <- MBNMA.run(network,
-                  fun="linear",
-                  beta.1="rel",
-                  method="common",
-                  n.iter=10000
-)
 
-test4 <- MBNMA.run(network,
-                   fun="emax",
+test6 <- MBNMA.run(network, fun="emax",
                    beta.1="rel",
                    beta.2="random",
-                   n.iter=10000
+                   method="common",
+                   n.iter=7000
 )
+
+test7 <- MBNMA.run(network, fun="emax",
+                   beta.1="random",
+                   beta.2="rel",
+                   method="common",
+                   n.iter=7000
+)
+
+# Method = random
+re.1 <- MBNMA.run(network, fun="emax",
+                   beta.1="rel",
+                   beta.2="random",
+                   method="random",
+                   n.iter=7000
+)
+
+re.2 <- MBNMA.run(network, fun="emax",
+                   beta.1="random",
+                   beta.2="rel",
+                   method="random",
+                   n.iter=7000
+)
+
+
+re.3 <- MBNMA.run(network, fun="emax",
+                  beta.1="rel",
+                  beta.2="common",
+                  method="random",
+                  n.iter=10000
+)
+##### CONVERGENCE!!!! ######
