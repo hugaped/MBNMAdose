@@ -226,3 +226,78 @@ genmaxcols <- function() {
 
   return(cols)
 }
+
+
+
+
+
+#' Forest plot for results from dose-response MBNMA models
+#'
+#' Generates a forest plot for dose-response parameters.
+#'
+#' @inheritParams predict.MBNMA
+#' @param params A character vector of dose-response parameters to plot.
+#' Parameters must be given the same name as monitored nodes in `mbnma` and must be
+#' modelled as relative effects (`"rel"`). Can be set to
+#' `NULL` to include all available dose-response parameters estimated by `mbnma`.
+#'
+#' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different dose-response parameters
+#' @export
+plot.MBNMA <- function(mbnma, params=NULL) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertChoice(params, choices=mbnma[["parameters.to.save"]], null.ok=TRUE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Check that specified params are modelled using relative effects
+  for (i in seq_along(params)) {
+    if (grepl("d\\.", params[i]) | grepl("D\\.", params[i])) {
+      stop(paste0(params[i], " has not been modelled using relative effects and does not vary by agent or class"))
+    }
+  }
+
+  # Add all available params if is.null(params)
+  if (is.null(params)) {
+    params <- vector()
+
+    # Add d
+    params <- append(params,
+                     mbnma[["parameters.to.save"]][grep("^d\\.", mbnma[["parameters.to.save"]])]
+    )
+
+    # Add D
+    params <- append(params,
+                     mbnma[["parameters.to.save"]][grep("^D\\.", mbnma[["parameters.to.save"]])]
+    )
+
+    if (length(params)==0) {
+      stop("No dose-response relative effects can be identified from the model")
+    }
+  }
+
+
+  # Compile parameter data into one data frame
+  mbnma.sum <- as.data.frame(mbnma[["BUGSoutput"]][["summary"]])
+  plotdata <- mbnma.sum[0,]
+  for (i in seq_along(params)) {
+    paramdata <- mbnma.sum[grepl(paste0("^", params[i]),rownames(mbnma.sum)),]
+    paramdata[["doseparam"]] <- rep(params[i], nrow(paramdata))
+    plotdata <- rbind(plotdata, paramdata)
+  }
+  plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
+
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=factor(param))) +
+    ggplot2::geom_point() +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+    ggplot2::coord_flip()
+
+  g <- g + ggplot2::facet_wrap(~doseparam, scales="free")
+
+  # Axis labels
+  g <- g + ggplot2::xlab("Agent / Class") +
+    ggplot2::ylab("Effect size")
+
+  return(g)
+}
