@@ -82,7 +82,7 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
     if (!("agents" %in% names(network))) {
       stop("`level` has been set to `agent` but there are no agent codes given in the dataset")
     }
-    nodes <- network[["agents"]]
+    nodes <- sort(network[["agents"]])
     data.ab$treatment <- as.character(temp)
 
   } else if (level=="treatment") {
@@ -138,9 +138,11 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
     cols <- genmaxcols()
 
     if (level=="treatment") {
-      igraph::V(g)$color <- cols[sapply(nodes, function(x) strsplit(x, "[_]")[[1]][1])]
+      #igraph::V(g)$color <- cols[1:length(sapply(nodes, function(x) strsplit(x, "[_]")[[1]][1]))]
+      temp <- as.character(sapply(nodes, function(x) strsplit(x, "[_]")[[1]][1]))
+      igraph::V(g)$color <- cols[as.numeric(factor(temp))]
     } else if (level=="agent") {
-      igraph::V(g)$color <- cols[nodes]
+      igraph::V(g)$color <- cols[1:length(nodes)]
     }
   }
 
