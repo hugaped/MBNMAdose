@@ -70,6 +70,8 @@ re.1 <- MBNMA.run(network, fun="emax",
                    n.iter=7000
 )
 
+
+
 re.2 <- MBNMA.run(network, fun="emax",
                    beta.1="random",
                    beta.2="rel",
@@ -85,3 +87,12 @@ re.3 <- MBNMA.run(network, fun="emax",
                   n.iter=10000
 )
 ##### CONVERGENCE!!!! ######
+
+
+re.4 <- MBNMA.run(network, fun="emax",
+                  beta.1="rel",
+                  beta.2="rel",
+                  method="random",
+                  n.iter=10000, n.thin=10
+)
+##### FULL CONVERGENCE!!!! ######

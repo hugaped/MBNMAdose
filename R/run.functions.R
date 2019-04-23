@@ -398,7 +398,8 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==TRUE |
+        grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
     } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
       if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {

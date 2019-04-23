@@ -7,13 +7,13 @@
     "folds" : "",
     "hash" : "0",
     "id" : "CF2C69B7",
-    "lastKnownWriteTime" : 1555601507,
-    "last_content_update" : 1555601507112,
+    "lastKnownWriteTime" : 1556028818,
+    "last_content_update" : 1556028818821,
     "path" : "~/MBNMA/MBNMA R Package/Dose/MBNMAdose/R/write.functions.R",
     "project_path" : "R/write.functions.R",
     "properties" : {
-        "cursorPosition" : "2,26",
-        "scrollLine" : "0",
+        "cursorPosition" : "30,2",
+        "scrollLine" : "18",
         "tempName" : "Untitled1"
     },
     "relative_order" : 8,

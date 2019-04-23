@@ -26,6 +26,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
                         method="common",
+                        cor="estimate", cor.prior="wishart",
                         class.effect=list(),
                         likelihood="binomial", link=NULL
                         ) {
@@ -48,7 +49,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
 
   write.check(fun=fun, user.fun=user.fun,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
-              method=method,
+              method=method, cor.prior=cor.prior,
               class.effect=class.effect)
 
   model <- write.model()
@@ -64,6 +65,10 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
   # Add treatment effects
   model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
                       method=method, class.effect=class.effect)
+
+  # Add correlation between dose-response parameters
+  model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                     method=method, cor=cor, cor.prior=cor.prior)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -239,6 +244,7 @@ write.check <- function(fun="linear", user.fun=NULL,
                         beta.3=NULL,
                         method="common",
                         UME=FALSE,
+                        cor.prior="wishart",
                         class.effect=list()) {
   parameters <- c("beta.1", "beta.2", "beta.3")
 
@@ -256,6 +262,9 @@ write.check <- function(fun="linear", user.fun=NULL,
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(fun, choices=c("none", "monotonic", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  if (method=="random") {
+    checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
+  }
   checkmate::reportAssertions(argcheck)
 
   # Check betas
@@ -635,6 +644,124 @@ write.beta <- function(model,
 
 
 
+#' Writes code for correlation between dose-response parameters
+#'
+#' Correlation is modelled between d parameter priors
+write.cor <- function(model, cor="estimate", cor.prior="wishart",
+                      beta.1="rel", beta.2=NULL, beta.3=NULL,
+                      method="random") {
+  # cor can either take "estimate" to be estimated from the data,
+  #or be a numeric vector of values to assign to rho to fill correlation
+  #matrix between random effects dose-response parameters
+  # (i.e. rho[2,1], rho[3,1], rho[3,2])
+
+  if (is.numeric(cor) & cor.prior=="wishart") {
+    stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
+  }
+  if (!is.numeric(cor) & cor!="estimate") {
+    stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
+  }
+
+  inserts <- write.inserts()
+
+  jagswish <- "
+      for (r in 1:mat.size) {
+        d.prior[r] <- 0
+        Omega[r,r] <- 1
+      }
+
+      inv.R ~ dwish(Omega[,], 2)
+
+      for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
+      for (c in (r+1):mat.size) {
+      Omega[r,c] <- 0   # Lower triangle
+      Omega[c,r] <- 0   # Upper triangle
+      }
+      }
+      "
+
+  jagsrho <- "
+      for (r in 1:mat.size) {
+        d.prior[r] <- 0
+        R[r,r] <- 1000    # Covariance matrix diagonals
+      }
+
+      for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
+      for (c in (r+1):mat.size) {
+        R[r,c] <- 1000*rho[1]   # Lower triangle
+        R[c,r] <- 1000*rho[1]   # Upper triangle
+      }
+      }
+"
+
+  if (method=="random") {
+    corparams <- vector()
+    for (i in 1:3) {
+      if (!is.null(get(paste0("beta.", i)))) {
+        if (get(paste0("beta.", i))=="rel") {
+          corparams <- append(corparams, paste0("beta.",i))
+        }
+      }
+    }
+    sufparams <- sapply(corparams, function(x) strsplit(x, ".", fixed=TRUE)[[1]][2])
+    mat.size <- length(corparams)
+
+  } else {
+    mat.size <- 0
+  }
+
+  if (mat.size>=2) {
+    for (i in seq_along(corparams)) {
+        # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
+      model <- gsub(paste0("d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
+                    paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]\n"),
+                    model
+                    )
+    }
+
+    if (cor.prior=="wishart") {
+      addcode <- jagswish
+      model <- gsub(inserts[["insert.te.priors"]],
+                    paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
+                    model
+                    )
+    } else if (cor.prior=="rho") {
+      addcode <- jagsrho
+      model <- gsub(inserts[["insert.te.priors"]],
+                    paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])\\2"),
+                    model
+      )
+
+      if (cor=="estimate") {
+        addcode <- paste(addcode, "
+          for (m in 1:(mat.size-1)) {
+            rho[m] ~ dunif(-1,1)
+          }
+        ")
+      } else if (is.numeric(cor)) {
+        # Add values for rho assigned by user
+        if (length(cor)!=(mat.size)-1) {
+          stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
+        }
+        for (m in seq_along(cor)) {
+          model <- gsub(inserts[["insert.end"]],
+                        paste0("\\1rho[", m, "] <- ", cor[m]))
+        }
+      }
+    }
+
+    addcode <- gsub("mat\\.size", mat.size, addcode)
+    model <- gsub(inserts[["insert.end"]], paste0("\\1", addcode, "\\2"), model)
+  }
+
+  return(model)
+
+}
+
+
+
+
+
 
 #' Removes any loops from MBNMA model JAGS code that do not contain any
 #' expressions
@@ -721,3 +848,5 @@ get.prior <- function(model) {
 
   return(priors)
 }
+
+
