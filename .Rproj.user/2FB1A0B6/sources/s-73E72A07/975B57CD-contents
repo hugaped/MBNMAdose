@@ -134,6 +134,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                       beta.2=NULL, beta.3=NULL,
                       method="common",
                       class.effect=list(),
+                      var.scale=NULL,
                       pd="pv", parallel=TRUE,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
@@ -207,6 +208,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
                          method=method,
                          class.effect=class.effect,
+                         var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
 

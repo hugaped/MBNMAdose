@@ -27,6 +27,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
                         beta.2=NULL, beta.3=NULL,
                         method="common",
                         cor="estimate", cor.prior="wishart",
+                        var.scale=NULL,
                         class.effect=list(),
                         likelihood="binomial", link=NULL
                         ) {
@@ -50,6 +51,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
   write.check(fun=fun, user.fun=user.fun,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
               method=method, cor.prior=cor.prior,
+              var.scale=var.scale,
               class.effect=class.effect)
 
   model <- write.model()
@@ -68,7 +70,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
 
   # Add correlation between dose-response parameters
   model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
-                     method=method, cor=cor, cor.prior=cor.prior)
+                     method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -202,10 +204,13 @@ write.dose.fun <- function(fun="linear", user.fun=NULL) {
     DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k]) - (beta.1[agent[i,1]] * dose[i,1])"
   } else if (fun=="exponential") {
     DR <- "DR[i,k] <- exp(beta.1[agent[i,k]] * dose[i,k]) - exp(beta.1[agent[i,1]] * dose[i,1])"
+    message("Results for the rate of increase/decrease (`beta.1`) modelled on the exponential scale")
   } else if (fun=="emax") {
     DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"
+    message("Results for ET50 (`beta.2`) modelled on the exponential scale")
   } else if (fun=="emax.hill") {
-    DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^beta.3[agent[i,k]]) / ((dose[i,k]^beta.3[agent[i,k]]) + exp(beta.2[agent[i,k]]^beta.3[agent[i,k]]))) - (beta.1[agent[i,1]] * (dose[i,1]^beta.3[agent[i,1]]) / ((dose[i,1]^beta.3[agent[i,1]]) + exp(beta.2[agent[i,1]]^beta.3[agent[i,1]])))"
+    DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
+    message("Results for ET50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
@@ -245,6 +250,7 @@ write.check <- function(fun="linear", user.fun=NULL,
                         method="common",
                         UME=FALSE,
                         cor.prior="wishart",
+                        var.scale=NULL,
                         class.effect=list()) {
   parameters <- c("beta.1", "beta.2", "beta.3")
 
@@ -264,6 +270,7 @@ write.check <- function(fun="linear", user.fun=NULL,
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
+    checkmate::assertNumeric(var.scale, null.ok = TRUE)
   }
   checkmate::reportAssertions(argcheck)
 
@@ -610,8 +617,9 @@ write.beta <- function(model,
           model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta.sd.prior", i, sep=".")]], "\\2"), model)
         }
       } else if (is.numeric(betaparam)) {
+        model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.fe", i, sep=".")]], "\\2"), model)
         model <- gsub(inserts[["insert.end"]],
-                      paste0("\\1\nd.", i, "[agent[i,k]] <- ", betaparam$method, "\n\\2"),
+                      paste0("\\1\nbeta.", i, " <- ", betaparam, "\n\\2"),
                       model)
       } else {
         stop(paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value"))
@@ -647,7 +655,7 @@ write.beta <- function(model,
 #' Writes code for correlation between dose-response parameters
 #'
 #' Correlation is modelled between d parameter priors
-write.cor <- function(model, cor="estimate", cor.prior="wishart",
+write.cor <- function(model, cor="estimate", cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
                       method="random") {
   # cor can either take "estimate" to be estimated from the data,
@@ -665,33 +673,32 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart",
   inserts <- write.inserts()
 
   jagswish <- "
-      for (r in 1:mat.size) {
-        d.prior[r] <- 0
-        Omega[r,r] <- 1
-      }
+for (r in 1:mat.size) {
+d.prior[r] <- 0
+}
 
-      inv.R ~ dwish(Omega[,], mat.size)
+inv.R ~ dwish(Omega[,], mat.size)
 
-      for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
-      for (c in (r+1):mat.size) {
-      Omega[r,c] <- 0   # Lower triangle
-      Omega[c,r] <- 0   # Upper triangle
-      }
-      }
-      "
+for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
+for (c in (r+1):mat.size) {
+Omega[r,c] <- 0   # Lower triangle
+Omega[c,r] <- 0   # Upper triangle
+}
+}
+"
 
   jagsrho <- "
-      for (r in 1:mat.size) {
-        d.prior[r] <- 0
-        R[r,r] <- 1000    # Covariance matrix diagonals
-      }
+for (r in 1:mat.size) {
+d.prior[r] <- 0
+R[r,r] <- 1000    # Covariance matrix diagonals
+}
 
-      for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
-      for (c in (r+1):mat.size) {
-        R[r,c] <- 1000*rho[1]   # Lower triangle
-        R[c,r] <- 1000*rho[1]   # Upper triangle
-      }
-      }
+for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
+for (c in (r+1):mat.size) {
+R[r,c] <- 1000*rho[1]   # Lower triangle
+R[c,r] <- 1000*rho[1]   # Upper triangle
+}
+}
 "
 
   if (method=="random") {
@@ -725,6 +732,19 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart",
                     paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
                     model
                     )
+
+      # Check that var.scale has correct length and add omega to code
+      if (is.null(var.scale)) {
+        var.scale <- rep(1,mat.size)
+      } else if (length(var.scale)!=mat.size) {
+        stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
+      }
+      for (i in seq_along(var.scale)) {
+        model <- gsub(inserts[["insert.end"]],
+                      paste0("\\1Omega[", i, ",", i, "] <- ", var.scale[i], "\n\\2"),
+                      model)
+      }
+
     } else if (cor.prior=="rho") {
       addcode <- jagsrho
       model <- gsub(inserts[["insert.te.priors"]],
@@ -734,9 +754,9 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart",
 
       if (cor=="estimate") {
         addcode <- paste(addcode, "
-          for (m in 1:(mat.size-1)) {
-            rho[m] ~ dunif(-1,1)
-          }
+for (m in 1:(mat.size-1)) {
+rho[m] ~ dunif(-1,1)
+}
         ")
       } else if (is.numeric(cor)) {
         # Add values for rho assigned by user
@@ -837,8 +857,8 @@ get.prior <- function(model) {
   model <- strsplit(model, split="\n")[[1]]
   #priors <- model[grep(".+~ [A-z]+\\([-?0-9]", model)]
 
-  priorcode <- model[grep("^.+~ [A-z]+\\([-?0-9]", model) |
-                       grep("^.+~ [A-z]+\\(Omega", model)]
+  priorcode <- model[c(grep("^.+~ [A-z]+\\([-?0-9]", model),
+                       grep("^.+~ [A-z]+\\(Omega", model))]
 
   priorlist <- strsplit(priorcode, split=" +?~ +?")
   priors <- list()
@@ -851,3 +871,76 @@ get.prior <- function(model) {
 }
 
 
+
+
+
+
+#' Replace original priors in an MBNMA model with new priors
+#'
+#' Identical to `get.prior()` in MBNMAtime.
+#'
+#' This function takes new priors, as specified by the user, and adds them to
+#' the JAGS code from an MBNMA model. New priors replace old priors in the JAGS
+#' model.
+#'
+#' @inheritParams get.prior
+#' @param mbnma An S3 object of class `c("MBNMA", "rjags")` generated by running a
+#'   time-course MBNMA model.
+#' @param priors A named list of parameter values (without indices) and
+#'   replacement prior distribution values given as strings
+#'   **using distributions as specified in JAGS syntax**.
+#'
+#' @details Values in `priors` can include any JAGS functions/distributions
+#'   (e.g. censoring/truncation).
+#'
+#' @return A character object of JAGS MBNMA model code that includes the new
+#'   priors in place of original priors
+#'
+replace.prior <- function(priors, model=NULL, mbnma=NULL) {
+  # priors is a named list of parameter values (without indices) and replacement
+  #prior values given as strings USING DISTRIBUTIONS AS SPECIFIED IN JAGS SYNTAX (i.e.
+  #dnorm() is specified using mean and precision rather than mean and SD.
+  #It can include JAGS functions (e.g. censoring/truncation)
+  #e.g. for a half-normal SD prior list("sd.et50"="dnorm(0,0.5) T(0,)")
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "MBNMA", null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(model, len=1, null.ok=TRUE, add=argcheck)
+  checkmate::assertList(priors, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!is.null(mbnma) & !is.null(model)) {
+    stop("Must provide EITHER an existing MBNMA model (using `mbnma`) OR MBNMA JAGS code (using `model`)")
+  }
+
+  if (!is.null(mbnma)) {
+    model <- strsplit(mbnma$model.arg$jagscode, split="\n")[[1]]
+  } else if (!is.null(model)) {
+    model <- strsplit(model, split="\n")[[1]]
+  } else {
+    stop("Must provide EITHER an existing MBNMA model (using `mbnma`) OR MBNMA JAGS code (using `model`)")
+  }
+
+  for (i in seq_along(priors)) {
+    # Checks
+    if (length(grep(paste0("^( +)?", names(priors)[i]), model))==0) {
+      stop("Prior named ", names(priors)[i], " not found in the model code. Check priors currently present in model code using get.prior()")
+      # } else if (length(grep(paste0("^( +)?", names(priors)[i]), model))>1) {
+      #   stop("Prior named ", names(priors)[i], " has matched on multiple instances in the model code. Check priors currently present in model code using get.prior()")
+    }
+
+    #line <- grep(paste0("^( +)?", names(priors)[i]), model)
+    line <- grep(paste0("^( +)?", names(priors)[i], ".+~"), model)
+    state <- model[line]
+    model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
+  }
+
+  # Cut irrelevant section from JAGS code
+  start <- grep("^model\\{", model)
+  end <- grep("# Model ends", model) + 1
+
+  model <- paste(model[start:end], collapse="\n")
+
+  return(model)
+}

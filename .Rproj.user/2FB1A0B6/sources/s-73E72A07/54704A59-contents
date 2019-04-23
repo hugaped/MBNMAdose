@@ -103,5 +103,14 @@ re.5 <- MBNMA.run(network, fun="emax.hill",
                   beta.2="rel",
                   beta.3="rel",
                   method="random",
-                  n.iter=10000, n.thin=10
+                  n.iter=20000, n.thin=15
+)
+
+
+re.6 <- MBNMA.run(network, fun="emax.hill",
+                  beta.1="rel",
+                  beta.2="rel",
+                  beta.3=1,
+                  method="random",
+                  n.iter=15000, n.thin=10
 )
