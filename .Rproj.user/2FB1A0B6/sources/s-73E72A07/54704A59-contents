@@ -96,3 +96,12 @@ re.4 <- MBNMA.run(network, fun="emax",
                   n.iter=10000, n.thin=10
 )
 ##### FULL CONVERGENCE!!!! ######
+
+
+re.5 <- MBNMA.run(network, fun="emax.hill",
+                  beta.1="rel",
+                  beta.2="rel",
+                  beta.3="rel",
+                  method="random",
+                  n.iter=10000, n.thin=10
+)

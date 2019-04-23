@@ -670,7 +670,7 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart",
         Omega[r,r] <- 1
       }
 
-      inv.R ~ dwish(Omega[,], 2)
+      inv.R ~ dwish(Omega[,], mat.size)
 
       for (r in 1:(mat.size-1)) {  # Covariance matrix upper/lower triangles
       for (c in (r+1):mat.size) {
@@ -837,7 +837,8 @@ get.prior <- function(model) {
   model <- strsplit(model, split="\n")[[1]]
   #priors <- model[grep(".+~ [A-z]+\\([-?0-9]", model)]
 
-  priorcode <- model[grep("^.+~ [A-z]+\\([-?0-9]", model)]
+  priorcode <- model[grep("^.+~ [A-z]+\\([-?0-9]", model) |
+                       grep("^.+~ [A-z]+\\(Omega", model)]
 
   priorlist <- strsplit(priorcode, split=" +?~ +?")
   priors <- list()
