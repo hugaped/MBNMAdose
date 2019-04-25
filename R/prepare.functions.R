@@ -233,8 +233,12 @@ add_index <- function(data.ab) {
   checkmate::assertDataFrame(data.ab)
 
   recoded <- recode.agent(data.ab, level = "agent")
-  data.ab <- recoded[["data.ab"]]
+  treatments <- dplyr::arrange(data.ab, agent, dose)
+  treatments <- unique(paste(treatments$agent, treatments$dose, sep="_"))
   agents <- recoded[["lvlnames"]]
+  data.ab <- recoded[["data.ab"]]
+
+
 
 
   #### Add indices
@@ -250,6 +254,8 @@ add_index <- function(data.ab) {
     dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=n())
 
+  output <- list("data.ab"=data.ab, "agents"=agents, "treatments"=treatments)
+
 
   # Store class labels and recode (if they exist in data.ab)
   if ("class" %in% names(data.ab)) {
@@ -263,10 +269,11 @@ add_index <- function(data.ab) {
     classkey$agent <- factor(classkey$agent, labels=agents)
     classkey$class <- factor(classkey$class, labels=classes)
 
-    return(list("data.ab"=data.ab, "agents"=agents, "classes"=classes, "classkey"=classkey))
-  } else {
-    return(list("data.ab"=data.ab, "agents"=agents))
+    output[["classes"]] <- classes
+    output[["classkey"]] <- classkey
   }
+
+  return(output)
 }
 
 

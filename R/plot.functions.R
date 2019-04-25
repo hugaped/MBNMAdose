@@ -87,7 +87,8 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
 
   } else if (level=="treatment") {
     data.ab$treatment <- paste(as.character(temp), data.ab$dose, sep="_")
-    nodes <- sort(unique(data.ab$treatment))
+    nodes <- sort(network[["treatments"]])
+    #nodes <- sort(unique(data.ab$treatment))
   }
 
   # Calculate participant numbers (if v.scale not NULL)
