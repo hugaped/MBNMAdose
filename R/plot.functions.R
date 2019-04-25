@@ -240,10 +240,17 @@ genmaxcols <- function() {
 #' Parameters must be given the same name as monitored nodes in `mbnma` and must be
 #' modelled as relative effects (`"rel"`). Can be set to
 #' `NULL` to include all available dose-response parameters estimated by `mbnma`.
+#' @param agent.labs A caracter vector of agent labels (including `"placebo"` only if it
+#' has been included in the original network). This can be easily inputted by using the
+#' object of `class("MBNMA.network")` on which the MBNMA model was run (i.e. `network$agents`).
+#' @param class.labs A character vector of class labels if `mbnma` was modelled using class effects
+#' (including `"placebo"` only if it has been included in the original network). This can be
+#' easily inputted by using the object of `class("MBNMA.network")` on which the MBNMA model
+#' was run (i.e. `network$classes`).
 #'
 #' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different dose-response parameters
 #' @export
-plot.MBNMA <- function(mbnma, params=NULL) {
+plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -288,7 +295,34 @@ plot.MBNMA <- function(mbnma, params=NULL) {
   }
   plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
 
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=factor(param))) +
+  # Change param labels for agents
+  agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
+  if (!is.null(agent.labs)) {
+    agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
+    a.labs <- agent.labs[sort(unique(agentcodes))]
+  } else {
+    a.labs <- sort(unique(agentdat$param))
+  }
+
+  # Change param labels for classes
+  classdat <- plotdata[grepl("^D\\.", rownames(plotdata)),]
+  if (nrow(classdat)!=0) {
+    if (!is.null(class.labs)) {
+      classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
+      c.labs <- class.labs[classcodes]
+    } else {
+      c.labs <- sort(unique(classdat$param))
+    }
+  }
+  # Increase param number for classes
+  plotdata$param[grepl("^D\\.", rownames(plotdata))] <-
+    plotdata$param[grepl("^D\\.", rownames(plotdata))] + max(agentdat$param)
+
+  # Attach labels
+  all.labs <- c(a.labs, c.labs)
+  plotdata$param <- factor(plotdata$param, labels=all.labs)
+
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
     ggplot2::coord_flip()
