@@ -232,18 +232,18 @@ add_index <- function(data.ab) {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
 
-  recoded <- recode.agent(data.ab, level = "agent")
-  treatments <- dplyr::arrange(data.ab, agent, dose)
-  treatments <- unique(paste(treatments$agent, treatments$dose, sep="_"))
-  agents <- recoded[["lvlnames"]]
-  data.ab <- recoded[["data.ab"]]
+  if ("agent" %in% names(data.ab)) {
+    recoded <- recode.agent(data.ab, level = "agent")
+    treatments <- dplyr::arrange(data.ab, agent, dose)
+    treatments <- unique(paste(treatments$agent, treatments$dose, sep="_"))
+    agents <- recoded[["lvlnames"]]
+    data.ab <- recoded[["data.ab"]]
 
-
+    data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
+  }
 
 
   #### Add indices
-
-  data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
 
   # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
@@ -254,7 +254,22 @@ add_index <- function(data.ab) {
     dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=n())
 
-  output <- list("data.ab"=data.ab, "agents"=agents, "treatments"=treatments)
+
+  # Reorder columns in data.ab
+  ord <- c("agent", "dose", "class", "narm", "arm", "y", "se", "r", "E", "N")
+  newdat <- data.frame("studyID"=data.ab$studyID)
+  for (i in seq_along(ord)) {
+    if (ord[i] %in% names(data.ab)) {
+      newdat <- cbind(newdat, data.ab[,which(names(data.ab)==ord[i])])
+    }
+  }
+
+  output <- list("data.ab"=newdat)
+
+  if ("agent" %in% names(data.ab)) {
+    output[["agents"]] <- agents
+    output[["treatments"]] <- treatments
+  }
 
 
   # Store class labels and recode (if they exist in data.ab)
@@ -334,6 +349,9 @@ recode.agent <- function(data.ab, level="agent") {
 #' @inheritParams MBNMA.network
 #' @param class A boolean object indicating whether or not `data.ab` contains
 #'   information on different classes of treatments
+#' @param level Can take either `"agent"` to indicate that data should be at the agent-
+#'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatent-
+#'   level (for NMA)
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:
@@ -346,17 +364,20 @@ recode.agent <- function(data.ab, level="agent") {
 #'   * If `likelihood="poisson"`:
 #'     - `r` An array of the number of responses/count for each each arm within each study
 #'     - `E` An array of the total exposure time for each arm within each study
-#'   * `dose` A matrix of doses for each arm within each study
+#'   * `dose` A matrix of doses for each arm within each study (if `level="agent"`)
 #'   * `narm` A numeric vector with the number of arms per study
 #'   * `NS` The total number of studies in the dataset
-#'   * `Nagent` The total number of agents in the dataset
-#'   * `agent` A matrix of agent codes within each study
+#'   * `Nagent` The total number of agents in the dataset (if `level="agent"`)
+#'   * `agent` A matrix of agent codes within each study (if `level="agent"`)
+#'   * `NT` The total number of treatment in the dataset (if `level="treatment"`)
+#'   * `treatment` A matrix of treatment codes within each study (if `level="treatment"`)
 #'   * `Nclass` Optional. The total number of classes in the dataset
 #'   * `class` Optional. A matrix of class codes within each study
 #'   * `classkey` Optional. A vector of class codes that correspond to agent codes.
 #'   Same length as the number of agent codes.
 #' @export
-getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit") {
+getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
+                        level="agent") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -364,11 +385,18 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(link, choices=c("logit", "identity", "log", "cloglog", "probit"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
 
-  varnames <- c("studyID", "dose", "agent", "arm", "narm")
+  varnames <- c("studyID", "arm", "narm")
+
+  if (level=="agent") {
+    varnames <- append(varnames, c("dose", "agent"))
+  } else if (level=="treatment") {
+    varnames <- append(varnames, c("treatment"))
+  }
 
   if (class==TRUE) {
     varnames <- append(varnames, "class")
@@ -405,17 +433,26 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   narm <- vector()
   NS <- max(as.numeric(df$studyID))
-  Nagent <- max(df$agent)
-
-  agent <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
-                  nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
-  )
-
-  dose <- agent
 
   datalist <- list(get(datavars[1]), get(datavars[2]),
-                   narm=narm, NS=NS, Nagent=Nagent, agent=agent, dose=dose)
+                   narm=narm, NS=NS)
   names(datalist)[1:2] <- datavars
+
+  if (level=="agent") {
+    datalist[["Nagent"]] <- max(df$agent)
+    datalist[["agent"]] <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
+                                  nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
+                                  )
+    datalist[["dose"]] <- datalist[["agent"]]
+
+  } else if (level=="treatment") {
+    datalist[["NT"]] <- max(df$treatment)
+
+    datalist[["treatment"]] <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
+                                      nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
+                                      )
+  }
+
 
   if (class==TRUE) {
     Nclass <- max(df$class)
@@ -436,10 +473,15 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
                               df$arm==k]
       }
 
-      datalist[["agent"]][i,k] <- max(df$agent[as.numeric(df$studyID)==i &
-                                                     df$arm==k])
-      datalist[["dose"]][i,k] <- max(df$dose[as.numeric(df$studyID)==i &
+      if (level=="agent") {
+        datalist[["agent"]][i,k] <- max(df$agent[as.numeric(df$studyID)==i &
+                                                   df$arm==k])
+        datalist[["dose"]][i,k] <- max(df$dose[as.numeric(df$studyID)==i &
                                                  df$arm==k])
+      } else if (level=="treatment") {
+        datalist[["treatment"]][i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
+                                                   df$arm==k])
+      }
 
     }
 

@@ -198,34 +198,44 @@ write.inserts <- function() {
 #' # Write a user-defined dose-response function
 #' doseresp <- "beta.1 + (dose ^ beta.2)"
 #' write.dose.fun(fun="user", user.fun=doseresp)
-write.dose.fun <- function(fun="linear", user.fun=NULL) {
+write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
   if (fun=="linear") {
-    DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k]) - (beta.1[agent[i,1]] * dose[i,1])"
+    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k]) - (beta.1[agent[i,1]] * dose[i,1])"
+    DR.1 <- "(beta.1[agent[i,k]] * dose[i,k])"
   } else if (fun=="exponential") {
-    DR <- "DR[i,k] <- exp(beta.1[agent[i,k]] * dose[i,k]) - exp(beta.1[agent[i,1]] * dose[i,1])"
+    #DR <- "DR[i,k] <- exp(beta.1[agent[i,k]] * dose[i,k]) - exp(beta.1[agent[i,1]] * dose[i,1])"
+    DR.1 <- "exp(beta.1[agent[i,k]] * dose[i,k])"
     message("Results for the rate of increase/decrease (`beta.1`) modelled on the exponential scale")
   } else if (fun=="emax") {
-    DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"
+    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"
+    DR.1 <- "(beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]])))"
     message("Results for ET50 (`beta.2`) modelled on the exponential scale")
   } else if (fun=="emax.hill") {
-    DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
+    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
+    DR.1 <- "(beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]]))"
     message("Results for ET50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
     DR.1 <- gsub("(dose)", "\\1[i,k]", DR.1)
 
-    DR.2 <- gsub("k", "1", DR.1)
-
-    DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+    # DR.2 <- gsub("k", "1", DR.1)
+    #
+    # DR <- paste0("(", DR.1, ") - (", DR.2, ")")
   }
 
   # Add "s." to indicate within-study betas
-  DR <- gsub("(beta\\.[1-3])", "s.\\1", DR)
+  DR.1 <- gsub("(beta\\.[1-3])", "s.\\1", DR.1)
 
-  return(DR)
+  DR.2 <- gsub("k", "1", DR.1)
+  DR <- paste0("(", DR.1, ") - (", DR.2, ")")
 
+  if (effect=="rel") {
+    return(paste0("DR[i,k] <- ", DR))
+  } else if (effect=="abs") {
+    return(paste0("DR[i,k] <- ", DR.1))
+  }
 }
 
 
@@ -400,8 +410,8 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
   inserts <- write.inserts()
 
-  # Add linear predictor
   model <- gsub(inserts[["insert.arm"]], paste0("\\1", paste(like, glm, sep="\n"), "\\2"), model)
+
 
   # Add deviance contributions
   if (likelihood=="binomial") {
@@ -411,7 +421,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
     "
   } else if (likelihood=="normal") {
     resdevs <- "
-    resdev[i,k,m] <- pow((y[i,k,m] - theta[i,k,m]),2) * prec[i,k,m] # residual deviance for normal likelihood
+    resdev[i,k] <- pow((y[i,k] - theta[i,k]),2) * prec[i,k] # residual deviance for normal likelihood
     "
   } else if (likelihood=="poisson") {
     resdevs <- "
@@ -419,7 +429,6 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
     "
   }
 
-  # Add resdevs
   model <- gsub(inserts[["insert.arm"]], paste0("\\1", resdevs, "\\2"), model)
 
   return(model)
@@ -943,4 +952,128 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   model <- paste(model[start:end], collapse="\n")
 
   return(model)
+}
+
+
+
+
+
+
+
+
+#' Write E0 synthesis JAGS model
+write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
+  model <-
+"
+model{ 			# Begin Model Code
+
+for(i in 1:NS){ # Run through all NS trials
+
+for (k in 1:narm[i]){ # Run through all arms within a study
+
+}
+
+resstudydev[i] <- sum(resdev[i, 1:narm[i]])
+
+}
+
+totresdev <- sum(resstudydev[])
+
+m.mu ~ dnorm(0,0.0001)
+
+# Model ends
+}
+"
+
+  # Add likelihood
+  model <- write.likelihood(model, likelihood = likelihood, link=link)
+
+  if (synth=="fixed") {
+    mucode <- "mu[i] <- m.mu\n"
+
+    model <- gsub("(.+Run through all NS trials\n)(.+)", paste0("\\1", mucode, "\\2"), model)
+  } else if (synth=="random") {
+    mucode <- "mu[i] ~ dnorm(m.mu, tau.mu)\n"
+    musdcode <- "tau.mu <- pow(sd.mu, -2)\nsd.mu ~ dnorm(0,0.0025) T(0,)\n"
+
+    model <- gsub("(.+Run through all NS trials\n)(.+)", paste0("\\1", mucode, "\\2"), model)
+    model <- gsub("(.+\n)(# Model ends)", paste0("\\1", musdcode, "\\2"), model)
+  }
+
+  # Remove delta
+  model <- gsub("(.+<- mu\\[i\\])( \\+ delta\\[i,k\\])", "\\1", model)
+
+  return(model)
+}
+
+
+
+#' Write JAGS code for split NMA
+write.NMA <- function(network, method="common", likelihood, link) {
+  model <- "
+model{ 			# Begin Model Code
+
+d[1] <- 0
+
+for(i in 1:NS){ # Run through all NS trials
+
+mu[i] ~ dnorm(0,0.001)
+delta[i,1] <- 0
+
+for (k in 1:narm[i]){ # Run through all arms within a study
+
+}
+
+resstudydev[i] <- sum(resdev[i, 1:narm[i]])
+
+for(k in 2:narm[i]){ # Treatment effects
+}
+}
+
+for (k in 2:NT){ # Priors on relative treatment effects
+d[k] ~ dnorm(0,0.0001)
+}
+
+totresdev <- sum(resstudydev[])
+
+# Model ends
+}
+"
+
+  # Add likelihood
+  model <- write.likelihood(model, likelihood = likelihood, link=link)
+
+
+  # Add treatment effects
+  if (method=="common") {
+  te <- "
+delta[i,k] <- md[i,k]
+md[i,k] <- d[treatment[i,k]] - d[treatment[i,1]]
+"
+
+  } else if (method=="random") {
+    # Insert w[1]=0
+    model <- gsub("(.+# Run through all NS trials\n)(.+)",
+                  "\\1\nw[i,1] <- 0\n\\2",
+                  model)
+
+    # Insert SD prior
+    model <- gsub("(.+)(\n# Model ends.+)",
+                  "\\1\ntau <- pow(sd,-2)\nsd ~ dnorm(0,0.0025) T(0,)\n\\2",
+                  model)
+
+    te <- "
+delta[i,k] ~ dnorm(md[i,k], taud[i,k])
+md[i,k] <- d[treatment[i,k]] - d[treatment[i,1]] + sw[i,k]
+taud[i,k] <- tau *2*(k-1)/k
+w[i,k] <- (delta[i,k] - d[treatment[i,k]] + d[treatment[i,1]])
+sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)
+"
+  }
+
+  model <- gsub("(.+# Treatment effects\n)(.+)",
+                paste0("\\1", te, "\\2"),
+                model)
+
+
 }

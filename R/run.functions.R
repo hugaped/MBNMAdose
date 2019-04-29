@@ -290,6 +290,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
                     "method"=method,
+                    "likelihood"=likelihood, "link"=link,
                     "class.effect"=class.effect,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
@@ -447,5 +448,96 @@ gen.parameters.to.save <- function(model.params, model) {
   }
 
   return(unique(parameters.to.save))
+
+}
+
+
+
+
+
+
+#' Run an NMA model
+#'
+#' Used for calculating split NMA results for overlay.split
+#'
+NMA.run <- function(network, method="common", likelihood="binomial", link="logit",
+                    warn.rhat=TRUE, n.iter=5000, ...) {
+  #### Write model for NMA ####
+  model <- write.NMA(network=network, method=method,
+                     likelihood=likelihood, link=link)
+
+
+  #### Parameters ####
+  parameters.to.save <- c("d", "totresdev")
+  if (method=="random") {
+    parameters.to.save <- append(parameters.to.save, "sd")
+  }
+
+  #### Prepare data ####
+  data.ab <- network$data.ab
+
+  data.ab$treatment <- paste(as.character(factor(data.ab$agent, labels=network$agents)),
+                             data.ab$dose,
+                             sep="_"
+  )
+
+  # Check treatments that are not connected and remove if not
+  trt.labs <- network$treatments
+  #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+  png("NUL")
+  discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+  dev.off()
+
+
+  data.ab <- data.ab[!(data.ab$treatment %in% discon),]
+  trt.labs <- network$treatments[!(network$treatments %in% discon)]
+
+  data.ab$treatment <- as.numeric(factor(data.ab$treatment, levels = trt.labs))
+
+  jagsdata <- getjagsdata(data.ab, likelihood = likelihood, link=link, level="treatment")
+
+
+  #### Run JAGS model ####
+  # Put data from jagsdata into separate R objects
+  for (i in seq_along(jagsdata)) {
+    ##first extract the object value
+    temp <- jagsdata[[i]]
+    ##now create a new variable with the original name of the list item
+    eval(parse(text=paste(names(jagsdata)[[i]],"<- temp")))
+  }
+
+  # Take names of variables in jagsdata for use in rjags
+  jagsvars <- list()
+  for (i in seq_along(names(jagsdata))) {
+    jagsvars[[i]] <- names(jagsdata)[i]
+  }
+
+  # Create a temporary model file
+  tmpf=tempfile()
+  tmps=file(tmpf,"w")
+  cat(model,file=tmps)
+  close(tmps)
+
+  out <- tryCatch({
+    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                           parameters.to.save=parameters.to.save,
+                           n.iter=n.iter,
+                           ...
+    )
+  },
+  error=function(cond) {
+    message(cond)
+    return(list("error"=cond))
+  }
+  )
+
+  # Gives warning if any rhat values > 1.02
+  if (warn.rhat==TRUE) {
+    if (!("error" %in% names(out))) {
+      rhat.warning(out)
+    }
+  }
+
+  return(list("jagsresult"=out, "trt.labs"=trt.labs))
 
 }
