@@ -295,6 +295,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
   result[["model.arg"]] <- model.arg
+  result[["type"]] <- "dose"
 
   if (!("error" %in% names(result))) {
     class(result) <- c("MBNMA", class(result))

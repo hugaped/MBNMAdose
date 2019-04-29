@@ -416,17 +416,17 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   # Add deviance contributions
   if (likelihood=="binomial") {
     resdevs <- "
-    rhat[i,k] <- theta[i,k] * N[i,k]
-    resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (N[i,k] - r[i,k]) * (log(N[i,k] - r[i,k]) - log(N[i,k] - rhat[i,k])))
-    "
+rhat[i,k] <- theta[i,k] * N[i,k]
+resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (N[i,k] - r[i,k]) * (log(N[i,k] - r[i,k]) - log(N[i,k] - rhat[i,k])))
+"
   } else if (likelihood=="normal") {
     resdevs <- "
-    resdev[i,k] <- pow((y[i,k] - theta[i,k]),2) * prec[i,k] # residual deviance for normal likelihood
-    "
+resdev[i,k] <- pow((y[i,k] - theta[i,k]),2) * prec[i,k] # residual deviance for normal likelihood
+"
   } else if (likelihood=="poisson") {
     resdevs <- "
-    resdev[i,k] <- 2*((lambda[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/lambda[i,k]))
-    "
+resdev[i,k] <- 2*((lambda[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/lambda[i,k]))
+"
   }
 
   model <- gsub(inserts[["insert.arm"]], paste0("\\1", resdevs, "\\2"), model)
