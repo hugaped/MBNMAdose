@@ -685,6 +685,8 @@ overlay.split <- function(g, network, method="common",
 #' default) or deviances (`"dev"`)
 #' @param plot.type Deviances can be plotted either as scatter points (`"scatter"` - using
 #' `geom_point()`, the default) or as boxplots (`"box"`)
+#' @param facet A boolean object that indicates whether or not to facet (by agent for MBNMAdose
+#' and by treatment for MBNMAtime)
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_boxplot`
 #' @inheritParams predict.MBNMA
 #'
@@ -704,7 +706,8 @@ overlay.split <- function(g, network, method="common",
 #' @examples
 #'
 #' @export
-devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", ...) {
+devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
+                    ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
@@ -729,18 +732,31 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", ...) {
     dev.df <- get.theta.dev(mbnma, param=dev.type)
   }
 
-  # Plots the residual deviances over time grouped by study and arm
+  # Plots the residual deviances
+  if (mbnma$type=="time") {
+    xlab <- "Follow-up count"
+    facetscale <- "fixed"
+  } else if (mbnma$type=="dose") {
+    xlab <- "Dose"
+    facetscale <- "free_x"
+  }
+
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fup, y=mean), group=(paste(study, arm, sep="_"))) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean), group=groupvar) +
       ggplot2::geom_point(...)
   } else if (plot.type=="box") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fup), y=mean)) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fupdose), y=mean)) +
       ggplot2::geom_boxplot(...)
   }
 
   # Add axis labels
-  g <- g + ggplot2::xlab("Follow-up count") +
+  g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab("Posterior mean")
+
+  if (facet==TRUE) {
+    g <- g + ggplot2::facet_wrap(~facet, scales = facetscale) +
+      ggplot2::expand_limits(x=0)
+  }
 
   plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
@@ -761,8 +777,7 @@ update.mbnma <- function(mbnma, param="theta") {
   n.iter <- mbnma$BUGSoutput$n.iter - mbnma$BUGSoutput$n.burnin
   n.thin <- mbnma$BUGSoutput$n.thin
 
-  if (!(grepl(paste0("^", param), mbnma$model.arg$jagscode)==TRUE |
-        grepl(paste0(" ", param), mbnma$model.arg$jagscode)==TRUE)) {
+  if (grepl(paste0("\n", param), mbnma$model.arg$jagscode)==FALSE) {
     stop(paste0(param, " not in model code"))
   }
 
@@ -770,12 +785,105 @@ update.mbnma <- function(mbnma, param="theta") {
                                 n.iter=n.iter, n.thin=n.thin)
 
   # Take means of posteriors and convert to data.frame with indices
-  update.mat <- apply(result[[param]], c(1,2,3), function(x) mean(x, na.rm=TRUE))
-  update.df <- reshape2::melt(update.mat)
-  names(update.df) <- c("study", "arm", "fup", "mean")
+  if (mbnma$type=="time") {
+    update.mat <- apply(result[[param]], c(1,2,3), function(x) mean(x, na.rm=TRUE))
+    update.df <- reshape2::melt(update.mat)
+    names(update.df) <- c("study", "arm", "fupdose", "mean")
 
-  # Remove missing values
-  update.df <- update.df[complete.cases(update.df),]
+    # Remove missing values
+    update.df <- update.df[complete.cases(update.df),]
+
+    # Treatment as facet
+    temp <- replicate(max(update.df$fupdose), mbnma$model$data()$treatment)
+    update.df$facet <- as.vector(temp)[
+      complete.cases(as.vector(temp))
+      ]
+
+  } else if (mbnma$type=="dose") {
+    update.mat <- apply(result[[param]], c(1,2), function(x) mean(x, na.rm=TRUE))
+    update.df <- reshape2::melt(update.mat)
+    names(update.df) <- c("study", "arm", "mean")
+
+    # Remove missing values
+    update.df <- update.df[complete.cases(update.df),]
+
+    # Agent as facet
+    update.df$facet <- as.vector(mbnma$model$data()$agent)[
+      complete.cases(as.vector(mbnma$model$data()$agent))
+      ]
+
+    update.df$fupdose <- as.vector(mbnma$model$data()$dose)[
+      complete.cases(as.vector(mbnma$model$data()$dose))
+      ]
+  }
+
+
 
   return(update.df)
+}
+
+
+
+
+
+#' Extracts fitted values or deviance contributions into a data.frame with indices
+get.theta.dev <- function(mbnma, param="theta") {
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  dev.df <- as.data.frame(
+    mbnma$BUGSoutput$summary[grep(paste0("^", param, "\\["),
+                                  rownames(mbnma$BUGSoutput$summary)),]
+  )
+
+  if (mbnma$type=="time") {
+    # Takes the study, arm and follow-up measurement identifier for each residual deviance point
+    id <- matrix(unlist(strsplit(
+      gsub(
+        "([a-z]+\\[)([0-9]+)(,)([0-9]+)(,)([0-9]+)(\\])",
+        "\\2.\\4.\\6", rownames(dev.df)),
+      split="\\.")),
+      byrow=TRUE,
+      ncol=3
+    )
+
+    dev.df$fupdose <- as.numeric(id[,3])
+    dev.df$groupvar <- paste(as.numeric(id[,1]), as.numeric(id[,2]), sep="_")
+
+    # Treatment as facet
+    temp <- replicate(max(dev.df$fupdose), mbnma$model$data()$treatment)
+    dev.df$facet <- as.vector(temp)[
+      complete.cases(as.vector(temp))
+      ]
+
+  } else if (mbnma$type=="dose") {
+    # Takes the study, arm and follow-up measurement identifier for each residual deviance point
+    id <- matrix(unlist(strsplit(
+      gsub(
+        "([a-z]+\\[)([0-9]+)(,)([0-9]+)(\\])",
+        "\\2.\\4", rownames(dev.df)),
+      split="\\.")),
+      byrow=TRUE,
+      ncol=2
+    )
+
+    # Agent as facet
+    dev.df$facet <- as.vector(mbnma$model$data()$agent)[
+      complete.cases(as.vector(mbnma$model$data()$agent))
+      ]
+
+    dev.df$fupdose <- as.vector(mbnma$model$data()$dose)[
+      complete.cases(as.vector(mbnma$model$data()$dose))
+      ]
+    dev.df$groupvar <- as.numeric(id[,1])
+  }
+
+  dev.df$study <- as.numeric(id[,1])
+  dev.df$arm <- as.numeric(id[,2])
+
+
+  return(dev.df)
 }
