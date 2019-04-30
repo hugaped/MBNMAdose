@@ -391,21 +391,23 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   checkmate::checkChoice(likelihood, choices=c("binomial", "normal", "poisson"))
 
   if (likelihood=="binomial") {
-    like <- "r[i,k] ~ dbin(theta[i,k], N[i,k])"
+    like <- "r[i,k] ~ dbin(psi[i,k], N[i,k])"
     if (is.null(link)) {link <- "logit"}
   } else if (likelihood=="normal") {
-    like <- "y[i,k] ~ dnorm(theta[i,k], prec[i,k])
+    like <- "y[i,k] ~ dnorm(psi[i,k], prec[i,k])
       prec[i,k] <- pow(se[i,k], -2)"
     if (is.null(link)) {link <- "identity"}
   } else if (likelihood=="poisson") {
     like <- "r[i,k] ~ dpois(lambda[i,k])
-      lambda[i,k] <- theta[i,k] * N[i,k]"
+      lambda[i,k] <- psi[i,k] * N[i,k]"
     if (is.null(link)) {link <- "log"}
   }
 
-  glm <- "theta[i,k] <- mu[i] + delta[i,k]"
+  transfer <- "psi[i,k] <- theta[i,k]"
+
+  glm <- "psi[i,k] <- theta[i,k]\ntheta[i,k] <- mu[i] + delta[i,k]"
   if (link!="identity") {
-    glm <- gsub("(theta\\[i,k\\])(.+)", paste0(link, "(\\1)\\2"), glm)
+    glm <- gsub("(psi\\[i,k\\])(.+)", paste0(link, "(\\1)\\2"), glm)
   }
 
   inserts <- write.inserts()
@@ -416,12 +418,12 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   # Add deviance contributions
   if (likelihood=="binomial") {
     resdevs <- "
-rhat[i,k] <- theta[i,k] * N[i,k]
+rhat[i,k] <- psi[i,k] * N[i,k]
 resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (N[i,k] - r[i,k]) * (log(N[i,k] - r[i,k]) - log(N[i,k] - rhat[i,k])))
 "
   } else if (likelihood=="normal") {
     resdevs <- "
-resdev[i,k] <- pow((y[i,k] - theta[i,k]),2) * prec[i,k] # residual deviance for normal likelihood
+resdev[i,k] <- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood
 "
   } else if (likelihood=="poisson") {
     resdevs <- "

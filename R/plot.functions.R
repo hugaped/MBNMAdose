@@ -417,7 +417,7 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
 
   # Plot predictions
   g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(dose)),
-                                            y=`50%`, ymin=`2.5%`, ymax=`97.5%`))#, ...)
+                                            y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
 
 
   # Plot observed data as shaded regions
@@ -614,7 +614,7 @@ overlay.split <- function(g, network, method="common",
                           likelihood="binomial", link="logit", ...) {
 
   splitNMA <- NMA.run(network=network, method=method,
-                      likelihood=likelihood, link=link)#, ...)
+                      likelihood=likelihood, link=link, ...)
 
   split.df <- splitNMA[["jagsresult"]]$BUGSoutput$summary
   split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
@@ -777,7 +777,8 @@ update.mbnma <- function(mbnma, param="theta") {
   n.iter <- mbnma$BUGSoutput$n.iter - mbnma$BUGSoutput$n.burnin
   n.thin <- mbnma$BUGSoutput$n.thin
 
-  if (grepl(paste0("\n", param), mbnma$model.arg$jagscode)==FALSE) {
+  if (grepl(paste0("\\\n", param), mbnma$model.arg$jagscode)==FALSE &
+      grepl(paste0("\\(", param), mbnma$model.arg$jagscode)==FALSE) {
     stop(paste0(param, " not in model code"))
   }
 
@@ -799,6 +800,9 @@ update.mbnma <- function(mbnma, param="theta") {
       complete.cases(as.vector(temp))
       ]
 
+    # Studyarm as group
+    update.df$groupvar <- paste(as.numeric(update.df$study), as.numeric(update.df$arm), sep="_")
+
   } else if (mbnma$type=="dose") {
     update.mat <- apply(result[[param]], c(1,2), function(x) mean(x, na.rm=TRUE))
     update.df <- reshape2::melt(update.mat)
@@ -815,6 +819,9 @@ update.mbnma <- function(mbnma, param="theta") {
     update.df$fupdose <- as.vector(mbnma$model$data()$dose)[
       complete.cases(as.vector(mbnma$model$data()$dose))
       ]
+
+    # Study as group
+    update.df$groupvar <- as.numeric(update.df$study)
   }
 
 
@@ -886,4 +893,112 @@ get.theta.dev <- function(mbnma, param="theta") {
 
 
   return(dev.df)
+}
+
+
+
+
+
+#' Plot fitted values from MBNMA model
+#'
+#' @param labs A character vector of agent labels with which to name graph panels.
+#' Can use `MBNMA.network()[["agents"]]` with original
+#' dataset if in doubt.
+#' @param disp.obs A boolean object to indicate whether raw data responses should be
+#' plotted as points on the graph
+#' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_line()`
+#' @inheritParams predict.MBNMA
+#'
+#' @return Generates a plot of fitted values from the MBNMA model and returns a list containing
+#' the plot (as an object of class `c("gg", "ggplot")`), and a data.frame of posterior mean
+#' fitted values for each observation.
+#'
+#' @details
+#' Fitted values should only be plotted for models that have converged successfully.
+#' If fitted values (`theta`) have not been monitored in `mbnma$parameters.to.save`
+#' then additional iterations will have to be run to get results for these.
+#'
+#' @examples
+#' @export
+fitplot <- function(mbnma, agent.labs=NULL, disp.obs=TRUE, ...) {
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(disp.obs, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!("theta" %in% mbnma$parameters.to.save)) {
+    msg <- paste0("`theta` not monitored in mbnma$parameters.to.save.\n",
+                  "additional iterations will be run in order to obtain results")
+    message(msg)
+
+    theta.df <- update.mbnma(mbnma, param="theta")
+  } else {
+    theta.df <- get.theta.dev(mbnma, param="theta")
+  }
+
+
+  # Obtain raw responses to plot over fitted
+  if (mbnma$model.arg$likelihood=="binomial") {
+    theta <- mbnma$model$data()$r / mbnma$model$data()$N
+  } else if (mbnma$model.arg$likelihood=="poisson") {
+    theta <- mbnma$model$data()$r / mbnma$model$data()$E
+  } else if (mbnma$model.arg$likelihood=="identity") {
+    theta <- mbnma$model$data()$y
+  }
+
+  theta <- rescale.link(theta, direction="link", link=mbnma$model.arg$link)
+  theta.df$y <- as.vector(theta)[complete.cases(as.vector(theta))]
+
+  # Add E0 for each agent and drop dose==0
+  E0 <- mean(theta.df$mean[theta.df$fupdose==0])
+  theta.df <- theta.df[theta.df$fupdose!=0,]
+
+  for (i in seq_along(unique(theta.df$study))) {
+    subset <- theta.df[theta.df$study==unique(theta.df$study)[i],]
+    for (k in seq_along(unique(subset$facet))) {
+      row <- subset[subset$facet==unique(subset$facet)[k],][1,]
+      row$mean <- E0
+      row$y <- NA
+      row$fupdose <- 0
+      theta.df <- rbind(theta.df, row)
+    }
+  }
+
+  theta.df <- dplyr::arrange(theta.df, study, facet, fupdose)
+
+  ylab <- "Response on link scale"
+  xlab <- "Dose"
+
+
+  # Generate plot
+  g <- ggplot2::ggplot(theta.df,
+                       ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
+    ggplot2::geom_line()
+
+  # Overlay observed responses
+  if (disp.obs==TRUE) {
+    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
+  }
+
+  # Add facet labels
+  if (!is.null(agent.labs)) {
+    if (!any(theta.df$facet==1)) {
+      agent.labs <- agent.labs[-1]
+    }
+    if (length(agent.labs)!=length(unique(theta.df$facet))) {
+      stop("`agent.labs` must be the same length as the number of agent codes in the model")
+    }
+    g <- g + ggplot2::facet_wrap(~factor(facet, labels=agent.labs))
+  } else {
+    g <- g + ggplot2::facet_wrap(~facet)
+  }
+
+  # Add axis labels
+  g <- g + ggplot2::xlab(xlab) +
+    ggplot2::ylab(ylab)
+
+  suppressWarnings(plot(g))
+
 }
