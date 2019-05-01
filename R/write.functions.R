@@ -388,7 +388,10 @@ write.check <- function(fun="linear", user.fun=NULL,
 #' @examples
 write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
-  checkmate::checkChoice(likelihood, choices=c("binomial", "normal", "poisson"))
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
   if (likelihood=="binomial") {
     like <- "r[i,k] ~ dbin(psi[i,k], N[i,k])"
@@ -1011,11 +1014,11 @@ m.mu ~ dnorm(0,0.0001)
 
 
 #' Write JAGS code for split NMA
-write.NMA <- function(network, method="common", likelihood, link) {
+write.NMA <- function(method="common", likelihood="binomial", link="logit",
+                      UME=FALSE) {
   model <- "
 model{ 			# Begin Model Code
 
-d[1] <- 0
 
 for(i in 1:NS){ # Run through all NS trials
 
@@ -1032,9 +1035,6 @@ for(k in 2:narm[i]){ # Treatment effects
 }
 }
 
-for (k in 2:NT){ # Priors on relative treatment effects
-d[k] ~ dnorm(0,0.0001)
-}
 
 totresdev <- sum(resstudydev[])
 
@@ -1044,6 +1044,14 @@ totresdev <- sum(resstudydev[])
 
   # Add likelihood
   model <- write.likelihood(model, likelihood = likelihood, link=link)
+
+
+  # Add d[1] <- 0
+  if (UME==FALSE) {
+    model <- gsub("(.+# Begin Model Code\n)(.+)",
+                  "\\1\nd[1] <- 0\n\\2",
+                  model)
+  }
 
 
   # Add treatment effects
@@ -1078,4 +1086,34 @@ sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)
                 model)
 
 
+  # Add treatment effect priors and make UME changes
+  if (UME==FALSE) {
+    te.prior <- "
+for (k in 2:NT){ # Priors on relative treatment effects
+d[k] ~ dnorm(0,0.0001)
+}
+"
+  } else if (UME==TRUE) {
+
+    model <- gsub("d\\[treatment\\[i,k\\]\\] (\\+|-) d\\[treatment\\[i,1\\]\\]",
+                  "d[treatment[i,k],treatment[i,1]]",
+                  model
+                  )
+
+    te.prior <- "
+for (k in 1:NT) { d[k,k] <- 0 }
+
+for (c in 1:(NT-1)) {
+for (k in (c+1):NT) {
+d[k,c] ~ dnorm(0,0.0001)
+}
+}
+"
+  }
+
+  model <- gsub("(.+)(\n# Model ends.+)",
+                paste0("\\1", te.prior, "\\2"),
+                model)
+
+  return(model)
 }

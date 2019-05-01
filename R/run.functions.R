@@ -459,13 +459,37 @@ gen.parameters.to.save <- function(model.params, model) {
 
 #' Run an NMA model
 #'
-#' Used for calculating split NMA results for overlay.split
+#' Used for calculating split NMA results, either when comparing models that do not
+#' account for dose-response relationship, or to estimate split results for `overlay.split`.
+#' Results can also be compared between consistency (`UME=FALSE`) and inconsistency
+#' (`UME=TRUE`) models to test the validity of the consistency assumption.
 #'
+#' @inheritParams MBNMA.run
+#' @param drop.discon A boolean object that indicates whether or not to drop disconnected
+#'   studies from the network.
+#' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
+#'   that does not assume consistency and so can be used to test if the consistency
+#'   assumption is valid.
+#'
+#' @examples
+#' @export
 NMA.run <- function(network, method="common", likelihood="binomial", link="logit",
-                    warn.rhat=TRUE, n.iter=5000, ...) {
+                    warn.rhat=TRUE, n.iter=5000, drop.discon=TRUE, UME=FALSE, ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
+  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), add=argcheck)
+  checkmate::assertLogical(warn.rhat, add=argcheck)
+  checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
+  checkmate::assertLogical(drop.discon, add=argcheck)
+  checkmate::assertLogical(UME, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
   #### Write model for NMA ####
-  model <- write.NMA(network=network, method=method,
-                     likelihood=likelihood, link=link)
+  model <- write.NMA(method=method, likelihood=likelihood, link=link, UME=UME)
 
 
   #### Parameters ####
@@ -483,12 +507,15 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
   )
 
   # Check treatments that are not connected and remove if not
-  trt.labs <- network$treatments
-  #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-  png("NUL")
-  discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-  dev.off()
-
+  if (drop.discon==TRUE) {
+    trt.labs <- network$treatments
+    #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+    png("NUL")
+    discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+    dev.off()
+  } else {
+    discon <- vector()
+  }
 
   data.ab <- data.ab[!(data.ab$treatment %in% discon),]
   trt.labs <- network$treatments[!(network$treatments %in% discon)]
@@ -539,6 +566,8 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
     }
   }
 
-  return(list("jagsresult"=out, "trt.labs"=trt.labs))
+  output <- list("jagsresult"=out, "trt.labs"=trt.labs)
+  class(output) <- "NMA"
+  return(output)
 
 }
