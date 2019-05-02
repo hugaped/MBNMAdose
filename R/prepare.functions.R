@@ -50,7 +50,7 @@
 #' # Define network with different network reference agent
 #' network <- MBNMA.network(HF2PPITT, reference="Ce_200", description="Example")
 #' @export
-MBNMA.network <- function(data.ab, reference=1, description="Network") {
+MBNMA.network <- function(data.ab, description="Network") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -601,9 +601,20 @@ drop.disconnected <- function(network) {
   discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
   dev.off()
 
+  data.ab <- network$data.ab
+
   data.ab$treatment <- as.character(factor(data.ab$treatment, labels=network$treatments))
 
-  data.ab <- data.ab[!(data.ab$treatment %in% discon),]
+  drops <- vector()
+  studies <- unique(data.ab$studyID)
+  for (i in seq_along(studies)) {
+    if (any(discon %in% data.ab$treatment[data.ab$studyID==studies[i]])) {
+      drops <- append(drops, studies[i])
+    }
+  }
+
+  #data.ab <- data.ab[!(data.ab$treatment %in% discon),]
+  data.ab <- data.ab[!(data.ab$studyID %in% drops),]
   trt.labs <- network$treatments[!(network$treatments %in% discon)]
 
   data.ab$treatment <- as.numeric(factor(data.ab$treatment, levels = trt.labs))

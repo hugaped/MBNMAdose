@@ -9,7 +9,7 @@
 #'
 #' @param ... Arguments to be sent to `gemtc::mtc.nodesplit`
 MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method="common",
-                            drop.discon=TRUE,
+                            drop.discon=TRUE, comparisons=NULL,
                             level="treatment", ...) {
 
   # Run checks
@@ -17,10 +17,11 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
   checkmate::assertClass(network, "MBNMA.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
+  checkmate::assertDataFrame(comparisons, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
-  likelink <- check.likelink(data.ab, likelihood=likelihood)
+  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
@@ -62,12 +63,16 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
   # Convert to GeMTC
   mtc <- gemtc::mtc.network(data.ab)
 
+
+
   # Identify closed loops of treatments
-  splits <- inconsistency.loops(network$data.ab)
+  if (is.null(comparisons)) {
+    comparisons <- inconsistency.loops(network$data.ab)
+  }
 
   # Nodesplit
   nodesplit <- gemtc::mtc.nodesplit(mtc, likelihood=likelihood, link=link,
-                          comparisons=splits, linearModel=method, ...
+                          comparisons=comparisons[1:2], linearModel=method, ...
                           )
 
   return(nodesplit)

@@ -75,21 +75,19 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   # Generate comparisons (using get.latest.time and MBNMA.contrast?
   data.ab <- network$data.ab
 
+  # Add "s" onto level to make consistent with network names
+  levels <- paste0(level, "s")
 
   # Check if level="agent" that agents are present in dataset
-  temp <- factor(data.ab$agent, labels=network$agents)
-  if (level=="agent") {
-    if (!("agents" %in% names(network))) {
-      stop("`level` has been set to `agent` but there are no agent codes given in the dataset")
-    }
-    nodes <- sort(network[["agents"]])
-    data.ab$treatment <- as.character(temp)
-
-  } else if (level=="treatment") {
-    data.ab$treatment <- paste(as.character(temp), data.ab$dose, sep="_")
-    nodes <- sort(network[["treatments"]])
-    #nodes <- sort(unique(data.ab$treatment))
+  if (!(levels %in% names(network))) {
+    stop(paste0("`level` has been set to `",
+                level,
+                "` but ", levels, " is not a variable within the dataset"))
   }
+
+  nodes <- network[[levels]]
+  data.ab$node <- as.character(factor(data.ab[[level]], labels=network[[levels]]))
+
 
   # Calculate participant numbers (if v.scale not NULL)
   if (!is.null(v.scale)) {
@@ -99,7 +97,7 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
 
     size.vec <- vector()
     for (i in seq_along(nodes)) {
-      size.vec <- append(size.vec, sum(data.ab$N[data.ab$treatment==nodes[i]]))
+      size.vec <- append(size.vec, sum(data.ab$N[data.ab$node==nodes[i]]))
     }
     # Scale size.vec by the max node.size
     size.vec <- size.vec/ (max(size.vec)/20)
@@ -111,14 +109,19 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
     node.size <- NULL
   }
 
-
+  # Change treatment column for agent if necessary
+  if (level=="agent") {
+    data.ab$treatment <- data.ab$agent
+  }
   comparisons <- MBNMA.comparisons(data.ab)
 
   # Code to make graph.create as an MBNMA command if needed
   g <- igraph::graph.empty()
   g <- g + igraph::vertex(nodes)
   ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
-  edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
+  ed <- factor(as.vector(ed), labels=nodes)
+  edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
+  #edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
   g <- g + edges
 
   if (remove.loops==TRUE) {
@@ -174,11 +177,11 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
 #' Check if all nodes in the network are connected (identical to MBNMAtime)
 check.network <- function(g, reference=1) {
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
-                                               reference))
-  treats <- colnames(connects)[connects==FALSE]
+                                               to=reference))
+  treats <- rownames(connects)[connects==FALSE]
 
   if (length(treats>0)) {
-    warning(paste0("The following treatments are not connected to the network reference:\n",
+    warning(paste0("The following treatments/agents are not connected to the network reference:\n",
                    paste(treats, collapse = "\n")))
   }
   return(treats)
