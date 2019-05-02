@@ -234,10 +234,16 @@ add_index <- function(data.ab) {
 
   if ("agent" %in% names(data.ab)) {
     recoded <- recode.agent(data.ab, level = "agent")
-    treatments <- dplyr::arrange(data.ab, agent, dose)
-    treatments <- unique(paste(treatments$agent, treatments$dose, sep="_"))
+    treatments.df <- dplyr::arrange(data.ab, agent, dose)
+    treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
     agents <- recoded[["lvlnames"]]
     data.ab <- recoded[["data.ab"]]
+
+    data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
+                                                 data.ab$dose,
+                                                 sep="_"),
+                                           labels=treatments
+    ))
 
     data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
   }
@@ -256,13 +262,15 @@ add_index <- function(data.ab) {
 
 
   # Reorder columns in data.ab
-  ord <- c("agent", "dose", "class", "narm", "arm", "y", "se", "r", "E", "N")
+  ord <- c("agent", "dose", "treatment", "class", "narm", "arm", "y", "se", "r", "E", "N")
   newdat <- data.frame("studyID"=data.ab$studyID)
   for (i in seq_along(ord)) {
     if (ord[i] %in% names(data.ab)) {
       newdat <- cbind(newdat, data.ab[,which(names(data.ab)==ord[i])])
     }
   }
+  olddat <- data.ab[,!(names(data.ab) %in% c("studyID", ord))]
+  newdat <- cbind(newdat, olddat)
 
   output <- list("data.ab"=newdat)
 
