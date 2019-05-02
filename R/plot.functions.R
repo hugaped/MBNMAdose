@@ -613,6 +613,11 @@ alpha.scale <- function(n.cut, col="blue") {
 overlay.split <- function(g, network, method="common",
                           likelihood="binomial", link="logit", ...) {
 
+  # Check/assign link and likelihood
+  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
+  likelihood <- likelink[["likelihood"]]
+  link <- likelink[["link"]]
+
   splitNMA <- NMA.run(network=network, method=method,
                       likelihood=likelihood, link=link, ...)
 

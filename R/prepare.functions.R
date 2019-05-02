@@ -391,10 +391,13 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
-  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=FALSE, add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "log", "cloglog", "probit"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check/assign link and likelihood
+  likelink <- check.likelink(data.ab, likelihood=likelihood, link=link)
+  likelihood <- likelink[["likelihood"]]
+  link <- likelink[["link"]]
 
   df <- data.ab
 
@@ -576,4 +579,34 @@ MBNMA.comparisons <- function(data)
 
   return(comparisons)
 
+}
+
+
+
+
+
+
+
+#' Drop studies that are not connected to the network reference treatment
+#'
+#' @return A single row per arm data frame containing only studies that are
+#' connected to the network reference treatment
+#'
+#' @export
+drop.disconnected <- function(network) {
+
+  trt.labs <- network$treatments
+  #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+  png("NUL")
+  discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+  dev.off()
+
+  data.ab$treatment <- as.character(factor(data.ab$treatment, labels=network$treatments))
+
+  data.ab <- data.ab[!(data.ab$treatment %in% discon),]
+  trt.labs <- network$treatments[!(network$treatments %in% discon)]
+
+  data.ab$treatment <- as.numeric(factor(data.ab$treatment, levels = trt.labs))
+
+  return(list("data.ab"=data.ab, "trt.labs"=trt.labs))
 }

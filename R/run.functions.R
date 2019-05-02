@@ -152,30 +152,10 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
-  if (is.null(likelihood)) {
-    if (all(c("r", "N") %in% names(network$data.ab))) {
-      likelihood <- "binomial"
-      message("`likelihood` not given by user - set to `binomial` based on data provided")
-    } else if (all(c("y", "se") %in% names(network$data.ab))) {
-      likelihood <- "normal"
-      message("`likelihood` not given by user - set to `normal` based on data provided")
-    } else if (all(c("r", "E") %in% names(network$data.ab))) {
-      likelihood <- "poisson"
-      message("`likelihood` not given by user - set to `poisson` based on data provided")
-    }
-  }
-  if (is.null(link)) {
-    if (likelihood=="binomial") {
-      link <- "logit"
-      message("`link` not given by user - set to `logit` based on assigned value for `likelihood`")
-    } else if (likelihood=="normal") {
-      link <- "identity"
-      message("`link` not given by user - set to `identity` based on assigned value for `likelihood`")
-    } else if (likelihood=="poisson") {
-      link <- "log"
-      message("`link` not given by user - set to `log` based on assigned value for `likelihood`")
-    }
-  }
+  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
+  likelihood <- likelink[["likelihood"]]
+  link <- likelink[["link"]]
+
 
   if (!is.null(arg.params)) {
     if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
@@ -480,13 +460,16 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "MBNMA.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
-  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), add=argcheck)
   checkmate::assertLogical(warn.rhat, add=argcheck)
   checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   checkmate::assertLogical(UME, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check/assign link and likelihood
+  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
+  likelihood <- likelink[["likelihood"]]
+  link <- likelink[["link"]]
 
   #### Write model for NMA ####
   model <- write.NMA(method=method, likelihood=likelihood, link=link, UME=UME)
@@ -500,27 +483,19 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
 
   #### Prepare data ####
   data.ab <- network$data.ab
+  trt.labs <- network$treatments
 
-  data.ab$treatment <- paste(as.character(factor(data.ab$agent, labels=network$agents)),
-                             data.ab$dose,
-                             sep="_"
-  )
+  # data.ab$treatment <- paste(as.character(factor(data.ab$agent, labels=network$agents)),
+  #                            data.ab$dose,
+  #                            sep="_"
+  # )
 
   # Check treatments that are not connected and remove if not
   if (drop.discon==TRUE) {
-    trt.labs <- network$treatments
-    #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-    png("NUL")
-    discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-    dev.off()
-  } else {
-    discon <- vector()
+    connect <- drop.disconnected(network)
+    data.ab <- connect[["data.ab"]]
+    trt.labs <- connect[["trt.labs"]]
   }
-
-  data.ab <- data.ab[!(data.ab$treatment %in% discon),]
-  trt.labs <- network$treatments[!(network$treatments %in% discon)]
-
-  data.ab$treatment <- as.numeric(factor(data.ab$treatment, levels = trt.labs))
 
   jagsdata <- getjagsdata(data.ab, likelihood = likelihood, link=link, level="treatment")
 
@@ -570,4 +545,63 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
   class(output) <- "NMA"
   return(output)
 
+}
+
+
+
+
+
+
+
+#' Check likelihood and link function
+#'
+#' Checks that likelihood and link function is provided and confirm that the correct
+#' form of data is provided.
+#'
+#' @export
+check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
+
+  # Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertDataFrame(data.ab, add=argcheck)
+  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), null.ok=TRUE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+
+  if (is.null(likelihood)) {
+    if (all(c("r", "N") %in% names(data.ab))) {
+      likelihood <- "binomial"
+      message("`likelihood` not given by user - set to `binomial` based on data provided")
+    } else if (all(c("y", "se") %in% names(data.ab))) {
+      likelihood <- "normal"
+      message("`likelihood` not given by user - set to `normal` based on data provided")
+    } else if (all(c("r", "E") %in% names(data.ab))) {
+      likelihood <- "poisson"
+      message("`likelihood` not given by user - set to `poisson` based on data provided")
+    }
+  }
+  if (is.null(link)) {
+    if (likelihood=="binomial") {
+      link <- "logit"
+      message("`link` not given by user - set to `logit` based on assigned value for `likelihood`")
+    } else if (likelihood=="normal") {
+      link <- "identity"
+      message("`link` not given by user - set to `identity` based on assigned value for `likelihood`")
+    } else if (likelihood=="poisson") {
+      link <- "log"
+      message("`link` not given by user - set to `log` based on assigned value for `likelihood`")
+    }
+  }
+
+  # Check valid likelihood is used
+  if (likelihood=="binomial" & !all(c("r", "N") %in% names(data.ab))) {
+    stop("Binomial likelihood - columns `r` and `N` must be included in `data.ab`")
+  } else if (likelihood=="poisson" & !all(c("E", "N") %in% names(data.ab))) {
+    stop("Poisson likelihood - columns `E` and `N` must be included in `data.ab`")
+  } else if (likelihood=="normal" & !all(c("y", "se") %in% names(data.ab))) {
+    stop("Normal likelihood - columns `y` and `se` must be included in `data.ab`")
+  }
+
+  return(list("likelihood"=likelihood, "link"=link))
 }

@@ -394,13 +394,10 @@ E0.validate <- function(data.ab, likelihood=NULL) {
   checkmate::assertNames(names(data.ab), must.include = c("studyID"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (likelihood=="binomial" & !all(c("r", "N") %in% names(data.ab))) {
-    stop("`mbnma` modelled using a binomial likelihood - columns `r` and `N` must be included in `data.ab`")
-  } else if (likelihood=="poisson" & !all(c("E", "N") %in% names(data.ab))) {
-    stop("`mbnma` modelled using a poisson likelihood - columns `E` and `N` must be included in `data.ab`")
-  } else if (likelihood=="normal" & !all(c("y", "se") %in% names(data.ab))) {
-    stop("`mbnma` modelled using a normal likelihood - columns `y` and `se` must be included in `data.ab`")
-  }
+  # Check/assign link and likelihood
+  likelink <- check.likelink(data.ab, likelihood=likelihood)
+  likelihood <- likelink[["likelihood"]]
+
 
   # Sort data.ab
   data.ab <- dplyr::arrange(data.ab, studyID)
