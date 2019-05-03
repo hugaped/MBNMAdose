@@ -57,4 +57,5 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, agents=NULL) {
              "rank.matrix"=rank.mat)
 
     }
+  }
 }

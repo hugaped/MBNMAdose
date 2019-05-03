@@ -240,11 +240,16 @@ add_index <- function(data.ab) {
 
   if ("agent" %in% names(data.ab)) {
     recoded <- recode.agent(data.ab, level = "agent")
-    treatments.df <- dplyr::arrange(data.ab, agent, dose)
-    treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
     agents <- recoded[["lvlnames"]]
     data.ab <- recoded[["data.ab"]]
 
+    # Generate treatment labels
+    treatments.df <- recoded[["data.ab"]]
+    treatments.df$agent <- factor(treatments.df$agent, labels=agents)
+    treatments.df <- dplyr::arrange(treatments.df, agent, dose)
+    treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
+
+    # Generate treatment variable
     data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
                                                  data.ab$dose,
                                                  sep="_"),
@@ -310,42 +315,60 @@ add_index <- function(data.ab) {
 #' Assigns agent and class variables numeric identifiers
 #'
 #' @param level Can take either `"agent"` or `"class"`
+#'
+#' @details Also relabels the agent for any arms in which dose = 0 to "Placebo_0"
 recode.agent <- function(data.ab, level="agent") {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
   checkmate::assertChoice(level, choices = c("agent", "class"))
 
+  # Check for consistency across all dose=0
+  #dose.df <- data.ab[, names(data.ab) %in% c(level, "dose")]
+
+  print.msg <- FALSE
+
+  lvls <- as.character(sort(unique(data.ab[[level]])))
+
   if (is.factor(data.ab[[level]])) {
-    agents <- levels(data.ab[[level]])
-    match <- match(agents, as.character(data.ab[[level]]))
-    if (any(is.na(match))) {
-      agents <- agents[!is.na(match)]
+    data.ab[[level]] <- as.numeric(data.ab[[level]])
+  } else if (is.character(data.ab[[level]])) {
+    data.ab[[level]] <- as.numeric(factor(data.ab[[level]], labels=lvls))
+  }
+
+  agent.seq <- sort(unique(data.ab[[level]]))
+
+  for (i in seq_along(agent.seq)) {
+    # If all doses of a particular agent/class = 0 then recode to "Placebo"
+    if (all(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+      if (lvls[1]!="Placebo") {
+        # Swap current lvls for "Placebo"
+        lvls <- c("Placebo", lvls[-agent.seq[i]])
+      }
+      data.ab[[level]][data.ab[[level]]==agent.seq[i]] <- 0
+      print.msg <- TRUE
+    } else if (any(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+    # Else if agent/class contains any dose=0, convert those doses to "Placebo"
+      if (lvls[1]!="Placebo") {
+        # Add "Placebo"
+        lvls <- c("Placebo", lvls)
+      }
+      data.ab[[level]][data.ab[[level]]==agent.seq[i] & data.ab$dose==0] <- 0
+      print.msg <- TRUE
     }
   }
 
-  if (is.numeric(data.ab[[level]])) {
-    if (max(data.ab[[level]]) != length(unique(data.ab[[level]])) |
-        !all.equal(data.ab[[level]], as.integer(data.ab[[level]]))
-    ) {
-      print(paste0(level, " is being recoded to enforce sequential numbering"))
-    }
-    agents <- sort(unique(data.ab[[level]]))
+  # Messages
+  if (print.msg==TRUE) {
+    message(paste0("Values for `", level, "` with dose = 0 have been recoded to `Placebo`"))
+  }
+  if (!identical(1:max(data.ab[[level]]), sort(unique(data.ab[[level]]))[-1])) {
+    message(paste0(level, " is being recoded to enforce sequential numbering and allow inclusion of `Placebo`"))
   }
 
-  if (is.character(data.ab[[level]])) {
-    agents <- sort(unique(data.ab[[level]]))
-  }
+  # Reorder by number sequentially (meaning that "Placebo" now is 1)
+  data.ab[[level]] <- as.numeric(factor(data.ab[[level]], labels=lvls))
 
-  # Numeric data must be checked that sequence is consistent for sequential numbering
-  # Factor data must be allocated codes based on factor levels
-  # Character data must be allocated codes automatically (alphabetically)
-
-  # Must be numeric for MBNMA.run
-  data.ab[[level]] <- as.numeric(factor(data.ab[[level]],
-                                     levels=agents)) # provide factor for sorting so that reference is as given by user
-
-
-  return(list("data.ab"=data.ab, "lvlnames"=agents))
+  return(list("data.ab"=data.ab, "lvlnames"=lvls))
 }
 
 
