@@ -9,7 +9,7 @@
 #'
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
 #' * `studyID` Study identifiers
-#' * `dose` Numeric data indicating the dose
+#' * `dose` Numeric data indicating the dose (must take positive values)
 #' * `agent` Agent identifiers (can be numeric, factor or character)
 #' * `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
 #' continuous data.
@@ -79,7 +79,8 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' @details Checks done within the validation:
 #' * Checks data.ab has required column names
 #' * Checks there are no NAs
-#' * Checks that all SEs are positive (if variables are included in dataset)
+#' * Checks that all SEs are >0 (if variables are included in dataset)
+#' * Checks that all doses are >=0
 #' * Checks that all r and N are positive (if variables are included in dataset)
 #' * Checks that class codes are consistent within each agent
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
@@ -142,7 +143,7 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   }
 
 
-  # Check that all SEs are positive
+  # Check that all SEs are >0
   var_tmp <- c("se", var_bin, "E")
   for (i in seq_along(var_tmp)) {
     if (var_tmp[i] %in% names(data.ab)) {
@@ -150,6 +151,11 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
         stop(paste("All values for", var_tmp[i], "must be >0", sep=" "))
       }
     }
+  }
+
+  # Check that all doses are positive
+  if (!all(data.ab$dose>=0)) {
+    stop("All values for `dose` must be >=0")
   }
 
 
