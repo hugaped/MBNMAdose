@@ -28,6 +28,8 @@
 #' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
+#' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
+#'   should be modelled with between-study heterogeneity or not (see LINK `Details`).
 #' @param class.effect A list of named strings that determines which dose-response
 #'   parameters to model with a class effect and what that effect should be
 #'   (`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.
@@ -37,17 +39,22 @@
 #'   defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
 #'   and identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
+#' @param var.scale A numeric vector indicating the relative scale of variances between
+#' correlated dose-response parameters when relative effects are modelled on more than
+#' one dose-response parameter and `method="random"` (see Details LINK). Each element of
+#' the vector refers to the relative scale of each of the dose-response parameters that is
+#' modelled using relative effects.
 #'
 #' @param pd Can take either:
 #'   * `pv` only pV will be reported (as automatically outputted by R2jags).
 #'   * `plugin` calculates pD by the plug-in
-#'   method \insertCite{RN60}{MBNMAtime}. It is faster, but may output negative
+#'   method REF. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence \insertCite{RN92}{MBNMAtime}. This
+#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence REF. This
 #'   will require running the model for additional iterations but
 #'   will always produce a positive result.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
-#'   of the penalized expected deviance \insertCite{RN92}{MBNMAtime}
+#'   of the penalized expected deviance REF.
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated.
@@ -56,6 +63,12 @@
 #' @param ... Arguments to be sent to R2jags.
 #'
 #' @inheritParams replace.prior
+#'
+#' @details When relative effects are modelled on more than one dose-response parameter and
+#' `method="random"`, correlation between the dose-response parameters is automatically
+#' estimated using a vague Wishart prior. This prior can be made slightly more informative
+#' by specifying the relative scale of variances between the dose-response parameters using
+#' `var.scale`.
 #'
 #' @return An object of S3 class `c("MBNMA", "rjags")`` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
@@ -75,22 +88,7 @@
 #'   users identify the source of the error.
 #'
 #' @section Dose-response parameters:
-#' Dose-response parameters in the model must be provided as a list with named elements
-#' `pool` and `method`.
-#'
-#' `pool` is used to define the approach used for pooling of a given dose-response parameter and
-#' can take any of the following values:
-#' * `"rel"` indicates that relative effects should be pooled for this dose-response parameter.
-#' This preserves randomisation within included studies and are likely to vary less between studies
-#' (only due to effect modification). Pooling follows the
-#' general approach for Network Meta-Analysis proposed by Lu and Ades (2004).
-#' * `"const"` indicates that treatments should be pooled across the whole network to allow estimation
-#' of a single dose-response parameter.
-#' This implies using a single value across the network for this dose-response parameter,
-#' and may therefore be making very strong assumptions of similarity.
-#'
-#' `method` is used to define the model used for meta-analysis for a given dose-response parameter
-#' and can take any of the following values:
+#' EXPLAIN DIFFERENCE BETWEEN "rel", "common", "random", and numeric value
 #' * `"common"` implies that all studies estimate the same true effect
 #' (akin to a "fixed effect" meta-analysis)
 #' * `"random"` implies that all studies estimate a separate true effect, but that each
@@ -165,18 +163,11 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
     run.params <- arg.params$run.params
 
     fun.params <- names(class.effect)
-
-
     for (k in seq_along(fun.params)) {
-      for (m in seq_along(wrap.params)) {
-        if (wrap.params[m] %in% fun.params[k]) {
-          fun.params[k] <- run.params[m]
-        }
-      }
+      fun.params[k] <- run.params[which(fun.params[k]==wrap.params)]
     }
-
-
     names(class.effect) <- fun.params
+
   } else if (is.null(arg.params)) {
     wrap.params <- list(beta.1, beta.2, beta.3)
     wrap.params <- which(sapply(wrap.params,
@@ -193,7 +184,37 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
     )
 
     # Change beta.1 and beta.2 to emax and et50, etc. if necessary
-    # NEED TO ADD SOMETHING HERE SPECIFIC TO MBNMAdose
+    # Change beta.1 and beta.2 to emax and et50, etc. if necessary
+    if (!is.null(arg.params)) {
+      code.params <- c("d", "beta", "sd", "tau", "D", "sd.D")
+      for (i in seq_along(wrap.params)) {
+        for (k in seq_along(code.params)) {
+          model <- gsub(paste(code.params[k], strsplit(run.params[i], split="[.]")[[1]][2], sep="."),
+                        paste(code.params[k], wrap.params[i], sep="."), model)
+        }
+      }
+
+      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3),
+                                              is.character))]
+
+
+
+      # This bit is messy...remove if problematic though it will cause issues with parameters.to.save
+      # param.list <- list("beta.1"=beta.1.str, "beta.2"=beta.2.str, "beta.3"=beta.3.str, "beta.4"=beta.4.str)
+      # temp <- names(unlist(sapply(param.list, function(x) {
+      #   if(!is.null(x)) {
+      #     if (x %in% c("arm.common", "arm.random", "const.common", "const.random")) {
+      #       x
+      #     }
+      #   }
+      # })))
+      # temp <- unlist(sapply(temp, FUN=function(x) strsplit(x, split="[.]")[[1]][2]))
+      # wrap.params <- append(wrap.params, temp)
+
+    } else {
+      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3),
+                                  is.character))
+    }
 
     if (!is.null(priors)) {
       model <- replace.prior(priors=priors, model=model)
@@ -604,4 +625,236 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
   }
 
   return(list("likelihood"=likelihood, "link"=link))
+}
+
+
+
+
+
+
+
+
+
+
+#######################################################
+#########   MBNMA.run Wrapper Functions   #############
+#######################################################
+
+
+#' Run MBNMA model with a linear dose-response function
+#'
+#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
+#' dose-response function. Follows the methods
+#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' uses more clearly defined parameter names.
+#'
+#' @inheritParams MBNMA.run
+#' @inherit MBNMA.run return references
+#' @param slope Refers to the slope parameter of the linear dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#'
+#' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @examples
+#'
+#' @export
+MBNMA.linear <- function(network, parameters.to.save=NULL,
+                         slope="rel",
+                         method="common",
+                         class.effect=list(),
+                         var.scale=NULL,
+                         pd="pv", parallel=TRUE,
+                         likelihood=NULL, link=NULL,
+                         priors=NULL,
+                         arg.params=NULL, ...)
+{
+
+  arg.params <- list(
+    wrap.params=c("slope"),
+    run.params=c("beta.1")
+  )
+
+  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+                      fun="linear", user.fun=NULL,
+                      model.file=NULL,
+                      beta.1=slope,
+                      method=method,
+                      class.effect=class.effect,
+                      var.scale=var.scale,
+                      pd=pd, parallel=parallel,
+                      likelihood=likelihood, link=link,
+                      priors=priors,
+                      arg.params=arg.params, ...)
+
+  return(result)
+}
+
+
+
+
+
+#' Run MBNMA model with a exponential dose-response function
+#'
+#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
+#' dose-response function. Follows the methods
+#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' uses more clearly defined parameter names.
+#'
+#' @inheritParams MBNMA.run
+#' @inherit MBNMA.run return references
+#' @param lambda Refers to the rate of growth/decay of the exponential dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#'
+#' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @examples
+#'
+#' @export
+MBNMA.exponential <- function(network, parameters.to.save=NULL,
+                         lambda="rel",
+                         method="common",
+                         class.effect=list(),
+                         var.scale=NULL,
+                         pd="pv", parallel=TRUE,
+                         likelihood=NULL, link=NULL,
+                         priors=NULL,
+                         arg.params=NULL, ...)
+{
+
+  arg.params <- list(
+    wrap.params=c("lambda"),
+    run.params=c("beta.1")
+  )
+
+  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+                      fun="linear", user.fun=NULL,
+                      model.file=NULL,
+                      beta.1=lambda,
+                      method=method,
+                      class.effect=class.effect,
+                      var.scale=var.scale,
+                      pd=pd, parallel=parallel,
+                      likelihood=likelihood, link=link,
+                      priors=priors,
+                      arg.params=arg.params, ...)
+
+  return(result)
+}
+
+
+
+
+
+
+#' Run MBNMA model with an Emax dose-response function (without Hill parameter)
+#'
+#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
+#' dose-response function. Follows the methods
+#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' uses more clearly defined parameter names.
+#'
+#' @inheritParams MBNMA.run
+#' @inherit MBNMA.run return references
+#' @param emax Refers to the Emax parameter of the Emax dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#'
+#' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @examples
+#'
+#' @export
+MBNMA.emax <- function(network, parameters.to.save=NULL,
+                         emax="rel",
+                         ed50="rel",
+                         method="common",
+                         class.effect=list(),
+                         var.scale=NULL,
+                         pd="pv", parallel=TRUE,
+                         likelihood=NULL, link=NULL,
+                         priors=NULL,
+                         arg.params=NULL, ...)
+{
+
+  arg.params <- list(
+    wrap.params=c("emax", "ed50"),
+    run.params=c("beta.1", "beta.2")
+  )
+
+  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+                      fun="emax", user.fun=NULL,
+                      model.file=NULL,
+                      beta.1=emax,
+                      beta.2=ed50,
+                      method=method,
+                      class.effect=class.effect,
+                      var.scale=var.scale,
+                      pd=pd, parallel=parallel,
+                      likelihood=likelihood, link=link,
+                      priors=priors,
+                      arg.params=arg.params, ...)
+
+  return(result)
+}
+
+
+
+
+
+
+#' Run MBNMA model with an Emax dose-response function (with a Hill parameter)
+#'
+#' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
+#' dose-response function. Follows the methods
+#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' uses more clearly defined parameter names.
+#'
+#' @inheritParams MBNMA.run
+#' @inherit MBNMA.run return references
+#' @param emax Refers to the Emax parameter of the Emax dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param hill Refers to the Hill parameter of the Emax dose-response function.
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#'
+#' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @examples
+#'
+#' @export
+MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
+                       emax="rel",
+                       ed50="rel",
+                       hill="common",
+                       method="common",
+                       class.effect=list(),
+                       var.scale=NULL,
+                       pd="pv", parallel=TRUE,
+                       likelihood=NULL, link=NULL,
+                       priors=NULL,
+                       arg.params=NULL, ...)
+{
+
+  arg.params <- list(
+    wrap.params=c("emax", "ed50", "hill"),
+    run.params=c("beta.1", "beta.2", "beta.3")
+  )
+
+  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+                      fun="emax.hill", user.fun=NULL,
+                      model.file=NULL,
+                      beta.1=emax,
+                      beta.2=ed50,
+                      beta.3=hill,
+                      method=method,
+                      class.effect=class.effect,
+                      var.scale=var.scale,
+                      pd=pd, parallel=parallel,
+                      likelihood=likelihood, link=link,
+                      priors=priors,
+                      arg.params=arg.params, ...)
+
+  return(result)
 }

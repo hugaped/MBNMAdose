@@ -210,11 +210,11 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   } else if (fun=="emax") {
     #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"
     DR.1 <- "(beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]])))"
-    message("Results for ET50 (`beta.2`) modelled on the exponential scale")
+    message("Results for ED50 (`beta.2`) modelled on the exponential scale")
   } else if (fun=="emax.hill") {
     #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
     DR.1 <- "(beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]]))"
-    message("Results for ET50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
+    message("Results for ED50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
