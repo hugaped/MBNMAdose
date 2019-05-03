@@ -28,7 +28,8 @@
 #' effects estimated by the model will be compared to).
 #' @param description Optional. Short description of the network.
 #'
-#' @details Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
+#' @details Agents/classes for arms that have dose = 0 will be relabelled as `"Placebo"`.
+#' Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
 #' be included.
 #'
 #' @return An object of class `MBNMA.network` which is a list containing:
@@ -123,21 +124,25 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
       na.vars <- append(na.vars, varnames[i])
     }
   }
-  if (all(var_norm %in% names(data.ab))) {
-    if (anyNA(data.ab[[var_norm[i]]])) {
-      na.vars <- append(na.vars, var_norm[i])
+
+  for (i in 1:2) {
+    if (all(var_norm %in% names(data.ab))) {
+      if (anyNA(data.ab[[var_norm[i]]])) {
+        na.vars <- append(na.vars, var_norm[i])
+      }
+    }
+    if (all(var_bin %in% names(data.ab))) {
+      if (anyNA(data.ab[[var_bin[i]]])) {
+        na.vars <- append(na.vars, var_bin[i])
+      }
+    }
+    if (all(var_pois %in% names(data.ab))) {
+      if (anyNA(data.ab[[var_pois[i]]])) {
+        na.vars <- append(na.vars, var_pois[i])
+      }
     }
   }
-  if (all(var_bin %in% names(data.ab))) {
-    if (anyNA(data.ab[[var_bin[i]]])) {
-      na.vars <- append(na.vars, var_bin[i])
-    }
-  }
-  if (all(var_pois %in% names(data.ab))) {
-    if (anyNA(data.ab[[var_pois[i]]])) {
-      na.vars <- append(na.vars, var_pois[i])
-    }
-  }
+
   if (length(na.vars)>0) {
     stop(paste0("NA values in:\n", paste(na.vars, collapse="\n")))
   }
@@ -156,6 +161,13 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   # Check that all doses are positive
   if (!all(data.ab$dose>=0)) {
     stop("All values for `dose` must be >=0")
+  }
+
+  # Check that if numeric, agent codes are >0
+  if (is.numeric(data.ab$agent)) {
+    if (!all(data.ab$agent>0)) {
+      stop("Agent codes in dataset must be numbered sequentially from 1")
+    }
   }
 
 
@@ -205,6 +217,13 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
     if (length(unique(class.mismatch))>0) {
       stop(paste0("Class codes are different within the same agent for the following treatments:\n",
                   paste(unique(class.mismatch), collapse="\n")))
+    }
+
+    # Check that if numeric, class codes are >0
+    if (is.numeric(data.ab$class)) {
+      if (!all(data.ab$class>0)) {
+        stop("Class codes in dataset must be numbered sequentially from 1")
+      }
     }
   }
 
@@ -292,17 +311,19 @@ add_index <- function(data.ab) {
 
 
   # Store class labels and recode (if they exist in data.ab)
-  if ("class" %in% names(data.ab)) {
+  if ("class" %in% names(newdat)) {
 
-    recoded <- recode.agent(data.ab, level = "class")
+    recoded <- recode.agent(newdat, level = "class")
     classes <- recoded[["lvlnames"]]
 
     # Generate class key
-    classdata <- data.ab[, names(data.ab) %in% c("agent", "class")]
+    #classdata <- data.ab[, names(data.ab) %in% c("agent", "class")]
+    classdata <- recoded$data.ab[, names(recoded$data.ab) %in% c("agent", "class")]
     classkey <- unique(classdata)
     classkey$agent <- factor(classkey$agent, labels=agents)
     classkey$class <- factor(classkey$class, labels=classes)
 
+    output[["data.ab"]] <- recoded[["data.ab"]]
     output[["classes"]] <- classes
     output[["classkey"]] <- classkey
   }
@@ -568,12 +589,12 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' @export
 MBNMA.comparisons <- function(data)
 {
-  # Assert checks
-  checkmate::assertDataFrame(data)
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertDataFrame(data, add=argcheck)
+  checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
-  if (all(names(data) %in% c("studyID", "treatment") != TRUE)) {
-    stop("data must contain variables 'studyID' and 'treatment'")
-  }
 
   t1 <- vector()
   t2 <- vector()
