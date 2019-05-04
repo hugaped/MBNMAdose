@@ -107,7 +107,7 @@ model{ 			# Begin Model Code
 
 for(i in 1:NS){ # Run through all NS trials
 
-DR[i,1] <- 0 # Dose-response model is 0 for baseline arms
+#DR[i,1] <- 0 # Dose-response model is 0 for baseline arms
 mu[i] ~ dnorm(0,0.001)
 
 for (k in 1:narm[i]){ # Run through all arms within a study
@@ -131,7 +131,7 @@ for (k in (c+1):Nagent) { # UME priors
 }
 }
 
-#totresdev <- sum(resstudydev[])
+totresdev <- sum(resstudydev[])
 
 # Model ends
 }
@@ -225,7 +225,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
     DR.1 <- "(beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]]))"
     message("Results for ED50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
   } else if (fun=="nonparam.up" | fun=="nonparam.down") {
-    DR.1 <- "d.1[agent[i,k], dose[i,k]]"
+    DR.1 <- "d.1[dose[i,k], agent[i,k]]"
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
@@ -358,6 +358,11 @@ write.check <- function(fun="linear", user.fun=NULL,
 
   # Checks for class effects
   if (length(class.effect)>0) {
+    # Cannot model class effects with nonparam functions
+    if (fun %in% c("nonparam.up, nonparam.down")) {
+      stop("Class effects cannot be used with non-parametric dose-response functions")
+    }
+
     inclparams <- vector()
     for (i in 1:3) {
       if (!is.null(get(paste0("beta.",i)))) {
@@ -542,19 +547,27 @@ write.beta.vars <- function() {
 
     ############# NON-PARAMETRIC EFFECTS #############
 
-    d.zero <- "d.1[1,1] <- 0"
+    d.zero <- "d.1[1,1] <- 0\n"
+    ind <- "ind <- 1\n"
 
-    d.const.up <- "
-d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(d.1[1,1],)
+#     d.const.up <- "
+# d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(d.1[1,1],)
+# for (c in 2:maxdose[k]) {
+# d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(d.1[k,c-1],)
+# }
+# "
+
+    d.const.down <- "
+d.1[1,k] ~ dnorm(0,0.0001) T(,d.1[1,1])
 for (c in 2:maxdose[k]) {
-d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(d.1[k,c-1],)
+d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])
 }
 "
 
-  d.const.down <- "
-d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(,d.1[1,1])
+  d.const.up <- "
+d.1[1,k] ~ dnorm(0,0.0001) T(d.1[1,1],)
 for (c in 2:maxdose[k]) {
-d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(,d.1[k,c-1])
+d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 }
 "
 
@@ -709,6 +722,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
   vars <- write.beta.vars()
 
   model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[["d.zero"]], "\\2"), model)
+  #model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[["ind"]], "\\2"), model)
 
   if (fun=="nonparam.up") {
     model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[["d.const.up"]], "\\2"), model)

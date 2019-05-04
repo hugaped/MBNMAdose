@@ -111,8 +111,11 @@
 #'   Emax parameter, `beta.2` refers to ET50 parameter
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
+#'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
+#'   the method of OWENS REF)
+#'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
+#'   the method of OWENS REF)
 #'   * `"user"` (user-defined function: `user.fun` must be specified in arguments)
-#'   * `"monotonic"` (non-parametric dose-response relationship following the method of REF)
 #'   * `"none"` (no dose-response relationship).
 #'
 #' @importFrom Rdpack reprompt
@@ -410,7 +413,7 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==TRUE |
+    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
         grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
     } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
