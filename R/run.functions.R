@@ -112,7 +112,7 @@
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
 #'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
-#'   the method of OWENS REF)
+#'   the method of OWENS REF - THOUGH DO I ACTUALY USE THE SAME METHOD..? CONSTRAINTS ARE DIFFERENT)
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
 #'   the method of OWENS REF)
 #'   * `"user"` (user-defined function: `user.fun` must be specified in arguments)

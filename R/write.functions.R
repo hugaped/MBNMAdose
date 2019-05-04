@@ -226,6 +226,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
     message("Results for ED50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
   } else if (fun=="nonparam.up" | fun=="nonparam.down") {
     DR.1 <- "d.1[dose[i,k], agent[i,k]]"
+    message("Modelling non-parametric dose-response - arguments for dose-response parameters `beta.1`, `beta.2`, `beta.3` will be ignored")
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
