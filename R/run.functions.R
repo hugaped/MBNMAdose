@@ -250,7 +250,13 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
 
   #### Run jags model ####
 
-  data.ab <- network[["data.ab"]]
+  if (fun %in% c("nonparam.up", "nonparam.down")) {
+    # Change doses to dose indices
+    data.ab <- index.dose(network[["data.ab"]])[["data.ab"]]
+  } else {
+    data.ab <- network[["data.ab"]]
+  }
+
   result.jags <- MBNMA.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
@@ -338,8 +344,9 @@ MBNMA.jags <- function(data.ab, model,
 
   # Add variable for maxtime to jagsdata if required
   if (grepl("maxtime", model)) {
-    maxtime <- max(data.ab$time)
-    jagsdata[["maxtime"]] <- maxtime
+    jagsdata[["maxtime"]] <- max(data.ab$time)
+  } else if (grepl("maxdose", model)) {
+    jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
   }
 
   # Put data from jagsdata into separate R objects

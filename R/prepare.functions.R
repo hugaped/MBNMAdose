@@ -671,3 +671,26 @@ drop.disconnected <- function(network) {
 
   return(list("data.ab"=data.ab, "trt.labs"=trt.labs))
 }
+
+
+
+
+
+
+
+#' Replace doses with indices of doses in order
+index.dose <- function(data.ab) {
+  agents <- sort(unique(data.ab$agent))
+  maxdose <- vector()
+  for (i in seq_along(agents)) {
+    df <- data.ab[data.ab$agent==agents[i],]
+    doses <- sort(unique(df$dose))
+    maxdose <- append(maxdose, length(doses))
+    for (k in seq_along(doses)) {
+      data.ab$dose[data.ab$agent==agents[i] &
+                     data.ab$dose==doses[k]] <- -k
+    }
+  }
+  data.ab$dose <- -data.ab$dose
+  return(list("data.ab"=data.ab, "maxdose"=maxdose))
+}

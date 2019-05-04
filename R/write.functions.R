@@ -64,9 +64,18 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
   # Add likelihood
   model <- write.likelihood(model, likelihood=likelihood, link=link)
 
-  # Add treatment effects
-  model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
-                      method=method, class.effect=class.effect)
+  # Add treatment delta effects
+  model <- write.delta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                      method=method)
+
+  # Add treatment beta effects
+  if (fun %in% c("nonparam.up", "nonparam.down")) {
+    model <- write.beta.nonparam(model, method=method, fun=fun)
+  } else {
+    model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                        method=method, class.effect=class.effect)
+  }
+
 
   # Add correlation between dose-response parameters
   model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
@@ -122,7 +131,7 @@ for (k in (c+1):Nagent) { # UME priors
 }
 }
 
-totresdev <- sum(resstudydev[])
+#totresdev <- sum(resstudydev[])
 
 # Model ends
 }
@@ -215,6 +224,8 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
     #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
     DR.1 <- "(beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]]))"
     message("Results for ED50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
+  } else if (fun=="nonparam.up" | fun=="nonparam.down") {
+    DR.1 <- "d.1[agent[i,k], dose[i,k]]"
   } else if (fun=="user") {
     DR.1 <- user.fun
     DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
@@ -265,7 +276,8 @@ write.check <- function(fun="linear", user.fun=NULL,
   parameters <- c("beta.1", "beta.2", "beta.3")
 
   # Check fun
-  dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill", "user")
+  dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill",
+                "nonparam.up", "nonparam.down", "user")
   if (is.null(fun)) {
     stop("`fun` must be assigned dose-response function(s)")
   }
@@ -276,7 +288,7 @@ write.check <- function(fun="linear", user.fun=NULL,
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=c("none", "monotonic", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
@@ -507,16 +519,6 @@ write.beta.vars <- function() {
            paste0("\n", "d.", i, "[k] ~ dnorm(0,0.001)", "\n")
     )
 
-    # UME prior active treatment relative effect
-    assign(paste("ume.prior", i, sep="."),
-           paste0("\n", "d.", i, "[c,k] ~ dnorm(0,0.001)", "\n")
-    )
-
-    # Placebo relative effect for UME
-    assign(paste("ume.zero", i, sep="."),
-           paste0("\n", "d.", i, "[1,1] <- 0", "\n")
-    )
-
     # Class effect on active treatment relative effect - fixed
     assign(paste("d.class.fe", i, sep="."),
            paste0("\n", "d.", i, "[k]  <- D.", i, "[class[k]]", "\n")
@@ -536,6 +538,26 @@ write.beta.vars <- function() {
                   "tau.D.", i, " <- pow(sd.D.", i, ", -2)", "\n"
            )
     )
+
+
+    ############# NON-PARAMETRIC EFFECTS #############
+
+    d.zero <- "d.1[1,1] <- 0"
+
+    d.const.up <- "
+d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(d.1[1,1],)
+for (c in 2:maxdose[k]) {
+d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(d.1[k,c-1],)
+}
+"
+
+  d.const.down <- "
+d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(,d.1[1,1])
+for (c in 2:maxdose[k]) {
+d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(,d.1[k,c-1])
+}
+"
+
   }
 
   varnames <- ls()
@@ -549,6 +571,49 @@ write.beta.vars <- function() {
 
 
 
+
+
+
+
+
+#' Adds sections of JAGS code for an MBNMA model that correspond to delta
+#' parameters
+#'
+#' @param model A character object of JAGS MBNMA model code
+#'
+#' @inheritParams MBNMA.run
+#'
+#' @return A character object of JAGS MBNMA model code that includes delta
+#'   parameter components of the model
+#'
+#' @examples
+write.delta <- function(model,
+                       beta.1, beta.2=NULL, beta.3=NULL,
+                       method="common"
+) {
+
+  inserts <- write.inserts()
+
+  # Assign treatment effect segments
+  vars <- write.beta.vars()
+
+  # Add to model
+  # Add deltas and everything
+  if (method %in% c("common", "random")) {
+    model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["delta.ref"]], "\\2"), model)
+    if (method=="common") {
+      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.fe"]], "\\2"), model)
+    } else if (method=="random") {
+      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.re"]], "\\2"), model)
+      model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["multiarm"]], "\\2"), model)
+      model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[["sd.prior"]], "\\2"), model)
+    } else {
+      stop("`method` must take either `common` or `random`")
+    }
+  }
+
+  return(model)
+}
 
 
 
@@ -576,20 +641,6 @@ write.beta <- function(model,
   # Assign treatment effect segments
   vars <- write.beta.vars()
 
-  # Add to model
-  # Add deltas and everything
-  if (method %in% c("common", "random")) {
-    model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["delta.ref"]], "\\2"), model)
-    if (method=="common") {
-      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.fe"]], "\\2"), model)
-    } else if (method=="random") {
-      model <- gsub(inserts[["insert.te"]], paste0("\\1", vars[["delta.re"]], "\\2"), model)
-      model <- gsub(inserts[["insert.study"]], paste0("\\1", vars[["multiarm"]], "\\2"), model)
-      model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[["sd.prior"]], "\\2"), model)
-    } else {
-      stop(paste0("beta.", i, ": `method` must take either `common` or `random` if `pool`=`rel`"))
-    }
-  }
 
   for (i in 1:3) {
     # If a beta parameter has relative effects for indirect evidence calculation
@@ -621,7 +672,7 @@ write.beta <- function(model,
         }
 
 
-      # CONSTANT BETA PARAMETERS
+        # CONSTANT BETA PARAMETERS
       } else if (betaparam %in% c("common", "random")) {
         model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta", i, sep=".")]], "\\2"), model)
         if (betaparam=="common") {
@@ -638,31 +689,40 @@ write.beta <- function(model,
       } else {
         stop(paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value"))
       }
-
-      # } else if (betaparam$pool=="const") {
-      #   if (is.numeric(betaparam$method)) {
-      #     model <- gsub(inserts[["insert.end"]],
-      #     paste0("\\1\nd.", i, "[agent[i,k]] <- ", betaparam$method, "\n\\2"),
-      #     model)
-      #   } else if (is.character(betaparam$method)) {
-      #     model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta", i, sep=".")]], "\\2"), model)
-      #     if (betaparam$method=="common") {
-      #       model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.fe", i, sep=".")]], "\\2"), model)
-      #     } else if (betaparam$method=="random") {
-      #       model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("beta.re", i, sep=".")]], "\\2"), model)
-      #       model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("beta.sd.prior", i, sep=".")]], "\\2"), model)
-      #     } else {
-      #       stop(paste0("beta.", i, ": `method` must take either `common`, `random` or be assigned a numeric value"))
-      #     }
-      #   }
-      # } else {
-      #   stop(paste0("beta.", i, ": `pool` must take either `rel` or `const`"))
-      # }
     }
   }
 
   return(model)
 }
+
+
+
+
+
+
+#' Adds sections of JAGS code for a nonparametric MBNMA model that correspond to beta
+#' parameters
+write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
+  inserts <- write.inserts()
+
+  # Assign treatment effect segments
+  vars <- write.beta.vars()
+
+  model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[["d.zero"]], "\\2"), model)
+
+  if (fun=="nonparam.up") {
+    model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[["d.const.up"]], "\\2"), model)
+  } else if (fun=="nonparam.down") {
+    model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[["d.const.down"]], "\\2"), model)
+  } else {
+    stop("`fun` can only take either `nonparam.up` or `nonparam.down` if write.beta.nonparam() has been called")
+  }
+
+  return(model)
+}
+
+
+
 
 
 
