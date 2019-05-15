@@ -79,7 +79,8 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
 
   # Add correlation between dose-response parameters
   model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
-                     method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale)
+                     method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale,
+                     class.effect=class.effect)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -741,23 +742,67 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 
 
 
-#' Writes code for correlation between dose-response parameters
+#' Adds correlation between dose-response relative effects
 #'
-#' Correlation is modelled between d parameter priors
+#' This uses a Wishart prior as default for modelling the correlation
+#'
+#' @inheritParams MBNMA.run
+#' @inheritParams write.beta
 write.cor <- function(model, cor="estimate", cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
-                      method="random") {
+                      method="random", class.effect=list()) {
   # cor can either take "estimate" to be estimated from the data,
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
   # (i.e. rho[2,1], rho[3,1], rho[3,2])
 
-  if (is.numeric(cor) & cor.prior=="wishart") {
-    stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
+  if (length(class.effect)>0) {
+    warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+  } else {
+    if (is.numeric(cor) & cor.prior=="wishart") {
+      stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
+    }
+    if (!is.numeric(cor) & cor!="estimate") {
+      stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
+    }
+
+    if (method=="random") {
+      corparams <- vector()
+      for (i in 1:3) {
+        if (!is.null(get(paste0("beta.", i)))) {
+          if (get(paste0("beta.", i))=="rel") {
+            corparams <- append(corparams, paste0("beta.",i))
+          }
+        }
+      }
+      sufparams <- sapply(corparams, function(x) strsplit(x, ".", fixed=TRUE)[[1]][2])
+      mat.size <- length(corparams)
+
+    } else {
+      mat.size <- 0
+    }
+
+    if (mat.size>=2) {
+      model <- write.cov.mat(model, sufparams=sufparams, cor=cor, cor.prior=cor.prior,
+                             var.scale=var.scale)
+    }
   }
-  if (!is.numeric(cor) & cor!="estimate") {
-    stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
-  }
+
+  return(model)
+
+}
+
+
+
+
+
+#' Function for adding covariance matrix for correlation between relative effects
+#'
+#' @param sufparams A numeric vector of dose-response/time-course parameter suffixes. It
+#'  should be the same length as the number of relative effects (i.e. the covariance
+#'  matrix size).
+write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
+                          var.scale=NULL) {
 
   inserts <- write.inserts()
 
@@ -790,81 +835,62 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 }
 "
 
-  if (method=="random") {
-    corparams <- vector()
-    for (i in 1:3) {
-      if (!is.null(get(paste0("beta.", i)))) {
-        if (get(paste0("beta.", i))=="rel") {
-          corparams <- append(corparams, paste0("beta.",i))
-        }
-      }
-    }
-    sufparams <- sapply(corparams, function(x) strsplit(x, ".", fixed=TRUE)[[1]][2])
-    mat.size <- length(corparams)
-
-  } else {
-    mat.size <- 0
+  mat.size <- length(sufparams)
+  for (i in seq_along(sufparams)) {
+    # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
+    model <- gsub(paste0("d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
+                  paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]\n"),
+                  model
+    )
   }
 
-  if (mat.size>=2) {
-    for (i in seq_along(corparams)) {
-        # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
-      model <- gsub(paste0("d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
-                    paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]\n"),
-                    model
-                    )
+  if (cor.prior=="wishart") {
+    addcode <- jagswish
+    model <- gsub(inserts[["insert.te.priors"]],
+                  paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
+                  model
+    )
+
+    # Check that var.scale has correct length and add omega to code
+    if (is.null(var.scale)) {
+      var.scale <- rep(1,mat.size)
+    } else if (length(var.scale)!=mat.size) {
+      stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
+    }
+    for (i in seq_along(var.scale)) {
+      model <- gsub(inserts[["insert.end"]],
+                    paste0("\\1Omega[", i, ",", i, "] <- ", var.scale[i], "\n\\2"),
+                    model)
     }
 
-    if (cor.prior=="wishart") {
-      addcode <- jagswish
-      model <- gsub(inserts[["insert.te.priors"]],
-                    paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
-                    model
-                    )
+  } else if (cor.prior=="rho") {
+    addcode <- jagsrho
+    model <- gsub(inserts[["insert.te.priors"]],
+                  paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])\\2"),
+                  model
+    )
 
-      # Check that var.scale has correct length and add omega to code
-      if (is.null(var.scale)) {
-        var.scale <- rep(1,mat.size)
-      } else if (length(var.scale)!=mat.size) {
-        stop(paste0("`var.scale` must be a numeric vector whose length is the size of the covariance matrix for dose-response parameters.\nCovariance matrix size = ", mat.size))
+    if (cor=="estimate") {
+      addcode <- paste(addcode, "
+                       for (m in 1:(mat.size-1)) {
+                       rho[m] ~ dunif(-1,1)
+                       }
+                       ")
+    } else if (is.numeric(cor)) {
+      # Add values for rho assigned by user
+      if (length(cor)!=(mat.size)-1) {
+        stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
       }
-      for (i in seq_along(var.scale)) {
+      for (m in seq_along(cor)) {
         model <- gsub(inserts[["insert.end"]],
-                      paste0("\\1Omega[", i, ",", i, "] <- ", var.scale[i], "\n\\2"),
-                      model)
+                      paste0("\\1rho[", m, "] <- ", cor[m]))
       }
-
-    } else if (cor.prior=="rho") {
-      addcode <- jagsrho
-      model <- gsub(inserts[["insert.te.priors"]],
-                    paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])\\2"),
-                    model
-      )
-
-      if (cor=="estimate") {
-        addcode <- paste(addcode, "
-for (m in 1:(mat.size-1)) {
-rho[m] ~ dunif(-1,1)
-}
-        ")
-      } else if (is.numeric(cor)) {
-        # Add values for rho assigned by user
-        if (length(cor)!=(mat.size)-1) {
-          stop("Length of numeric vector assigned to `cor` must equal the size of the correlation matrix - 1")
-        }
-        for (m in seq_along(cor)) {
-          model <- gsub(inserts[["insert.end"]],
-                        paste0("\\1rho[", m, "] <- ", cor[m]))
-        }
-      }
-    }
-
-    addcode <- gsub("mat\\.size", mat.size, addcode)
-    model <- gsub(inserts[["insert.end"]], paste0("\\1", addcode, "\\2"), model)
   }
+}
 
+  addcode <- gsub("mat\\.size", mat.size, addcode)
+  model <- gsub(inserts[["insert.end"]], paste0("\\1", addcode, "\\2"), model)
   return(model)
-
 }
 
 

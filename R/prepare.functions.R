@@ -595,6 +595,7 @@ MBNMA.comparisons <- function(data)
   checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  data <- dplyr::arrange(data, studyID, treatment)
 
   t1 <- vector()
   t2 <- vector()

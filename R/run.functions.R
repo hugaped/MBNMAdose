@@ -302,6 +302,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
                     "class.effect"=class.effect,
+                    "var.scale"=var.scale,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
   result[["model.arg"]] <- model.arg
