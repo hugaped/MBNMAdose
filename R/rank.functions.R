@@ -2,8 +2,26 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-26
 
+#' Rank predicted doses of different agents
+#'
+#' @inheritParams rank.MBNMA
+#' @param rank.doses A list of numeric vectors. Each named element corresponds to an
+#' agent, and each number within the vector for that element corresponds to the dose
+#' for that agent. Doses of agents specified in `rank.doses` *must* be a subset of those
+#' for which responses have been predicted in `predict`. If left as `NULL` (the default)
+#' then all doses of all agents in `predict` will be ranked.
+rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 
-rank.MBNMA.predict <- function() {
+  # Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(predict, classes="MBNMA.predict", add=argcheck)
+  checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
+  checkmate::assertList(rank.doses, types="numeric", null.ok = TRUE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Check that rank.doses is a subset of predict
+
+
 
 }
 

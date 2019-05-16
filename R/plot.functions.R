@@ -245,12 +245,11 @@ genmaxcols <- function() {
 #' modelled as relative effects (`"rel"`). Can be set to
 #' `NULL` to include all available dose-response parameters estimated by `mbnma`.
 #' @param agent.labs A caracter vector of agent labels (including `"placebo"` only if it
-#' has been included in the original network). This can be easily inputted by using the
-#' object of `class("MBNMA.network")` on which the MBNMA model was run (i.e. `network$agents`).
+#' has been included in the original network). If left as `NULL` (the default) then
+#' labels will be used as defined in the data.
 #' @param class.labs A character vector of class labels if `mbnma` was modelled using class effects
-#' (including `"placebo"` only if it has been included in the original network). This can be
-#' easily inputted by using the object of `class("MBNMA.network")` on which the MBNMA model
-#' was run (i.e. `network$classes`).
+#' (including `"placebo"` only if it has been included in the original network). If left as `NULL`
+#' (the default) then labels will be used as defined in the data.
 #'
 #' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different dose-response parameters
 #' @export
@@ -304,6 +303,8 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
   if (!is.null(agent.labs)) {
     agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
     a.labs <- agent.labs[sort(unique(agentcodes))]
+  } else if ("agents" %in% names(mbnma)) {
+    a.labs <- mbnma[["agents"]][mbnma[["agents"]]!="Placebo"]
   } else {
     a.labs <- sort(unique(agentdat$param))
   }
@@ -315,6 +316,8 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
     if (!is.null(class.labs)) {
       classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
       c.labs <- class.labs[classcodes]
+    } else if ("classes" %in% names(mbnma)) {
+      c.labs <- mbnma[["classes"]][mbnma[["classes"]]!="Placebo"]
     } else {
       c.labs <- sort(unique(classdat$param))
     }
@@ -360,7 +363,8 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'   For this `predict` must include a dose = 0 for at least one agent.
 #' @param method Indicates the type of split NMA to perform when `overlay.split=TRUE`. Can
 #'   take either `"common"` or `"random"`.
-#' @param agent.labs A character vector of agent labels to display on plots. The position of
+#' @param agent.labs A character vector of agent labels to display on plots. If
+#'   left as `NULL` (the default) the names of agents will be taken from `predict`. The position of
 #'   each label corresponds to each element of `predict`. The number of labels must equal
 #'   the number of elements in `predict`. If placebo / dose=0 data is included in the predictions
 #'   then a label for this should be included in `agent.labs`, though it will not be shown
@@ -404,18 +408,18 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
 
 
   # Remove placebo
-  if (all(sum.df$dose[as.character(sum.df$agent)=="placebo"]==0)) {
-    plac.incl <- TRUE
-  } else {
-    plac.incl <- FALSE
-  }
-
-  if (plac.incl==TRUE) {
-    #sum.df <- sum.df[sum.df$agent!=1,]
-    sum.df <- sum.df[sum.df$agent!="placebo",]
-    #agent.labs <- agent.labs[-1]
-  }
-
+  # if (all(sum.df$dose[as.character(sum.df$agent)=="placebo"]==0)) {
+  #   plac.incl <- TRUE
+  # } else {
+  #   plac.incl <- FALSE
+  # }
+  #
+  # if (plac.incl==TRUE) {
+  #   #sum.df <- sum.df[sum.df$agent!=1,]
+  #   sum.df <- sum.df[sum.df$agent!="placebo",]
+  #   #agent.labs <- agent.labs[-1]
+  # }
+  sum.df <- sum.df[!(sum.df$agent %in% c("1", "Placebo")),]
 
 
   # Plot predictions
@@ -478,6 +482,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
 
   raw.data <- network[["data.ab"]]
+  raw.data$agent <- factor(raw.data$agent, labels=network[["agents"]])
   predict.data <- summary(predict)
   predict.data[["count"]] <- NA
   predict.data[["cum.count"]] <- NA
@@ -511,18 +516,26 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   }
 
   # Identify if placebo is in data
-  if (all(predict.data$dose[predict.data$agent==1]==0)) {
-    plac.incl <- TRUE
+  # if (all(predict.data$dose[predict.data$agent==1]==0)) {
+  #   plac.incl <- TRUE
+  #
+  #   plac.count <- predict.data$count[predict.data$agent==1]
+  #   message(paste0(plac.count, " placebo arms in the dataset are not shown within the plots"))
+  #
+  #   predict.data <- predict.data[predict.data$agent!=1,]
+  # } else {
+  #   plac.incl <- FALSE
+  # }
 
-    plac.count <- predict.data$count[predict.data$agent==1]
+  # Identify if placebo is in data
+  if (any(unique(predict.data$agent) %in% c("1", "Placebo"))) {
+    plac.count <- predict.data$count[predict.data$agent %in% c("1", "Placebo")]
     message(paste0(plac.count, " placebo arms in the dataset are not shown within the plots"))
-
-    predict.data <- predict.data[predict.data$agent!=1,]
+    agents <- unique(predict.data$agent)[!(unique(predict.data$agent) %in% c("1", "Placebo"))]
   } else {
-    plac.incl <- FALSE
+    agents <- unique(predict.data$agent)
   }
 
-  agents <- unique(predict.data$agent)
 
   # Check max.col.scale
   n.cut <- max(predict.data$count)
@@ -566,7 +579,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 #' Identical to MBNMAtime
 alpha.scale <- function(n.cut, col="blue") {
   # Run checks
-  checkmate::assertIntegerish(n.cut, lower=1, len=1, add=argcheck)
+  checkmate::assertIntegerish(n.cut, lower=1, len=1)
 
   # Set colour intensities
   if (is.character(col)) {
