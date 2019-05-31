@@ -114,10 +114,19 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 
 #' Rank parameter estimates
 #'
-#' Only parameters that vary by agent can be ranked
+#' Only parameters that vary by agent/class can be ranked.
 #'
-#' @param to.rank A numeric vector containing the codes for the agents you wish to rank.
-#' If left `NULL` then all agents in the model will be ranked.
+#' @param to.rank A numeric vector containing the codes for the agents/classes you wish to rank.
+#' If left `NULL` then all agents/classes (depending on the value assigned to `level`) in
+#' the model will be ranked. Numbers must be greater than
+#' 2 if placebo has been modelled, since placebo will not be included in the ranking
+#' @param level Can be set to `"agent"` to rank across different agents or `"class"` to rank
+#' across different classes.
+#' @param params A character vector of named parameters in the model that vary by either agent
+#' or class (depending on the value assigned to `level`). If left as `NULL` (the default), then
+#' ranking will be calculated for all available parameters that vary by agent/class.
+#'
+#' @export
 rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {
 
   # Checks
@@ -129,9 +138,16 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  if (mbnma$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+    stop("Ranking cannot currently be performed for non-parametric models")
+  }
+
   if (level=="class") {
     if (is.null(mbnma[["model"]][["data"]]()[["class"]])) {
       stop("`level` has been set to `class` but classes have not been used in the model")
+    }
+    if (!is.null(to.rank)) {
+      warning("Codes in `to.rank` correspond to class codes rather than treatment codes")
     }
   }
 
@@ -141,7 +157,12 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
     to.rank <- codes.mod
   }
 
-  agents <- mbnma$agents[to.rank]
+  if (level=="agent") {
+    agents <- mbnma$agents[to.rank]
+  } else if (level=="class") {
+    agents <- mbnma$classes[to.rank]
+  }
+
 
   if (direction==-1) {
     decreasing <- FALSE
@@ -184,6 +205,10 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
     }
   }
   class(rank.result) <- "MBNMA.rank"
+
+  if (length(rank.result)==0) {
+    stop(paste0("There are no parameters saved in the model that vary by ", level))
+  }
 
   return(rank.result)
 }

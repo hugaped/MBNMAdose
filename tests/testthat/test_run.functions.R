@@ -4,7 +4,7 @@ network <- MBNMA.network(HF2PPITT)
 
 # Make class data
 df <- HF2PPITT
-df$class <- ifelse(df$agent=="placebo", "placecbo", "active")
+df$class <- ifelse(df$agent=="placebo", "placebo", "active")
 netclass <- MBNMA.network(df)
 
 
