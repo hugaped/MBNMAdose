@@ -756,7 +756,7 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart", var.scale=NULL
   #matrix between random effects dose-response parameters
   # (i.e. rho[2,1], rho[3,1], rho[3,2])
 
-  if (length(class.effect)>0 & method=="random") {
+  if (length(class.effect)>0 & method=="random" & (!is.null(beta.2) | !is.null(beta.3))) {
     warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
   } else {
     if (is.numeric(cor) & cor.prior=="wishart") {

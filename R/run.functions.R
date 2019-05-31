@@ -601,6 +601,9 @@ NMA.run <- function(network, method="common", likelihood="binomial", link="logit
 #' Checks that likelihood and link function is provided and confirm that the correct
 #' form of data is provided.
 #'
+#' @inheritParams MBNMA.run
+#' @inheritParams MBNMA.network
+#'
 #' @export
 check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 
@@ -956,6 +959,9 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
   checkmate::reportAssertions(argcheck)
 
   if (type=="time") {
+    if (is.null(fups)) {
+      stop("`fups` cannot be NA in pDcalc for time-course MBNMA")
+    }
     dev.post <- array(dim=c(NS,max(narm),max(fups)))
     pD <- array(dim=c(NS,max(narm),max(fups)))
   } else if (type=="dose") {
