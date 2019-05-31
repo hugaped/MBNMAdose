@@ -1008,3 +1008,78 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 
   return(pD)
 }
+
+
+
+
+
+
+#' Update MBNMA to monitor deviance nodes in the model
+#'
+#' Useful for obtaining deviance contributions or fitted values
+#'
+#' @param param Used to indicate which node to monitor in the model. Can take either:
+#'  * `"theta"` for fitted values
+#'  * `"dev"` for deviance contributions
+#'  * `"resdev"` for residual deviance contributions
+#'
+#' @export
+update.mbnma <- function(mbnma, param="theta") {
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  n.iter <- mbnma$BUGSoutput$n.iter - mbnma$BUGSoutput$n.burnin
+  n.thin <- mbnma$BUGSoutput$n.thin
+
+  if (grepl(paste0("\\\n", param), mbnma$model.arg$jagscode)==FALSE &
+      grepl(paste0("\\(", param), mbnma$model.arg$jagscode)==FALSE) {
+    stop(paste0(param, " not in model code"))
+  }
+
+  result <- rjags::jags.samples(mbnma$model, variable.names = param,
+                                n.iter=n.iter, n.thin=n.thin)
+
+  # Take means of posteriors and convert to data.frame with indices
+  if (mbnma$type=="time") {
+    update.mat <- apply(result[[param]], c(1,2,3), function(x) mean(x, na.rm=TRUE))
+    update.df <- reshape2::melt(update.mat)
+    names(update.df) <- c("study", "arm", "fupdose", "mean")
+
+    # Remove missing values
+    update.df <- update.df[complete.cases(update.df),]
+
+    # Treatment as facet
+    temp <- replicate(max(update.df$fupdose), mbnma$model$data()$treatment)
+    update.df$facet <- as.vector(temp)[
+      complete.cases(as.vector(temp))
+      ]
+
+    # Studyarm as group
+    update.df$groupvar <- paste(as.numeric(update.df$study), as.numeric(update.df$arm), sep="_")
+
+  } else if (mbnma$type=="dose") {
+    update.mat <- apply(result[[param]], c(1,2), function(x) mean(x, na.rm=TRUE))
+    update.df <- reshape2::melt(update.mat)
+    names(update.df) <- c("study", "arm", "mean")
+
+    # Remove missing values
+    update.df <- update.df[complete.cases(update.df),]
+
+    # Agent as facet
+    update.df$facet <- as.vector(mbnma$model$data()$agent)[
+      complete.cases(as.vector(mbnma$model$data()$agent))
+      ]
+
+    update.df$fupdose <- as.vector(mbnma$model$data()$dose)[
+      complete.cases(as.vector(mbnma$model$data()$dose))
+      ]
+
+    # Study as group
+    update.df$groupvar <- as.numeric(update.df$study)
+  }
+
+  return(update.df)
+}

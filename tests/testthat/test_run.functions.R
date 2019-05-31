@@ -201,3 +201,22 @@ test_that("pDcalc functions correctly", {
                       likelihood="poisson", type="dose"))
 
 })
+
+
+
+
+
+test_that("update.mbnma function correctly", {
+
+  result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="rel", method="common",
+                      n.iter=500)
+
+  expect_error(update.mbnma(result, param="test"))
+
+  update <- update.mbnma(result, param="resdev")
+  expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
+
+  update <- update.mbnma(result, param="theta")
+  expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
+
+})
