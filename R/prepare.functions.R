@@ -523,7 +523,8 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     classcode <- unique(codes)$df.class
 
     datalist[["Nclass"]] <- Nclass
-    datalist[["classcode"]] <- classcode
+    #datalist[["classcode"]] <- classcode
+    datalist[["class"]] <- classcode
   }
 
 

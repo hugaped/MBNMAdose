@@ -236,7 +236,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
 
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
-    pluginvars <- c("theta", "resdev")
+    pluginvars <- c("psi", "resdev")
     for (param in seq_along(pluginvars)) {
       if (!(pluginvars[param] %in% parameters.to.save)) {
         parameters.to.save <- append(parameters.to.save, pluginvars[param])
@@ -285,9 +285,19 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
     # result$BUGSoutput$pD <- temp$deviance.sum[2]
   } else if (pd == "plugin") {
     # plugin method
-    warning("Plugin method only works for normal likelihood")
-    result$BUGSoutput$pD <- pDcalc(y=jagsdata[["y"]], se=jagsdata[["se"]], fups=jagsdata[["fups"]], narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                                   theta.result=result$BUGSoutput$mean$theta, resdev.result=result$BUGSoutput$mean$resdev)
+    if (likelihood=="normal") {
+      obs1 <- jagsdata[["y"]]
+      obs2 <- jagsdata[["se"]]
+    } else if (likelihood=="binomial") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["N"]]
+    } else if (likelihood=="poisson") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["E"]]
+    }
+    result$BUGSoutput$pD <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                                   theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                                   likelihood=likelihood, type="dose")
   }
 
   # Recalculate DIC so it is adjusted for choice of pD
@@ -429,7 +439,7 @@ gen.parameters.to.save <- function(model.params, model) {
     if (grepl(paste0("\\\nsd\\.beta.", model.params[i]), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("sd\\.beta\\.", model.params[i]))
     }
-    if (grepl(paste0("\\\nD\\.", model.params[i], " ~"), model)==TRUE) {
+    if (grepl(paste0("\\\nD\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
     }
     if (grepl(paste0("\\\nsd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
@@ -869,4 +879,126 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
                       arg.params=arg.params, ...)
 
   return(result)
+}
+
+
+
+
+
+#' Calculate plugin pD from a JAGS model with univariate likelihood for studies
+#' with repeated measurements
+#'
+#' Uses results from MBNMA JAGS models to calculate pD via the
+#' plugin method (Speigelhalter REF). Can only be used for models with known
+#' standard errors or covariance matrices (typically univariate).
+#'
+#' @param obs1 A matrix (study x arm) or array (study x arm x time point) containing
+#'   observed data for `y` (normal likelihood) or `r` (binomial or poisson likelihood)
+#'   in each arm of each study. This will be the same array
+#'   used as data for the JAGS model.
+#' @param obs2 A matrix (study x arm) or array (study x arm x time point) containing
+#'   observed data for `se` (normal likelihood), `N` (binomial likelihood) or `E` (poisson likelihood)
+#'   in each arm of each study. This will be the same array
+#'   used as data for the JAGS model.
+#' @param fups A numeric vector of length equal to the number of studies,
+#'   containing the number of follow-up mean responses reported in each study. Required for
+#'   time-course MBNMA models (if `type="time"`)
+#' @param narm A numeric vector of length equal to the number of studies,
+#'   containing the number of arms in each study.
+#' @param NS A single number equal to the number of studies in the dataset.
+#' @param theta.result A matrix (study x arm) or array (study x arm x time point)
+#'   containing the posterior mean predicted means/probabilities/rate in each arm of each
+#'   study. This will be estimated by the JAGS model.
+#' @param resdev.result A matrix (study x arm) or array (study x arm x time point)
+#'   containing the posterior mean residual deviance contributions in each arm of each
+#'   study. This will be estimated by the JAGS model.
+#'
+#' @param likelihood A character object of any of the following likelihoods:
+#' * `univariate`
+#' * `binomial` (does not work with time-course MBNMA models)
+#' * `multivar.normal` (does not work with time-course MBNMA models)
+#' @param type The type of MBNMA model fitted. Can be either `"time"` or `"dose"`
+#'
+#' @details Method for calculating pD via the plugin method proposed by
+#'   Spiegelhalter (REF). Standard errors / covariance matrices must be assumed
+#'   to be known. To obtain values for theta.result and resdev.result these
+#'   parameters must be monitored when running the JAGS model.
+#'
+#'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
+#'   can lead to non-sensical results when calculating pD via the plugin method.
+#'   Alternative approaches are to use pV as an approximation (Plummer REF) or
+#'   pD calculated by Kullback–Leibler divergence (REF).
+#'
+#' @references TO ADD pV REF
+#' @inherit MBNMA.run references
+#'
+#' @examples
+#' @export
+pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
+                   likelihood="normal", type="time") {
+  # For univariate models only!!
+
+  # likelihood could in theory be c("normal", "multivar.normal", "binomial")
+  # theta.result = model$BUGSoutput$mean$theta
+  # resdev.result = model$BUGSoutput$mean$totresdev
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertMatrix(obs1, add=argcheck)
+  checkmate::assertMatrix(obs2, add=argcheck)
+  checkmate::assertMatrix(theta.result, add=argcheck)
+  checkmate::assertMatrix(resdev.result, add=argcheck)
+  checkmate::assertNumeric(fups, null.ok=TRUE, add=argcheck)
+  checkmate::assertNumeric(narm, add=argcheck)
+  checkmate::assertNumeric(NS, add=argcheck)
+  checkmate::assertChoice(likelihood, choices=c("normal", "binomial", "poisson"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(type, choices=c("dose", "time"), null.ok=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (type=="time") {
+    dev.post <- array(dim=c(NS,max(narm),max(fups)))
+    pD <- array(dim=c(NS,max(narm),max(fups)))
+  } else if (type=="dose") {
+    dev.post <- matrix(nrow=NS, ncol=max(narm))
+    pD <- matrix(nrow=NS, ncol=max(narm))
+    rhat <- matrix(nrow=NS, ncol=max(narm))
+  }
+
+  for (i in 1:NS) {
+    for (k in 1:narm[i]) {
+
+      if (type=="time") {
+        for (m in 1:fups[i]) {
+          # Need to use formula for residual deviance as plugin
+          if (likelihood=="normal") {
+            dev.post[i,k,m] <- ((obs1[i,k,m] - theta.result[i,k,m])/obs2[i,k,m])^2
+            pD[i,k,m] <- resdev.result[i,k,m] - dev.post[i,k,m]
+          } else {
+            stop("pD cannot be calculated via `plugin` method for time-course MBNMA models without data following a normal likelihood")
+          }
+        }
+      } else if (type=="dose") {
+        if (likelihood=="normal") {
+          dev.post[i,k] <- ((obs1[i,k] - theta.result[i,k])/obs2[i,k])^2
+
+        } else if (likelihood=="binomial") {
+          rhat[i,k] <- theta.result[i,k] * obs2[i,k]
+          dev.post[i,k] <- 2*(obs1[i,k] * (log(obs1[i,k])-log(rhat[i,k]))  +
+                                (obs2[i,k]-obs1[i,k]) * (log(obs2[i,k]-obs1[i,k]) -
+                                                           log(obs2[i,k]-rhat[i,k])))
+        } else if (likelihood=="poisson") {
+          rhat[i,k] <- theta.result[i,k] * obs2[i,k]
+          dev.post[i,k] <- 2*((rhat[i,k]-obs1[i,k]) + (obs1[i,k] * (log(obs1[i,k]/rhat[i,k]))))
+        }
+
+        pD[i,k] <- resdev.result[i,k] - dev.post[i,k]
+
+      }
+
+    }
+  }
+
+  pD <- sum(pD, na.rm=TRUE)
+
+  return(pD)
 }
