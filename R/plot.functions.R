@@ -176,6 +176,15 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
 
 #' Check if all nodes in the network are connected (identical to MBNMAtime)
 check.network <- function(g, reference=1) {
+
+  # Can add component to test for if placebo is missing:
+  # First use check.network with reference=2 (so that next treatment is reference)
+
+  # Then any loops which aren't connected, check if there are X doses of ANY agent within
+  #that loop AND within the main loop. Report the max number of doses that are common to
+  #all loops in the network (perhaps even colour vertices of loops different depending on
+  #the number of doses they can connect via)
+
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=reference))
   treats <- rownames(connects)[connects==FALSE]

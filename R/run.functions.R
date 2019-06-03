@@ -157,6 +157,11 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Check if placebo has been included
+  if (network$agents[1]!="Placebo" & network$treatments[1]=="Placebo_0") {
+    plac.incl <- TRUE
+  } else {plac.incl <- FALSE}
+
 
   if (!is.null(arg.params)) {
     if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
@@ -185,6 +190,18 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                          var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
+
+    # Change code for if plac not included in network
+    if (plac.incl==FALSE) {
+      model <- gsub("\\\nfor \\(k in 2:Nagent\\)\\{ # Priors on relative treatment effects\\\n",
+                    "for (k in 1:Nagent){ # Priors on relative treatment effects",
+                    model)
+      model <- gsub("\\\nfor \\(k in 2:Nclass\\)\\{ # Priors on relative class effects\\\n",
+                    "for (k in 1:Nclass){ # Priors on relative class effects",
+                    model)
+
+      model <- gsub("s\\.beta\\.[1-3]\\[1\\] <- 0", "", model)
+    }
 
     # Change beta.1 and beta.2 to emax and et50, etc. if necessary
     # Change beta.1 and beta.2 to emax and et50, etc. if necessary
