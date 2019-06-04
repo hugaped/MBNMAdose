@@ -85,14 +85,25 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
                 "` but ", levels, " is not a variable within the dataset"))
   }
 
-  nodes <- network[[levels]]
-  data.ab$node <- as.character(factor(data.ab[[level]], labels=network[[levels]]))
+  #nodes <- network[[levels]]
+  #data.ab$node <- as.character(factor(data.ab[[level]], labels=network[[levels]]))
 
+  if (!(nodes[1] %in% c("Placebo", "Placebo_0"))) {
+    plac.incl <- TRUE
+    net.lbls <- c("Placebo", network[[levels]])
+    data.ab <- add.plac.row(data.ab)
+
+  } else {
+    plac.incl <- FALSE
+    net.lbls <- network[[levels]]
+  }
+  nodes <- net.lbls
+  data.ab$node <- as.character(factor(data.ab[[level]], labels=net.lbls))
 
   # Calculate participant numbers (if v.scale not NULL)
   if (!is.null(v.scale)) {
     if (!("N" %in% names(data.ab))) {
-      stop("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
+      warning("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
     }
 
     size.vec <- vector()
@@ -113,7 +124,14 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   if (level=="agent") {
     data.ab$treatment <- data.ab$agent
   }
+
+  # Remove placebo row in data.ab if necessasry
+  if (plac.incl==TRUE) {
+    data.ab <- data.ab[data.ab$treatment!=0,]
+  }
+
   comparisons <- MBNMA.comparisons(data.ab)
+
 
   # Code to make graph.create as an MBNMA command if needed
   g <- igraph::graph.empty()
