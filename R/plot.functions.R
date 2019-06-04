@@ -28,6 +28,11 @@
 #'   dose-response in terms of network connectivity.
 #' @param remove.loops A boolean value indicating whether to include loops that
 #'   indicate comparisons within a node.
+#' @param doseparam An integer representing the tolerance for the number of doses of a single
+#' agent within a study that are required to estimate a dose-response function (and therefore
+#' to make a connection to placebo). This is equal to the degrees of freedom of the dose-response
+#' function + 1. If left as `NULL` (the default), connections via dose-response
+#' relationships will not be included unless there is no data for Placebo in `network`.
 #' @param ... Options for plotting in `igraph`.
 #'
 #' @details The S3 method `plot()` on an `MBNMA.network` object generates a
@@ -52,7 +57,7 @@
 #' @export
 plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
                                level="treatment", remove.loops=FALSE, v.color="connect",
-                               v.scale=NULL,
+                               v.scale=NULL, doseparam=NULL,
                                ...)
   # Requires igraph
   #S3method(plot, MBNMA.network)
@@ -85,14 +90,26 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
                 "` but ", levels, " is not a variable within the dataset"))
   }
 
-  nodes <- network[[levels]]
-  data.ab$node <- as.character(factor(data.ab[[level]], labels=network[[levels]]))
+  #nodes <- network[[levels]]
+  #data.ab$node <- as.character(factor(data.ab[[level]], labels=network[[levels]]))
 
+  # if (!(nodes[1] %in% c("Placebo", "Placebo_0"))) {
+  #   plac.incl <- FALSE
+  #   net.lbls <- c("Placebo", network[[levels]])
+  #   data.ab <- add.plac.row(data.ab)
+  #
+  # } else {
+  #   plac.incl <- TRUE
+  #   net.lbls <- network[[levels]]
+  # }
+  net.lbls <- network[[levels]]
+  nodes <- net.lbls
+  data.ab$node <- as.character(factor(data.ab[[level]], labels=net.lbls))
 
   # Calculate participant numbers (if v.scale not NULL)
   if (!is.null(v.scale)) {
     if (!("N" %in% names(data.ab))) {
-      stop("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
+      warning("`N` not included as a column in dataset. Vertices/nodes will all be scaled to be the same size.")
     }
 
     size.vec <- vector()
@@ -113,7 +130,30 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   if (level=="agent") {
     data.ab$treatment <- data.ab$agent
   }
+
   comparisons <- MBNMA.comparisons(data.ab)
+
+  # Add coloured vertices for plac if plac.incl!=TRUE
+  if ((network$agents[1] != "Placebo" & network$treatments[1]!="Placebo_0")) {
+    plac.incl <- FALSE
+    if (is.null(doseparam)) {
+      doseparam <- 2
+    }
+  } else {plac.incl <- TRUE}
+
+  if (!is.null(doseparam)) {
+    dr.comp <- DR.comparisons(network$data.ab, level=level, doseparam=doseparam)
+    if (plac.incl==TRUE) {
+      dr.comp$t1 <- dr.comp$t1 + 1
+    } else if (plac.incl==FALSE & nrow(dr.comp)>1) {
+      nodes <- c("Placebo", nodes)
+      if (!is.null(node.size)) {
+        node.size <- c(1, node.size)
+      }
+    }
+    comparisons <- rbind(comparisons, dr.comp)
+  }
+
 
   # Code to make graph.create as an MBNMA command if needed
   g <- igraph::graph.empty()
@@ -123,6 +163,14 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
   #edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
   g <- g + edges
+
+  if (!is.null(doseparam)) {
+    igraph::E(g)$color <- c(rep("black", nrow(comparisons)-nrow(dr.comp)),
+                            rep("red", nrow(dr.comp)))
+    # igraph::E(g)$lty <- c(rep("solid", nrow(comparisons)-nrow(dr.comp)),
+    #                         rep("dashed", nrow(dr.comp)))
+  }
+
 
   if (remove.loops==TRUE) {
     g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
@@ -164,6 +212,12 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   } else {
     igraph::plot.igraph(g, edge.width = edge.scale * comparisons[["nr"]], vertex.size = node.size,
                         ...)
+  }
+
+  if (!is.null(doseparam)) {
+    message(paste0("Dose-response connections to placebo plotted based on a dose-response
+                   function with ", (doseparam-1),
+                   " degrees of freedom"))
   }
 
   return(invisible(g))

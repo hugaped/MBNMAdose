@@ -594,6 +594,7 @@ MBNMA.comparisons <- function(data)
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data, add=argcheck)
   checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
+  checkmate::assertInt(doseparam, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   data <- dplyr::arrange(data, studyID, treatment)
@@ -695,4 +696,50 @@ index.dose <- function(data.ab) {
   }
   data.ab$dose <- -data.ab$dose
   return(list("data.ab"=data.ab, "maxdose"=maxdose))
+}
+
+
+
+
+
+#' Adds placebo comparisons for dose-response relationship
+#'
+#' Function adds additional rows to a data.frame of comparisons in a network that account
+#' for the relationship between placebo and other agents via the dose-response
+#' relationship.
+#'
+DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
+  t1 <- vector()
+  t2 <- vector()
+
+  studies <- unique(data.ab$studyID)
+  for (i in seq_along(studies)) {
+    subset <- data.ab[data.ab$studyID==studies[i],]
+    subset <- subset %>%
+      dplyr::group_by(agent) %>%
+      dplyr::mutate(nagent=n())
+
+    if (any(subset$nagent>=doseparam)) {
+      # temp <- subset[subset$nagent>=doseparam,]
+      # for (k in 1:nrow(temp)) {
+      #   t1 <- append(t1, 0)
+      #   t2 <- append(t2, temp[[level]][k])
+      # }
+      for (k in 1:nrow(subset)) {
+        t1 <- append(t1, 0)
+        t2 <- append(t2, subset[[level]][k])
+      }
+    }
+  }
+
+  comparisons <- data.frame("t1"=t1, "t2"=t2)
+
+  comparisons <- comparisons %>%
+    dplyr::group_by(t1, t2) %>%
+    dplyr::mutate(nr=n())
+
+  comparisons <- unique(comparisons)
+  comparisons <- dplyr::arrange(comparisons, t1, t2)
+
+  return(comparisons)
 }
