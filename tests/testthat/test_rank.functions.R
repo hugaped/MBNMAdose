@@ -8,6 +8,10 @@ df$class <- ifelse(df$agent=="placebo", "placebo", "active")
 df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
 netclass <- MBNMA.network(df)
 
+# Make data with no placebo
+noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+net.noplac <- MBNMA.network(noplac.df)
+
 # Models
 linear.run <- MBNMA.run(network, fun="linear")
 
@@ -20,7 +24,7 @@ emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
 
 nonparam <- MBNMA.run(network, fun="nonparam.up")
 
-
+emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
 
 testthat::test_that("rank.MBNMA functions correctly", {
 
@@ -38,6 +42,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[2]]$summary), "data.frame")
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
+
 
   # Checking direction=1 and direction=-1 are opposites
   rank.down <- rank.MBNMA(emax, direction=-1)
@@ -66,5 +71,13 @@ testthat::test_that("rank.MBNMA functions correctly", {
   rank <- rank.MBNMA(emax, params="d.ed50")
   expect_equal(names(rank), c("d.ed50"))
   expect_error(rank.MBNMA(emax, params="test"))
+
+  # With no placebo data
+  rank <- rank.MBNMA(emax.noplac)
+  expect_equal(names(rank), c("d.emax", "d.ed50"))
+  expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix"))
+  expect_equal(class(rank[[2]]$summary), "data.frame")
+  expect_equal(class(rank[[1]]$rank.matrix), "matrix")
+  expect_equal(class(rank[[2]]$prob.matrix), "matrix")
 
 })

@@ -152,9 +152,13 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   }
 
   # If treats have not been specified then select all of them - WONT WORK IF PLACEBO NOT INCLUDED
-  codes.mod <- c(2:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE))
+  starttrt <- ifelse(mbnma$agents[1]=="Placebo", 2, 1)
+  codes.mod <- c(starttrt:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE))
   if (is.null(to.rank)) {
     to.rank <- codes.mod
+  }
+  if (mbnma$agents[1]=="Placebo") {
+    to.rank <- to.rank-1
   }
 
   if (level=="agent") {
@@ -189,7 +193,7 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
         stop(msg)
       }
 
-      param.mod <- param.mod[,to.rank-1]
+      param.mod <- param.mod[,to.rank]
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
         order(order(x, decreasing = decreasing), decreasing=FALSE)
       }))

@@ -1,5 +1,11 @@
 testthat::context("Testing plot.functions")
 
+network <- MBNMA.network(HF2PPITT)
+
+# Generate data without placebo
+noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+net.noplac <- MBNMA.network(noplac.df)
+
 
 
 testthat::test_that("plot.MBNMA.network functions correctly", {
