@@ -567,10 +567,6 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #'
 #' @param data A data frame containing variables `studyID` and `treatment` (as numeric codes) that
 #' indicate which treatments are used in which studies.
-#' @param doseparam An integer representing the tolerance for the number of doses of a single
-#' agent within a study that are required to estimate a dose-response function (and therefore
-#' to make a connection to placebo). If left as `NULL` (the default), connections via dose-response
-#' relationships will not be included.
 #'
 #' @return A data frame of unique comparisons in which each row represents a different comparison.
 #' `t1` and `t2` indicate the treatment codes that make up the comparison. `nr` indicates the number
@@ -592,7 +588,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' # Identify comparisons informed by direct and indirect evidence
 #' MBNMA.comparisons(data)
 #' @export
-MBNMA.comparisons <- function(data, doseparam=NULL)
+MBNMA.comparisons <- function(data)
 {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -607,20 +603,6 @@ MBNMA.comparisons <- function(data, doseparam=NULL)
   t2 <- vector()
 
   for (i in seq_along(data[["studyID"]])) {
-
-    # For adding comparisons to placebo via dose-response relationship
-    if (plac.incl==FALSE & !is.null(doseparam)) {
-      subset <- data[data$studyID==data$studyID[i],]
-
-      subset <- subset %>%
-        dplyr::group_by(agent) %>%
-        dplyr::mutate(nagent=n())
-
-      if (any(subset$nagent)>doseparam) {
-        t1 <- append(t1, min(data$treatment))
-        t2 <- append(t2, t[2])
-      }
-    }
 
     k <- i+1
 
@@ -720,29 +702,44 @@ index.dose <- function(data.ab) {
 
 
 
-
-
-#' Adds temporary row to data frame with placebo
-add.plac.row <- function(data.ab) {
-  plac.row <- data.ab[1,]
-  plac.row$studyID <- 999999
-  plac.row$agent <- 0
-  plac.row$treatment <- 0
-  plac.row$dose <- 0
-  if ("N" %in% names(data.ab)) {
-    plac.row$N <- 1
-  }
-  return(data.ab)
-}
-
-
-
 #' Adds placebo comparisons for dose-response relationship
 #'
 #' Function adds additional rows to a data.frame of comparisons in a network that account
 #' for the relationship between placebo and other agents via the dose-response
 #' relationship.
 #'
-add.plac.comp <- function(comp.df) {
-  for ()
+DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
+  t1 <- vector()
+  t2 <- vector()
+
+  studies <- unique(data.ab$studyID)
+  for (i in seq_along(studies)) {
+    subset <- data.ab[data.ab$studyID==studies[i],]
+    subset <- subset %>%
+      dplyr::group_by(agent) %>%
+      dplyr::mutate(nagent=n())
+
+    if (any(subset$nagent>=doseparam)) {
+      # temp <- subset[subset$nagent>=doseparam,]
+      # for (k in 1:nrow(temp)) {
+      #   t1 <- append(t1, 0)
+      #   t2 <- append(t2, temp[[level]][k])
+      # }
+      for (k in 1:nrow(subset)) {
+        t1 <- append(t1, 0)
+        t2 <- append(t2, subset[[level]][k])
+      }
+    }
+  }
+
+  comparisons <- data.frame("t1"=t1, "t2"=t2)
+
+  comparisons <- comparisons %>%
+    dplyr::group_by(t1, t2) %>%
+    dplyr::mutate(nr=n())
+
+  comparisons <- unique(comparisons)
+  comparisons <- dplyr::arrange(comparisons, t1, t2)
+
+  return(comparisons)
 }
