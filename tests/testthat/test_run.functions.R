@@ -7,6 +7,10 @@ df <- HF2PPITT
 df$class <- ifelse(df$agent=="placebo", "placebo", "active")
 netclass <- MBNMA.network(df)
 
+# Make data with no placebo
+noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+net.noplac <- MBNMA.network(noplac.df)
+
 
 test_that("MBNMA.run functions correctly", {
   n.iter=500
@@ -72,6 +76,8 @@ test_that("MBNMA.run functions correctly", {
                       method="random", n.iter=n.iter)
   expect_equal("psi" %in% result$parameters.to.save, TRUE)
   expect_equal("d.1" %in% result$parameters.to.save, FALSE)
+
+  expect_error(MBNMA.run(net.noplac, fun="nonparam.up"))
 
 })
 

@@ -8,6 +8,28 @@ net.noplac <- MBNMA.network(noplac.df)
 
 netlist <- list(network, net.noplac)
 
+
+# Models
+linear <- MBNMA.run(network, fun="linear")
+
+emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+
+emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
+                         class.effect=list(emax="random"))
+
+emax.class2 <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="common",
+                         class.effect=list(emax="random"))
+
+nonparam <- MBNMA.run(network, fun="nonparam.up")
+
+emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
+
+modellist <- list(linear, emax, emax.class, emax.noplac)
+
+###################################################
+################## Run Tests ######################
+###################################################
+
 test_that("plot.MBNMA.network functions correctly", {
 
   expect_silent(plot(network, layout_in_circle = TRUE,
@@ -60,6 +82,30 @@ test_that("plot.MBNMA.network functions correctly", {
 
 
 testthat::test_that("plot.MBNMA functions correctly", {
+  for (i in seq_along(modellist)) {
+    expect_silent(plot(modellist[[i]]))
+  }
+  expect_equal("ggplot" %in% class(plot(nonparam)), TRUE)
+
+  # Test number of panels is equal to number of rel effect parameters
+  g <- plot(emax)
+  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 2)
+
+  g <- plot(emax.class)
+  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 1)
+
+  # params argument
+  expect_error(plot(emax, params="rabbit"))
+  g <- plot(emax, params = "d.emax")
+  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 1)
+
+  # Agent labs
+  expect_silent(plot(emax, agent.labs = network$agents))
+  expect_error(plot(emax, agent.labs = network$agents[-3]))
+
+  # Class labs
+  expect_silent(
+    plot(emax.class2, agent.labs = network$agents, class.labs=netclass$classes))
 
 })
 
@@ -67,6 +113,7 @@ testthat::test_that("plot.MBNMA functions correctly", {
 
 
 testthat::test_that("plot.MBNMA.predict functions correctly", {
+
 
 })
 

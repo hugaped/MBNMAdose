@@ -326,7 +326,7 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 
   # Check that specified params are modelled using relative effects
   for (i in seq_along(params)) {
-    if (grepl("d\\.", params[i]) | grepl("D\\.", params[i])) {
+    if (!(grepl("d\\.", params[i]) | grepl("D\\.", params[i]))) {
       stop(paste0(params[i], " has not been modelled using relative effects and does not vary by agent or class"))
     }
   }
@@ -360,14 +360,25 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
     plotdata <- rbind(plotdata, paramdata)
   }
   plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
+  if (any(is.na(plotdata[["param"]]))) {
+    plotdata[["param"]] <- c(1:nrow(plotdata))
+  }
 
   # Change param labels for agents
   agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
   if (!is.null(agent.labs)) {
     agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
-    a.labs <- agent.labs[sort(unique(agentcodes))]
+    if (length(agent.labs)!=max(agentcodes)) {
+      stop("`agent.labs` length does not equal number of agents within the model")
+    } else {
+      a.labs <- agent.labs[sort(unique(agentcodes))]
+    }
   } else if ("agents" %in% names(mbnma)) {
-    a.labs <- mbnma[["agents"]][mbnma[["agents"]]!="Placebo"]
+    if (mbnma$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+      a.labs <- mbnma[["treatments"]]
+    } else {
+      a.labs <- mbnma[["agents"]][mbnma[["agents"]]!="Placebo"]
+    }
   } else {
     a.labs <- sort(unique(agentdat$param))
   }
@@ -385,12 +396,16 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
       c.labs <- sort(unique(classdat$param))
     }
   }
+
   # Increase param number for classes
+  nagent <- ifelse(nrow(agentdat)>0, max(agentdat$param), 0)
   plotdata$param[grepl("^D\\.", rownames(plotdata))] <-
-    plotdata$param[grepl("^D\\.", rownames(plotdata))] + max(agentdat$param)
+    plotdata$param[grepl("^D\\.", rownames(plotdata))] + nagent
 
   # Attach labels
-  all.labs <- c(a.labs, c.labs)
+  if (nrow(agentdat)>0) {
+    all.labs <- c(a.labs, c.labs)
+  } else {all.labs <- c.labs}
   plotdata$param <- factor(plotdata$param, labels=all.labs)
 
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +

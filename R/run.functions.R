@@ -160,7 +160,12 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   # Check if placebo has been included
   if (network$agents[1]=="Placebo" & network$treatments[1]=="Placebo_0") {
     plac.incl <- TRUE
-  } else {plac.incl <- FALSE}
+  } else {
+    plac.incl <- FALSE
+    if (fun %in% c("nonparam.up", "nonparam.down")) {
+      stop("Placebo (or an agent with dose=0) must be included in the network to model a nonparametric dose-response relationship")
+    }
+  }
 
 
   if (!is.null(arg.params)) {
@@ -335,6 +340,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["agents"]] <- network[["agents"]]
+  result[["treatments"]] <- network[["treatments"]]
 
   if (!("error" %in% names(result))) {
     class(result) <- c("MBNMA", class(result))
