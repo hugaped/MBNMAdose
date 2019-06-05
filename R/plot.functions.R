@@ -151,7 +151,8 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
         node.size <- c(1, node.size)
       }
     }
-    comparisons <- rbind(comparisons, dr.comp)
+    #comparisons <- rbind(comparisons, dr.comp)
+    comparisons <- rbind(dr.comp, comparisons)
   }
 
 
@@ -165,10 +166,10 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   g <- g + edges
 
   if (!is.null(doseparam)) {
-    igraph::E(g)$color <- c(rep("black", nrow(comparisons)-nrow(dr.comp)),
-                            rep("red", nrow(dr.comp)))
-    # igraph::E(g)$lty <- c(rep("solid", nrow(comparisons)-nrow(dr.comp)),
-    #                         rep("dashed", nrow(dr.comp)))
+    igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),
+                            rep("black", nrow(comparisons)-nrow(dr.comp)))
+    # igraph::E(g)$lty <- c(rep("dashed", nrow(dr.comp)),
+    #                       rep("solid", nrow(comparisons)-nrow(dr.comp)))
   }
 
 
