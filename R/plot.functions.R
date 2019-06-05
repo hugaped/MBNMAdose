@@ -840,6 +840,12 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
     facetscale <- "free_x"
   }
 
+  if ("agents" %in% names(mbnma)) {
+    dev.df$facet <- factor(dev.df$facet, labels=mbnma$agents)
+  } else if ("treatments" %in% names(mbnma)) {
+    dev.df$facet <- factor(dev.df$facet, labels=mbnma$treatments)
+  }
+
   if (plot.type=="scatter") {
     g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean), group=groupvar) +
       ggplot2::geom_point(...)
@@ -933,9 +939,6 @@ get.theta.dev <- function(mbnma, param="theta") {
 
 #' Plot fitted values from MBNMA model
 #'
-#' @param labs A character vector of agent labels with which to name graph panels.
-#' Can use `MBNMA.network()[["agents"]]` with original
-#' dataset if in doubt.
 #' @param disp.obs A boolean object to indicate whether raw data responses should be
 #' plotted as points on the graph
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_line()`
@@ -952,11 +955,10 @@ get.theta.dev <- function(mbnma, param="theta") {
 #'
 #' @examples
 #' @export
-fitplot <- function(mbnma, agent.labs=NULL, disp.obs=TRUE, ...) {
+fitplot <- function(mbnma, disp.obs=TRUE, ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
-  checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(disp.obs, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -1000,9 +1002,26 @@ fitplot <- function(mbnma, agent.labs=NULL, disp.obs=TRUE, ...) {
 
   theta.df <- dplyr::arrange(theta.df, study, facet, fupdose)
 
+  # Axis labels
+  if (mbnma$type=="time") {
+    xlab <- "Follow-up count"
+    facetscale <- "fixed"
+  } else if (mbnma$type=="dose") {
+    xlab <- "Dose"
+    facetscale <- "free_x"
+  }
   ylab <- "Response on link scale"
-  xlab <- "Dose"
 
+  # Add facet labels
+  if ("agents" %in% names(mbnma)) {
+    if (mbnma$agents[1]=="Placebo" & mbnma$treatments[1]=="Placebo_0") {
+      labs <- mbnma$agents[-1]
+    } else {labs <- mbnma$agents}
+    theta.df$facet <- factor(theta.df$facet, labels=labs)
+  } else if ("treatments" %in% names(mbnma)) {
+    labs <- mbnma$treatments[-1]
+    theta.df$facet <- factor(theta.df$facet, labels=labs)
+  }
 
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
@@ -1014,18 +1033,8 @@ fitplot <- function(mbnma, agent.labs=NULL, disp.obs=TRUE, ...) {
     g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
   }
 
-  # Add facet labels
-  if (!is.null(agent.labs)) {
-    if (!any(theta.df$facet==1)) {
-      agent.labs <- agent.labs[-1]
-    }
-    if (length(agent.labs)!=length(unique(theta.df$facet))) {
-      stop("`agent.labs` must be the same length as the number of agent codes in the model")
-    }
-    g <- g + ggplot2::facet_wrap(~factor(facet, labels=agent.labs))
-  } else {
-    g <- g + ggplot2::facet_wrap(~facet)
-  }
+  # Add facets
+  g <- g + ggplot2::facet_wrap(~facet, scales = facetscale)
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
@@ -1085,12 +1094,15 @@ plot.MBNMA.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
     }
     data <- data.frame("ranks"=ranks, "treat"=treat)
 
-    # if (!is.null(treat.labs)) {
-    #   data$treat <- factor(data$treat, labels=treat.labs)
-    # } else {
-    #   #data$treat <- factor(as.numeric(as.character(data$treat)))
-    #   data$treat <- factor(data$treat)
-    # }
+    if (!is.null(treat.labs)) {
+      if (length(treat.labs)!=length(unique(data$treat))) {
+        stop("`treat.labs` must be a character vector of the same length as the number of ranked tretments/agents")
+      }
+      data$treat <- factor(data$treat, labels=treat.labs)
+    } else {
+      #data$treat <- factor(as.numeric(as.character(data$treat)))
+      data$treat <- factor(data$treat)
+    }
 
     g <- ggplot2::ggplot(data, ggplot2::aes(x=ranks)) +
       ggplot2::geom_bar(...) +

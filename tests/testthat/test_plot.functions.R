@@ -24,6 +24,8 @@ nonparam <- MBNMA.run(network, fun="nonparam.up")
 
 emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
 
+resdev <- MBNMA.linear(network, parameters.to.save = "resdev")
+
 modellist <- list(linear, emax, emax.class, emax.noplac)
 
 ###################################################
@@ -107,6 +109,9 @@ testthat::test_that("plot.MBNMA functions correctly", {
   expect_silent(
     plot(emax.class2, agent.labs = network$agents, class.labs=netclass$classes))
 
+  # No relative effects saved
+  expect_error(plot(resdev))
+
 })
 
 
@@ -120,6 +125,17 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
 
 
 testthat::test_that("devplot functions correctly", {
+  expect_message(devplot(emax, dev.type="resdev", plot.type = "scatter"))
+
+  expect_message(devplot(emax.class, dev.type="resdev", plot.type = "box"))
+
+  expect_message(devplot(emax.noplac, dev.type="resdev", plot.type = "box"))
+
+  expect_message(devplot(emax.noplac, dev.type="resdev", facet = FALSE))
+
+  expect_silent(devplot(resdev, dev.type="resdev"))
+
+  expect_error(devplot(emax, dev.type="dev"))
 
 })
 
@@ -127,9 +143,33 @@ testthat::test_that("devplot functions correctly", {
 
 testthat::test_that("fitplot functions correctly", {
 
+  expect_message(fitplot(emax, disp.obs = TRUE))
+
+  expect_message(fitplot(emax.class, disp.obs=FALSE))
+
+  theta.run <- MBNMA.run(network, fun="linear", parameters.to.save = "theta")
+  expect_silent(fitplot(theta.run))
+
 })
 
 
 testthat::test_that("plot.MBNMA.rank functions correctly", {
+  rank <- rank.MBNMA(emax)
+  g <- plot(rank)
+  expect_equal(length(g), 2)
+
+  rank <- rank.MBNMA(linear.run)
+  expect_silent(plot(rank))
+
+  rank <- rank.MBNMA(emax.noplac)
+  g <- plot(rank, params="d.emax")
+  expect_equal(length(g), 1)
+
+  expect_silent(plot(rank, treat.labs = net.noplac$agents))
+  expect_error(plot(rank, treat.labs = network$agents))
+
+  rank <- rank.MBNMA(emax.noplac, to.rank=c(3,5,6))
+  expect_silent(plot(rank, treat.labs = network$agents[c(3,5,6)]))
+  expect_error(plot(rank, treat.labs = net.noplac$agents))
 
 })
