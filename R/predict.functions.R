@@ -291,7 +291,8 @@ get.model.vals <- function(mbnma) {
       temp$pool <- mbnma$model.arg[[beta]]
 
       if (is.null(mbnma$model.arg$arg.params)) {
-        temp$name <- betaparams[[beta]]
+        #temp$name <- betaparams[[beta]]
+        temp$name <- i
       } else {
         temp$name <- mbnma$model.arg$arg.params$wrap.params[
           mbnma$model.arg$arg.params$run.params==beta
@@ -300,12 +301,12 @@ get.model.vals <- function(mbnma) {
 
       res.mat <- mbnma$BUGSoutput$sims.matrix
       if (temp$pool=="rel") {
-        temp$result <- res.mat[,grepl(paste0("^d.", i), colnames(res.mat))]
+        temp$result <- res.mat[,grepl(paste0("^d.", temp$name), colnames(res.mat))]
       } else if (temp$pool=="common") {
-        temp$result <- res.mat[,grepl(paste0("^beta.", i), colnames(res.mat))]
+        temp$result <- res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))]
       } else if (temp$pool=="random") {
-        temp$result <- dnorm(res.mat[,grepl(paste0("^beta.", i), colnames(res.mat))],
-                             res.mat[,grepl(paste0("^sd.", i), colnames(res.mat))]
+        temp$result <- dnorm(res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))],
+                             res.mat[,grepl(paste0("^sd.", temp$name), colnames(res.mat))]
         )
       } else if (is.numeric(temp$pool)) {
         temp$result <- rep(temp$pool, nsims)

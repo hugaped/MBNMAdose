@@ -129,8 +129,12 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
   expect_message(plot(pred, disp.obs = TRUE, network=network))
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
 
-  pred <- predict(emax.noplac, E0.data = 0.5)
+  pred <- predict(emax, E0.data = 0.5)
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+
+  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+  pred <- predict(linear, E0.data=0.1, exact.doses = doses)
+  expect_silent(plot(pred))
 
   # Test agent.labs
 

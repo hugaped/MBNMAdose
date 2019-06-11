@@ -101,12 +101,12 @@ testthat::test_that("predict.MBNMA functions correctly", {
   for (i in seq_along(network$agents)) {
     max.doses[[length(max.doses)+1]] <- 1
   }
-  pred <- predict(linear, E0.data=0.1, max.doses = max.doses)
+  pred <- predict(emax, E0.data=0.1, max.doses = max.doses)
   expect_identical(names(pred$predicts), linear$agents)
   expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
 
-  names(max.doses) <- linear$agents
-  expect_silent(predict(linear, E0.data=0.1, max.doses = max.doses))
+  names(max.doses) <- emax$agents
+  expect_silent(predict(emax, E0.data=0.1, max.doses = max.doses))
 
   max.doses[[9]] <- 1
   expect_error(predict(linear, E0.data=0.1, max.doses = max.doses))
@@ -141,7 +141,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   for (i in seq_along(network$agents)) {
     doses[[length(doses)+1]] <- dose
   }
-  expect_silent(predict(linear, E0.data=0.1, exact.doses = doses))
+  expect_silent(predict(emax, E0.data=0.1, exact.doses = doses))
 
   doses <- list("eletriptan"=c("I","am","a","test"), "rizatriptan"=c(0.5,1,2))
   expect_error(predict(linear, E0.data=0.1, exact.doses = doses))
