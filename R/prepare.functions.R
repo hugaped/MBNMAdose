@@ -594,7 +594,7 @@ MBNMA.comparisons <- function(data)
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data, add=argcheck)
   checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
-  checkmate::assertInt(doseparam, null.ok = TRUE, add=argcheck)
+  #checkmate::assertInt(doseparam, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   data <- dplyr::arrange(data, studyID, treatment)

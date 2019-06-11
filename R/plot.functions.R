@@ -439,7 +439,7 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'   not (`FALSE`)
 #' @param overlay.split A boolean object indicating whether to overlay a line
 #'   showing the split NMA results on the plot (`TRUE`) or not (`FALSE`).
-#'   For this `predict` must include a dose = 0 for at least one agent.
+#'   For this `predict` must include a predicted response at dose = 0 for at least one agent.
 #' @param method Indicates the type of split NMA to perform when `overlay.split=TRUE`. Can
 #'   take either `"common"` or `"random"`.
 #' @param agent.labs A character vector of agent labels to display on plots. If
@@ -451,6 +451,7 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #' @param ... Arguments for `ggplot`
 #' @inheritParams MBNMA.run
 #' @inheritParams plot.MBNMA.rank
+#' @inheritParams ggplot2::facet_wrap
 #'
 #' @details For the S3 method `plot()`, it is advisable to ensure predictions in
 #'   `predict` are estimated using a sufficient number of doses to ensure a smooth
@@ -523,8 +524,13 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
     checkmate::assertClass(network, "MBNMA.network", null.ok=TRUE)
 
     # Check that placebo is included (or dose=0 in networks without placebo)
-    if (!all(network$data.ab$dose[network$data.ab$agent==1]==0)) {
-      stop("placebo or dose=0 required in  for calculation of relative effects in split NMA")
+    if (network$agents[1]!="Placebo") {
+      stop("Placebo required in `network` for calculation of relative effects in split NMA")
+    }
+
+    # Check that at least one prediction is at a dose=0
+    if (!(0 %in% sum.pred$dose)) {
+      stop("`predict` must include a predicted response at dose = 0 for at least one agent")
     }
 
     g <- overlay.split(g=g, network=network, method=method,
@@ -590,9 +596,9 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
     dose.high <- predict.data$dose[i]
     p.agent <- predict.data$agent[i]
 
-    count <- length(raw.data$studyID[raw.data$agent==p.agent &
+    count <- length(raw.data$studyID[as.character(raw.data$agent)==p.agent &
                                      raw.data$dose>dose.low & raw.data$dose<=dose.high])
-    cum.count <- length(raw.data$studyID[raw.data$agent==p.agent &
+    cum.count <- length(raw.data$studyID[as.character(raw.data$agent)==p.agent &
                                        raw.data$dose<=dose.high])
 
     predict.data$count[i] <- count
@@ -639,7 +645,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
   for (agent in seq_along(agents)) {
     subset <- predict.data[predict.data$agent==agents[agent],]
-    print(subset)
     subset$agent <- factor(subset$agent, labels=levels(g$data$agent)[agents[agent]])
 
     # Start assuming lowest time = 0
@@ -731,11 +736,15 @@ overlay.split <- function(g, network, method="common",
   split.df$dose <- as.numeric(sapply(splitNMA[["trt.labs"]],
                            function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2]))
 
-  split.df$agent <- as.numeric(factor(split.df$agent, levels=network$agents))
-  split.df$agent <- factor(split.df$agent, labels=levels(g$data$agent))
+  split.df$agent <- factor(split.df$agent, levels=network$agents)
+  #split.df$agent <- as.numeric(factor(split.df$agent, levels=network$agents))
+  #split.df$agent <- factor(split.df$agent, labels=levels(g$data$agent))
 
   # Drop d[1] (reference)
-  split.df <- split.df[-1,]
+  #split.df <- split.df[-1,]
+
+  # Only include agents whose predictions are plotted
+  split.df <- split.df[split.df$agent %in% g$data$agent,]
 
   # Add E0 (on correct scale)
   E0 <- unique(g$data$`50%`[g$data$dose==0])
