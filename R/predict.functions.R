@@ -128,7 +128,7 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
         stop("If elements in `max.doses` or `exact.doses` are not named then there must be the same number of elements as there are agents in the model, so that they correspond to agent codes")
       }
       names(doses) <- mbnma.agents
-      agent.num <- length(mbnma.agents)
+      agent.num <- 1:length(mbnma.agents)
     } else if (!is.null(names(doses))) {
       if (any(is.na(suppressWarnings(as.numeric(names(doses)))))) {
         if (!all(names(doses) %in% mbnma.agents)) {

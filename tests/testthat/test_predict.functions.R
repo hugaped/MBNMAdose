@@ -79,6 +79,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   expect_silent(as.numeric(names(pred$predicts[[4]])))
   expect_equal(class(pred$predicts[[4]][[4]]), "matrix")
   expect_equal(nrow(pred$predicts[[4]][[4]]), linear$BUGSoutput$n.sims)
+  expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
 
   # Stochastic E0 values
   expect_silent(predict(linear, E0.data = "rnorm(nsims, 0.5,0.01)"))
@@ -102,6 +103,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   }
   pred <- predict(linear, E0.data=0.1, max.doses = max.doses)
   expect_identical(names(pred$predicts), linear$agents)
+  expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
 
   names(max.doses) <- linear$agents
   expect_silent(predict(linear, E0.data=0.1, max.doses = max.doses))
@@ -115,6 +117,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   expect_equal(names(pred$predicts), names(max.doses))
   expect_equal(names(pred$predicts$eletriptan)[10], "3")
   expect_equal(names(pred$predicts$rizatriptan)[10], "2")
+  expect_equal(all(pred$predicts[[1]][[1]][1] > 0), TRUE)
 
   max.doses <- list("badger"=3, "test"=1)
   expect_error(predict(linear, E0.data=0.1, max.doses = max.doses))
@@ -128,6 +131,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   pred <- predict(linear, E0.data=0.1, exact.doses = doses)
   expect_identical(as.numeric(names(pred$predicts[[1]])), doses[[1]])
   expect_identical(as.numeric(names(pred$predicts[[2]])), doses[[2]])
+  expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
 
   doses <- list(c(0,1,2,3), c(0.5,1,2))
   expect_error(predict(linear, E0.data=0.1, exact.doses = doses))

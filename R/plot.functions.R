@@ -510,6 +510,11 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
   if (disp.obs==TRUE) {
     checkmate::assertClass(network, "MBNMA.network", null.ok=TRUE)
 
+    # Check that predict labels and agent labels in network are consistent
+    if (!all(sum.pred$agent %in% network$agents)) {
+      stop("Agent labels in `network` differ from those in `pred`")
+    }
+
     g <- disp.obs(g=g, network=network, predict=predict,
                   col="green", max.col.scale=NULL)
 
@@ -634,6 +639,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
   for (agent in seq_along(agents)) {
     subset <- predict.data[predict.data$agent==agents[agent],]
+    print(subset)
     subset$agent <- factor(subset$agent, labels=levels(g$data$agent)[agents[agent]])
 
     # Start assuming lowest time = 0

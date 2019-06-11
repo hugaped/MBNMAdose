@@ -118,6 +118,27 @@ testthat::test_that("plot.MBNMA functions correctly", {
 
 
 testthat::test_that("plot.MBNMA.predict functions correctly", {
+  pred <- predict(linear, E0.data = 0.5)
+  expect_silent(plot(pred))
+
+  pred <- predict(linear, E0.data = "rbeta(nsims, shape1=1, shape2=5)")
+  expect_silent(plot(pred))
+
+  # Test disp.obs
+  expect_error(plot(pred, disp.obs = TRUE))
+  expect_message(plot(pred, disp.obs = TRUE, network=network))
+  expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+
+  pred <- predict(emax.noplac, E0.data = 0.5)
+  expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+
+  # Test agent.labs
+
+  # Test overlay.split
+
+  # Test method="common"
+
+  # Test scales
 
 
 })
