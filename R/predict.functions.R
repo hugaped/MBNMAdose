@@ -30,7 +30,7 @@
 #'   for that element corresponds to a dose of the agent for which to predict responses.
 #'   Doses can only take positive values.
 #'
-#' @param E0.data A value to use for the response at dose = 0 (i.e. placebo) in the prediction.
+#' @param E0.data A character value to use for the response at dose = 0 (i.e. placebo) in the prediction.
 #'   This is not estimated separately by the model but can be supplied as data, either
 #'   as a deterministic value, specified by giving a single number, or a
 #'   stochastic distribution, specified by giving a character object that represents a
@@ -91,7 +91,6 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
   checkmate::assertList(exact.doses, types="numeric", null.ok=TRUE, add=argcheck)
   checkmate::assertInt(n.doses, lower=1, add=argcheck)
   checkmate::assertDataFrame(E0.estimate, null.ok=TRUE, add=argcheck)
-  checkmate::assertList(E0.data, null.ok=TRUE, types=c("character", "numeric"), add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -119,25 +118,34 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
 
   if (!is.null(doses)) {
     if (length(doses)>max(agents, na.rm=TRUE)) {
-      stop("A greater number of agents have been supplied in `doses` than are present in the model")
+      stop("A greater number of agents have been supplied in either `max.doses` or `exact.doses` than are present in the model")
     }
 
     # If named elements of list are not numeric, check if they match agents in mbnma
     match.pass <- TRUE
-    if (any(is.na(suppressWarnings(as.numeric(names(doses)))))) {
-      if (!all(names(doses) %in% mbnma.agents)) {
-        match.pass <- FALSE
+    if (is.null(names(doses))) {
+      if (length(doses)!=length(mbnma.agents)) {
+        stop("If elements in `max.doses` or `exact.doses` are not named then there must be the same number of elements as there are agents in the model, so that they correspond to agent codes")
       }
-      agent.num <- match(names(doses), mbnma.agents)
-    } else {
-      if (!all(names(doses) %in% c(1:max(agents, na.rm=TRUE)))) {
-        match.pass <- FALSE
+      names(doses) <- mbnma.agents
+      agent.num <- length(mbnma.agents)
+    } else if (!is.null(names(doses))) {
+      if (any(is.na(suppressWarnings(as.numeric(names(doses)))))) {
+        if (!all(names(doses) %in% mbnma.agents)) {
+          match.pass <- FALSE
+        }
+        agent.num <- match(names(doses), mbnma.agents)
+      } else {
+        if (!all(names(doses) %in% c(1:max(agents, na.rm=TRUE)))) {
+          match.pass <- FALSE
+        }
+        agent.num <- as.numeric(names(doses)) # Add an agent numerical identifier for included agents
       }
-      agent.num <- as.numeric(names(doses)) # Add an agent numerical identifier for included agents
+      if (match.pass==FALSE) {
+        stop("Element names in `doses` must correspond either to agent names in data or agent codes in `mbnma`")
+      }
     }
-    if (match.pass==FALSE) {
-      stop("Element names in `doses` must correspond either to agent names in data or agent codes in `mbnma`")
-    }
+
 
 
     for (i in seq_along(doses)) {
@@ -192,6 +200,9 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
     stop("Either `E0.data` or `E0.estimate` can be provided, but not both")
   }
   if (!is.null(E0.data)) {
+    if (length(E0.data)!=1) {
+      stop("`E0.data` must take a single numeric (deterministic E0) or character (stochastic E0) value")
+    }
     if (is.numeric(E0.data)) {
       E0 <- E0.data
     } else if (is.character(E0.data)) {
