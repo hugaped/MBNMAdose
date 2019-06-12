@@ -22,6 +22,7 @@
 #'   beta.2=list(pool="const", method="random"),
 #'   class.effect=list("beta.1"="random")
 #'   )
+#' @export
 MBNMA.write <- function(fun="linear", user.fun=NULL,
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
@@ -421,7 +422,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
     if (is.null(link)) {link <- "identity"}
   } else if (likelihood=="poisson") {
     like <- "r[i,k] ~ dpois(lambda[i,k])
-      lambda[i,k] <- psi[i,k] * N[i,k]"
+      lambda[i,k] <- psi[i,k] * E[i,k]"
     if (is.null(link)) {link <- "log"}
   }
 
