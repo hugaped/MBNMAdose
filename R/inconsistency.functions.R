@@ -3,35 +3,42 @@
 # Date created: 2019-04-30
 
 
-#' Node-splitting model for testing consistency
+#' Node-splitting model for testing consistency at the treatment level
 #'
-#' Uses GeMTC
+#' Splits contributions for a given set of treatment comparisons into direct and
+#' indirect evidence. A discrepancy between the two suggests that the consistency
+#' assumption required for NMA and MBNMA may violated.
 #'
-#' @param ... Arguments to be sent to `gemtc::mtc.nodesplit`
+#' @param drop.discon A boolean object that indicates whether to drop treatments
+#' that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
+#' this could lead to indentification of nodesplit comparisons that are not connected
+#' to the network reference treatment.
+#' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
+#' The matrix must have two columns indicating each treatment for each comparison. Values can
+#' either be character (corresponding to the treatment names given in `network`) or
+#' numerical (corresponding to treatment codes within the `network` - note that these
+#' may change if `drop.discon=TRUE`).
+#' @param ... Arguments to be sent to `R2jags`
+#' @inheritParams MBNMA.run
+#' @inheritParams MBNMA.network
+#'
+#' @export
 MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method="common",
                             drop.discon=TRUE, comparisons=NULL,
-                            level="treatment", ...) {
+                            ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "MBNMA.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
-  checkmate::assertDataFrame(comparisons, null.ok=TRUE, add=argcheck)
+  #checkmate::assertDataFrame(comparisons, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
-
-  if (link=="probit") {
-    stop("Node-splitting does not work with probit link function...  :-(")
-  }
-
-  if (method=="common") {method <- "fixed"}
-
-  if (likelihood=="binomial") {likelihood <- "binom"}
 
   # Load data
     # Check treatments that are not connected and remove if not
@@ -44,38 +51,188 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
     trt.labs <- network$treatments
   }
 
-  # Change names to allow for GeMTC
-  varlist <- list(
-    c("studyID", "study"),
-    c("y", "mean"),
-    c("se", "std.err"),
-    c("r", "responders"),
-    c("N", "sampleSize"),
-    c("E", "exposure")
-    )
+  # Identify closed loops of treatments
+  if (is.null(comparisons)) {
+    comparisons <- inconsistency.loops(data.ab)
+  } else {
+    if (class(comparisons)=="data.frame") {
+      if (all(c("t1", "t2") %in% names(comparisons))) {
+        comparisons <- data.frame(comparisons$t1, comparisons$t2)
+      }
+      comparisons <- as.matrix(comparisons)
+    }
+    if (ncol(comparisons)!=2) {
+      stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
+    }
+    if (is.character(comparisons)) {
+      if (!all(comparisons %in% trt.labs)) {
+        stop("Treatment names given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
+      }
+      comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
+    }
+    if (!all(comparisons %in% data.ab$treatment)) {
+      stop("Treatment codes given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
+    }
 
-  for (i in seq_along(varlist)) {
-    if (varlist[[i]][1] %in% names(data.ab)) {
-      names(data.ab)[names(data.ab)==varlist[[i]][1]] <- varlist[[i]][2]
+    # Sort comparisons so that lowest is t1
+    comparisons <- t(apply(comparisons, MARGIN=1, FUN=function(x) {sort(x)}))
+
+    # Ensure comparisons are nested within inconsistency.loops
+    check <- paste(comparisons[,1], comparisons[,2], sep="_")
+    fullcomp <- inconsistency.loops(data.ab)
+    match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
+    if (any(is.na(match))) {
+      out <- comparisons[is.na(match),]
+      out <- matrix(unlist(lapply(out, FUN=function(x) {trt.labs[x]})), ncol=2)
+      printout <- c()
+      for (i in 1:nrow(out)) {
+        printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
+      }
+      stop(cat(paste0("The following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
+                      printout, "\n\n")))
     }
   }
 
-  # Convert to GeMTC
-  mtc <- gemtc::mtc.network(data.ab)
+
+  ##### Run NMA #####
+  nma.net <- suppressMessages(MBNMA.network(data.ab))
+  nma.jags <- NMA.run(nma.net, method=method,
+                      likelihood=likelihood, link=link,
+                      warn.rhat=FALSE, drop.discon = FALSE, ...)
+
+  nodesplit.result <- list()
+  for (split in seq_along(comparisons[,1])) {
+
+    comp <- as.numeric(comparisons[split,1:2])
+    print(paste0("Calculating nodesplit for: ",
+                 paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])))
+
+    ##### Estimate NMA #####
+    nma.res <- nma.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
+      nma.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
+
+    ##### Estimate Indirect #####
+
+    ind.df <- data.ab
+
+    # Drop studies/comparisons that compare comps
+    dropID <- vector()
+    dropcomp <- vector()
+    studies <- unique(ind.df$studyID)
+    for (study in seq_along(studies)) {
+      subset <- ind.df[ind.df$studyID==studies[study],]
+      if (all(comp %in% subset$treatment)) {
+        if (subset$narm[1]<=2) {
+          dropID <- append(dropID, subset$studyID[1])
+        } else if (subset$narm[1]>2) {
+          dropcomp <- append(dropcomp, subset$studyID[1])
+        }
+      }
+    }
+
+    # Drop studies
+    ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
+
+    # Drop comparisons from studies
+    index <- rbinom(1,1,0.5)
+    for (i in seq_along(dropcomp)) {
+      # If one of the split treatments (chosen at random) remains in the data when removed
+      #from this comparison...
+      if (comp[index+1] %in% ind.df$treatment[!(ind.df$studyID %in% dropcomp[i])]) {
+        ind.df <- ind.df[!(ind.df$studyID %in% dropcomp[i] &
+                             ind.df$treatment==comp[index+1]),]
+        index <- !index
+      } else {
+        index <- !index
+        ind.df <- ind.df[!(ind.df$studyID %in% dropcomp[i] &
+                             ind.df$treatment==comp[index+1]),]
+        index <- !index
+      }
+    }
 
 
+    # Run NMA
+    ind.net <- suppressMessages(MBNMA.network(ind.df))
+    ind.jags <- NMA.run(ind.net, method=method, likelihood=likelihood, link=link,
+                        warn.rhat=FALSE, drop.discon = FALSE, ...)
+    ind.res <- ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
+      ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
 
-  # Identify closed loops of treatments
-  if (is.null(comparisons)) {
-    comparisons <- inconsistency.loops(network$data.ab)
+
+    ##### Estimate Direct #####
+    dir.net <- suppressMessages(change.netref(MBNMA.network(data.ab), ref=comp[1]))
+    dir.jags <- NMA.run(dir.net, method=method, likelihood=likelihood, link=link,
+                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
+    dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
+      ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
+    ]
+
+
+    ##### Generate plots/results #####
+
+    # Overlaps
+    overlap.mat <- list("direct"=dir.res, "indirect"=ind.res)
+    overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
+    p.values <- overlap$OV
+
+    # Quantiles
+    quantile_dif <- quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
+    quantile_dir <- quantile(dir.res, c(0.025, 0.5, 0.975))
+    quantile_ind <- quantile(ind.res, c(0.025, 0.5, 0.975))
+    quantile_nma <- quantile(nma.res, c(0.025, 0.5, 0.975))
+    quantiles <- list("difference" = quantile_dif, "nma"=quantile_nma,
+                      "direct"=quantile_dir, "indirect"=quantile_ind)
+
+
+    # GGplots
+    source <- c("NMA", "Direct", "Indirect")
+    l95 <- c(quantile_nma[1], quantile_dir[1], quantile_ind[1])
+    med <- c(quantile_nma[2], quantile_dir[2], quantile_ind[2])
+    u95 <- c(quantile_nma[3], quantile_dir[3], quantile_ind[3])
+    plotdata <- data.frame(source, l95, med, u95)
+
+    title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
+
+    gg <-
+      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
+      ggplot2::geom_pointrange() +
+      ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
+      ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=15),
+                     axis.title = ggplot2::element_text(size=18),
+                     title=ggplot2::element_text(size=18)) +
+      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm"))
+
+    # Density plots (with shaded area of overlap)
+    molten <- data.frame(ind.res, dir.res)
+    molten <- reshape2::melt(molten)
+    names(molten) <- c("Estimate", "value")
+    linetypes <- c("solid", "dash")
+    levels(molten$Estimate) <- c("Indirect", "Direct")
+
+    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
+      ggplot2::geom_density(alpha=0.2) +
+      ggplot2::xlab(title) +
+      ggplot2::ylab("Posterior density") +
+      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
+                     axis.title = ggplot2::element_text(size=14))
+
+    nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
+                      "direct"=dir.res, "indirect"=ind.res, "nma"=nma.res,
+                      "overlap matrix"=overlap.mat,
+                      "p.values"=p.values, "quantiles"=quantiles,
+                      "forest.plot"=gg, "density.plot"=dens,
+                      "direct.model"=dir.jags, "indirect.model"=ind.jags,
+                      "nma.model"=nma.jags)
+
+    nodesplit.result[[paste0(comp[2], "v", comp[1])]] <-
+      nodesplit
   }
 
-  # Nodesplit
-  nodesplit <- gemtc::mtc.nodesplit(mtc, likelihood=likelihood, link=link,
-                          comparisons=comparisons[1:2], linearModel=method, ...
-                          )
+  class(nodesplit.result) <- "MBNMA.nodesplit"
 
-  return(nodesplit)
+  return(nodesplit.result)
 }
 
 

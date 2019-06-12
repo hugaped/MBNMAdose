@@ -646,12 +646,22 @@ MBNMA.comparisons <- function(data)
 #' connected to the network reference treatment
 #'
 #' @export
-drop.disconnected <- function(network) {
+drop.disconnected <- function(network, connect.dose=FALSE) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertLogical(connect.dose, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (connect.dose==FALSE) {
+    doseparam <- 10000
+  } else {doseparam <- 1}
 
   trt.labs <- network$treatments
   #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
   png("NUL")
-  discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
+  discon <- suppressMessages(suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect", doseparam=doseparam))))
   dev.off()
 
   data.ab <- network$data.ab
@@ -742,4 +752,44 @@ DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
   comparisons <- dplyr::arrange(comparisons, t1, t2)
 
   return(comparisons)
+}
+
+
+
+#' Change the network reference treatment
+#'
+#' @param ref A positive integer indicating the *treatment* code of the new reference
+#' treatment to use
+#'
+#' @inheritParams MBNMA.network
+change.netref <- function(network, ref=1) {
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertIntegerish(ref, len=1, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  data.ab <- network$data.ab
+
+  if (!(ref %in% data.ab$treatment)) {
+    stop("`ref` does not match any of the treatment codes in `network`")
+  }
+
+  trtcodes <- data.ab$treatment
+  trtcodes[trtcodes==ref] <- 0
+  trtcodes <- as.numeric(factor(trtcodes))
+
+  trtnames <- network$treatments
+  trtnames <- c(trtnames[ref], trtnames[-ref])
+
+  data.ab$treatment <- trtcodes
+  data.ab$agent <- NULL
+  data.ab <- dplyr::arrange(data.ab, studyID, treatment)
+  data.ab <- add_index(data.ab)
+
+  network$data.ab <- data.ab$data.ab
+  network$treatments <- trtnames
+  network$agents <- NULL
+
+  return(network)
 }

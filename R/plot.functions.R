@@ -165,6 +165,9 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   #edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
   g <- g + edges
 
+
+  igraph::E(g)$curved <- FALSE # ensure edges are straight
+
   if (!is.null(doseparam)) {
     igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),
                             rep("black", nrow(comparisons)-nrow(dr.comp)))

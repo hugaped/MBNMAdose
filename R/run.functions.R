@@ -520,7 +520,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #' @examples
 #' @export
 NMA.run <- function(network, method="common", likelihood="binomial", link="logit",
-                    warn.rhat=TRUE, n.iter=5000, drop.discon=TRUE, UME=FALSE, ...) {
+                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
