@@ -81,3 +81,51 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
 
 })
+
+
+
+
+
+
+testthat::test_that("rank.MBNMA.predict functions correctly", {
+
+  pred <- predict(linear.run, E0.data = 0.5)
+  rank <- rank.MBNMA.predict(pred)
+  expect_equal(names(rank), "Predictions")
+  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix"))
+  expect_equal(class(rank$Predictions$summary), "data.frame")
+  expect_equal(class(rank$Predictions$rank.matrix), "matrix")
+  expect_equal(class(rank$Predictions$prob.matrix), "matrix")
+
+
+  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+                  exact.doses=doses)
+  rank <- rank.MBNMA.predict(pred)
+  expect_equal(names(rank), "Predictions")
+  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix"))
+  expect_equal(class(rank$Predictions$summary), "data.frame")
+  expect_equal(class(rank$Predictions$rank.matrix), "matrix")
+  expect_equal(class(rank$Predictions$prob.matrix), "matrix")
+
+  expect_equal(nrow(rank$Predictions$summary), length(unlist(doses)))
+
+  # Test direction
+  rank.up <- rank.MBNMA.predict(pred, direction=-1)
+  rank.down <- rank.MBNMA.predict(pred, direction=1)
+  expect_equal(rank.down$Predictions$summary$rank.param[rank.down$Predictions$summary$`50%`==min(rank.down$Predictions$summary$`50%`)],
+               rank.up$Predictions$summary$rank.param[rank.up$Predictions$summary$`50%`==max(rank.up$Predictions$summary$`50%`)]
+               )
+
+  # Test rank.doses
+  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+                  exact.doses=doses)
+  rank <- rank.MBNMA.predict(pred, rank.doses = list("eletriptan"=2, "rizatriptan"=2))
+  expect_equal(nrow(rank$Predictions$summary), 2)
+
+  expect_error(rank.MBNMA.predict(pred, rank.doses = list("badger"=2, "rizatriptan"=2)), "badger")
+
+  expect_error(rank.MBNMA.predict(pred, rank.doses = list("eletriptan"=c(2, 50, 100), "rizatriptan"=2)), "cannot be included in ranking: 50\\, 100")
+
+})

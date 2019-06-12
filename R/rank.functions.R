@@ -46,7 +46,7 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
       rank.doses[[names(predict$predicts)[i]]] <- doses
     }
 
-  } else {
+  } else if (!is.null(rank.doses)) {
     # Check that rank.doses is a subset of predict
     agents.missing <- vector()
     doses.msg <- vector()
@@ -54,7 +54,7 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
     for (i in seq_along(rank.doses)) {
       doses.missing <- vector()
       if (!(names(rank.doses)[i] %in% names(predict[["predicts"]]))) {
-        warning(paste0("Agent ", names(rank.doses)[i], " not in `predicts` so will not be included in ranking"))
+        stop(paste0("Agent ", names(rank.doses)[i], " not in `predicts` so cannot be included in ranking"))
         new.ranks[[i]] <- NULL
       } else {
         doses <- as.numeric(names(predict[["predicts"]][[names(rank.doses)[i]]]))
@@ -67,7 +67,7 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
       }
 
       if (length(doses.missing)>0) {
-        warning(paste0("For ", names(rank.doses)[i], " in `rank.doses`, the following doses are missing from `predict` and will not be included in ranking: ", paste(doses.missing, collapse=", ")))
+        stop(paste0("For ", names(rank.doses)[i], " in `rank.doses`, the following doses are missing from `predict` and cannot be included in ranking: ", paste(doses.missing, collapse=", ")))
       }
     }
     rank.doses <- new.ranks
