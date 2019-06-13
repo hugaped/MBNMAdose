@@ -47,6 +47,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_error(print(rank), NA)
   expect_equal(class(summary(rank)[[1]]), "data.frame")
 
+  expect_error(rank(emax, params=c("badger", "d.ed50")))
 
   # Checking direction=1 and direction=-1 are opposites
   rank.down <- rank.MBNMA(emax, direction=-1)

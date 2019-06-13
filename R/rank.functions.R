@@ -10,6 +10,7 @@ rank <- function (x, ...) {
 #' Rank predicted doses of different agents
 #'
 #' @inheritParams rank.MBNMA
+#' @inheritParams predict.MBNMA
 #' @param rank.doses A list of numeric vectors. Each named element corresponds to an
 #' agent (as named/coded in `predict`), and each number within the vector for that element corresponds to the dose
 #' for that agent. Doses of agents specified in `rank.doses` *must* be a subset of those
@@ -19,6 +20,28 @@ rank <- function (x, ...) {
 #' @details
 #' If `predict` contains multiple predictions at dose=0, then only the first of these
 #' will be included, to avoid duplicating rankings.
+#'
+#' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Rank predictions from a linear dose-response MBNMA
+#' linear <- MBNMA.run(network, fun="linear")
+#' pred <- predict(linear, E0.data = 0.5)
+#' rank <- rank(pred)
+#' summary(rank)
+#'
+#' # Rank selected predictions from an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+#' pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+#'   exact.doses=doses)
+#' rank <- rank(pred,
+#'   rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))
+#' summary(rank)
+#' print(rank)
+#'
+#' @export
 rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 
   # Checks
@@ -122,6 +145,8 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #'
 #' Only parameters that vary by agent/class can be ranked.
 #'
+#' @param direction Indicates whether negative responses are better (taking the
+#'   value `-1`) or positive responses are better (taking the value `1`)
 #' @param to.rank A numeric vector containing the codes for the agents/classes you wish to rank.
 #' If left `NULL` then all agents/classes (depending on the value assigned to `level`) in
 #' the model will be ranked. Numbers must be greater than
@@ -131,6 +156,37 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' @param params A character vector of named parameters in the model that vary by either agent
 #' or class (depending on the value assigned to `level`). If left as `NULL` (the default), then
 #' ranking will be calculated for all available parameters that vary by agent/class.
+#' @inheritParams predict.MBNMA
+#'
+#' @details Ranking cannot currently be performed on nonparametric dose-response MBNMA
+#'
+#' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Rank selected agents from a linear dose-response MBNMA
+#' linear <- MBNMA.run(network, fun="linear")
+#' ranks <- rank(linear, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
+#' summary(ranks)
+#'
+#' # Rank only ED50 parameters from an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' ranks <- rank(emax, params="d.ed50")
+#' summary(ranks)
+#'
+#'
+#' #### Ranking by class ####
+#' # Generate some classes for the data
+#' class.df <- HF2PPITT
+#' class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
+#' class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
+#' netclass <- MBNMA.network(class.df)
+#' emax <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="random",
+#'   class.effect=list("ed50"="common"))
+#'
+#' # Rank by class, with negative responses being "better"
+#' ranks <- rank(emax, level="class", direction=-1)
+#' print(ranks)
 #'
 #' @export
 rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {
@@ -140,13 +196,16 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   checkmate::assertClass(mbnma, classes="MBNMA", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
-  checkmate::assertNumeric(to.rank, lower = 2, null.ok=TRUE, add=argcheck)
+  #checkmate::assertNumeric(to.rank, lower = 2, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (mbnma$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
     stop("Ranking cannot currently be performed for non-parametric models")
   }
+
+  # Change agent/class to agents/classes
+  levels <- ifelse(level=="agent", "agents", "classes")
 
   if (level=="class") {
     if (is.null(mbnma[["model"]][["data"]]()[["class"]])) {
@@ -162,15 +221,26 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   codes.mod <- c(starttrt:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE))
   if (is.null(to.rank)) {
     to.rank <- codes.mod
-  }
-  if (mbnma$agents[1]=="Placebo") {
-    to.rank <- to.rank-1
+  } else if (is.numeric(to.rank)) {
+    if (!all(to.rank %in% seq(1:max(mbnma[["model"]][["data"]]()[[level]])))) {
+      stop("`to.rank` codes must match those in the dataset for either `agent` or `class`")
+    }
+  } else if (is.character(to.rank)) {
+    if (!all(to.rank %in% mbnma[[levels]])) {
+      stop("`to.rank` agent/class names must match those in the network for either `agent` or `class`")
+    }
+    to.rank <- as.numeric(factor(to.rank, levels=mbnma[[levels]]))
   }
 
-  if (level=="agent") {
-    agents <- mbnma$agents[to.rank]
-  } else if (level=="class") {
-    agents <- mbnma$classes[to.rank]
+  if (mbnma$agents[1]=="Placebo") {
+    to.rank <- to.rank-1
+    if (any(to.rank==0)) {
+      warning("Placebo (d[1] or D[1]) cannot be included in the ranking for relative effects and will therefore be excluded")
+      to.rank <- to.rank[to.rank!=0]
+    }
+    agents <- mbnma[[levels]][to.rank+1]
+  } else {
+    agents <- mbnma[[levels]][to.rank]
   }
 
 
@@ -181,9 +251,15 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   } else {stop("`direction` must be either -1 or 1 for ranking")}
 
   if (is.null(params)) {
-    for (i in seq_along(mbnma[["parameters.to.save"]])) {
+    for (i in seq_along(mbnma$BUGSoutput$root.short)) {
       if (length(mbnma$BUGSoutput$long.short[i][[1]])==length(codes.mod)) {
-        params <- append(params, mbnma[["parameters.to.save"]][i])
+        params <- append(params, mbnma$BUGSoutput$root.short[i])
+      }
+    }
+  } else {
+    for (i in seq_along(params)) {
+      if (!(params[i] %in% mbnma[["parameters.to.save"]])) {
+        stop(paste0(params[i], " has not been monitored by the model. `params` can only include model parameters that have been monitored and vary by agent/class"))
       }
     }
   }

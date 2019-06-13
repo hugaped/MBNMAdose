@@ -341,6 +341,9 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   result[["type"]] <- "dose"
   result[["agents"]] <- network[["agents"]]
   result[["treatments"]] <- network[["treatments"]]
+  if (length(class.effect)>0) {
+    result[["classes"]] <- network[["classes"]]
+  }
 
   if (!("error" %in% names(result))) {
     class(result) <- c("MBNMA", class(result))
