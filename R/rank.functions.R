@@ -2,6 +2,11 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-26
 
+#' Set rank as a method
+rank <- function (x, ...) {
+  UseMethod("rank", x)
+}
+
 #' Rank predicted doses of different agents
 #'
 #' @inheritParams rank.MBNMA
