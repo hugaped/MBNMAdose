@@ -35,7 +35,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[1]]$prob.matrix), "matrix")
   expect_error(print(rank), NA)
-  expect_error(summary(rank), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
 
   rank <- rank.MBNMA(emax)
@@ -45,7 +45,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
   expect_error(print(rank), NA)
-  expect_error(summary(rank), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
 
   # Checking direction=1 and direction=-1 are opposites
@@ -54,7 +54,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
                  rank$d.emax$summary$rank.param[rank$d.emax$summary$`50%`==7],
                TRUE)
   expect_error(print(rank.down), NA)
-  expect_error(summary(rank.down), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
   to.ranks <- c(2,5,6)
   rank <- rank.MBNMA(exponential, to.rank = to.ranks)
@@ -68,7 +68,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   rank <- rank.MBNMA(emax.class, level="class")
   expect_equal(ncol(rank$D.emax$rank.matrix), 2)
   expect_error(print(rank), NA)
-  expect_error(summary(rank), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
   expect_error(rank.MBNMA(nonparam))
 
@@ -80,7 +80,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(names(rank), c("d.ed50"))
   expect_error(rank.MBNMA(emax, params="test"))
   expect_error(print(rank), NA)
-  expect_error(summary(rank), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
   # With no placebo data
   rank <- rank.MBNMA(emax.noplac)
@@ -90,7 +90,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
   expect_error(print(rank), NA)
-  expect_error(summary(rank), NA)
+  expect_equal(class(summary(rank)[[1]]), "data.frame")
 
 })
 

@@ -36,6 +36,8 @@ testthat::test_that("test.MBNMA.nodesplit", {
   expect_equal(length(split[[4]]$comparison), 2)
   expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
   expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
+  expect_error(print(split), NA)
+  expect_equal(class(summary(split)), "data.frame")
 
 
   split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
@@ -53,6 +55,8 @@ testthat::test_that("test.MBNMA.nodesplit", {
   expect_equal(length(split[[4]]$comparison), 2)
   expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
   expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
+  expect_error(print(split), NA)
+  expect_equal(class(summary(split)), "data.frame")
 
 
   # Test drop.discon
@@ -71,6 +75,8 @@ testthat::test_that("test.MBNMA.nodesplit", {
   expect_equal(length(split[[4]]$comparison), 2)
   expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
   expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
+  expect_error(print(split), NA)
+  expect_equal(class(summary(split)), "data.frame")
 
 
   # Test comparisons
@@ -78,11 +84,15 @@ testthat::test_that("test.MBNMA.nodesplit", {
                            method="random", n.iter=1000, drop.discon = FALSE,
                            comparisons = rbind(c(18,20), c(17,20)))
   expect_equal(2, length(split))
+  expect_error(print(split), NA)
+  expect_equal(class(summary(split)), "data.frame")
 
   split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE,
                            comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5")))
   expect_equal(1, length(split))
+  expect_error(print(split), NA)
+  expect_equal(class(summary(split)), "data.frame")
 
   expect_error(MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
                                method="random", n.iter=1000, drop.discon = FALSE,
