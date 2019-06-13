@@ -23,9 +23,6 @@
 #' for poisson data.
 #' * `class` An optional column indicating a particular class code. Agents with the same identifier
 #' must also have the same class code.
-#' @param reference A number or character (depending on the format of `treatment` within `data.ab`)
-#' indicating the reference treatment in the network (i.e. those for which estimated relative treatment
-#' effects estimated by the model will be compared to).
 #' @param description Optional. Short description of the network.
 #'
 #' @details Agents/classes for arms that have dose = 0 will be relabelled as `"Placebo"`.
@@ -38,6 +35,8 @@
 #' been recoded to a sequential numeric code)
 #' * `agents` A character vector indicating the agent identifiers that correspond to the
 #' new agent codes.
+#' * `treatments` A character vector indicating the treatment identifiers that correspond
+#' to the new treatment codes.
 #' * `classes` A character vector indicating the class identifiers (if included in the original data)
 #' that correspond to the new class codes.
 #'
@@ -48,8 +47,6 @@
 #' # Define network
 #' network <- MBNMA.network(HF2PPITT, description="Example")
 #'
-#' # Define network with different network reference agent
-#' network <- MBNMA.network(HF2PPITT, reference="Ce_200", description="Example")
 #' @export
 MBNMA.network <- function(data.ab, description="Network") {
 
@@ -88,7 +85,6 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' * Checks that each study includes at least two treatments
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
-#'
 MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   # data.ab must have columns c("studyID", "agent", "dose", and either "y" and "se" or "r" and "N")
   # optional column of class
@@ -333,11 +329,14 @@ add_index <- function(data.ab) {
 
 
 
-#' Assigns agent and class variables numeric identifiers
+#' Assigns agent or class variables numeric identifiers
 #'
 #' @param level Can take either `"agent"` or `"class"`
 #'
 #' @details Also relabels the agent for any arms in which dose = 0 to "Placebo_0"
+#'
+#' @return A list containing a data frame with recoded agent/class identifiers and
+#'   a character vector of original agent/class names
 recode.agent <- function(data.ab, level="agent") {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
@@ -433,6 +432,27 @@ recode.agent <- function(data.ab, level="agent") {
 #'   * `class` Optional. A matrix of class codes within each study
 #'   * `classkey` Optional. A vector of class codes that correspond to agent codes.
 #'   Same length as the number of agent codes.
+#'
+#' @examples
+#' # Using the triptans headache dataset
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
+#'
+#'
+#' # Get JAGS data with class
+#' df <- HF2PPITT
+#' df$class <- ifelse(df$agent=="placebo", "placebo", "active")
+#' netclass <- MBNMA.network(df)
+#'
+#' jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
+#'
+#'
+#' # Get JAGS data at the treatment level for Network Meta-Analysis
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' jagsdat <- getjagsdata(network$data.ab, level="treatment)
+#'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
                         level="agent") {
@@ -560,7 +580,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
 
 
-#' Identify unique comparisons within a network (identical to MBNMAtime)
+#' Identify unique comparisons within a network
 #'
 #' Identify unique contrasts within a network that make up all the head-to-head comparisons. Repetitions
 #' of the same treatment comparison are grouped together.
@@ -585,8 +605,14 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
 #'   )
 #'
-#' # Identify comparisons informed by direct and indirect evidence
+#' # Identify unique comparisons within the data
 #' MBNMA.comparisons(data)
+#'
+#'
+#' # Using the triptans headache dataset
+#' network <- MBNMA.network(HF2PPITT) # Adds treatment identifiers
+#' MBNMA.comparisons(network$data.ab)
+#'
 #' @export
 MBNMA.comparisons <- function(data)
 {
@@ -642,8 +668,34 @@ MBNMA.comparisons <- function(data)
 
 #' Drop studies that are not connected to the network reference treatment
 #'
-#' @return A single row per arm data frame containing only studies that are
-#' connected to the network reference treatment
+#' @param connect.dose A boolean object to indicate whether treatments should be
+#' kept in the network if they connect via the simplest possible dose-response
+#' relationship (`TRUE`) or not (`FALSE`)
+#' @inheritParams MBNMA.run
+#'
+#' @return A list containing a single row per arm data frame containing only studies that are
+#' connected to the network reference treatment, and a character vector of treatment labels
+#'
+#' @examples
+#' # Using the triptans headache dataset
+#' network <- MBNMA.network(HF2PPITT)
+#' drops <- drop.disconnected(network)
+#'
+#' # No studies have been dropped since network is fully connected
+#' length(unique(network$data.ab$studyID))==length(unique(drops$data.ab$studyID))
+#'
+#'
+#' # Make data with no placebo
+#' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+#' net.noplac <- MBNMA.network(noplac.df)
+#'
+#' # Studies are dropped as some only connect via the dose-response function
+#' drops <- drop.disconnected(net.noplac, connect.dose=FALSE)
+#' length(unique(net.noplac$data.ab$studyID))==length(unique(drops$data.ab$studyID))
+#'
+#' # Studies are not dropped if they connect via the dose-response function
+#' drops <- drop.disconnected(net.noplac, connect.dose=TRUE)
+#' length(unique(net.noplac$data.ab$studyID))==length(unique(drops$data.ab$studyID))
 #'
 #' @export
 drop.disconnected <- function(network, connect.dose=FALSE) {
@@ -760,6 +812,11 @@ DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
 #'
 #' @param ref A positive integer indicating the *treatment* code of the new reference
 #' treatment to use
+#'
+#' @return An object of `class("MBNMA.network")` that has a new reference treatment.
+#' The new object is only really used as an intermediate in other package functions
+#' and it should not be used separately, as some characteristics of the dataset may
+#' not be properly encoded.
 #'
 #' @inheritParams MBNMA.network
 change.netref <- function(network, ref=1) {
