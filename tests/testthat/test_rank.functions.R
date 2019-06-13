@@ -34,6 +34,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[1]]$summary), "data.frame")
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[1]]$prob.matrix), "matrix")
+  expect_error(print(rank), NA)
+  expect_error(summary(rank), NA)
 
 
   rank <- rank.MBNMA(emax)
@@ -42,6 +44,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[2]]$summary), "data.frame")
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
+  expect_error(print(rank), NA)
+  expect_error(summary(rank), NA)
 
 
   # Checking direction=1 and direction=-1 are opposites
@@ -49,6 +53,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(rank.down$d.emax$summary$rank.param[rank.down$d.emax$summary$`50%`==1]==
                  rank$d.emax$summary$rank.param[rank$d.emax$summary$`50%`==7],
                TRUE)
+  expect_error(print(rank.down), NA)
+  expect_error(summary(rank.down), NA)
 
   to.ranks <- c(2,5,6)
   rank <- rank.MBNMA(exponential, to.rank = to.ranks)
@@ -61,6 +67,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_error(rank.MBNMA(emax.class, level="agent"))
   rank <- rank.MBNMA(emax.class, level="class")
   expect_equal(ncol(rank$D.emax$rank.matrix), 2)
+  expect_error(print(rank), NA)
+  expect_error(summary(rank), NA)
 
   expect_error(rank.MBNMA(nonparam))
 
@@ -71,6 +79,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   rank <- rank.MBNMA(emax, params="d.ed50")
   expect_equal(names(rank), c("d.ed50"))
   expect_error(rank.MBNMA(emax, params="test"))
+  expect_error(print(rank), NA)
+  expect_error(summary(rank), NA)
 
   # With no placebo data
   rank <- rank.MBNMA(emax.noplac)
@@ -79,6 +89,8 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(rank[[2]]$summary), "data.frame")
   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
+  expect_error(print(rank), NA)
+  expect_error(summary(rank), NA)
 
 })
 
@@ -92,7 +104,7 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
   pred <- predict(linear.run, E0.data = 0.5)
   rank <- rank.MBNMA.predict(pred)
   expect_equal(names(rank), "Predictions")
-  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix"))
+  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank$Predictions$summary), "data.frame")
   expect_equal(class(rank$Predictions$rank.matrix), "matrix")
   expect_equal(class(rank$Predictions$prob.matrix), "matrix")
@@ -103,7 +115,7 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
                   exact.doses=doses)
   rank <- rank.MBNMA.predict(pred)
   expect_equal(names(rank), "Predictions")
-  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix"))
+  expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank$Predictions$summary), "data.frame")
   expect_equal(class(rank$Predictions$rank.matrix), "matrix")
   expect_equal(class(rank$Predictions$prob.matrix), "matrix")
