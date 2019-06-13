@@ -21,24 +21,29 @@ test_that("MBNMA.run functions correctly", {
   expect_equal(class(result), c("MBNMA", "rjags"))
   expect_equal("d.1" %in% result$parameters.to.save, TRUE)
   expect_equal(result$BUGSoutput$pD<0, TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
                       pd="pd.kl", n.iter=n.iter)
   expect_equal(class(result), c("MBNMA", "rjags"))
   expect_equal("sd" %in% result$parameters.to.save, TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(netclass, fun="exponential", beta.1="rel", method="common",
                       pd="popt", class.effect = list(beta.1="random"), n.iter=n.iter)
   expect_equal(class(result), c("MBNMA", "rjags"))
   expect_equal("D.1" %in% result$parameters.to.save, TRUE)
   expect_equal("sd.D.1" %in% result$parameters.to.save, TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(network, fun="nonparam.up", method="common", n.iter=n.iter)
   expect_equal("d.1[1,1]" %in% rownames(result$BUGSoutput$summary), TRUE)
+  expect_error(summary(result))
 
   result <- MBNMA.run(network, fun="nonparam.down", method="random", n.iter=n.iter)
   expect_equal("d.1[1,1]" %in% rownames(result$BUGSoutput$summary), TRUE)
   expect_equal("sd" %in% result$parameters.to.save, TRUE)
+  expect_error(summary(result))
 
   expect_error(result <- MBNMA.run(network, fun="linear", beta.1="rel", method="fixed", n.iter=n.iter))
 
@@ -48,27 +53,33 @@ test_that("MBNMA.run functions correctly", {
   result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="rel", method="common",
                       n.iter=n.iter)
   expect_equal(all(c("d.1", "d.2") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="rel", method="random",
                       n.iter=n.iter)
   expect_equal("sd" %in% result$parameters.to.save, TRUE)
+  expect_error(summary(result), NA)
 
   expect_warning(MBNMA.run(netclass, fun="emax", beta.1="rel", beta.2="rel", method="random",
                       class.effect=list(beta.2="common"), n.iter=n.iter))
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(netclass, fun="emax", beta.1="rel", beta.2="rel", method="common",
                       class.effect=list(beta.2="common"), n.iter=n.iter)
   expect_equal(all(c("d.1", "D.2") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="random", method="common",
                       n.iter=n.iter)
   expect_equal(all(c("d.1", "beta.2", "sd.2") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
 
   # Three parameter DR function
   result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="random", beta.3="common",
                       method="random", n.iter=n.iter)
   expect_equal(all(c("d.1", "sd", "beta.2", "sd.2", "beta.3") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
 
   result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="random", beta.3="common",
@@ -76,6 +87,7 @@ test_that("MBNMA.run functions correctly", {
                       method="random", n.iter=n.iter)
   expect_equal("psi" %in% result$parameters.to.save, TRUE)
   expect_equal("d.1" %in% result$parameters.to.save, FALSE)
+  expect_error(summary(result))
 
   expect_error(MBNMA.run(net.noplac, fun="nonparam.up"))
 
@@ -90,21 +102,25 @@ test_that("MBNMA.run wrappers function correctly", {
   # Single parameter DR functions
   result <- MBNMA.linear(network, slope="random", n.iter=n.iter)
   expect_equal(all(c("beta.slope", "sd.slope") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
   result <- MBNMA.exponential(network, lambda="rel", method="common", n.iter=n.iter)
   expect_equal(all(c("d.lambda") %in% result$parameters.to.save), TRUE)
   expect_equal(all(c("sd") %in% result$parameters.to.save), FALSE)
+  expect_error(summary(result), NA)
 
   # Two parameter DR functions
   result <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="common",
                        class.effect=list(emax="common"), n.iter=n.iter)
   expect_equal(all(c("D.emax", "d.ed50") %in% result$parameters.to.save), TRUE)
   expect_equal(all(c("d.emax") %in% result$parameters.to.save), FALSE)
+  expect_error(summary(result), NA)
 
   # Three parameter DR functions
   result <- MBNMA.emax.hill(netclass, emax="rel", ed50="rel", hill="rel",
                             method="random", n.iter=n.iter)
   expect_equal(all(c("d.emax", "d.ed50", "d.hill", "sd") %in% result$parameters.to.save), TRUE)
+  expect_error(summary(result), NA)
 
 })
 
@@ -166,6 +182,7 @@ test_that("NMA.run function correctly", {
 
 
 test_that("pDcalc functions correctly", {
+  n.iter=1000
 
   # For binomial likelihood
   likelihood <- "binomial"
