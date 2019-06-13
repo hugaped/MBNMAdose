@@ -100,7 +100,8 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 
   result <- list("summary"=sumrank(rank.mat),
                  "prob.matrix"=calcprob(rank.mat, treats=treats),
-                 "rank.matrix"=rank.mat)
+                 "rank.matrix"=rank.mat,
+                 "direction"=direction)
   result <- list("Predictions"=result)
 
   class(result) <- "MBNMA.rank"
@@ -204,7 +205,8 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
         list("summary"=sumrank(rank.mat),
              #"prob.matrix"=calcprob(rank.mat, treats=to.rank),
              "prob.matrix"=calcprob(rank.mat, treats=agents),
-             "rank.matrix"=rank.mat)
+             "rank.matrix"=rank.mat,
+             "direction"=direction)
 
     }
   }
