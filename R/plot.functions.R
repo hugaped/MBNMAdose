@@ -532,7 +532,7 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
 #' emax <- MBNMA.emax(network, method="random")
-#' pred <- predict(emax, E0.data = 0.5)
+#' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
 #' # Display observed doses on the plot (must include `network`)
@@ -557,7 +557,7 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'
 #' # If insufficient predictions are made across dose-response function
 #' # then the plotted responses are less smooth and can be misleading
-#' pred <- predict(emax, E0.data = 0.5, n.doses=3)
+#' pred <- predict(emax, E0 = 0.5, n.doses=3)
 #' plot(pred)
 #'
 #'
@@ -1223,7 +1223,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 #'
 #' # Plot rankings from prediction
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-#' pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+#' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
 #'   exact.doses=doses)
 #' rank <- rank(pred)
 #' plot(rank)

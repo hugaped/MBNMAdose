@@ -102,7 +102,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
 
 testthat::test_that("rank.MBNMA.predict functions correctly", {
 
-  pred <- predict(linear.run, E0.data = 0.5)
+  pred <- predict(linear.run, E0 = 0.5)
   rank <- rank.MBNMA.predict(pred)
   expect_equal(names(rank), "Predictions")
   expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
@@ -112,7 +112,7 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
 
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
                   exact.doses=doses)
   rank <- rank.MBNMA.predict(pred)
   expect_equal(names(rank), "Predictions")
@@ -132,7 +132,7 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
 
   # Test rank.doses
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
                   exact.doses=doses)
   rank <- rank.MBNMA.predict(pred, rank.doses = list("eletriptan"=2, "rizatriptan"=2))
   expect_equal(nrow(rank$Predictions$summary), 2)

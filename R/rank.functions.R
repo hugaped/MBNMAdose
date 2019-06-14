@@ -31,14 +31,14 @@ rank <- function (x, ...) {
 #'
 #' # Rank predictions from a linear dose-response MBNMA
 #' linear <- MBNMA.run(network, fun="linear")
-#' pred <- predict(linear, E0.data = 0.5)
+#' pred <- predict(linear, E0 = 0.5)
 #' rank <- rank(pred)
 #' summary(rank)
 #'
 #' # Rank selected predictions from an Emax dose-response MBNMA
 #' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-#' pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+#' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
 #'   exact.doses=doses)
 #' rank <- rank(pred,
 #'   rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))

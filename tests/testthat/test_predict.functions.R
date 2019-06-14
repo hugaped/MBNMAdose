@@ -71,7 +71,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   ref.df <- network$data.ab[network$data.ab$agent==1,]
 
   # Estimating E0
-  pred <- predict(linear, E0.estimate = ref.df)
+  pred <- predict(linear, E0 = ref.df)
   expect_identical(names(pred), c("predicts", "likelihood", "link"))
   expect_equal(linear$model.arg$likelihood, pred$likelihood)
   expect_equal(linear$model.arg$link, pred$link)
@@ -84,18 +84,18 @@ testthat::test_that("predict.MBNMA functions correctly", {
   expect_equal(class(summary(pred)), "data.frame")
 
   # Stochastic E0 values
-  expect_silent(predict(linear, E0.data = "rnorm(nsims, 0.5,0.01)"))
-  expect_silent(predict(linear, E0.data = "rbeta(nsims, shape1=1, shape2=5)"))
-  expect_error(predict(linear, E0.data = "badgers(nsims, shape1=1, shape2=5)"))
-  expect_error(predict(linear, E0.data = "rbeta(badgers, shape1=1, shape2=5)"))
+  expect_silent(predict(linear, E0 = "rnorm(n, 0.5,0.01)"))
+  expect_silent(predict(linear, E0 = "rbeta(n, shape1=1, shape2=5)"))
+  expect_error(predict(linear, E0 = "badgers(n, shape1=1, shape2=5)"))
+  expect_error(predict(linear, E0 = "rbeta(badgers, shape1=1, shape2=5)"))
 
   # Determinsitic E0 values
-  expect_silent(predict(linear, E0.data = 0.01))
-  expect_silent(predict(linear, E0.data = 0.99))
-  expect_warning(predict(linear, E0.data = 1.5))
+  expect_silent(predict(linear, E0 = 0.01))
+  expect_silent(predict(linear, E0 = 0.99))
+  expect_warning(predict(linear, E0 = 1.5))
 
   # Changing n.doses
-  pred <- predict(linear, E0.data=0.5, n.doses = 10)
+  pred <- predict(linear, E0=0.5, n.doses = 10)
   expect_equal(length(pred$predicts[[2]]), 10)
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")
@@ -105,20 +105,20 @@ testthat::test_that("predict.MBNMA functions correctly", {
   for (i in seq_along(network$agents)) {
     max.doses[[length(max.doses)+1]] <- 1
   }
-  pred <- predict(emax, E0.data=0.1, max.doses = max.doses)
+  pred <- predict(emax, E0=0.1, max.doses = max.doses)
   expect_identical(names(pred$predicts), linear$agents)
   expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")
 
   names(max.doses) <- emax$agents
-  expect_silent(predict(emax, E0.data=0.1, max.doses = max.doses))
+  expect_silent(predict(emax, E0=0.1, max.doses = max.doses))
 
   max.doses[[9]] <- 1
-  expect_error(predict(linear, E0.data=0.1, max.doses = max.doses))
+  expect_error(predict(linear, E0=0.1, max.doses = max.doses))
 
   max.doses <- list("eletriptan"=3, "rizatriptan"=2)
-  pred <- predict(linear, E0.data=0.1, max.doses = max.doses, n.doses = 10)
+  pred <- predict(linear, E0=0.1, max.doses = max.doses, n.doses = 10)
   expect_equal(length(pred$predicts), length(max.doses))
   expect_equal(names(pred$predicts), names(max.doses))
   expect_equal(names(pred$predicts$eletriptan)[10], "3")
@@ -128,15 +128,15 @@ testthat::test_that("predict.MBNMA functions correctly", {
   expect_equal(class(summary(pred)), "data.frame")
 
   max.doses <- list("badger"=3, "test"=1)
-  expect_error(predict(linear, E0.data=0.1, max.doses = max.doses))
+  expect_error(predict(linear, E0=0.1, max.doses = max.doses))
 
   max.doses <- list("eletriptan"="badger", "rizatriptan"=2)
-  expect_error(predict(linear, E0.data=0.1, max.doses = max.doses, n.doses = 10))
+  expect_error(predict(linear, E0=0.1, max.doses = max.doses, n.doses = 10))
 
 
   # Changing exact.doses
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(linear, E0.data=0.1, exact.doses = doses)
+  pred <- predict(linear, E0=0.1, exact.doses = doses)
   expect_identical(as.numeric(names(pred$predicts[[1]])), doses[[1]])
   expect_identical(as.numeric(names(pred$predicts[[2]])), doses[[2]])
   expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
@@ -144,20 +144,20 @@ testthat::test_that("predict.MBNMA functions correctly", {
   expect_equal(class(summary(pred)), "data.frame")
 
   doses <- list(c(0,1,2,3), c(0.5,1,2))
-  expect_error(predict(linear, E0.data=0.1, exact.doses = doses))
+  expect_error(predict(linear, E0=0.1, exact.doses = doses))
 
   dose <- c(0,0.5,1,2,4)
   doses <- list()
   for (i in seq_along(network$agents)) {
     doses[[length(doses)+1]] <- dose
   }
-  expect_silent(predict(emax, E0.data=0.1, exact.doses = doses))
+  expect_silent(predict(emax, E0=0.1, exact.doses = doses))
 
   doses <- list("eletriptan"=c("I","am","a","test"), "rizatriptan"=c(0.5,1,2))
-  expect_error(predict(linear, E0.data=0.1, exact.doses = doses))
+  expect_error(predict(linear, E0=0.1, exact.doses = doses))
 
   doses <- list("badger"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  expect_error(predict(linear, E0.data=0.1, exact.doses = doses))
+  expect_error(predict(linear, E0=0.1, exact.doses = doses))
 
 
   #### Repeat sections with emax.noplac ####
@@ -165,7 +165,7 @@ testthat::test_that("predict.MBNMA functions correctly", {
   for (i in seq_along(net.noplac$agents)) {
     max.doses[[length(max.doses)+1]] <- 1
   }
-  pred <- predict(emax.noplac, E0.data=0.1, max.doses = max.doses)
+  pred <- predict(emax.noplac, E0=0.1, max.doses = max.doses)
   expect_identical(names(pred$predicts), emax.noplac$agents)
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")

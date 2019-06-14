@@ -118,10 +118,10 @@ testthat::test_that("plot.MBNMA functions correctly", {
 
 
 testthat::test_that("plot.MBNMA.predict functions correctly", {
-  pred <- predict(linear, E0.data = 0.5)
+  pred <- predict(linear, E0 = 0.5)
   expect_silent(plot(pred))
 
-  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)")
+  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
   expect_silent(plot(pred))
 
   # Test disp.obs
@@ -129,20 +129,20 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
   expect_message(plot(pred, disp.obs = TRUE, network=network))
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
 
-  pred <- predict(emax, E0.data = 0.5)
+  pred <- predict(emax, E0 = 0.5)
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0.data=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_silent(plot(pred, disp.obs=TRUE, network=network))
 
-  pred <- predict(emax.noplac, E0.data = 0.5)
+  pred <- predict(emax.noplac, E0 = 0.5)
   expect_silent(plot(pred, disp.obs = TRUE, network=net.noplac))
 
 
   # Test agent.labs
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0.data=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   g <- plot(pred, agent.labs = c("Badger", "Ferret"))
   expect_identical(levels(g$data$agent), c("Badger", "Ferret"))
 
@@ -150,37 +150,37 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
 
 
   # Test overlay.split
-  pred <- predict(linear, E0.data = 0.5)
+  pred <- predict(linear, E0 = 0.5)
   expect_error(plot(pred, overlay.split = TRUE))
   expect_output(plot(pred, overlay.split = TRUE, network=network))
 
-  pred <- predict(emax, E0.data = 0.5)
+  pred <- predict(emax, E0 = 0.5)
   expect_output(plot(pred, overlay.split = TRUE, network=network))
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
-  pred <- predict(emax, E0.data=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_output(plot(pred, overlay.split = TRUE, network=network))
 
   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0.data=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_error(plot(pred, overlay.split = TRUE, network=network))
 
-  pred <- predict(emax.noplac, E0.data = 0.5)
+  pred <- predict(emax.noplac, E0 = 0.5)
   expect_error(plot(pred, overlay.split = TRUE, network=net.noplac))
 
 
   # Test method="common"
-  pred <- predict(linear, E0.data = 0.5)
+  pred <- predict(linear, E0 = 0.5)
   expect_output(plot(pred, overlay.split = TRUE, network=network, method="random"),
                 "SD")
 
-  pred <- predict(emax, E0.data = 0.5)
+  pred <- predict(emax, E0 = 0.5)
   expect_output(plot(pred, overlay.split = TRUE, network=network, method="random"),
                 "SD")
 
 
   # Test scales
-  pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)")
+  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
   expect_silent(plot(pred, scales="fixed"))
   expect_error(plot(pred, scales="badger"))
 
