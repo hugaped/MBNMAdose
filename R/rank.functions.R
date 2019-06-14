@@ -21,6 +21,10 @@ rank <- function (x, ...) {
 #' If `predict` contains multiple predictions at dose=0, then only the first of these
 #' will be included, to avoid duplicating rankings.
 #'
+#' @return An object of `class("MBNMA.rank")` which is a list containing a summary data
+#' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
+#' that each agent has a particular rank, for each parameter that has been ranked.
+#'
 #' @examples
 #' # Using the triptans data
 #' network <- MBNMA.network(HF2PPITT)
@@ -159,6 +163,10 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' @inheritParams predict.MBNMA
 #'
 #' @details Ranking cannot currently be performed on nonparametric dose-response MBNMA
+#'
+#' @return An object of `class("MBNMA.rank")` which is a list containing a summary data
+#' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
+#' that each agent has a particular rank, for each parameter that has been ranked.
 #'
 #' @examples
 #' # Using the triptans data

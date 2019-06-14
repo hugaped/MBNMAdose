@@ -42,6 +42,9 @@
 #'   indirect evidence are informing different treatment comparisons. Depends on
 #'   \code{\link[igraph]{igraph}}.
 #'
+#' @return An object of `class("igraph")` - any functions from the `igraph` package
+#' can be applied to this object to change its characteristics.
+#'
 #' @examples
 #' # Create an MBNMA.network object from the data
 #' network <- MBNMA.network(HF2PPITT)
@@ -58,10 +61,10 @@
 #'
 #' # Generate a network plot that includes connections via the dose-response function
 #' # For a one parameter dose-response function (e.g. exponential)
-#' plot(network, level="treatment", doseparam=1)
+#' plot(network, level="treatment", doseparam=1, remove.loops=TRUE)
 #'
 #' # For a two parameter dose-response function (e.g. Emax)
-#' plot(network, level="treatment", doseparam=2)
+#' plot(network, level="treatment", doseparam=2, remove.loops=TRUE)
 #'
 #'
 #' #### Plot a network with no placebo data included ####
@@ -70,7 +73,7 @@
 #' net.noplac <- MBNMA.network(noplac.df)
 #'
 #' # Plotting network automatically plots connections to Placebo via dose-response
-#' plot(net.nonplac)
+#' plot(net.noplac)
 #' @export
 plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
                                level="treatment", remove.loops=FALSE, v.color="connect",
@@ -328,14 +331,46 @@ genmaxcols <- function() {
 #' Parameters must be given the same name as monitored nodes in `mbnma` and must be
 #' modelled as relative effects (`"rel"`). Can be set to
 #' `NULL` to include all available dose-response parameters estimated by `mbnma`.
-#' @param agent.labs A caracter vector of agent labels (including `"placebo"` only if it
+#' @param agent.labs A character vector of agent labels (including `"Placebo"` if it
 #' has been included in the original network). If left as `NULL` (the default) then
 #' labels will be used as defined in the data.
 #' @param class.labs A character vector of class labels if `mbnma` was modelled using class effects
-#' (including `"placebo"` only if it has been included in the original network). If left as `NULL`
+#' (including `"Placebo"` if it
+#' has been included in the original network). If left as `NULL`
 #' (the default) then labels will be used as defined in the data.
 #'
-#' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for different dose-response parameters
+#' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for
+#' different dose-response parameters. Results are plotted on the link scale.
+#'
+#' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an exponential dose-response MBNMA and generate the forest plot
+#' exponential <- MBNMA.run(network, fun="exponential")
+#' plot(exponential)
+#'
+#' # Plot only Emax parameters from an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' plot(emax, params=c("d.emax"))
+#'
+#'
+#' #### Forest plots including class effects ####
+#' # Generate some classes for the data
+#' class.df <- HF2PPITT
+#' class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
+#' class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
+#' netclass <- MBNMA.network(class.df)
+#' emax <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="random",
+#'   class.effect=list("ed50"="common"))
+#'
+#' # Plot forest plot with different labels for classes
+#' plot(emax, class.labs=c("Placebo", "Other Active", "Eletriptan"))
+#'
+#' # Since "Placebo" is included in the network, it must be included in labels
+#' # Failure to do so will cause an error
+#' ## ERROR ## plot(emax, class.labs=c("Other Active", "Eletriptan"))
+#'
 #' @export
 plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 
@@ -429,6 +464,10 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
   } else {all.labs <- c.labs}
   plotdata$param <- factor(plotdata$param, labels=all.labs)
 
+  if (any(is.na(levels(plotdata$param)))) {
+    stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
+  }
+
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
@@ -456,19 +495,23 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'   `predict("MBNMA")`
 #' @param disp.obs A boolean object to indicate whether to mark which observed doses
 #'   were given in the data on the dose-response curves as shaded regions (`TRUE`) or
-#'   not (`FALSE`)
+#'   not (`FALSE`). If set to `TRUE` the original network object used for the model
+#'   *must* be specified in `network`.
 #' @param overlay.split A boolean object indicating whether to overlay a line
-#'   showing the split NMA results on the plot (`TRUE`) or not (`FALSE`).
-#'   For this `predict` must include a predicted response at dose = 0 for at least one agent.
+#'   showing the split NMA results on the plot (`TRUE`) or not (`FALSE`). This will
+#'   require running of a split NMA model.
+#'   For `overlay.split=TRUE` the original network object used for the model
+#'   *must* be specified in `network`.
 #' @param method Indicates the type of split NMA to perform when `overlay.split=TRUE`. Can
 #'   take either `"common"` or `"random"`.
 #' @param agent.labs A character vector of agent labels to display on plots. If
 #'   left as `NULL` (the default) the names of agents will be taken from `predict`. The position of
 #'   each label corresponds to each element of `predict`. The number of labels must equal
-#'   the number of elements in `predict`. If placebo / dose=0 data is included in the predictions
-#'   then a label for this should be included in `agent.labs`, though it will not be shown
-#'   in the final plot (since placebo is the point within each plot at which dose = 0).
-#' @param ... Arguments for `ggplot`
+#'   the number of active agents in `predict`. If placebo / dose=0 data is included in the predictions
+#'   then the label `"Placebo"` *should not* be included in `agent.labs`. It will not be shown
+#'   in the final plot since placebo is the point within each plot at which dose = 0 (rather
+#'   than a separate agent).
+#' @param ... Arguments for `ggplot2`
 #' @inheritParams MBNMA.run
 #' @inheritParams plot.MBNMA.rank
 #' @inheritParams ggplot2::facet_wrap
@@ -479,7 +522,45 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'   advisable to ensure predictions in `predict` are estimated using an even
 #'   sequence of time points to avoid misrepresentation of shaded densities.
 #'
+#'   If using `overlay.split`, or `disp.obs` then the original dataset must be specified
+#'   by including the original network object used to estimate the model as the `network`
+#'   argument.
+#'
 #' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an Emax dose-response MBNMA and predict responses
+#' emax <- MBNMA.emax(network, method="random")
+#' pred <- predict(emax, E0.data = 0.5)
+#' plot(pred)
+#'
+#' # Display observed doses on the plot (must include `network`)
+#' plot(pred, disp.obs=TRUE, network=network)
+#'
+#' # Display split NMA results on the plot (must include `network`)
+#' plot(pred, overlay.split=TRUE, network=network)
+#'
+#' # Split NMA results estimated using random treatment effects model
+#' plot(pred, overlay.split=TRUE, network=network, method="random")
+#'
+#' # Add agent labels
+#' plot(pred, agent.labs=c("Elet", "Suma", "Frov", "Almo", "Zolmi",
+#'   "Nara", "Riza"))
+#'
+#' # These labels will throw an error because "Placebo" is included in agent.labs when
+#' #it will not be plotted as a separate panel
+#' #### ERROR ####
+#' #plot(pred, agent.labs=c("Placebo", "Elet", "Suma", "Frov", "Almo", "Zolmi",
+#' #  "Nara", "Riza"))
+#'
+#'
+#' # If insufficient predictions are made across dose-response function
+#' # then the plotted responses are less smooth and can be misleading
+#' pred <- predict(emax, E0.data = 0.5, n.doses=3)
+#' plot(pred)
+#'
+#'
 #' @export
 plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
                                overlay.split=FALSE, method="common",
@@ -491,34 +572,24 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
   checkmate::assertLogical(disp.obs, len=1, add=argcheck)
   checkmate::assertLogical(overlay.split, len=1, add=argcheck)
   checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(scales, c("free_x", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   sum.pred <- summary(predict)
   sum.df <- sum.pred
 
   # Check agent.labs and that the number of labels there are is correct
-  if (is.null(agent.labs)) {
-    agent.labs <- names(predict[["predicts"]])
-  } else {
-    if (length(agent.labs)!=length(predict[["predicts"]])) {
-      stop("The length of `agent.labs` does not equal the number of agents that responses have been predicted for in `predict`")
+  if (!is.null(agent.labs)) {
+    if ("Placebo" %in% names(predict[["predicts"]])) {
+      agent.labs <- c("Placebo", agent.labs)
     }
+    if (length(agent.labs)!=
+        length(predict[["predicts"]])) {
+      stop("The length of `agent.labs` does not equal the number of active agents that responses have been predicted for in `predict`. `Placebo` will be added automatically and should not be given a label")
+    }
+    sum.df$agent <- factor(sum.df$agent, labels=agent.labs)
   }
-  sum.df$agent <- factor(sum.df$agent, labels=agent.labs)
 
-
-  # Remove placebo
-  # if (all(sum.df$dose[as.character(sum.df$agent)=="placebo"]==0)) {
-  #   plac.incl <- TRUE
-  # } else {
-  #   plac.incl <- FALSE
-  # }
-  #
-  # if (plac.incl==TRUE) {
-  #   #sum.df <- sum.df[sum.df$agent!=1,]
-  #   sum.df <- sum.df[sum.df$agent!="placebo",]
-  #   #agent.labs <- agent.labs[-1]
-  # }
   sum.df <- sum.df[!(sum.df$agent %in% c("1", "Placebo")),]
 
 
@@ -624,18 +695,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
     predict.data$count[i] <- count
     predict.data$cum.count[i] <- cum.count
   }
-
-  # Identify if placebo is in data
-  # if (all(predict.data$dose[predict.data$agent==1]==0)) {
-  #   plac.incl <- TRUE
-  #
-  #   plac.count <- predict.data$count[predict.data$agent==1]
-  #   message(paste0(plac.count, " placebo arms in the dataset are not shown within the plots"))
-  #
-  #   predict.data <- predict.data[predict.data$agent!=1,]
-  # } else {
-  #   plac.incl <- FALSE
-  # }
 
   # Identify if placebo is in data
   if (any(unique(predict.data$agent) %in% c("1", "Placebo"))) {
@@ -816,8 +875,8 @@ overlay.split <- function(g, network, method="common",
 
 #' Plot deviance contributions from an MBNMA model
 #'
-#' @param dev.type Deviances to plot - can be either residual deviances (`"resdev"`, the
-#' default) or deviances (`"dev"`)
+#' @param dev.type STILL IN DEVELOPMENT FOR MBNMAdose! Deviances to plot - can be either residual
+#' deviances (`"resdev"`, the default) or deviances (`"dev"`)
 #' @param plot.type Deviances can be plotted either as scatter points (`"scatter"` - using
 #' `geom_point()`, the default) or as boxplots (`"box"`)
 #' @param facet A boolean object that indicates whether or not to facet (by agent for MBNMAdose
@@ -839,6 +898,38 @@ overlay.split <- function(g, network, method="common",
 #' models is treated as unknown (if `rho="estimate"`) and deviance contributions will be correlated.
 #'
 #' @examples
+#' ###########################
+#' ###### For MBNMAdose ######
+#' ###########################
+#'
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an Emax dose-response MBNMA and predict responses
+#' emax <- MBNMA.emax(network, method="random")
+#'
+#' # Plot deviances
+#' devplot(emax)
+#'
+#' # Plot deviances using boxplots
+#' devplot(emax, plot.type="box")
+#'
+#' # Plot deviances on a single plot (not facetted by agent)
+#' devplot(emax, facet=FALSE, plot.type="box")
+#'
+#' # A data frame of deviance contributions can be obtained from the object
+#' #returned by `devplot`
+#' devs <- devplot(emax)
+#' head(devs$dev.data)
+#'
+#' # Other deviance contributions not currently implemented but in future
+#' #it will be possible to plot them like so
+#' #devplot(emax, dev.type="dev")
+#'
+#'
+#' ###########################
+#' ###### For MBNMAtime ######
+#' ###########################
 #'
 #' @export
 devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
@@ -990,6 +1081,23 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' then additional iterations will have to be run to get results for these.
 #'
 #' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an Emax dose-response MBNMA and predict responses
+#' emax <- MBNMA.emax(network, method="random")
+#'
+#' # Plot fitted values and observed values
+#' fitplot(emax)
+#'
+#' # Plot fitted values only
+#' fitplot(emax, disp.obs=FALSE)
+#'
+#' # A data frame of fitted values can be obtained from the object
+#' #returned by `fitplot`
+#' fits <- fitplot(emax)
+#' head(fits$fv)
+#'
 #' @export
 fitplot <- function(mbnma, disp.obs=TRUE, ...) {
   # Run checks
@@ -1078,6 +1186,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 
   suppressWarnings(plot(g))
 
+  return(list("graph"=g, "fv"=theta.df))
 }
 
 
@@ -1099,7 +1208,25 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 #' which is an object of class `c("gg", "ggplot")`.
 #'
 #' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
 #'
+#' # Estimate rankings  from an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' ranks <- rank(emax)
+#'
+#' # Plot rankings for both dose-response parameters (in two separate plots)
+#' plot(ranks)
+#'
+#' # Plot rankings just for ED50
+#' plot(ranks, params="d.ed50")
+#'
+#' # Plot rankings from prediction
+#' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+#' pred <- predict(emax, E0.data = "rbeta(nsims, shape1=1, shape2=5)",
+#'   exact.doses=doses)
+#' rank <- rank(pred)
+#' plot(rank)
 #' @export
 plot.MBNMA.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
   # ... are commands to be sent to geom_histogram
