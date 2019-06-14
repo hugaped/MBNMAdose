@@ -28,10 +28,11 @@
 #'   dose-response in terms of network connectivity.
 #' @param remove.loops A boolean value indicating whether to include loops that
 #'   indicate comparisons within a node.
-#' @param doseparam An integer representing the tolerance for the number of doses of a single
+#' @param doseparam An integer representing the number of degrees of freedom of the
+#' dose-response function. It is equivalent to the number of doses of a single
 #' agent within a study that are required to estimate a dose-response function (and therefore
-#' to make a connection to placebo). This is equal to the degrees of freedom of the dose-response
-#' function + 1. If left as `NULL` (the default), connections via dose-response
+#' to make a connection to placebo) plus one. If left as `NULL` (the default), connections
+#' via dose-response
 #' relationships will not be included unless there is no data for Placebo in `network`.
 #' @param ... Options for plotting in `igraph`.
 #'
@@ -46,7 +47,7 @@
 #' network <- MBNMA.network(HF2PPITT)
 #'
 #' # Generate a network plot from the data
-#' plot(network, layout_in_circle=TRUE)
+#' plot(network)
 #'
 #' # Generate a network plot at the agent level that removes loops indicating comparisons
 #' #within a node
@@ -54,6 +55,22 @@
 #'
 #' # Generate a network plot at the treatment level that colours nodes by agent
 #' plot(network, v.color="agent", remove.loops=TRUE)
+#'
+#' # Generate a network plot that includes connections via the dose-response function
+#' # For a one parameter dose-response function (e.g. exponential)
+#' plot(network, level="treatment", doseparam=1)
+#'
+#' # For a two parameter dose-response function (e.g. Emax)
+#' plot(network, level="treatment", doseparam=2)
+#'
+#'
+#' #### Plot a network with no placebo data included ####
+#' # Make data with no placebo
+#' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+#' net.noplac <- MBNMA.network(noplac.df)
+#'
+#' # Plotting network automatically plots connections to Placebo via dose-response
+#' plot(net.nonplac)
 #' @export
 plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
                                level="treatment", remove.loops=FALSE, v.color="connect",
