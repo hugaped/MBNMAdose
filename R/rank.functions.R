@@ -42,8 +42,13 @@ rank <- function (x, ...) {
 #'   exact.doses=doses)
 #' rank <- rank(pred,
 #'   rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))
+#'
+#' # Print and generate summary data frame for `MBNMA.rank` object
 #' summary(rank)
 #' print(rank)
+#'
+#' # Plot `MBNMA.rank` object
+#' plot(rank)
 #'
 #' @export
 rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
@@ -195,6 +200,13 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' # Rank by class, with negative responses being "better"
 #' ranks <- rank(emax, level="class", direction=-1)
 #' print(ranks)
+#'
+#' # Print and generate summary data frame for `MBNMA.rank` object
+#' summary(rank)
+#' print(rank)
+#'
+#' # Plot `MBNMA.rank` object
+#' plot(rank)
 #'
 #' @export
 rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {

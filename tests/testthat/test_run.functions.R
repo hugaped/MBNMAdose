@@ -91,6 +91,17 @@ test_that("MBNMA.run functions correctly", {
 
   expect_error(MBNMA.run(net.noplac, fun="nonparam.up"))
 
+
+  # Changing priors
+  result <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="rel", method="random",
+                      n.iter=n.iter)
+  prior <- list(sd="dunif(0,5)", inv.R="dwish(Omega[,],5)")
+  runprior <- MBNMA.run(network, fun="emax", beta.1="rel", beta.2="rel", method="random",
+                        n.iter=n.iter, priors = prior)
+  expect_equal(runprior$model.arg$priors$sd, prior$sd)
+  expect_equal(runprior$model.arg$priors$inv.R, prior$inv.R)
+  expect_equal(result$model.arg$priors$inv.R!=runprior$model.arg$priors$inv.R, TRUE)
+
 })
 
 

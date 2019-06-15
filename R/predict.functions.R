@@ -31,7 +31,8 @@
 #'   Doses can only take positive values.
 #' @param E0 An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 #'   placebo) in the prediction. This can take a number of different formats depending
-#'   on how it will be used/calculated:
+#'   on how it will be used/calculated. The default is `0` but this will typically lead
+#'   to non-sensical predictions.
 #'   * `numeric` A single numeric value representing the deterministic response at dose = 0,
 #'   given on the natural scale - so for binomial data, proportions should be given and
 #'   for Poisson data, a rate should be given.
@@ -63,7 +64,7 @@
 #'   follow-up times specified in `times` for each treatment specified in
 #'   `treats`
 #'
-#' @details#'
+#' @details
 #' The range of doses on which to make predictions can be specified in one of two ways:
 #'
 #' 1. Use `max.dose` and `n.doses` to specify the maximum dose for each agent and the
@@ -77,16 +78,74 @@
 #' `rank.MBNMA.predict()`
 #'
 #' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
 #'
 #'
-#' # Predict responses using E0.data
+#' ###########################
+#' ###### Specifying E0 ######
+#' ###########################
 #'
-#' #
+#' #### Predict responses using deterministic value for E0 ####
+#' # Data is binomial so we specify E0 on the natural scale as a probability
+#' pred <- predict(emax, E0 = 0.2)
 #'
+#' # Specifying non-sensical values will return an error
+#' #pred <- predict(emax, E0 = -10)
+#' ### ERROR ###
+#'
+#' #### Predict responses using stochastic value for E0 ####
+#' # Data is binomial so we might want to draw from a beta distribution
+#' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
+#'
+#' # Misspecifying the RNG string will return an error
+#' #pred <- predict(emax, E0 = "rbeta(shape1=1, shape2=5)")
+#' ### ERROR ###
+#'
+#'
+#' #### Predict responses using meta-analysis of dose = 0 studies ####
+#'
+#' # E0 is assigned a data frame of studies to synthesis
+#' # Can be taken from placebo arms in triptans dataset
+#' ref.df <- network$data.ab[network$data.ab$agent==1,]
+#'
+#' # Synthesis can be fixed/random effects
+#' pred <- predict(emax, E0 = ref.df, synth="random")
+#'
+#'
+#'
+#' ######################################################################
+#' #### Specifying which doses/agents for which to predict responses ####
+#' ######################################################################
+#'
+#' # Change the number of predictions for each agent
+#' pred <- predict(emax, E0 = 0.2, n.doses=20)
+#' pred <- predict(emax, E0 = 0.2, n.doses=3)
+#'
+#' # Change the range of predicted doses to be the same for all agents
+#' # But only predict responses for a subset of agents
+#' pred <- predict(emax, E0 = 0.2,
+#'   max.doses=list("Placebo"=0, "eletriptan"=5, "sumatriptan"=5))
+#' plot(pred) # Plot predictions
+#'
+#' # Specify several exact combinations of doses and agents to predict
+#' pred <- predict(emax, E0 = 0.2,
+#'   exact.doses=list("eletriptan"=c(0:5), "sumatriptan"=c(1,3,5)))
+#' plot(pred) # Plot predictions
+#'
+#' # Print and summarise `MBNMA.predict` object
+#' print(pred)
+#' summary(pred)
+#'
+#' # Plot `MBNMA.predict` object
+#' plot(pred)
 #'
 #' @export
 predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
-                          E0=NULL, synth="fixed",
+                          E0=0, synth="fixed",
                           ...) {
   ######## CHECKS ########
 
@@ -203,7 +262,7 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
     stop("`E0` has not been given a value. Responses cannot be predicted without a value(s) for dose = 0 (placebo)")
   }
   if (!(class(E0) %in% c("numeric", "character", "data.frame"))) {
-    stop("`E0` can only be of type `numeric`, `character` or `data.frame`")
+    stop("`E0` can only be of type `numeric()`, `character()` or `data.frame()`")
   }
 
   if ((is.numeric(E0) | is.character(E0)) & length(E0)!=1) {
@@ -385,6 +444,23 @@ get.model.vals <- function(mbnma) {
 #'   E0 if `synth="random"`. Each elemnt contains the full MCMC results from the synthesis.
 #'
 #' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' # Run an Emax dose-response MBNMA
+#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#'
+#' # Data frame for synthesis can be taken from placebo arms
+#' ref.df <- HF2PPITT[HF2PPITT$agent=="placebo",]
+#'
+#' # Meta-analyse placebo studies using fixed treatment effects
+#' E0 <- ref.synth(ref.df, emax, synth="fixed")
+#' names(E0)
+#'
+#' # Meta-analyse placebo studies using random treatment effects
+#' E0 <- ref.synth(ref.df, emax, synth="random")
+#' names(E0)
+#'
 #' @export
 ref.synth <- function(data.ab, mbnma, synth="fixed",
                       n.iter=mbnma$BUGSoutput$n.iter,

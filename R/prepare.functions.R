@@ -47,6 +47,9 @@
 #' # Define network
 #' network <- MBNMA.network(HF2PPITT, description="Example")
 #'
+#' # Plot network
+#' plot(network)
+#'
 #' @export
 MBNMA.network <- function(data.ab, description="Network") {
 

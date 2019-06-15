@@ -17,11 +17,52 @@
 #' @inherit MBNMA.run details
 #'
 #' @examples
-#' MBNMA.write(fun="emax",
-#'   beta.1=list(pool="rel", method="common"),
-#'   beta.2=list(pool="const", method="random"),
-#'   class.effect=list("beta.1"="random")
+#' # Write model code for a model with an exponential dose-response function,
+#' # relative effects modelled on the rate of growth/decay (beta.1) with a random
+#' # effects model
+#' model <- MBNMA.write(fun="exponential",
+#'   beta.1="rel",
+#'   method="random",
+#'   likelihood="binomial",
+#'   link="logit"
 #'   )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) with a random effects model,
+#' # a single parameter estimated for ED50 (beta.2) with a common effects model
+#' model <- MBNMA.write(fun="emax",
+#'   beta.1="rel",
+#'   beta.2="common",
+#'   likelihood="normal",
+#'   link="identity"
+#'   )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2).
+#' # Class effects modelled on ED50 with common effects
+#' model <- MBNMA.write(fun="emax",
+#'   beta.1="rel",
+#'   beta.2="rel",
+#'   likelihood="normal",
+#'   link="identity",
+#'   class.effect=list("beta.2"="common")
+#'   )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2) with a
+#' # random effects model that automatically models a correlation between
+#' # both parameters.
+#' model <- MBNMA.write(fun="emax",
+#'   beta.1="rel",
+#'   beta.2="rel",
+#'   method="random",
+#'   likelihood="normal",
+#'   link="identity",
+#'   )
+#' cat(model)
 #' @export
 MBNMA.write <- function(fun="linear", user.fun=NULL,
                         beta.1="rel",
@@ -951,16 +992,17 @@ write.remove.loops <- function(model) {
 #'   solve issues with initialisation.
 #'
 #' @examples
-#' # Create MBNMA.network object using an MBNMAtime dataset
-#' network <- MBNMA.network(osteopain)
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
 #'
-#' # Create MBNMA.network object using an MBNMAdose dataset
-#'
-#' # Run linear MBNMA
-#' result <- MBNMA.linear(network,
-#'   slope=list(pool="rel", method="random"))
+#' # Run an Emax dose-response MBNMA
+#' result <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
 #'
 #' # Obtain model prior values
+#' print(result$model.arg$priors)
+#'
+#' # Priors when using MBNMA.run with an exponential function
+#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random")
 #' print(result$model.arg$priors)
 #'
 #' @export
