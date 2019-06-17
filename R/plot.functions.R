@@ -1281,3 +1281,90 @@ plot.MBNMA.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
 
   return(invisible(output))
 }
+
+
+
+
+#' @describeIn MBNMA.nodesplit Plot outputs from treatment-level nodesplit models
+#'
+#' @param nodesplit An object of `class("MBNMA.nodesplit")`
+#' @param plot.type A character string that can take the value of `"forest"` to plot
+#' only forest plots, `"density"` to plot only density plots, or left as `NULL` (the
+#' default) to plot both types of plot.
+#'
+#' @details The S3 method `plot()` on an `MBNMA.nodesplit` object generates either
+#' forest plots of posterior medians and 95% credible intervals, or density plots
+#' of posterior densities for direct and indirect evidence.
+#'
+#' @return Plots the desired graph(s) and returns an object (or list of object if
+#' `plot.type=NULL`) of `class(c("gg", "ggplot"))`
+#'
+#' @export
+plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
+  # ... are commands to be sent to geom_histogram
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(nodesplit, "MBNMA.nodesplit", add=argcheck)
+  checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=TRUE, add=argcheck)
+  #checkmate::assertLogical(facet, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  forestdata <- nodesplit[[1]]$forest.plot$data[0,]
+  densitydata <- nodesplit[[1]]$density.plot$data[0,]
+  forestfacet <- vector()
+  densityfacet <- vector()
+  for (i in seq_along(nodesplit)) {
+    comp <- paste(nodesplit[[i]]$comparison, collapse=" vs ")
+    temp <- nodesplit[[i]]$forest.plot$data
+    forestfacet <- append(forestfacet, rep(comp, nrow(temp)))
+    forestdata <- rbind(forestdata, temp)
+
+    temp <- nodesplit[[i]]$density.plot$data
+    densityfacet <- append(densityfacet, rep(comp, nrow(temp)))
+    densitydata <- rbind(densitydata, temp)
+  }
+  forestdata$comp <- forestfacet
+  densitydata$comp <- densityfacet
+
+
+  if (is.null(plot.type) | plot.type=="forest") {
+    forest <-
+      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
+      ggplot2::geom_pointrange() +
+      ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
+      ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=10),
+                     axis.title = ggplot2::element_text(size=12),
+                     title=ggplot2::element_text(size=18)) +
+      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+      ggplot2::facet_wrap(~factor(comp))
+
+  }
+  if (is.null(plot.type) | plot.type=="density") {
+
+    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
+      ggplot2::geom_density(alpha=0.2) +
+      ggplot2::xlab("Treatment effect (95% CrI)") +
+      ggplot2::ylab("Posterior density") +
+      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
+                     axis.title = ggplot2::element_text(size=14)) +
+      ggplot2::facet_wrap(~factor(comp))
+  }
+
+  if (is.null(plot.type)) {
+    plot(forest)
+    plot(density)
+    return(invisible(list(forest, density)))
+  } else {
+    if (plot.type=="forest") {
+      plot(forest)
+      return(invisible(forest))
+    } else if (plot.type=="density") {
+      plot(density)
+      return(invisible(density))
+    }
+  }
+
+}

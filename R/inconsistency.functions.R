@@ -22,9 +22,36 @@
 #' @inheritParams MBNMA.run
 #' @inheritParams MBNMA.network
 #'
+#' @examples
+#' # Using the triptans data
+#' network <- MBNMA.network(HF2PPITT)
+#'
+#' split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+#'   method="common")
+#'
+#'
+#' #### To perform nodesplit on selected comparisons ####
+#'
+#' # Check for closed loops of treatments with independent evidence sources
+#' loops <- inconsistency.loops(network$data.ab)
+#'
+#' split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+#'   method="random", comparisons=rbind(c(6,23), c(6,12)))
+#'
+#' # Drop treatments that are disconnected from the network in the analysis
+#' split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+#'   method="random", drop.discon=TRUE)#'
+#'
+#' # Plot results
+#' plot(split, plot.type="density") # Plot density plots of posterior densities
+#' plot(split, plot.type="forest") # Plot forest plots of direct and indirect evidence
+#'
+#' # Print and summarise results
+#' print(split)
+#' summary(split) # Generate a data frame of summary results
 #' @export
 MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method="common",
-                            drop.discon=TRUE, comparisons=NULL,
+                            drop.discon=FALSE, comparisons=NULL,
                             ...) {
 
   # Run checks

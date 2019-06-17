@@ -28,10 +28,13 @@ Imports:
   checkmate (>= 1.8.5),
   testthat (>= 1.0.2)
 Suggests:
-  overlapping (>= 1.5.0),
-  ggplot2 (>= 2.2.1), 
-  igraph (>= 1.1.2),
-  RColorBrewer (>= 1.1-2),
-  mcmcplots (>= 0.4.3)
+    overlapping (>= 1.5.0),
+    ggplot2 (>= 2.2.1),
+    igraph (>= 1.1.2),
+    RColorBrewer (>= 1.1-2),
+    mcmcplots (>= 0.4.3),
+    knitr,
+    rmarkdown
 Encoding: UTF-8
 LazyData: true
+VignetteBuilder: knitr

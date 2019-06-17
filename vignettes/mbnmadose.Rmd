@@ -1,0 +1,26 @@
+---
+title: "MBNMAdose for dose-response Model-Based (Network) Meta-Analysis"
+author: "Hugo Pedder"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+
+library(MBNMAtime)
+library(rmarkdown)
+library(knitr)
+```
+
+
+## Introduction
