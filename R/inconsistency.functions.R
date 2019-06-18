@@ -40,7 +40,7 @@
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
 #' split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
-#'   method="random", drop.discon=TRUE)#'
+#'   method="random", drop.discon=TRUE)
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities
@@ -125,7 +125,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
   nma.net <- suppressMessages(MBNMA.network(data.ab))
   nma.jags <- NMA.run(nma.net, method=method,
                       likelihood=likelihood, link=link,
-                      warn.rhat=FALSE, drop.discon = FALSE, ...)
+                      warn.rhat=FALSE, drop.discon = FALSE)#, ...)
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
@@ -161,27 +161,30 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
     ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
 
     # Drop comparisons from studies
-    index <- rbinom(1,1,0.5)
-    for (i in seq_along(dropcomp)) {
-      # If one of the split treatments (chosen at random) remains in the data when removed
-      #from this comparison...
-      if (comp[index+1] %in% ind.df$treatment[!(ind.df$studyID %in% dropcomp[i])]) {
-        ind.df <- ind.df[!(ind.df$studyID %in% dropcomp[i] &
-                             ind.df$treatment==comp[index+1]),]
-        index <- !index
-      } else {
-        index <- !index
-        ind.df <- ind.df[!(ind.df$studyID %in% dropcomp[i] &
-                             ind.df$treatment==comp[index+1]),]
-        index <- !index
+    stoploop <- FALSE
+    while(stoploop==FALSE) {
+      temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
+      temp.net <- MBNMA.network(temp)
+      nt <- length(temp.net$treatments)
+      if (nt==length(nma.net$treatments)) {
+        g <- plot(temp.net, doseparam=1000)
+        connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+                                                         to=1)[
+                                                           c(comp[1], comp[2])
+                                                           ])
+        if (all(connectcheck==TRUE)) {
+          ind.df <- temp
+          stoploop <- TRUE
+        }
       }
+      #print("Restarting drop.comp")
     }
 
 
     # Run NMA
     ind.net <- suppressMessages(MBNMA.network(ind.df))
     ind.jags <- NMA.run(ind.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon = FALSE, ...)
+                        warn.rhat=FALSE, drop.discon = FALSE)#, ...)
     ind.res <- ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
       ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
 
@@ -189,7 +192,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
     ##### Estimate Direct #####
     dir.net <- suppressMessages(change.netref(MBNMA.network(data.ab), ref=comp[1]))
     dir.jags <- NMA.run(dir.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
+                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE)#, ...)
     dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
       ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
     ]
@@ -232,7 +235,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
 
     # Density plots (with shaded area of overlap)
     molten <- data.frame(ind.res, dir.res)
-    molten <- reshape2::melt(molten)
+    molten <- suppressWarnings(reshape2::melt(molten))
     names(molten) <- c("Estimate", "value")
     linetypes <- c("solid", "dash")
     levels(molten$Estimate) <- c("Indirect", "Direct")
@@ -318,7 +321,9 @@ inconsistency.loops <- function(data)
   paths <- vector()
   loops <- vector()
 
+  pb <- txtProgressBar(0, nrow(comparisons), style = 3)
   for (i in 1:nrow(comparisons)) {
+    setTxtProgressBar(pb, i)
 
     drops <- comparisons[-i,]
 
@@ -335,19 +340,27 @@ inconsistency.loops <- function(data)
     if (as.logical(is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                     comparisons[i,1], comparisons[i,2]))) == TRUE) {
 
-      # Identify the path made by the indirect evidence
-      path <- as.numeric(igraph::shortest_paths(igraph::as.undirected(g),
-                                                comparisons[i,1], comparisons[i,2],
-                                                weights=NA
-      )[["vpath"]][[1]])
+      # Check if dropping 2-arm studies with both treatments and then either arm from multi-arm
+      #would lead to disconnected network
+      check <- suppressMessages(suppressWarnings(
+        check.incon.drops(data, comp=c(as.numeric(comparisons[i,1]),
+                                       as.numeric(comparisons[i,2])))
+      ))
 
-      loop <- sort(path)
+      if (!is.null(check)) {
+        # Identify the path made by the indirect evidence
+        path <- as.numeric(igraph::shortest_paths(igraph::as.undirected(g),
+                                                  comparisons[i,1], comparisons[i,2],
+                                                  weights=NA
+        )[["vpath"]][[1]])
 
-      splits1 <- append(splits1, comparisons[["t1"]][i])
-      splits2 <- append(splits2, comparisons[["t2"]][i])
-      paths <- append(paths, paste(path, collapse="->"))
-      loops <- append(loops, paste(loop, collapse="->"))
+        loop <- sort(path)
 
+        splits1 <- append(splits1, comparisons[["t1"]][i])
+        splits2 <- append(splits2, comparisons[["t2"]][i])
+        paths <- append(paths, paste(path, collapse="->"))
+        loops <- append(loops, paste(loop, collapse="->"))
+      }
     }
   }
 
@@ -438,4 +451,103 @@ ref.comparisons <- function(data)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
 
   return(comparisons)
+}
+
+
+
+
+
+
+
+#' Drop treatments from multi-arm (>2) studies for node-splitting
+#'
+#' Drops arms in a way which preserves connectivity and equally removes
+#' data from each treatment in a nodesplit comparison (so as to maximise precision)
+drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
+  index <- start
+  #print(index)
+  for (i in seq_along(drops)) {
+    #index <- rbinom(1,1,0.5)
+    #print(index)
+
+    switchloop <- FALSE
+    temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
+                          ind.df$treatment==comp[index+1]),]
+
+    temp.net <- suppressMessages(plot(MBNMA.network(temp.df), doseparam = 1000))
+
+    connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
+                                                     to=comp[index+1])[
+                                                       c(comp[1], comp[2])
+                                                       ])
+
+    if (!(comp[index+1] %in% temp.df$treatment[!(temp.df$studyID %in% drops[i])] &
+          all(connectcheck==TRUE))) {
+
+      index <- !index
+      temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
+                            ind.df$treatment==comp[index+1]),]
+    }
+
+    ind.df <- temp.df
+    index <- !index
+  }
+  return(ind.df)
+}
+
+
+
+
+
+#' Ensures indirect evidence can be estimated for comparisons identified
+#' within inconsistency.loops
+check.indirect.drops <- function(data=data, comp) {
+
+  # Drop studies/comparisons that compare comps
+  dropID <- vector()
+  dropcomp <- vector()
+  studies <- unique(data$studyID)
+  for (study in seq_along(studies)) {
+    subset <- data[data$studyID==studies[study],]
+    if (all(comp %in% subset$treatment)) {
+      if (subset$narm[1]<=2) {
+        dropID <- append(dropID, subset$studyID[1])
+      } else if (subset$narm[1]>2) {
+        dropcomp <- append(dropcomp, subset$studyID[1])
+      }
+    }
+  }
+
+  # Drop studies
+  data <- data[!(data$studyID %in% dropID),]
+
+  # Drop comparisons from studies
+  stoploop <- FALSE
+  count <- 1
+  while(stoploop==FALSE) {
+    temp <- drop.comp(data, drops=dropcomp, comp=comp)
+    temp.net <- MBNMA.network(temp)
+    nt <- length(temp.net$treatments)
+    if (nt==length(nma.net$treatments)) {
+      g <- plot(temp.net, doseparam=1000)
+      connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+                                                       to=1)[
+                                                         c(comp[1], comp[2])
+                                                         ])
+      if (all(connectcheck==TRUE)) {
+        data <- temp
+        stoploop <- TRUE
+      }
+    }
+    #print("Restarting drop.comp")
+    count <- count+1
+    if (count==5) {
+      break()
+    }
+  }
+  if (count<5) {
+    return(data)
+  } else {
+    return(NULL)
+  }
 }
