@@ -161,24 +161,25 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
     ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
 
     # Drop comparisons from studies
-    stoploop <- FALSE
-    while(stoploop==FALSE) {
-      temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
-      temp.net <- MBNMA.network(temp)
-      nt <- length(temp.net$treatments)
-      if (nt==length(nma.net$treatments)) {
-        g <- plot(temp.net, doseparam=1000)
-        connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
-                                                         to=1)[
-                                                           c(comp[1], comp[2])
-                                                           ])
-        if (all(connectcheck==TRUE)) {
-          ind.df <- temp
-          stoploop <- TRUE
-        }
-      }
-      #print("Restarting drop.comp")
-    }
+    ind.df <- drop.comp(ind.df, drops=dropcomp, comp=comp)
+    # stoploop <- FALSE
+    # while(stoploop==FALSE) {
+    #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
+    #   temp.net <- MBNMA.network(temp)
+    #   nt <- length(temp.net$treatments)
+    #   if (nt==length(nma.net$treatments)) {
+    #     g <- plot(temp.net, doseparam=1000)
+    #     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+    #                                                      to=1)[
+    #                                                        c(comp[1], comp[2])
+    #                                                        ])
+    #     if (all(connectcheck==TRUE)) {
+    #       ind.df <- temp
+    #       stoploop <- TRUE
+    #     }
+    #   }
+    #   #print("Restarting drop.comp")
+    # }
 
 
     # Run NMA
@@ -235,7 +236,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
 
     # Density plots (with shaded area of overlap)
     molten <- data.frame(ind.res, dir.res)
-    molten <- suppressWarnings(reshape2::melt(molten))
+    molten <- suppressMessages(reshape2::melt(molten))
     names(molten) <- c("Estimate", "value")
     linetypes <- c("solid", "dash")
     levels(molten$Estimate) <- c("Indirect", "Direct")
@@ -343,7 +344,7 @@ inconsistency.loops <- function(data)
       # Check if dropping 2-arm studies with both treatments and then either arm from multi-arm
       #would lead to disconnected network
       check <- suppressMessages(suppressWarnings(
-        check.incon.drops(data, comp=c(as.numeric(comparisons[i,1]),
+        check.indirect.drops(data, comp=c(as.numeric(comparisons[i,1]),
                                        as.numeric(comparisons[i,2])))
       ))
 
@@ -528,7 +529,7 @@ check.indirect.drops <- function(data=data, comp) {
     temp <- drop.comp(data, drops=dropcomp, comp=comp)
     temp.net <- MBNMA.network(temp)
     nt <- length(temp.net$treatments)
-    if (nt==length(nma.net$treatments)) {
+    if (nt==length(unique(data$treatment))) {
       g <- plot(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                        to=1)[

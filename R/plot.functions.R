@@ -1310,6 +1310,10 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
   #checkmate::assertLogical(facet, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  if (is.null(plot.type)) {
+    plot.type <- c("density", "forest")
+  }
+
   forestdata <- nodesplit[[1]]$forest.plot$data[0,]
   densitydata <- nodesplit[[1]]$density.plot$data[0,]
   forestfacet <- vector()
@@ -1328,7 +1332,7 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
   densitydata$comp <- densityfacet
 
 
-  if (is.null(plot.type) | plot.type=="forest") {
+  if ("forest" %in% plot.type) {
     forest <-
       ggplot2::ggplot(data=forestdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
       ggplot2::geom_pointrange() +
@@ -1340,8 +1344,9 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
       ggplot2::facet_wrap(~factor(comp))
 
+    plot(forest)
   }
-  if (is.null(plot.type) | plot.type=="density") {
+  if ("density" %in% plot.type) {
 
     density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
       ggplot2::geom_density(alpha=0.2) +
@@ -1351,11 +1356,11 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
       ggplot2::facet_wrap(~factor(comp))
+
+    plot(density)
   }
 
-  if (is.null(plot.type)) {
-    plot(forest)
-    plot(density)
+  if (identical(sort(plot.type), c("density", "forest"))) {
     return(invisible(list(forest, density)))
   } else {
     if (plot.type=="forest") {
