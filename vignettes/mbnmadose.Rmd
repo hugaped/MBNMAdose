@@ -24,3 +24,783 @@ library(knitr)
 
 
 ## Introduction
+
+This vignette demonstrates how to use `MBNMAdose` to perform Model-Based Network Meta-Analysis (MBNMA) of studies with multiple doses of different agents by accounting for the dose-response relationship. This can improve precision of agent effects and connect disconnected networks via the dose-response relationship and the placebo response.
+
+Modelling the dose-response relationship also avoids the "lumping" of different doses of an agent which is often done in Network Meta-Analysis (NMA) and can introduce additional heterogeneity or inconsistency. All models and analyses are implemented in a Baysian framework, following an extension of the standrd NMA methodology presented by [@lu2004] and are run in JAGS [@jags]. For full details of dose-response MBNMA methodology see Mawdsley et al. [-REF]. Throughout this vignette we refer to a **treatment** as a specific **dose** or a specific **agent**
+
+This package has been developed alongside `MBNMAtime`, a package that allows users to perform time-course MBNMA to incorporate multiple time points within different studies. However, *they should not be loaded into R at the same time* as there are a number of functions with shared names that perform similar tasks yet are specific to dealing with either time-course *or* dose-response data.
+
+
+### Workflow within the package
+
+Functions within `MBNMAdose` follow a clear pattern of use:
+
+1. Load your data into the correct format using `MBNMA.network()`
+2. Analyse your data using `MBNMA.run()`, or any of the available wrapper dose-response functions
+3. Test for consistency at the treatment-level using functions like `MBNMA.nodesplit()` and `NMA.run()`
+4. Examine model results using forest plots and treatment rankings
+5. Use your model to predict responses using `predict.MBNMA()`
+
+At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regaring model fitting.
+
+
+## Datasets Included in the Package
+
+### Triptans for migraine pain relief
+
+`HF2PPITT` is from a systematic review of treatments for pain relief in migraine [REF]. The outcome was binary, and represented (as aggregate data) the proportion of participants who were headache-free at 2-hours. Data were from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses were standardised as relative to a "common" dose, and in total there were 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
+
+```{r, echo=FALSE}
+kable(head(HF2PPITT), digits=2) 
+```
+
+
+### Gout
+
+
+### Obesity
+
+
+
+## Inspecting the data
+
+Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and time-course relationship) are particularly important for MBNMA/MBMA. For this we want to get our dataset into the right format for the package. We can do this using `MBNMA.network()`. This requires specifying the desired treatment to use for the network reference treatment. 
+
+```{r network.pain}
+# Using the pain dataset
+network.pain <- MBNMA.network(osteopain, reference = "Pl_0")
+print(network.pain)
+```
+
+This takes a dataset with the required columns:
+
+* `studyID` Study identifiers
+* `time` Numeric data indicating follow-up times
+* `y` Numeric data indicating the mean response for a given observation
+* `se` Numeric data incicating the standard error for a given observation
+* `treatment` Treatment identifiers (can be numeric, factor or character)
+* `class` An optional column indicating a particular class code. Treatments with the same identifier
+* `N` An optional column indicating the number of participants used to calculate the response at a given observation
+must also have the same class code.
+
+Additional columns can be included in the dataset. These will simply be added to the `MBNMA.network` object, though will not affect the classification of the data.
+
+It then performs the following checks on the data:
+* The dataset has the required column names
+* There are no missing values
+* All SEs are positive
+* Studies have a baseline measurement (unless change from baseline data is being used)
+* Observations are made at the same time points in all arms of a study (i.e. the data are balanced)
+* Class labels are consistent within each treatment
+* Studies have at least two arms
+
+And finally it converts it into an object of `class("MBNMA.network")`, which contains indices for study arms and follow-up measurements, and generates numeric values for treatments and classes. By convention, treatments are numbered alphabetically, though if the original data for treatments is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAtime` functions.
+
+
+### Network connectivity
+
+Looking at how the evidence in the network is connected and identifying which studies compare which treatments helps to understand which treatment effects can be estimated and what information will be helping to inform those estimates. Network plots can be plotted which shows which treatments have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment (provided `N` is included as a variable in the original dataset for `MBNMA.network()`). 
+
+In `MBNMAtime` these plots are generated using `igraph`, and can be plotted by calling `plot()`. The generated plots are objects of `class("igraph")` meaning that, in addition to the options specified in `plot.MBNMA.network()`, various `igraph` functions can be used to make more detailed edits to them.
+
+Within these network plots, treatments are automatically alligned in a circle (as the default) and can be tidied by shifting the label distance away from the nodes.
+
+```{r gout.network, error = TRUE, purl = FALSE}
+# Prepare data using the gout dataset
+network.gout <- MBNMA.network(goutSUA_CFB, reference = "Plac")
+
+# Draw network plot
+plot(network.gout, layout_in_circle = TRUE, label.distance = 5)
+```
+
+This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
+
+```{r gout.class.network}
+plot(network.gout, level = "class", remove.loops = TRUE, label.distance = 5)
+```
+
+It is also possible to plot a network at the treatment level but to colour the treatments by the class that they belong to.
+
+```{r}
+plot(network.gout, level = "treatment", v.color = "class", label.distance = 5)
+```
+
+For other analyses on the Gout dataset in this vignette we have taken the approach of combining several very similar doses to generate a network that is more completely connected:
+
+```{r}
+network.gout <- MBNMA.network(goutSUA_CFBcomb, reference="Plac")
+plot(network.gout, label.distance = 5)
+```
+
+
+### Examining the time-course relationship
+
+In order to consider which functional forms may be appropriate for modelling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("MBNMA.network")`
+
+```{r pain.time}
+# Prepare data using the pain dataset
+network.pain <- MBNMA.network(osteopain, reference="Pl_0")
+
+# Draw plot of raw study responses over time
+timeplot(network.pain)
+```
+
+As the mean response for all treatments shows a rapid reduction in pain score followed by a levelling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a linear piecewise function.
+
+Responses can also be plotted grouped by class rather than by treatment, which may give an indication of whether there are any similarities within a class:
+
+```{r obese.time}
+# Choose the agent class as the `class` variable for modelling in the obesity dataset
+classdata <- obesityBW_CFB
+classdata$class <- classdata$agentclass
+
+# Prepare data
+network.obese <- MBNMA.network(classdata)
+
+# Draw plot of raw study responses over time grouped by agent class
+timeplot(network.obese, level="class")
+```
+
+In this example many of the profiles are quite different within the same class, which would suggest modelling class effects may be inappropriate.
+
+
+## Analysis using `MBNMA.run()`
+
+MBNMA/MBMA is performed in the `MBNMAtime` by applying `MBNMA.run()`. This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
+
+A `"MBNMA.network"` object must be provided as the data for `MBNMA.run()`. The key arguments within `MBNMA.run()` involve specifying the functional form used to model the time-course, and the time-course parameters that comprise that functional form.
+
+
+#### Time-course functions
+
+Several different functional forms are implemented within `MBNMAtime`, that allow a wide variety of parameterizations and time-course shapes. These are provided to the `fun` argument in `MBNMA.run()`:
+
+* `"linear"`
+* `"quadratic"`
+* `"exponential"`
+* `"emax"` - emax without a Hill parameter
+* `"emax.hill"` - emax with a Hill parameter
+* `"fract.poly.first"` - first-order fractional polynomial
+* `"fract.poly.second"` - second-order fractional polynomial
+* `"piecelinear"` - piecewise linear with a knot joining the two linear pieces
+* `"user"` - A function that can be specified by the user within `user.fun` (see `?MBNMA.run()`)
+* `"none"` - No parametric time-course relationship (can be used to test if there is actually any statistical change in response over time)
+
+
+#### Time-course parameters
+
+In `MBNMA.run()` it is possible to specify up to four different time-course parameters, depending on the time-course function used. These are named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and their interpretation varies depending on the time-course function used (see `?MBNMA.run()`). 
+
+For simplification and interpretability, both in the way in which time-course parameters are defined and in how they are reported in the output, there are wrapper functions for `MBNMA.run()` for each of the provided time-course functions. For example, `MBNMA.emax()` is equivalent to `MBNMA.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `et50` instead of `beta.2`) . A number of these will be shown in other examples in this vignette.
+
+Time-course parameters can be assigned several different specifications, which define the key parameters estimated by the model. These are defined within a list that contains two
+named elemnts, `pool` and `method`.
+
+`pool` is used to define the approach used for pooling of a given time-course parameter and can take any of the following values:
+
+* `"rel"` indicates that relative effects should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
+* `"arm"` indicates that study arms should be pooled within each treatment in the network
+for this time-course parameter. This allows estimation of absolute time-course parameter values, but makes stronger assumptions regarding similarity of studies.
+* `"const"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single value across the network for this time-course parameter, and may therefore be making very strong assumptions of similarity.
+
+`method` is used to define the model used for meta-analysis for a given time-course parameter and can take any of the following values:
+
+* `"common"` implies that all studies estimate the same true effect (akin to a "fixed effect" meta-analysis)
+* `"random"` implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
+* `numeric()` Assigned a numeric value - this can only be used if `pool="const"`. It indicates that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions or knot location in piecewise functions).
+
+Specifying pooling relative effects (`pool="rel"`) on all time-course parameters would imply performing a contrast-based MBNMA, whereas specifying pooling arm effects (`pool="arm"`) on all of them would imply performing an arm-based MBMA. There has been subtantial discussion in the literature regarding the srengths and limitations of both these approaches [@dias2016; @hong2016; @armprotocol2017].
+
+### Output
+
+`MBNMA.run()` returns an object of class `c("MBNMA", "rjags")`. `summary()` provides posterior medians and 95% credible intervals for different parameters in the model, with some explanation of the way in which the model has been defined. `print()` can also be used to give summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
+
+Nodes that are automatically monitored (if present in the model) have the following interpretation. They will have an additional suffix that relates to the name/number of the time-course paramter to which they correspond (e.g. `d.et50` or `beta.1`):
+
+* `d` The pooled relative effect for a given treatment compared to the network reference treatment for a particular time-course parameter, reported if `pool="rel"`
+* `sd.d` The between-study SD (heterogeneity) for relative effects, reported if `pool="rel"` and `method="random"`
+* `D` The class effect for a given class relative to the network reference class for a particular time-course parameter. This will be reported if class effects are applied to a parameter for which `method="rel"`.
+* `sd.D` The standard deviation for the pooled relative effects of treatments within a given class from a model with a random class effect.
+* `beta` If `pool="const"` then only a single node will be present in the output, which corresponds to the absolute value of a particular time-course parameter across the network, If `pool="arm"` then for the relevant time-course parameter there will be one node for each treatment, which represents the absolute value of the time-course parameter for each treatment
+* `sd.beta` Reported if `method="random"` and `pool` is either `"const"` or `"arm"`. If `pool="const"` this represents the between-study SD for the absolute value of a particular time-course parameter exchangeable across the network. If `pool="arm"` this represents the between-study SD for the absolute value of a particular time-course parameter exchangeable by treatment
+* `BETA` The class effect for a given class for a particular time-course parameter, reported as an absolute value. This will be reported if class effects are applied to a parameter for which `method="arm"`.
+* `sd.BETA` The standard deviation for the pooled absolute effects of treatments within a given class from a model with a random class effect.
+* `rho` The correlation coefficient for correlation between time-points. Its interpretation will differ depending on the covariance structure used
+* `totresdev` The residual deviance of the model
+* `deviance` The deviance of the model
+
+Model fit statistics for `pD` (effective number of parameters) and `DIC` (Deviance Information Criterion) are also reported, with an explanation as to how they have been calculated.
+
+
+#### Examples
+
+An example MBNMA of the pain dataset using an exponential time-course function and fixed treatment effects that pool relative effects and assumes consistency between direct and indirect evidence can be performed as follows:
+
+```{r, results="hide"}
+# Run a linear time-course MBNMA
+mbnma <- MBNMA.run(network.pain, fun="linear", 
+                   beta.1=list(pool="rel", method="common"))
+```
+```{r}
+summary(mbnma)
+```
+```{r, eval=FALSE}
+# An alternative would be to use a linear wrapper for MBNMA.run() which would give the same result
+MBNMA.linear(network.pain, 
+                  slope=list(pool="rel", method="common"))
+```
+
+In this case the `d.1` parameters correspond to the relative effects for each treatment versus the network reference treatment for the time-course parameter `beta.1`, which corresponds to the linear slope/gradient.
+
+
+
+Instead of pooling relative effects, a different approach could be to use MBMA to pool absolute time-course parameter affects within the same treatment. The following is an example MBMA of the gout dataset which uses an Emax time-course function, with random effects for pooling absolute Emax (`beta.1`) within different treatments and modelling a single common parameter for ET50 (`beta.2`) estimated across all treatments within the network. As the gout data is reported as change from baseline, we do not include an intercept in the model, forcing the response to be zero at `time = 0`.
+
+```{r, results="hide"}
+# Run an emax time-course MBNMA pooling absolute effects
+mbnma <- MBNMA.run(network.gout, fun="emax", 
+                   beta.1=list(pool="arm", method="random"), 
+                   beta.2=list(pool="const", method="common"), 
+                   intercept=FALSE)
+```
+```{r}
+summary(mbnma)
+```
+```{r, eval=FALSE}
+# An alternative would be to use an emax wrapper for MBNMA.run() which would give the same result
+MBNMA.emax(network.gout, 
+           emax=list(pool="arm", method="random"), 
+           et50=list(pool="const", method="common"), 
+           intercept=FALSE)
+```
+
+In this case the `beta.1` parameters in the output correspond to the absolute effect for each treatment for the time-course parameter `beta.1`, which corresponds to Emax. `beta.2` corresponds to the overall absolute effect for the time-course parameter `beta.2`, which corresponds to ET50. `sd.beta.1` is the between-study SD for the absolute effect of `beta.1`.
+
+
+
+Finally, we could perform an analysis that combines both relative and absolute pooling approaches on different time-course parameters. For exmample an analysis of the pain dataset that models a piecewise linear time-course with fixed pooling of relative treatment effects on the slope of the first linear piece (`beta.1`) and fixed pooling of absolute treatment effects on the slope of the second linear piece (`beta.2`), with a knot (`beta.3`) at 1 week follow-up defined in the model (rather than estimated from the data.
+
+```{r, results="hide"}
+# Run a piecewise linear time-course MBNMA
+mbnma <- MBNMA.run(network.pain, fun="piecelinear", 
+                   beta.1=list(pool="rel", method="common"), 
+                   beta.2=list(pool="arm", method="common"), 
+                   beta.3=list(pool="const", method=1))
+```
+```{r}
+summary(mbnma)
+```
+```{r, eval=FALSE}
+# An alternative would be to use a piecewise linear wrapper for MBNMA.run() which would give the same result
+MBNMA.piecelinear(network.pain, 
+                  slope.1=list(pool="rel", method="common"), 
+                  slope.2=list(pool="arm", method="common"), 
+                  knot=list(pool="const", method=1), 
+                  n.iter=5000)
+```
+
+This automatically monitors `d.1`, the relative effect for each treatment versus the network reference treatment of the slope of the first linear piece, and `beta.1`, the absolute value of the slope of the second linear piece for each treatment. `beta.3` is not shown in the output as this is defined in the model as taking the value of 1 and has not been estimated from the data.
+
+
+### Additional model specification with `MBNMA.run()`
+
+#### Correlation
+
+Correlation between time points can easily be modelled using `MBNMA.run()`, though this requires some additional considerations . The simplest approach is to set `rho = "estimate"` in `MBNMA.run()`, which will estimate `rho` from the data, and then define a covariance structure using `covar`. A simple compound symmetry (`"CS"`) covariance structure can be used, which assumes the same correlation between responses at any two time points. Alternatively, an autoregressive AR1 structure (`"AR1"`), allows for responses at closer time points to be more strongly correlated.
+
+As with `beta` time-course parameters in the model, we can also assign `rho` a numeric value if we do not want to estimate it within the model. For example this could be estimated from external data, or one might wish to run a deterministic sensitivity analysis with different value of `rho`.
+
+As these models account for correlation by using a multivariate likelihood, the analysis will be much slower to run.
+
+```{r, results="hide"}
+# Run an emax time-course MBNMA that accounts for correlation between time points using a wrapper for MBNMA.run()
+mbnma <- MBNMA.emax(network.pain, 
+                    emax=list(pool="rel", method="common"), 
+                    et50=list(pool="const", method="common"), 
+                    rho="estimate", covar="CS")
+```
+```{r}
+summary(mbnma)
+```
+
+Since `rho` is estimated from the data in this model, we also have summary statistics for it in the output.
+
+It is important to note that the covariance matrix must be positive semi-definite. This may mean that in order to satisfy this requirement for particular covariance matrix structures, the values that `rho` can take are limited. In some instances the default prior distribution for `rho` (`dunif(-1,1)`) can lead to an error in the evaluation of the multivariate likelihood, in which case it may be necessary to restrict the prior distribution. This can be done using the `priors` argument (see `?MBNMA.run()` and the section below on priors).
+
+
+### Class effects
+
+Shared effects between treatments within the network can be modelled using class effects. This requires assuming that different treatments have some sort of common class effect, perhaps due to different doses of the same agent or different treatments with a similar mechanism of action. One advantage of this is that class effects can be used to connect relative effects between treatments in a network that are connected at the class level but that might otherwise be disconnected at the treatment level.
+
+Class effects can only be applied to time-course parameters which vary by treatment (either `pool="rel"` or `pool="arm"`).
+
+In `MBNMA.run()` class effects are supplied as a list, in which each element is named following the name of the corresponding time-course parameter as defined in the function. The names will therefore differ when using wrapper functions for `MBNMA.run()`. The class effect for each time-course parameter can be either `"fixed"`, in which the effects for each treatment within the same class are constrained to a common class effect, or `"random"`, in which the effects for each treatment within the same class are assumed to be randomly distributed around a shared class mean.
+
+```{r, results="hide"}
+# Run an emax time-course MBNMA with a random class effects on beta.1 (Emax parameters)
+# Additional iterations run to ensure MCMC chain convergence
+mbnma <- MBNMA.run(network.gout, fun="emax", 
+                   beta.1=list(pool="rel", method="random"), 
+                   beta.2=list(pool="const", method="common"), 
+                   n.iter=10000, n.thin=10, intercept=FALSE, 
+                   class.effect=list(beta.1="random"))
+```
+```{r}
+summary(mbnma)
+```
+
+Mean class effects are given in the output as `D.1` parameters. These can be interpreted as the relative effect of each class versus the network reference class, for Emax parameters (`beta.1`). Note the number of `D.1` parameters is therefore equal to the number of classes defined in the dataset.
+
+As we have specified that the class effects are `"random"`, each treatment effect for Emax (`beta.1`) is randomly distributed around its class mean with SD given in the output as `sd.D.1`.
+
+Alternatively if we apply class effects to a time-course parameter pooled using `"arm"` then the outputs are in terms of absolute class effects (`BETA` and `sd.BETA`):
+
+```{r, results="hide"}
+# Same as above but using arm-based pooling and using an Emax wrapper
+mbnma <- MBNMA.emax(network.gout, 
+                   emax=list(pool="arm", method="random"), 
+                   et50=list(pool="const", method="common"), 
+                   n.iter=10000, n.thin=10, intercept=FALSE, 
+                   class.effect=list(emax="random"))
+```
+```{r}
+summary(mbnma)
+```
+
+
+
+### Additional arguments
+
+Several additional arguments can be given to `MBNMA.run()` that require further explanation.
+
+
+#### Absolute or change from baseline data
+
+`intercept` can be used to specify whether or not the time-course function should include baseline (`alpha`) parameters. These are nuisance parameters in the model, and are not important to monitor, but if we are using change from baseline (CFB) data then we can set `intercept = FALSE` to define that the baseline will be zero (no change from baseline at time = 0). We have done this for analyses of the gout dataset.
+
+
+#### User-specified time-course function
+
+If users want to write their own time-course function rather than using one of the ones specified in `MBNMA.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `alpha` and `beta` parameters. This allows a huge amount of addtional flexibility when defining the time-course function.
+
+The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
+* `alpha` must be specified within the function. If modelling change from baseline data `alpha` still needs to be included, but users can set `intercept = FALSE` (see above).
+* At least one `beta` time-course parameter must be specified, up to a maximum of four. These are always named `beta.1`, `beta.2`, `beta.3` and `beta.4` (even if only one is specified), and must be included sequentially (i.e. don't include `beta.3` if `beta.1` is not included)
+* Indices used by JAGS should not be added to the function (e.g. use `alpha` rather than `alpha[i]`)
+* Any mathematical/logical operators that can be implemented in JAGS can be added to the function
+
+
+#### Priors
+
+Default vague priors for the model are as follows:
+
+$$
+\begin{aligned}
+  &d_t \sim N(0,10000)\\
+  &beta_t \sim N(0,10000)\\
+  &D_c \sim N(0,1000)\\
+  &BETA_c \sim N(0,1000)\\
+  &rho \sim U(-1,1)\\
+  &\sigma_d \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &\sigma_{beta} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &\sigma_D \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+  &\sigma_{BETA} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+\end{aligned}
+$$
+
+...where $t$ is a treatment identifier and $c$ is a class identifier
+
+Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
+
+This can be more likely for certain types of models. For example for multivariate models, the covariance matrix must be positive semi-definite, and some values of the correlation coefficient, `rho`, will not fullfil this. Another example might be when using values that might generate results that are too extreme for JAGS to computer, such as for time-course parameters that are powers (e.g. Emax functions with a Hill parameter or power parameters in fractional polynomials).
+
+If the model fails during compilation/updating (i.e. due to a problem in JAGS), `MBNMA.run()` will generate an error and return a list of arguments that `MBNMA.run()` used to generate the model. Within this (as within a model that has run successfully), the priors used by the model (in JAGS syntax) are stored within `"model.arg"`:
+
+```{r}
+print(mbnma$model.arg$priors)
+```
+
+In this way a model can first be run with vague priors and then rerun with different priors, perhaps to allow successful computation, perhaps to provide more informative priors, or perhaps to run a sensitivity analysis with different priors. Increasing the precison of prior distributions only a little can also often improve convergence considerably.
+
+To change priors within a model, a list of replacements can be provided to `priors` in `MBNMA.run()`. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren't specified will take default values.
+
+For example, if we want to use tighter priors for the half-normal SD parameters we could increase the precision:
+
+```{r, results="hide"}
+# Define replacement priors
+new.priors <- list(
+  "sd.D.emax" = "dnorm(0, 0.1) T(0,)",
+  "sd.emax" = "dnorm(0, 0.1) T(0,)"
+  )
+
+# Run an MBNMA model with new priors
+mbnma <- MBNMA.emax(network.gout, 
+                    emax=list(pool="rel", method="random"), 
+                    et50=list(pool="const", method=0.1), 
+                    n.iter=10000, n.thin=10, intercept=FALSE, 
+                    class.effect=list("emax"="random"), 
+                    priors=new.priors)
+```
+
+#### pD (effective number of parameters)
+
+The default value in for `pd` in `MBNMA.run()` is `"pv"`, which uses the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is only an approximation to pD, and may perform more poorly in certain conditions [@gelman2003].
+
+A commonly-used approach for calculating pD is the plug-in method (`pd="plugin"`), which is an exact method [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
+
+Another exact approach that is more reliable than the plug-in method when modelling non-linear effects is using the Kullback-Leibler divergence (`pd="pd.kl"`) [@plummer2008]. The disadvantage of this approach is that it requires running additional MCMC iterations, so can be slightly slower to calculate.
+
+Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  which allows for calculation of the penalized expected deviance [@plummer2008]. This adjustment allows for the fact that data used to estimate the model is the same as that used to assess its parsimony. It also requires running additional MCMC iterations.
+
+
+#### Arguments to be sent to JAGS
+
+In addition to the arguments specific to `MBNMA.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
+
+* `n.chains` The number of Markov chains to run (default is 3)
+* `n.iter` The total number of iterations per MCMC chain
+* `n.burnin` The number of iterations that are discarded to ensure iterations are only saved once chains have converged 
+* `n.thin` The thinning rate which ensures that results are only saved for 1 in every `n.thin` iterations per chain. This can be increased to reduce autocorrelation
+
+
+## Post-Estimation
+
+### Deviance plots
+
+To assess how well a model fits the data, it can be useful to look at a plot of the constributions of each data point to the total deviance or residual deviance. This can be done using `devplot()`. As individual deviance contributions are not automatically monitored in the model, this might require the model to be run for additional iterations.
+
+Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a series of boxplots (`plot.type="box"`).
+
+```{r, fig.width=4, fig.height=3, results="hide", fig.show="hold"}
+# Run a first-order fractional polynomial time-course MBNMA
+mbnma <- MBNMA.fract.first(network.pain, 
+                           slope=list(pool="rel", method="common"),
+                           power=list(pool="const", method="common")
+                           )
+
+# Plot a scatter plot of residual deviance contributions (the default)
+devplot(mbnma)
+
+# Plot boxplots of deviance contributions
+devplot(mbnma, dev.type = "dev", plot.type = "box")
+```
+
+From these plots we can see that whilst the model fit is good at later time points, it underestimates responses at earlier time points and can hugely overestimate that in the middle of the time-course function.
+
+A function that appropriately captures the time-course shape should not show a flat shape of deviance contributions (i.e. contributions should be similar across all time points).
+
+If saved to an object, the output of `devplot()` contains the results for individual deviance contributions, and this can be used to identify any extreme outliers.
+
+
+### Fitted values
+
+Another approach for assessing model fit can be to plot the fitted values, using `fitplot()`. As with `devplot()`, this may require running additional model iterations to monitor `theta`.
+
+```{r, results="hide"}
+# Plot fitted and observed values with treatment labels
+fitplot(mbnma, treat.labs = network.pain$treatments)
+```
+
+Fitted values are plotted as connecting lines and observed values in the original dataset are plotted as points. These plots can be used to identify if the model fits the data well for different treatments and at different parts of the time-course.
+
+
+### Forest plots
+
+Forest plots can be easily generated from MBNMA models using the `plot()` method on an `"MBNMA"` object. By default this will plot a separate panel for each time-course parameter in the model. Forest plots can only be generated for parameters which vary by treatment/class.
+
+```{r, results="hide"}
+# Run a quadratic time-course MBNMA
+mbnma <- MBNMA.quadratic(network.obese, 
+                    beta.1=list(pool="rel", method="common"), 
+                    beta.2=list(pool="arm", method="common"))
+
+plot(mbnma)
+```
+
+
+### Ranking
+
+Rankings can be calculated for different time-course parameters from MBNMA models by using `rank.MBNMA()` on an `"MBNMA"` object. Any parameter monitored in an MBNMA model that varies by treatment/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative scores should be ranked as "better" (`-1`) or "worse" (`1`)
+
+In addition, it is possible to rank the Area Under the Curve (AUC) for a particular treatment by adding `"auc"` to the vector of `params` (included as the default). This will calculate the area under the predicted response over time, and will therefore be a function of all the time-course parameters in the model simultaneously. However, it will be dependent on the range of times chosen to integrate over (`int.range`), and a different choice of time-frame may lead to different treatment rankings. `"auc"` can also not currently be calculated from MBNMA models with more complex time-course functions (piecewise, fractional polynomials).
+
+```{r, results="hide"}
+# Run a piecewise linear time-course MBNMA with a knot at 1 week
+mbnma <- MBNMA.piecelinear(network.pain, 
+                           slope.1=list(pool="rel", method="common"),
+                           slope.2=list(pool="rel", method="common"), 
+                           knot=list(pool="const", method=1))
+
+# Rank results based on AUC (calculated 0-10 weeks), more negative slopes considered to be "better"
+ranks <- rank.MBNMA(mbnma, params=c("auc", "d.slope.1", "d.slope.2"), 
+                    int.range=c(0,10),  direction=-1)
+```
+```{r}
+print(ranks)
+```
+
+The output is an object of `class("MBNMA.rank")`, containing a list for each ranked parameter in `params`, which consists of a summary table of rankings and raw information on treatment ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `print()`.
+
+Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results given in `rank.matrix` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
+
+```{r}
+# Ranking histograms for slope.1
+plot(ranks, params = "d.slope.1")
+
+# Ranking histograms for AUC with labelled panels
+plot(ranks, params = "auc", treat.labs = network.pain$treatments)
+```
+
+
+### Prediction
+
+After performing an MBNMA, responses can be predicted from the parameter estimates using `predict()` on an `"MBNMA"` object. A number of important parameters need to be identified for this. Additionally, it is also necessary to specify the time points for which to predict responses (`times`), given as a vector of positive numbers.
+
+The first parameter is `baseline`, which defines what value(s) to use for the baseline (time = 0) prediction. A single numeric value can be given for this to indicate a deterministic value, or a distribution can be given as a character to indicate a stochastic value. This should take the form of an R random number generated (RNG) distribution, with the value `nsims` instead of the number of observations (`n`). `baseline` could be identified for the population of interest from external data (e.g. observational/registry).
+
+The second are the values to use for the network reference treatment response. This is only necessary when predicting responses from an MBNMA that pools relative effects for any time-course parameters (`pool="rel"`), as in this case the network reference treatment response is treated as a nuisance parameter in the modelling. The network reference treatment response can be estimated from a separate dataset (`ref.estimate`) that contains a series of single-arm studies of the network reference treatment, measured at multiple follow-up times. This could be a series of observational studies that closely match the population of interest, or it could be a selection of data corresponding to the network reference treatment from the same dataset of RCTs used for MBNMA.
+
+```{r, results="hide"}
+mbnma <- MBNMA.emax(network.pain, 
+                    emax=list(pool="rel", method="common"), 
+                    et50=list(pool="const", method="common"))
+
+# Generate a dataset that is made up only of network reference treatment responses over time (in this case placebo)
+placebo.data <- network.pain$data.ab[network.pain$data.ab$treatname=="Placebo_0",]
+
+# Predict responses for treatments 1-9 using a deterministic baseline and placebo.data to estimate the network reference treatment effect
+predict.data <- predict(mbnma, treats=c(1:9), 
+                        times=c(0:15), baseline=10, 
+                        ref.estimate=placebo.data)
+```
+```{r}
+# Summary of posterior median predictions
+summary(predict.data)
+```
+
+
+Alternatively, values for each time-course parameter modelled using relative effects can be provided by the user as a single numeric value (deterministic), or as a RNG distribution (stochastic) with the value of `nsims` instead of the number of observations (`n`).
+
+```{r, results="hide"}
+# Define stochastic values for network reference treatment effect on Emax
+ref.resp <- list("emax"="rnorm(nsims, -2, 0.1)")
+
+# Predict responses for treatments 1-9 using a stochastic baseline and ref.data to estimate the network reference treatment effect
+predict.resp <- predict(mbnma, treats=c(1:9), 
+                        times=c(0:15), baseline="rnorm(nsims,9,0.5)",
+                        ref.data=ref.resp)
+```
+
+An object of class `"MBNMA.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment. The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
+
+Predicted responses can also be plotted using the `plot()` method on an object of `class("MBNMA.predict")`. Within the default arguments, the median predicted network reference treatment response is overlaid on the predicted response for each treatment. Setting `overlay.ref = FALSE` prevents this and causes the network reference treatment predicted response to be plotted as a separate panel.
+
+```{r}
+plot(predict.resp)
+```
+
+Shaded counts of observations in the original dataset at each predicted timepoint can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`, though this requires that the original `"MBNMA.network"` object used to estimate the MBNMA be provided via `network`.
+
+```{r}
+plot(predict.resp, overlay.ref=FALSE, disp.obs=TRUE, network=network.pain)
+```
+
+This can be used to identify any extrapolation/interpretation of the time-course that might be ocurring for a particular treatment.
+
+To illustrate a situation in which this could be very informative, we can look at predicted responses for a quadratic time-course function fitted to the Obesity dataset:
+
+```{r, fig.height=3, results="hide"}
+# Fit a quadratic time-course MBNMA to the Obesity dataset
+mbnma <- MBNMA.quadratic(network.obese, 
+                         beta.1 = list(pool="rel", method="common"),
+                         beta.2 = list(pool="rel", method="common")
+                         )
+
+# Define stochastic values centred at zero for network reference treatment
+ref.resp <- list(beta.1="rnorm(nsims, 0, 0.05)", beta.2="rnorm(nsims, 0, 0.0001)")
+
+# Predict responses over the
+predict.resp <- predict(mbnma, times=c(0:50), baseline=120, treats = c(1,4,15),
+                        ref.data=ref.resp)
+
+# Plot predictions
+plot(predict.resp, disp.obs = TRUE, network = network.obese)
+```
+
+As you can see, within the limits of the observed data the predicted responses appear reasonable. However, extrapolation beyond this in treatment 4 leads to some rather strange results, suggesting a huge increase in body weight after 50 weeks of treatment. On the other hand, the predicted response at 50 weeks follow-up in treatment 15 is within the limits of the observed data and so are likely to be more justifiable.
+
+
+## Consistency Testing
+
+When performing a MBNMA by pooling relative treatment effects (`pool="rel"`), the modelling approach assumes consistency between direct and indirect evidence within a network. This is an incredibly useful assumption as it allows us to improve precision on existing direct estimates, or to estimate relative effects between treatments that have not been compared in head-to-head trials, by making use of indirect evidence.
+
+However, if this assumption does not hold, this is extremely problematic for inference, so it is important to be able to test it. A number of different approaches exist to allow for this in standard Network Meta-Analysis [@dias2013]. Two of these have been implemented within MBNMA. However, it is important to note that in some model specifications there is likely to be sharing of model parameters (e.g. heterogeneity parameters, correlation coefficients) across networks which will lead to more conservative tests for consistency, and may lead to an inflated type II error.
+
+Consistency is also likely to differ depending on the model used. Failing to appropriately model the time-course function may in fact induce inconsistency in the data. "Lumping" together different time points from studies in standard NMA is known to be a potential cause of inconsistency, which is one of the reaons why accounting for time-course using MBNMA is important (REF time-course MBNMA manuscript). When performing MBNMA, this is why it is important to first try to identify the best model possible in terms of time-course and common/random effects, and then to test for consistency within that model, rather than testing for consistency in models that are known not be be a good fit to the data.
+
+Consistency testing can only be performed in networks in which closed loops of treatment comparisons exist that are drawn from independent sources of evidence. In networks which do not have any such loops of evidence, consistency cannot be formally tested (though it may still be present). The `MBNMA.nodesplit.comparisons()` function identifies loops of evidence that conform to this property, and identifies a treatment comparison within that loop for which direct and indirect evidence can be compared using nodesplitting (see below).
+
+```{r}
+# Loops of evidence within the pain dataset
+splits.pain <- MBNMA.nodesplit.comparisons(network.pain)
+print(splits.pain)
+
+# Loops of evidence within the pain dataset
+splits.gout <- MBNMA.nodesplit.comparisons(network.gout)
+print(splits.gout)
+```
+
+
+### Unrelated Mean Effects (UME) model
+
+To check for consistency using UME we fit a model that does not assume consistency relationships, and that only models the direct relative effects between each arm in a study and the study reference treatment. If the consistency assumption holds true then the results from the UME model and the MBNMA will be very similar. However, if there is a discrepancy between direct and indirect evidence in the network, then the consistency assumption may not be valid, and the UME results are likely differ in several ways:
+
+* The UME model may provide a better fit to the data, as measured by DIC or deviance
+* The between-study SD for different parameters may be lower in the UME model
+* Individual relative effects may differ in magnitude or (more severely) in direction for different treatment comparisons between UME and MBNMA models
+
+UME can be fitted to any time-course parameter which has been modelled using relative effects (`pool="rel"`). UME can be specified for each time-course paramter in separate analyses, or can be modelled all at once in a single analysis. **DO WE WANT TO RECOMMEND AN APPROACH HERE?**
+
+```{r, results="hide"}
+# Fit a piecewise linear MBNMA with fixed relative effects on slope.1 and slope.2
+mbnma <- MBNMA.piecelinear(network.pain, 
+                           slope.1=list(pool="rel", method="common"), 
+                           slope.2=list(pool="rel", method="common"), 
+                           knot=list(pool="const", method=0.5),
+                           pd="pd.kl")
+
+# Fit a UME model on both slope parameters simultaneously in a piecewise linear MBNMA
+ume <- MBNMA.piecelinear(network.pain, 
+                         slope.1=list(pool="rel", method="common"),
+                         slope.2=list(pool="rel", method="common"), 
+                         knot=list(pool="const", method=0.5),
+                         UME=TRUE, pd="pd.kl")
+
+# Fit a UME model on slope.1 only in a piecewise linear MBNMA
+ume.slope.1 <- MBNMA.piecelinear(network.pain, 
+                         slope.1=list(pool="rel", method="common"),
+                         slope.2=list(pool="rel", method="common"), 
+                         knot=list(pool="const", method=0.5),
+                         UME="slope.1", pd="pd.kl")
+
+# Fit a UME model on slope.2 only in a piecewise linear MBNMA
+ume.slope.2 <- MBNMA.piecelinear(network.pain, 
+                         slope.1=list(pool="rel", method="common"),
+                         slope.2=list(pool="rel", method="common"), 
+                         knot=list(pool="const", method=0.5),
+                         UME="slope.2", pd="pd.kl")
+```
+```{r, echo=FALSE}
+# Compare DIC between models
+paste("DIC for mbnma:", round(mbnma$DIC,2), sep=" ")
+paste("DIC for ume on slope.1 and slope.2:", round(ume$DIC,2), sep=" ")
+paste("DIC for ume on slope.1:", round(ume.slope.1$DIC,2), sep=" ")
+paste("DIC for ume on slope.2:", round(ume.slope.2$DIC,2), sep=" ")
+```
+
+By comparing the DIC of models with UME fitted on different time-course paramters and the MBNMA model, we can see that there is some reduction in DIC in the different UME models. Given that DIC is lowest when UME is modelled only on `slope.1` this is suggestive of inconsistency between direct and indirect evidence on `slope.1`, but perhaps also on `slope.2` given that modelling UME on this also leads to a reduction in DIC.
+
+```{r, results="hide"}
+# Run an Emax MBNMA with random relative effects on emax
+mbnma <- MBNMA.emax(network.gout, 
+                    emax=list(pool="rel", method="random"), 
+                    et50=list(pool="const", method="common"), 
+                    n.iter=10000, n.thin=10,
+                    intercept=FALSE)
+
+# Fit a UME model on Emax parameters
+ume <- MBNMA.emax(network.gout, 
+                  emax=list(pool="rel", method="random"), 
+                  et50=list(pool="const", method="common"), 
+                  n.iter=10000, n.thin=10,
+                  intercept=FALSE, UME=TRUE)
+```
+```{r, echo=FALSE}
+# Compare DIC between models
+paste("DIC for mbnma:", round(mbnma$DIC,2), sep=" ")
+paste("DIC for UME:", round(ume$DIC,2), sep=" ")
+```
+
+In the gout dataset, the DIC for MBNMA and UME models are very similar when modelling an Emax time-course, suggesting that the consistency assumption is likely to be reasonable. 
+
+```{r}
+# Compare between-study SD between models
+paste("SD for mbnma:", round(mbnma$BUGSoutput$median$sd.emax,2), sep=" ")
+paste("SD for UME:", round(ume$BUGSoutput$median$sd.emax,2), sep=" ")
+```
+
+As these model random relative treatment effects, we can also compare the between-study SDs. The SD for the UME model is slightly higher, suggesting that assuming consistency in the MBNMA model is not leading to higher between-study SD. This is further evidence to support the consistency assumption.
+
+Direct estimates from UME and MBNMA models can also be compared to examine in greater detail how inconsistency may be affecting results. However, it is important to note that whilst a discrepancy between UME and MBNMA results may be seen for a particular relative effect, the inconsistency is not exclusively applicable to that particular treatment comparison and may originate from other comparisons in the network. This is why consistency checking is so important, as a violation of the consistency assumption raises concerns about estimates for all treatments within the network.
+
+
+### Node-splitting
+
+Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity. `MBNMA.nodesplit()` takes similar arguments to `MBNMA.run()` that define the underlying MBNMA model in which to test for consistency, and returns an object of `class("MBNMA.nodesplit")`. Currently nodesplitting does not work with any of the wrapper function for `MBNMA.run()`. There are two additional arguments required:
+
+`comparisons` indicates on which treatment comparisons to perform a nodesplit. The default value for this is to automatically idenitify these using `MBNMA.nodesplit.comparisons()`.
+
+`nodesplit.parameters` indicates on which time-course parameters to perform a nodesplit. This can only take time-course parameters that have been assigned relative effects in the model (`pool="rel"`). Alternatively the default `"all"` can be used to split on all available time-course paramters in the model that have been pooled using relative effects.
+
+As up to two models will need to be run for each treatment comparison to split, this function can take some time to run.
+
+```{r, results="hide", warning=FALSE}
+# Nodesplit using an Emax MBNMA (with 5000 iterations to ensure convergence)
+nodesplit <- MBNMA.nodesplit(network.pain, fun="emax", 
+                             beta.1=list(pool="rel", method="random"), 
+                             beta.2=list(pool="const", method="common"), 
+                             nodesplit.parameters="all",
+                             n.iter=5000)
+```
+```{r}
+print(nodesplit)
+```
+
+Performing the `print()` method on an object of `class("MBNMA.nodesplit")` prints a summary of the node-split results to the console, whilst the `summary()` method will return a data frame of posterior summaries for direct and indirect estimates for each split treatment comparison and each time-course parameter. 
+
+The nodesplit object itself is a list with results for each time-course parameter, for each treatment comparison that has been split. There is a lot of information within the results, but the most useful (and easily interpretable) elements are:
+
+* `p.values` the Bayesian p-value for the posterior overlap between direct and indirect estimates
+* `quantiles` the median and 95%CrI of the posterior distributions for direct and indirect evidence, and for the difference between them.
+* `forest.plot` a forest plot that shows the median and 95% CrI for direct and indirect estimates
+* `density.plot` a plot that shows the posterior distributions for direct and indirect estimates
+
+It is possible to generate different plots of each nodesplit comparison using `plot()`:
+
+```{r, fig.width=3.5, fig.height=2.5, fig.show="hold"}
+# Plot forest plots of direct and indirect results for each nodesplit comparison
+plot(nodesplit, type="forest")
+
+# Plot posterior densities of direct and indirect results for each nodesplit comparisons
+plot(nodesplit, type="density")
+```
+
+As a further example, if we use a different time-course function (piecewise linear - as in the section on UME models) that is a less good fit for the data, and perform a nodesplit on both `beta.1` and `beta.2` time-course parameters, we find that there seems to be a strong discrepancy between direct and indirect estimates for `beta.1` and a smaller, yet still important discrepancy for `beta.2`. This is in agreement with the results from the UME models, that were suggestive of inconsistency in this MBNMA model. This is strong evidence to reject the consistency assumption, and to either (as in this case) try to identify a better fitting model, or to re-examine the dataset to try to explain why this might be the case.
+
+This highlights the importance of testing for consistency *after* identifying an appropriate time-course and common/random effects model.
+
+```{r, fig.width=3.5, fig.height=2.5, results="hide"}
+# Nodesplit on beta.1 and beta.2 using a piecewise linear MBNM
+nodesplit <- MBNMA.nodesplit(network.pain, fun="piecelinear", 
+                             beta.1=list(pool="rel", method="common"), 
+                             beta.2=list(pool="rel", method="common"), 
+                             beta.3=list(pool="const", method=0.5), 
+                             n.iter=5000, 
+                             nodesplit.parameters="all")
+```
+```{r, fig.height=2.5}
+print(nodesplit)
+
+plot(nodesplit, type="forest")
+```
+
+
+## Conclusions
+
+`MBNMAtime` provides a complete set of functions that allow for meta-analysis of longitudinal time-course data and plotting of a number of informative graphics. Funcions are also provided for prediction, and for assessing consistency when modelling using relative effects. By accounting for time-course in meta-analysis this can help to explain heterogeneity/inconsistency that may arise when using conventional NMA. 
+
+The package allows for modelling of either relative or arm-based absolute effects interchangeably on different time-course parameters within the same analysis, whilst allows users wishing to perform MBNMA/MBMA a great deal of flexibility in their modelling decisions, whilst providing a straightforward syntax with which to define these models.
+
+## References
+

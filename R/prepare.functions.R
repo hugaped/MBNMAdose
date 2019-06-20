@@ -83,6 +83,7 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' * Checks that all SEs are >0 (if variables are included in dataset)
 #' * Checks that all doses are >=0
 #' * Checks that all r and N are positive (if variables are included in dataset)
+#' * Checks that all y,se,r,N and E are numeric
 #' * Checks that class codes are consistent within each agent
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
 #' * Checks that each study includes at least two treatments
@@ -124,26 +125,40 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
     }
   }
 
+  numeric.error <- vector()
   for (i in 1:2) {
     if (all(var_norm %in% names(data.ab))) {
       if (anyNA(data.ab[[var_norm[i]]])) {
         na.vars <- append(na.vars, var_norm[i])
+      }
+      if (!is.numeric(data.ab[[var_norm[i]]])) {
+        numeric.error <- append(numeric.error, var_norm[i])
       }
     }
     if (all(var_bin %in% names(data.ab))) {
       if (anyNA(data.ab[[var_bin[i]]])) {
         na.vars <- append(na.vars, var_bin[i])
       }
+      if (!is.numeric(data.ab[[var_bin[i]]])) {
+        numeric.error <- append(numeric.error, var_bin[i])
+      }
     }
     if (all(var_pois %in% names(data.ab))) {
       if (anyNA(data.ab[[var_pois[i]]])) {
         na.vars <- append(na.vars, var_pois[i])
+      }
+      if (!is.numeric(data.ab[[var_pois[i]]])) {
+        numeric.error <- append(numeric.error, var_pois[i])
       }
     }
   }
 
   if (length(na.vars)>0) {
     stop(paste0("NA values in:\n", paste(na.vars, collapse="\n")))
+  }
+
+  if (length(numeric.error)>0) {
+    stop(paste0("Data must be numeric for:\n", paste(numeric.error, collapse="\n")))
   }
 
 
