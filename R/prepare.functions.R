@@ -126,6 +126,10 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   }
 
   numeric.error <- vector()
+  if (!is.numeric(data.ab$dose)) {
+    numeric.error <- append(numeric.error, "dose")
+  }
+
   for (i in 1:2) {
     if (all(var_norm %in% names(data.ab))) {
       if (anyNA(data.ab[[var_norm[i]]])) {

@@ -319,7 +319,7 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
   for (i in seq_along(doses)) {
     predict.result[[names(doses)[i]]] <- list()
     for (k in seq_along(doses[[i]])) {
-      if (names(doses)[i] %in% c("1", "Placebo")) {
+      if (names(doses)[i] %in% c("1", "Placebo") | doses[[i]][k]==0) {
         # Ensures reference agent (placebo) takes E0
         pred <- E0
 
@@ -397,7 +397,7 @@ get.model.vals <- function(mbnma) {
                              res.mat[,grepl(paste0("^sd.", temp$name), colnames(res.mat))]
         )
       } else if (is.numeric(temp$pool)) {
-        temp$result <- rep(temp$pool, nsims)
+        temp$result <- rep(temp$pool, mbnma$BUGSoutput$n.sims)
       }
 
       betaparams[[beta]] <- temp
