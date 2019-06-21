@@ -987,8 +987,17 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
     run.params=c("beta.1")
   )
 
+  # Increase precision of prior for beta.1 to prevent errors
+  # if (is.null(priors)) {
+  #   maxdose <- max(network$data.ab$dose)
+  #   lim <- 700/maxdose
+  #   prec <- 1/((lim/2)^2)
+  #   dist <- gsub("prec", signif(prec,5), "dnorm(0,prec)")
+  #   priors <- list("d.lambda"=dist)
+  # }
+
   result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
-                      fun="linear", user.fun=NULL,
+                      fun="exponential", user.fun=NULL,
                       model.file=NULL,
                       beta.1=lambda,
                       method=method,
