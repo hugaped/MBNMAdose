@@ -1,6 +1,10 @@
 testthat::context("Testing plot.functions")
 
 network <- MBNMA.network(HF2PPITT)
+netgout <- MBNMA.network(GoutSUA_2wkCFB)
+netalog <- MBNMA.network(alog_pcfb)
+
+datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
 
 # Generate data without placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
@@ -10,9 +14,10 @@ netlist <- list(network, net.noplac)
 
 
 # Models
-linear <- MBNMA.run(network, fun="linear")
+linear <- MBNMA.run(MBNMA.network(alog_pcfb), fun="linear")
 
-emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+emax <- MBNMA.emax(netgout, emax="rel", ed50="rel", method="random")
+emax.tript <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
 
 emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
                          class.effect=list(emax="random"))
@@ -102,8 +107,8 @@ testthat::test_that("plot.MBNMA functions correctly", {
   expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 1)
 
   # Agent labs
-  expect_silent(plot(emax, agent.labs = network$agents))
-  expect_error(plot(emax, agent.labs = network$agents[-3]))
+  expect_silent(plot(emax, agent.labs = netgout$agents))
+  expect_error(plot(emax, agent.labs = netgout$agents[-3]))
 
   # Class labs
   expect_silent(
@@ -126,14 +131,14 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
 
   # Test disp.obs
   expect_error(plot(pred, disp.obs = TRUE))
-  expect_message(plot(pred, disp.obs = TRUE, network=network))
+  expect_message(plot(pred, disp.obs = TRUE, network=netgout))
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
 
   pred <- predict(emax, E0 = 0.5)
   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0=0.1, exact.doses = doses)
+  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
   expect_silent(plot(pred, disp.obs=TRUE, network=network))
 
   pred <- predict(emax.noplac, E0 = 0.5)
@@ -142,7 +147,7 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
 
   # Test agent.labs
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0=0.1, exact.doses = doses)
+  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
   g <- plot(pred, agent.labs = c("Badger", "Ferret"))
   expect_identical(levels(g$data$agent), c("Badger", "Ferret"))
 
@@ -152,17 +157,17 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
   # Test overlay.split
   pred <- predict(linear, E0 = 0.5)
   expect_error(plot(pred, overlay.split = TRUE))
-  expect_output(plot(pred, overlay.split = TRUE, network=network))
+  expect_output(plot(pred, overlay.split = TRUE, network=netalog))
 
   pred <- predict(emax, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=network))
+  expect_output(plot(pred, overlay.split = TRUE, network=netgout))
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
-  pred <- predict(emax, E0=0.1, exact.doses = doses)
+  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
   expect_output(plot(pred, overlay.split = TRUE, network=network))
 
   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax, E0=0.1, exact.doses = doses)
+  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
   expect_error(plot(pred, overlay.split = TRUE, network=network))
 
   pred <- predict(emax.noplac, E0 = 0.5)
@@ -171,11 +176,11 @@ testthat::test_that("plot.MBNMA.predict functions correctly", {
 
   # Test method="common"
   pred <- predict(linear, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=network, method="random"),
+  expect_output(plot(pred, overlay.split = TRUE, network=netalog, method="random"),
                 "SD")
 
   pred <- predict(emax, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=network, method="random"),
+  expect_output(plot(pred, overlay.split = TRUE, network=netgout, method="random"),
                 "SD")
 
 

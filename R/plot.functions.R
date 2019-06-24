@@ -1122,7 +1122,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
     theta <- mbnma$model$data()$r / mbnma$model$data()$N
   } else if (mbnma$model.arg$likelihood=="poisson") {
     theta <- mbnma$model$data()$r / mbnma$model$data()$E
-  } else if (mbnma$model.arg$likelihood=="identity") {
+  } else if (mbnma$model.arg$likelihood=="normal") {
     theta <- mbnma$model$data()$y
   }
 
