@@ -367,6 +367,11 @@ recode.agent <- function(data.ab, level="agent") {
   # Check for consistency across all dose=0
   #dose.df <- data.ab[, names(data.ab) %in% c(level, "dose")]
 
+  # Check that there are no NA values
+  if (any(is.na(data.ab[[level]]))) {
+    stop(paste0("NA values not allowed for ", level))
+  }
+
   print.msg <- FALSE
 
   lvls <- as.character(sort(unique(data.ab[[level]])))
@@ -380,16 +385,31 @@ recode.agent <- function(data.ab, level="agent") {
   agent.seq <- sort(unique(data.ab[[level]]))
 
   for (i in seq_along(agent.seq)) {
+
     # If all doses of a particular agent/class = 0 then recode to "Placebo"
-    if (all(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+    allzero <- FALSE
+    if (all(is.na(data.ab$dose[data.ab[[level]]==agent.seq[i]]))) {
+      allzero <- TRUE
+    } else if (all(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+      allzero <- TRUE
+    }
+    if (allzero==TRUE) {
       if (lvls[1]!="Placebo") {
         # Swap current lvls for "Placebo"
         lvls <- c("Placebo", lvls[-agent.seq[i]])
       }
       data.ab[[level]][data.ab[[level]]==agent.seq[i]] <- 0
       print.msg <- TRUE
-    } else if (any(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+    }
+
     # Else if agent/class contains any dose=0, convert those doses to "Placebo"
+    anyzero <- FALSE
+    if (any(is.na(data.ab$dose[data.ab[[level]]==agent.seq[i]]))) {
+      anyzero <- TRUE
+    } else if (any(data.ab$dose[data.ab[[level]]==agent.seq[i]]==0)) {
+      anyzero <- TRUE
+    }
+    if (anyzero==TRUE) {
       if (lvls[1]!="Placebo") {
         # Add "Placebo"
         lvls <- c("Placebo", lvls)
