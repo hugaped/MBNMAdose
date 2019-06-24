@@ -9,6 +9,8 @@ df.class <- HF2PPITT
 df.class$class[df.class$agent %in% c("placebo", "eletriptan")] <- 1
 df.class$class[is.na(df.class$class)] <- 2
 
+datalist <- list(HF2PPITT, osteopain_2wkabs, alog_pcfb)
+
 
 ################### Testing ################
 
@@ -74,22 +76,29 @@ test_that("MBNMA.network functions correctly", {
 
   y <- 5
   expect_error(MBNMA.network(y))
+
+  expect_message(MBNMA.network(alog_pcfb))
+  expect_message(MBNMA.network(osteopain_2wkabs))
+  expect_message(MBNMA.network(GoutSUA_2wkCFB))
 })
 
 
 
 
 test_that("MBNMA.comparions functions correctly", {
-  network <- MBNMA.network(df1)
 
-  expect_error(MBNMA.comparisons(network))
+  for (i in seq_along(datalist)) {
+    network <- MBNMA.network(datalist[[i]])
 
-  comps <- MBNMA.comparisons(network$data.ab)
+    expect_error(MBNMA.comparisons(network))
 
-  expect_equal(names(comps), c("t1", "t2", "nr"))
-  assertDataFrame(comps, any.missing = FALSE, types="numeric")
+    comps <- MBNMA.comparisons(network$data.ab)
 
-  expect_equal(all(comps$t1<=comps$t2), TRUE)
+    expect_equal(names(comps), c("t1", "t2", "nr"))
+    checkmate::assertDataFrame(comps, any.missing = FALSE, types="numeric")
+
+    expect_equal(all(comps$t1<=comps$t2), TRUE)
+  }
 })
 
 

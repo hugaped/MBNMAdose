@@ -242,7 +242,7 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
   if (is.null(to.rank)) {
     to.rank <- codes.mod
   } else if (is.numeric(to.rank)) {
-    if (!all(to.rank %in% seq(1:max(mbnma[["model"]][["data"]]()[[level]])))) {
+    if (!all(to.rank %in% seq(1:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE)))) {
       stop("`to.rank` codes must match those in the dataset for either `agent` or `class`")
     }
   } else if (is.character(to.rank)) {
