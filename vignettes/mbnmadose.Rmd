@@ -85,148 +85,151 @@ kable(head(alog_pcfb), digits=2)
 
 ## Inspecting the data
 
-## USE OVERLAY.SPLIT TO OUTPUT A SPLITPLOT WITHOUT PREDICTION IN ORDER TO EXAMINE DOSE-RESPONSE RELATIONSHIP: doseplot / dosesplit
+Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and dose-response relationship) are particularly important for MBNMA. For this we want to get our dataset into the right format for the package. We can do this using `MBNMA.network()`.
 
-Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and time-course relationship) are particularly important for MBNMA/MBMA. For this we want to get our dataset into the right format for the package. We can do this using `MBNMA.network()`. This requires specifying the desired treatment to use for the network reference treatment. 
-
-```{r network.pain}
-# Using the pain dataset
-network.pain <- MBNMA.network(osteopain, reference = "Pl_0")
-print(network.pain)
+```{}
+# Using the triptans dataset
+network <- MBNMA.network(HF2PPITT)
+print(network)
 ```
 
-This takes a dataset with the required columns:
+This takes a dataset with the columns:
 
 * `studyID` Study identifiers
-* `time` Numeric data indicating follow-up times
-* `y` Numeric data indicating the mean response for a given observation
+* `agent` Agent identifiers (can be character, factor or numeric)
+* `dose` Numeric data indicating the dose of the given agent within the study arm
+* `class` An optional column indicating a particular class code. Agents with the same name/identifier must also have the same class code.
+
+Depending on the type of data (and the likelihood) the following columns are required:
+* Normal likelihood
+  + `y` Numeric data indicating the mean response for a given study arm
+  + `se` Numeric data incicating the standard error for a given study arm
+* Binomial likelihood
+  + `r` Numeric data indicating the number of responders in a given study arm
+  + `N` Numeric data indicating the total number of participants in a given study arm
+* Poisson likelihood
+  + `r` Numeric data indicating the number of events in a given study arm
+  + `E` Numeric data indicating the total exposure time in a given study arm
+
 * `se` Numeric data incicating the standard error for a given observation
 * `treatment` Treatment identifiers (can be numeric, factor or character)
-* `class` An optional column indicating a particular class code. Treatments with the same identifier
-* `N` An optional column indicating the number of participants used to calculate the response at a given observation
-must also have the same class code.
 
 Additional columns can be included in the dataset. These will simply be added to the `MBNMA.network` object, though will not affect the classification of the data.
 
 It then performs the following checks on the data:
 * The dataset has the required column names
 * There are no missing values
-* All SEs are positive
-* Studies have a baseline measurement (unless change from baseline data is being used)
-* Observations are made at the same time points in all arms of a study (i.e. the data are balanced)
-* Class labels are consistent within each treatment
+* All doses are positive
+* All SE, r, N and E are positive
+* Class labels are consistent within each agent
 * Studies have at least two arms
+* Studies do not only compare the same agent at the same dose
 
-And finally it converts it into an object of `class("MBNMA.network")`, which contains indices for study arms and follow-up measurements, and generates numeric values for treatments and classes. By convention, treatments are numbered alphabetically, though if the original data for treatments is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAtime` functions.
+Finally it converts the data frame into an object of `class("MBNMA.network")`, which contains indices for study arms, numeric variables for treatments, agents and classes, and stores a vector of treatment, agent and class names as an element within the object. By convention, agents are numbered alphabetically, though if the original data for agents is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAdose` functions.
 
 
 ### Network connectivity
 
-Looking at how the evidence in the network is connected and identifying which studies compare which treatments helps to understand which treatment effects can be estimated and what information will be helping to inform those estimates. Network plots can be plotted which shows which treatments have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment (provided `N` is included as a variable in the original dataset for `MBNMA.network()`). 
+Looking at how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated and what information will be helping to inform those estimates. In particular, the complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available in the dataset.
 
-In `MBNMAtime` these plots are generated using `igraph`, and can be plotted by calling `plot()`. The generated plots are objects of `class("igraph")` meaning that, in addition to the options specified in `plot.MBNMA.network()`, various `igraph` functions can be used to make more detailed edits to them.
+Network plots can be plotted which shows which treatments/agents have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment/agent (provided `N` is included as a variable in the original dataset for `MBNMA.network()`). 
 
-Within these network plots, treatments are automatically alligned in a circle (as the default) and can be tidied by shifting the label distance away from the nodes.
+In `MBNMAdose` these plots are generated using `igraph`, and can be plotted by calling `plot()`. The generated plots are objects of `class("igraph")` meaning that, in addition to the options specified in `plot()`, various `igraph` functions can subsequently be used to make more detailed edits to them.
 
-```{r gout.network, error = TRUE, purl = FALSE}
-# Prepare data using the gout dataset
-network.gout <- MBNMA.network(goutSUA_CFB, reference = "Plac")
+Within these network plots, vertices are automatically alligned in a circle (as the default) and can be tidied by shifting the label distance away from the nodes.
+
+```{r, error = TRUE, purl = FALSE}
+# Prepare data using the triptans dataset
+network <- MBNMA.network(HF2PPITT)
 
 # Draw network plot
-plot(network.gout, layout_in_circle = TRUE, label.distance = 5)
+plot(network)
 ```
 
-This command returns a warning stating that some treatments are not connected to the network reference treatment through any pathway of head-to-head evidence. The nodes that are coloured white represent these treatments. This means that it will not be possible to estimate relative effects for these treatments versus the network reference treatment (or any treatments connected to it). Several options exist to allow for inclusion of these treatments in an analysis which we will discuss in more detail further on in the vignette, but one approach is to assume some sort of common effect among treatments within the same class/agent. We can generate a network plot at the class level to examine this more closely, and can see that the network is connected at the class level.
-
-```{r gout.class.network}
-plot(network.gout, level = "class", remove.loops = TRUE, label.distance = 5)
-```
-
-It is also possible to plot a network at the treatment level but to colour the treatments by the class that they belong to.
+If some vertices are not connected to the network reference treatment through any pathway of head-to-head evidence, a warning will be given. The nodes that are coloured white represent these disconnected vertices.
 
 ```{r}
-plot(network.gout, level = "treatment", v.color = "class", label.distance = 5)
+# Prepare data using the gout dataset
+goutnet <- MBNMA.network(GoutSUA_2wkCFB)
+plot(goutnet)
 ```
 
-For other analyses on the Gout dataset in this vignette we have taken the approach of combining several very similar doses to generate a network that is more completely connected:
+However, whilst at the treatment-level (specific dose of a specific agent), many of these vertices are disconnected, at the agent level they are connected (via different doses of the same agent), meaning that *via the dose-response relationship* it is possible to estimate results.
 
 ```{r}
-network.gout <- MBNMA.network(goutSUA_CFBcomb, reference="Plac")
-plot(network.gout, label.distance = 5)
+# Plot at the agent-level
+plot(goutnet, level="agent", label.distance = 6)
 ```
 
+One agent (RDEA) is still not connected to the network, but `MBNMAdose` allows agents to connect via a placebo response *even if they do not include placebo in a head-to-head trial*. The connectivity of this will depend on the number of doses compared within an agent, and on the complexity of the dose-response relationship (REF MAWDSLEY).
 
-### Examining the time-course relationship
+```{r}
+# Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)
+plot(goutnet, level="agent", doseparam = 2, remove.loops = TRUE, label.distance = 6)
+```
 
-In order to consider which functional forms may be appropriate for modelling the time-course relationship, it is important to look at the responses in each arm plotted over time. This can easily be done using the `timeplot()` function on an object of `class("MBNMA.network")`
+It is also possible to plot a network at the treatment level but to colour the doses by the agent that they belong to.
+```{r}
+# Colour vertices by agent
+plot(goutnet, v.color = "agent")
+```
+
+Several further options exist to allow for inclusion of disconnected treatments, such as assuming some sort of common effect among agents within the same class. This is discussed in more detail later in the vignette.
+
+
+### Examining the dose-response relationship
+
+In order to consider which functional forms may be appropriate for modelling the dose-response relationship, it is useful to look at results from a "split" network meta-analysis (NMA), in which each dose of an agent is considered as separate and unrelated (i.e. we are not assuming any dose-response relationship). The `NMA.run()` function performs a simple NMA, and by default it drops studies that are disconnected at the treatment-level (since estimates for these will be very uncertain if included).
 
 ```{r pain.time}
-# Prepare data using the pain dataset
-network.pain <- MBNMA.network(osteopain, reference="Pl_0")
+# Run a random effect split NMA using the alogliptin dataset
+net.alog <- MBNMA.network(alog_pcfb)
+nma.alog <- NMA.run(net.alog, method="random")
 
-# Draw plot of raw study responses over time
-timeplot(network.pain)
+# Draw plot of NMA estimates plotted by dose
+plot(nma.alog)
 ```
 
-As the mean response for all treatments shows a rapid reduction in pain score followed by a levelling out after 2-5 weeks, an exponential decay time-course function might be a reasonable fit for this dataset. More complex alternatives could be Emax models (with or without a Hill parameter), fractional polynomials or a linear piecewise function.
-
-Responses can also be plotted grouped by class rather than by treatment, which may give an indication of whether there are any similarities within a class:
-
-```{r obese.time}
-# Choose the agent class as the `class` variable for modelling in the obesity dataset
-classdata <- obesityBW_CFB
-classdata$class <- classdata$agentclass
-
-# Prepare data
-network.obese <- MBNMA.network(classdata)
-
-# Draw plot of raw study responses over time grouped by agent class
-timeplot(network.obese, level="class")
-```
-
-In this example many of the profiles are quite different within the same class, which would suggest modelling class effects may be inappropriate.
+Given that the NMA estimates are relative to placebo, there definitely appears to be a dose-response relationship, and it also appears to be non-linear.
 
 
 ## Analysis using `MBNMA.run()`
 
-MBNMA/MBMA is performed in the `MBNMAtime` by applying `MBNMA.run()`. This can just as easily be performed on datasets with many different treatments (network meta-analysis) as it can on datasets comparing only two treatments (pairwise meta-analysis) - the syntax is the same.
-
-A `"MBNMA.network"` object must be provided as the data for `MBNMA.run()`. The key arguments within `MBNMA.run()` involve specifying the functional form used to model the time-course, and the time-course parameters that comprise that functional form.
+MBNMA is performed in `MBNMAdose` by applying `MBNMA.run()`. A `"MBNMA.network"` object must be provided as the data for `MBNMA.run()`. The key arguments within `MBNMA.run()` involve specifying the functional form used to model the dose-response, and the dose-response parameters that comprise that functional form.
 
 
-#### Time-course functions
+#### Dose-response functions
 
-Several different functional forms are implemented within `MBNMAtime`, that allow a wide variety of parameterizations and time-course shapes. These are provided to the `fun` argument in `MBNMA.run()`:
+Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `MBNMA.run()`:
 
 * `"linear"`
-* `"quadratic"`
 * `"exponential"`
 * `"emax"` - emax without a Hill parameter
 * `"emax.hill"` - emax with a Hill parameter
-* `"fract.poly.first"` - first-order fractional polynomial
-* `"fract.poly.second"` - second-order fractional polynomial
-* `"piecelinear"` - piecewise linear with a knot joining the two linear pieces
+* `"nonparam.up"` - Non-parametric monotonically increasing dose-response
+* `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
 * `"user"` - A function that can be specified by the user within `user.fun` (see `?MBNMA.run()`)
-* `"none"` - No parametric time-course relationship (can be used to test if there is actually any statistical change in response over time)
 
 
-#### Time-course parameters
+#### Dose-response parameters
 
-In `MBNMA.run()` it is possible to specify up to four different time-course parameters, depending on the time-course function used. These are named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and their interpretation varies depending on the time-course function used (see `?MBNMA.run()`). 
+In `MBNMA.run()` it is possible to specify up to three different dose-response parameters, depending on the dose-response function used. These are named `beta.1`, `beta.2`, and `beta.3`, and their interpretation varies depending on the dose-response function used (see `?MBNMA.run()`). 
 
-For simplification and interpretability, both in the way in which time-course parameters are defined and in how they are reported in the output, there are wrapper functions for `MBNMA.run()` for each of the provided time-course functions. For example, `MBNMA.emax()` is equivalent to `MBNMA.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `et50` instead of `beta.2`) . A number of these will be shown in other examples in this vignette.
+For simplification and interpretability, both in the way in which dose-response parameters are defined and in how they are reported in the output, there are wrapper functions for `MBNMA.run()` for each of the provided time-course functions. For example, `MBNMA.emax()` is equivalent to `MBNMA.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `ed50` instead of `beta.2`) . A number of these will be shown in other examples in this vignette.
 
-Time-course parameters can be assigned several different specifications, which define the key parameters estimated by the model. These are defined within a list that contains two
-named elemnts, `pool` and `method`.
+Dose-response parameters can be assigned different specifications which define the key parameters estimated by the model and are dependent on the assumptions made within the model. Three different specifications are available for each parameter:
 
-`pool` is used to define the approach used for pooling of a given time-course parameter and can take any of the following values:
+* `"rel"` indicates that relative effects should be estimated for this dose-response parameter. This preserves randomisation within included studies and is likely to vary less between studies (only due to effect modification).
+* `"common"` indicates that a single absolute value for this dose-response parameter should be estimated across the whole network *that does not vary by agent*. This is particularly useful for parameters expected to be constant (e.g. Hill parameters in `MBNMA.emax.hill()`).
+* `"random"` indicates that a single absolute value should be estimated separately for each agent, but that all the agent values vary randomly around a single mean absolute network effect. It is similar to `"common"` but makes slightly less strong assumptions.
 
-* `"rel"` indicates that relative effects should be pooled for this time-course parameter. This preserves randomisation within included studies, are likely to vary less between studies (only due to effect modification), and allow for testing of consistency between direct and indirect evidence. Pooling follows the general approach for Network Meta-Analysis proposed by Lu and Ades [-@lu2004].
-* `"arm"` indicates that study arms should be pooled within each treatment in the network
-for this time-course parameter. This allows estimation of absolute time-course parameter values, but makes stronger assumptions regarding similarity of studies.
-* `"const"` indicates that study arms should be pooled across the whole network for this time-course parameter **independently of assigned treatment**. This implies using a single value across the network for this time-course parameter, and may therefore be making very strong assumptions of similarity.
 
-`method` is used to define the model used for meta-analysis for a given time-course parameter and can take any of the following values:
+In `MBNMA.run()`, an additional argument, `method`, indicates what method to use for pooling relative effects and can take either the values
+
+
+`method` is used to define the model used for 
+
+meta-analysis for a given dose-response parameter and can take any of the following values:
 
 * `"common"` implies that all studies estimate the same true effect (akin to a "fixed effect" meta-analysis)
 * `"random"` implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.

@@ -39,6 +39,9 @@
 #'   defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
 #'   and identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
+#' @param cor A boolean object that indicates whether correlation should be modelled
+#' between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
+#' automatically set to `FALSE` if class effects are modelled.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than
 #' one dose-response parameter and `method="random"` (see `Details` LINK). Each element of
@@ -65,7 +68,7 @@
 #' @inheritParams replace.prior
 #'
 #' @details When relative effects are modelled on more than one dose-response parameter and
-#' `method="random"`, correlation between the dose-response parameters is automatically
+#' `cor=TRUE`, correlation between the dose-response parameters is automatically
 #' estimated using a vague Wishart prior. This prior can be made slightly more informative
 #' by specifying the relative scale of variances between the dose-response parameters using
 #' `var.scale`.
@@ -246,6 +249,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                       beta.2=NULL, beta.3=NULL,
                       method="common",
                       class.effect=list(),
+                      cor=TRUE,
                       var.scale=NULL,
                       pd="pv", parallel=TRUE,
                       likelihood=NULL, link=NULL,
@@ -260,6 +264,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   checkmate::assertCharacter(model.file, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
+  checkmate::assertLogical(cor, len=1, add=argcheck)
   checkmate::assertList(arg.params, unique=TRUE, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -304,7 +309,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
                          method=method,
                          class.effect=class.effect,
-                         var.scale=var.scale,
+                         cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
 
@@ -425,6 +430,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
                     "class.effect"=class.effect,
+                    "cor"=cor,
                     "var.scale"=var.scale,
                     "parallel"=parallel, "pd"=pd,
                     "priors"=get.prior(model), "arg.params"=arg.params)
@@ -864,6 +870,7 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
                          slope="rel",
                          method="common",
                          class.effect=list(),
+                         cor=TRUE,
                          var.scale=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
@@ -882,7 +889,7 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
                       beta.1=slope,
                       method=method,
                       class.effect=class.effect,
-                      var.scale=var.scale,
+                      cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,
@@ -975,6 +982,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
                          lambda="rel",
                          method="common",
                          class.effect=list(),
+                         cor=TRUE,
                          var.scale=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
@@ -1002,7 +1010,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
                       beta.1=lambda,
                       method=method,
                       class.effect=class.effect,
-                      var.scale=var.scale,
+                      cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,
@@ -1116,6 +1124,7 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
                          ed50="rel",
                          method="common",
                          class.effect=list(),
+                         cor=TRUE,
                          var.scale=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
@@ -1135,7 +1144,7 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
                       beta.2=ed50,
                       method=method,
                       class.effect=class.effect,
-                      var.scale=var.scale,
+                      cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,
@@ -1259,6 +1268,7 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
                        hill="common",
                        method="common",
                        class.effect=list(),
+                       cor=TRUE,
                        var.scale=NULL,
                        pd="pv", parallel=TRUE,
                        likelihood=NULL, link=NULL,
@@ -1279,7 +1289,7 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
                       beta.3=hill,
                       method=method,
                       class.effect=class.effect,
-                      var.scale=var.scale,
+                      cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,

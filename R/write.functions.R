@@ -68,7 +68,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
                         method="common",
-                        cor="estimate", cor.prior="wishart",
+                        cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
                         class.effect=list(),
                         likelihood="binomial", link=NULL
@@ -790,25 +790,26 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #'
 #' @inheritParams MBNMA.run
 #' @inheritParams write.beta
-write.cor <- function(model, cor="estimate", cor.prior="wishart", var.scale=NULL,
+write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
                       method="random", class.effect=list()) {
-  # cor can either take "estimate" to be estimated from the data,
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
   # (i.e. rho[2,1], rho[3,1], rho[3,2])
 
-  if (length(class.effect)>0 & method=="random" & (!is.null(beta.2) | !is.null(beta.3))) {
+  #if (length(class.effect)>0 & method=="random" & (!is.null(beta.2) | !is.null(beta.3))) {
+  if (length(class.effect)>0 & cor==TRUE & (!is.null(beta.2) | !is.null(beta.3))) {
     warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
   } else {
-    if (is.numeric(cor) & cor.prior=="wishart") {
-      stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
-    }
-    if (!is.numeric(cor) & cor!="estimate") {
-      stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
-    }
+    # if (is.numeric(cor) & cor.prior=="wishart") {
+    #   stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
+    # }
+    # if (!is.numeric(cor) & cor!="estimate") {
+    #   stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
+    # }
 
-    if (method=="random") {
+    #if (method=="random") {
+    if (cor==TRUE) {
       corparams <- vector()
       for (i in 1:3) {
         if (!is.null(get(paste0("beta.", i)))) {
@@ -825,7 +826,7 @@ write.cor <- function(model, cor="estimate", cor.prior="wishart", var.scale=NULL
     }
 
     if (mat.size>=2) {
-      model <- write.cov.mat(model, sufparams=sufparams, cor=cor, cor.prior=cor.prior,
+      model <- write.cov.mat(model, sufparams=sufparams, cor="estimate", cor.prior=cor.prior,
                              var.scale=var.scale)
     }
   }
