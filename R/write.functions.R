@@ -451,7 +451,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (likelihood=="binomial") {

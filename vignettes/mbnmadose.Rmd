@@ -208,7 +208,7 @@ Several different functional forms are implemented within `MBNMAdose`, that allo
 * `"emax.hill"` - emax with a Hill parameter
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
-* `"user"` - A function that can be specified by the user within `user.fun` (see `?MBNMA.run()`)
+* `"user"` - A function that can be explictly specified by the user within `user.fun` (see `?MBNMA.run()`)
 
 
 #### Dose-response parameters
@@ -222,17 +222,12 @@ Dose-response parameters can be assigned different specifications which define t
 * `"rel"` indicates that relative effects should be estimated for this dose-response parameter. This preserves randomisation within included studies and is likely to vary less between studies (only due to effect modification).
 * `"common"` indicates that a single absolute value for this dose-response parameter should be estimated across the whole network *that does not vary by agent*. This is particularly useful for parameters expected to be constant (e.g. Hill parameters in `MBNMA.emax.hill()`).
 * `"random"` indicates that a single absolute value should be estimated separately for each agent, but that all the agent values vary randomly around a single mean absolute network effect. It is similar to `"common"` but makes slightly less strong assumptions.
+* `numeric()` Assigned a numeric value - this is similar to assigning `"common"`, but the single absolute value is assigned as a numeric value by the user, rather than estimated from the data.
 
 
-In `MBNMA.run()`, an additional argument, `method`, indicates what method to use for pooling relative effects and can take either the values
+In `MBNMA.run()`, an additional argument, `method`, indicates what method to use for pooling relative effects and can take either the values `"common"`, implying that all studies estimate the same true effect (akin to a "fixed effect" meta-analysis), or `"random"`, implying that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
 
 
-`method` is used to define the model used for 
-
-meta-analysis for a given dose-response parameter and can take any of the following values:
-
-* `"common"` implies that all studies estimate the same true effect (akin to a "fixed effect" meta-analysis)
-* `"random"` implies that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
 * `numeric()` Assigned a numeric value - this can only be used if `pool="const"`. It indicates that this time-course parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific time-course parameters (e.g. Hill parameters in Emax functions or knot location in piecewise functions).
 
 Specifying pooling relative effects (`pool="rel"`) on all time-course parameters would imply performing a contrast-based MBNMA, whereas specifying pooling arm effects (`pool="arm"`) on all of them would imply performing an arm-based MBMA. There has been subtantial discussion in the literature regarding the srengths and limitations of both these approaches [@dias2016; @hong2016; @armprotocol2017].

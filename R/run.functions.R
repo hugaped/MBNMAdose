@@ -44,7 +44,7 @@
 #' automatically set to `FALSE` if class effects are modelled.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than
-#' one dose-response parameter and `method="random"` (see `Details` LINK). Each element of
+#' one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
 #' the vector refers to the relative scale of each of the dose-response parameters that is
 #' modelled using relative effects.
 #'
@@ -736,7 +736,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=TRUE, add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
