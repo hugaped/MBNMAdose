@@ -615,7 +615,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @examples
 #' @export
-NMA.run <- function(network, method="common", likelihood="binomial", link="logit",
+NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
                     warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {
 
   # Run checks

@@ -49,21 +49,43 @@ At each of these stages there are a number of informative plots that can be gene
 
 ### Triptans for migraine pain relief
 
-`HF2PPITT` is from a systematic review of treatments for pain relief in migraine [REF]. The outcome was binary, and represented (as aggregate data) the proportion of participants who were headache-free at 2-hours. Data were from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses were standardised as relative to a "common" dose, and in total there were 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
+`HF2PPITT` is from a systematic review of interventions for pain relief in migraine [REF]. The outcome is binary, and represents (as aggregate data) the proportion of participants who were headache-free at 2-hours. Data are from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses are standardised as relative to a "common" dose, and in total there are 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
 
 ```{r, echo=FALSE}
 kable(head(HF2PPITT), digits=2) 
 ```
 
 
-### Gout
+### Interventions for Serum Uric Acid (SUA) reduction in gout
+
+`GoutSUA_2wkCFB` is from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in patients with gout [REF]. The outcome is continuous, and aggregate data responses correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA) arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total there were 19 different treatments (combination of dose and agent). `GoutSUA_2wkCFB` is a data frame in long format (one row per arm and study), with the variables `studyID`, `y`, `se`, `agent` and `dose`.
+
+```{r, echo=FALSE}
+kable(head(GoutSUA_2wkCFB), digits=2) 
+```
 
 
-### Obesity
+### Interventions for pain relief in osteoarthritis
 
+`osteopain_2wkabs` is from a systematic review of interventions for pain relief in osteoarthritis [REF]. The outcome is continuous, and aggregate data responses correspond to the mean WOMAC pain score at 2 weeks follow-up. The dataset includes 18 Randomised-Controlled Trials (RCTs), comparing 8 different agents with placebo. In total there were 26 different treatments (combination of dose and agent). The active treatments can also be grouped into 3 different classes, within which they have similar mechanisms of action. `osteopain_2wkabs` is a data frame in long format (one row per arm and study), with the variables `studyID`, `agent`, `dose`, `class`, `y`, `se`, and `N`.
+
+```{r, echo=FALSE}
+kable(head(osteopain_2wkabs), digits=2) 
+```
+
+
+### Alogliptin for lowering blood glucose concentration in type II diabetes
+
+`alog_pcfb` is from a systematic review of Randomised-Controlled Trials (RCTs) comparing different doses of alogliptin with placebo [REF]. The systematic review was simply performed and was intended to provide data to illustrate a statistical methodology rather than for clinical inference. Alogliptin is a treatment aimed at reducing blood glucose concentration in type II diabetes. The outcome is continuous, and aggregate data responses correspond to the mean change in HbA1c from baseline to follow-up in studies of at least 12 weeks follow-up. The dataset includes 14 Randomised-Controlled Trials (RCTs), comparing 5 different doses of alogliptin with placebo, leading to 6 different treatments (combination of dose and agent) within the network. `alog_pcfb` is a data frame in long format (one row per arm and study), with the variables `studyID`, `agent`, `dose`, `y`, `se`, and `N`.
+
+```{r, echo=FALSE}
+kable(head(alog_pcfb), digits=2) 
+```
 
 
 ## Inspecting the data
+
+## USE OVERLAY.SPLIT TO OUTPUT A SPLITPLOT WITHOUT PREDICTION IN ORDER TO EXAMINE DOSE-RESPONSE RELATIONSHIP: doseplot / dosesplit
 
 Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and time-course relationship) are particularly important for MBNMA/MBMA. For this we want to get our dataset into the right format for the package. We can do this using `MBNMA.network()`. This requires specifying the desired treatment to use for the network reference treatment. 
 

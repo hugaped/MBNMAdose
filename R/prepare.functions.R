@@ -83,8 +83,9 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' * Checks that all SEs are >0 (if variables are included in dataset)
 #' * Checks that all doses are >=0
 #' * Checks that all r and N are positive (if variables are included in dataset)
-#' * Checks that all y,se,r,N and E are numeric
+#' * Checks that all y, se, r, N and E are numeric
 #' * Checks that class codes are consistent within each agent
+#' * Checks that agent/class names do not contain restricted characters
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
 #' * Checks that each study includes at least two treatments
 #'
@@ -220,6 +221,19 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   if (length(singletreat.studyID) >0) {
     stop(paste0("The following studies only include comparison(s) of the same agent at the same dose:\n",
                 paste(unique(singletreat.studyID), collapse="\n")))
+  }
+
+
+  # Check that agent/class names do not contain forbidden characters
+  agents <- unique(data.ab$agent)
+  if (any(grepl("_", agents))) {
+    stop("Agent names cannot contain `_` (underscore) character")
+  }
+  if ("class" %in% names(data.ab)) {
+    classes <- unique(data.ab$class)
+    if (any(grepl("_", classes))) {
+      stop("Class names cannot contain `_` (underscore) character")
+    }
   }
 
 

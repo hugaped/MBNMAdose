@@ -1373,3 +1373,89 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
   }
 
 }
+
+
+
+
+
+#' Plot results from an NMA
+#'
+#' Results can be plotted either as a single forest plot, or facetted by agent
+#' and plotted with increasing dose in order to identify potential dose-response
+#' relationships.
+#'
+#' @param nma An object of `class("NMA")`
+#' @param bydose A boolean object indicating whether to plot responses with dose
+#' on the x axis (`TRUE`) to be able to examine potential dose-response shapes, or
+#' to plot a conventional forest plot with all treatments on the same plot (`FALSE`)
+#' @inheritParams plot.MBNMA.predict
+#'
+plot.NMA <- function(nma, bydose=TRUE, scales="free_x") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(nma, "NMA", add=argcheck)
+  checkmate::assertNumeric(intercept, len=1, add=argcheck)
+  checkmate::assertLogical(bydose, len=1, add=argcheck)
+  checkmate::assertChoice(scales, c("free_x", "fixed"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  intercept <- 0 # Leaving here in case want to allow user to change it at later date
+
+  split.df <- nma[["jagsresult"]]$BUGSoutput$summary
+  split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
+
+  split.df$treatment <- nma[["trt.labs"]]
+  split.df$agent <- sapply(nma[["trt.labs"]],
+                           function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1])
+  split.df$dose <- as.numeric(sapply(nma[["trt.labs"]],
+                                     function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2]))
+
+  if (split.df$`50%`[1]!=0 & split.df$`2.5%`[1]!=0) {
+    row <- split.df[0,]
+    row[,1:3] <- 0
+    row$treatment <- "Placebo_0"
+    row$agent <- "Placebo"
+    row$dose <- 1
+    split.df <- rbind(row, split.df)
+  }
+
+  # Plot faceted by agent as dose-response splitplot
+  if (bydose==TRUE) {
+
+    # Add intercept for all agents
+    agents <- unique(split.df$agent)
+    agents <- agents[agents!="Placebo"]
+    for (i in seq_along(agents)) {
+      row <- split.df[split.df$agent=="Placebo",]
+      row$agent <- agents[i]
+      split.df <- rbind(row, split.df)
+    }
+    split.df <- split.df[split.df$agent!="Placebo",]
+
+    if (intercept!=0) {
+      split.df[,1:3] <- split.df[,1:3] + intercept
+    }
+
+    g <- ggplot2::ggplot(split.df, aes(x=dose, y=`50%`)) +
+      ggplot2::geom_point() +
+      ggplot2::geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::facet_wrap(~factor(agent), scales = scales) +
+      ggplot2::xlab("Dose") +
+      ggplot2::ylab("Effect size on link scale")
+
+  } else if (bydose==FALSE) {
+    # Plot conventional forest plot
+    split.df$treatment <- factor(split.df$treatment, levels=nma[["trt.labs"]])
+
+    g <- ggplot2::ggplot(split.df, ggplot2::aes(y=`50%`, x=treatment)) +
+      ggplot2::geom_point() +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::coord_flip() +
+      ggplot2::ylab("Effect size on link scale") +
+      ggplot2::xlab("Treatment")
+  }
+
+  plot(g)
+  return(invisible(g))
+}
