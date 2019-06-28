@@ -28,12 +28,11 @@
 #'   dose-response in terms of network connectivity.
 #' @param remove.loops A boolean value indicating whether to include loops that
 #'   indicate comparisons within a node.
-#' @param doseparam An integer representing the number of degrees of freedom of the
-#' dose-response function. It is equivalent to the number of doses of a single
-#' agent within a study that are required to estimate a dose-response function (and therefore
-#' to make a connection to placebo) plus one. If left as `NULL` (the default), connections
-#' via dose-response
-#' relationships will not be included unless there is no data for Placebo in `network`.
+#' @param doselink If given an integer value it indicates that connections via the dose-response
+#' relationship with placebo should be plotted. The integer represents the minimum number of doses
+#' from which a dose-response function could be estimated and is equivalent to the number of
+#' parameters in the desired dose-response function plus one. If left as `NULL` (the default), connections
+#' to placebo via dose-response relationships will not be included.
 #' @param ... Options for plotting in `igraph`.
 #'
 #' @details The S3 method `plot()` on an `MBNMA.network` object generates a
@@ -61,10 +60,10 @@
 #'
 #' # Generate a network plot that includes connections via the dose-response function
 #' # For a one parameter dose-response function (e.g. exponential)
-#' plot(network, level="treatment", doseparam=1, remove.loops=TRUE)
+#' plot(network, level="treatment", doselink=1, remove.loops=TRUE)
 #'
 #' # For a two parameter dose-response function (e.g. Emax)
-#' plot(network, level="treatment", doseparam=2, remove.loops=TRUE)
+#' plot(network, level="treatment", doselink=2, remove.loops=TRUE)
 #'
 #'
 #' #### Plot a network with no placebo data included ####
@@ -77,7 +76,7 @@
 #' @export
 plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
                                level="treatment", remove.loops=FALSE, v.color="connect",
-                               v.scale=NULL, doseparam=NULL,
+                               v.scale=NULL, doselink=NULL,
                                ...)
   # Requires igraph
   #S3method(plot, MBNMA.network)
@@ -156,16 +155,16 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   # Add coloured vertices for plac if plac.incl!=TRUE
   if ((network$agents[1] != "Placebo" & network$treatments[1]!="Placebo_0")) {
     plac.incl <- FALSE
-    if (is.null(doseparam)) {
-      doseparam <- 2
-    }
+    # if (is.null(doselink)) {
+    #   doselink <- 2
+    # }
   } else {plac.incl <- TRUE}
 
-  if (!is.null(doseparam)) {
-    dr.comp <- DR.comparisons(network$data.ab, level=level, doseparam=doseparam)
+  if (!is.null(doselink)) {
+    dr.comp <- DR.comparisons(network$data.ab, level=level, doselink=doselink)
     if (plac.incl==TRUE) {
       dr.comp$t1 <- dr.comp$t1 + 1
-    } else if (plac.incl==FALSE & nrow(dr.comp)>1) {
+    } else if (plac.incl==FALSE & nrow(dr.comp)>0) {
       nodes <- c("Placebo", nodes)
       if (!is.null(node.size)) {
         node.size <- c(1, node.size)
@@ -188,7 +187,7 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
 
   igraph::E(g)$curved <- FALSE # ensure edges are straight
 
-  if (!is.null(doseparam)) {
+  if (!is.null(doselink)) {
     igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),
                             rep("black", nrow(comparisons)-nrow(dr.comp)))
     # igraph::E(g)$lty <- c(rep("dashed", nrow(dr.comp)),
@@ -238,9 +237,9 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
                         ...)
   }
 
-  if (!is.null(doseparam)) {
+  if (!is.null(doselink)) {
     message(paste0("Dose-response connections to placebo plotted based on a dose-response
-                   function with ", (doseparam-1),
+                   function with ", (doselink-1),
                    " degrees of freedom"))
   }
 
@@ -707,7 +706,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
 
   # Check max.col.scale
-  n.cut <- max(predict.data$count)
+  n.cut <- max(predict.data$count[predict.data$dose!=0])
   if (!is.null(max.col.scale)) {
     if (!is.numeric(max.col.scale)) {
       stop("max.col.scale must be a number greater than the maximum number of observed counts in the plotted treatments")
@@ -963,12 +962,20 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
     xlab <- "Follow-up count"
     facetscale <- "fixed"
   } else if (mbnma$type=="dose") {
+    agents <- mbnma$agents
+
+    # Remove placebo results if they are present
+    if (mbnma$agents[1]=="Placebo") {
+      dev.df <- dev.df[dev.df$facet!=1,]
+      agents <- agents[-1]
+    }
+
     xlab <- "Dose"
     facetscale <- "free_x"
   }
 
   if ("agents" %in% names(mbnma)) {
-    dev.df$facet <- factor(dev.df$facet, labels=mbnma$agents)
+    dev.df$facet <- factor(dev.df$facet, labels=agents)
   } else if ("treatments" %in% names(mbnma)) {
     dev.df$facet <- factor(dev.df$facet, labels=mbnma$treatments)
   }
@@ -1285,14 +1292,14 @@ plot.MBNMA.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
 
 
 
-#' @describeIn MBNMA.nodesplit Plot outputs from treatment-level nodesplit models
+#' @describeIn NMA.nodesplit Plot outputs from treatment-level nodesplit models
 #'
-#' @param nodesplit An object of `class("MBNMA.nodesplit")`
+#' @param nodesplit An object of `class("NMA.nodesplit")`
 #' @param plot.type A character string that can take the value of `"forest"` to plot
 #' only forest plots, `"density"` to plot only density plots, or left as `NULL` (the
 #' default) to plot both types of plot.
 #'
-#' @details The S3 method `plot()` on an `MBNMA.nodesplit` object generates either
+#' @details The S3 method `plot()` on an `NMA.nodesplit` object generates either
 #' forest plots of posterior medians and 95% credible intervals, or density plots
 #' of posterior densities for direct and indirect evidence.
 #'
@@ -1300,12 +1307,12 @@ plot.MBNMA.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
 #' `plot.type=NULL`) of `class(c("gg", "ggplot"))`
 #'
 #' @export
-plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
+plot.NMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
   # ... are commands to be sent to geom_histogram
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(nodesplit, "MBNMA.nodesplit", add=argcheck)
+  checkmate::assertClass(nodesplit, "NMA.nodesplit", add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=TRUE, add=argcheck)
   #checkmate::assertLogical(facet, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -1378,7 +1385,7 @@ plot.MBNMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
 
 
 
-#' Plot results from an NMA
+#' @describeIn NMA.run Plot outputs from treatment-level NMA models
 #'
 #' Results can be plotted either as a single forest plot, or facetted by agent
 #' and plotted with increasing dose in order to identify potential dose-response
@@ -1395,15 +1402,22 @@ plot.NMA <- function(nma, bydose=TRUE, scales="free_x") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(nma, "NMA", add=argcheck)
-  checkmate::assertNumeric(intercept, len=1, add=argcheck)
+  #checkmate::assertNumeric(intercept, len=1, add=argcheck)
   checkmate::assertLogical(bydose, len=1, add=argcheck)
   checkmate::assertChoice(scales, c("free_x", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   intercept <- 0 # Leaving here in case want to allow user to change it at later date
-
   split.df <- nma[["jagsresult"]]$BUGSoutput$summary
-  split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
+
+  # Check if NMA is from UME model
+  if (any(grepl("^d\\[[0-9+],[0-9]+\\]", rownames(nma$jagsresult$BUGSoutput$summary)))) {
+    split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+,1\\]", rownames(split.df)), c(3,5,7)])
+    #split.df <- as.data.frame(split.df[grepl("^d\\[[0-9+],1\\]", rownames(split.df)), c(3,5,7)])
+  } else {
+    split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
+  }
+
 
   split.df$treatment <- nma[["trt.labs"]]
   split.df$agent <- sapply(nma[["trt.labs"]],
@@ -1437,9 +1451,9 @@ plot.NMA <- function(nma, bydose=TRUE, scales="free_x") {
       split.df[,1:3] <- split.df[,1:3] + intercept
     }
 
-    g <- ggplot2::ggplot(split.df, aes(x=dose, y=`50%`)) +
+    g <- ggplot2::ggplot(split.df, ggplot2::aes(x=dose, y=`50%`)) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
       ggplot2::ylab("Effect size on link scale")

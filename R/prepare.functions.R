@@ -304,7 +304,10 @@ add_index <- function(data.ab) {
     data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
                                                  data.ab$dose,
                                                  sep="_"),
-                                           labels=treatments
+                                           labels=treatments,
+                                           levels=unique(paste(data.ab$agent,
+                                                               data.ab$dose,
+                                                               sep="_"))
     ))
 
     data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
@@ -507,7 +510,7 @@ recode.agent <- function(data.ab, level="agent") {
 #' # Get JAGS data at the treatment level for Network Meta-Analysis
 #' network <- MBNMA.network(HF2PPITT)
 #'
-#' jagsdat <- getjagsdata(network$data.ab, level="treatment)
+#' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
@@ -676,7 +679,7 @@ MBNMA.comparisons <- function(data)
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data, add=argcheck)
   checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
-  #checkmate::assertInt(doseparam, null.ok = TRUE, add=argcheck)
+  #checkmate::assertInt(doselink, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   data <- dplyr::arrange(data, studyID, treatment)
@@ -763,13 +766,13 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   checkmate::reportAssertions(argcheck)
 
   if (connect.dose==FALSE) {
-    doseparam <- 10000
-  } else {doseparam <- 1}
+    doselink <- 10000
+  } else {doselink <- 1}
 
   trt.labs <- network$treatments
   #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
   png("NUL")
-  discon <- suppressMessages(suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect", doseparam=doseparam))))
+  discon <- suppressMessages(suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect", doselink=doselink))))
   dev.off()
 
   data.ab <- network$data.ab
@@ -826,7 +829,7 @@ index.dose <- function(data.ab) {
 #' for the relationship between placebo and other agents via the dose-response
 #' relationship.
 #'
-DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
+DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   t1 <- vector()
   t2 <- vector()
 
@@ -837,8 +840,8 @@ DR.comparisons <- function(data.ab, level="treatment", doseparam=NULL) {
       dplyr::group_by(agent) %>%
       dplyr::mutate(nagent=n())
 
-    if (any(subset$nagent>=doseparam)) {
-      # temp <- subset[subset$nagent>=doseparam,]
+    if (any(subset$nagent>=doselink)) {
+      # temp <- subset[subset$nagent>=doselink,]
       # for (k in 1:nrow(temp)) {
       #   t1 <- append(t1, 0)
       #   t2 <- append(t2, temp[[level]][k])

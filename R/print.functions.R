@@ -573,7 +573,7 @@ summary.MBNMA <- function(mbnma) {
   # Model fit statistics section
   modfit.sect <- print.modfit.str(mbnma)
 
-  output <- paste(overall.sect, treat.sect, method.sect, class.sect, "\n\n", modfit.sect, sep="")
+  output <- paste(overall.sect, treat.sect, method.sect, "\n", class.sect, "\n\n", modfit.sect, sep="")
   cat(output)
 }
 

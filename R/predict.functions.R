@@ -41,11 +41,11 @@
 #'   for Poisson data, a rate should be given. This is specified as a random number generator
 #'   (RNG) given as a string, and can take any RNG distribution for which a function exists
 #'   in R. For example: `"rnorm(n, 7, 0.5)"`.
-#'   * `data.frame` A data frame containing data to be meta-analysed to estimate
-#'   the dose = 0 (placebo) response. This could be an observational
-#'   study/studies that are specific to the population on which to make
-#'   predictions, or can be a subset of the study arms within the MBNMA dataset
-#'   that investigate placebo.
+#'   * `data.frame` A data frame containing data in the long format (one row per study arm) to be meta-analysed
+#'   to estimate the dose = 0 (placebo) response. This could be a set of observational
+#'   studies that are specific to the population on which to make
+#'   predictions, or it can be a subset of the study arms within the MBNMA dataset
+#'   that investigate placebo. See `ref.synth()`
 #' @param synth A character object that can take the value `"fixed"` or `"random"` that
 #'   specifies the the type of pooling to use for synthesis of `E0` if a data frame
 #'   has been provided. Using `"random"` rather
@@ -261,7 +261,7 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
   if (is.null(E0)) {
     stop("`E0` has not been given a value. Responses cannot be predicted without a value(s) for dose = 0 (placebo)")
   }
-  if (!(class(E0) %in% c("numeric", "character", "data.frame"))) {
+  if (!any(class(E0) %in% c("numeric", "character", "data.frame"))) {
     stop("`E0` can only be of type `numeric()`, `character()` or `data.frame()`")
   }
 

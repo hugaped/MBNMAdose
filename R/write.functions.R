@@ -307,7 +307,6 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #' @details Used to check if the arguments given to MBNMA.write are valid. The
 #'   function will return informative errors if arguments are misspecified.
 #'
-#' @examples
 write.check <- function(fun="linear", user.fun=NULL,
                         beta.1=list(pool="rel", method="common"),
                         beta.2=NULL,
@@ -446,7 +445,6 @@ write.check <- function(fun="linear", user.fun=NULL,
 #' @return A character object of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
-#' @examples
 write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
   argcheck <- checkmate::makeAssertCollection()
@@ -643,7 +641,6 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 #' @return A character object of JAGS MBNMA model code that includes delta
 #'   parameter components of the model
 #'
-#' @examples
 write.delta <- function(model,
                        beta.1, beta.2=NULL, beta.3=NULL,
                        method="common"
@@ -686,7 +683,6 @@ write.delta <- function(model,
 #' @return A character object of JAGS MBNMA model code that includes beta
 #'   parameter components of the model
 #'
-#' @examples
 write.beta <- function(model,
                        beta.1, beta.2=NULL, beta.3=NULL,
                        method="common",
@@ -949,7 +945,6 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 #' @return A character object of JAGS MBNMA model code that has had empty loops
 #'   removed from it
 #'
-#' @examples
 write.remove.loops <- function(model) {
   # Remove empty loops
   empty.loops <- list(

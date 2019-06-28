@@ -65,7 +65,7 @@ test_that("plot.MBNMA.network functions correctly", {
                      level="agent"))
 
   expect_warning(plot(net.noplac, layout_in_circle = TRUE,
-                      level="agent", doseparam = 5))
+                      level="agent", doselink = 5))
 
   g1 <- plot(network, layout_in_circle = TRUE,
             level="treatment", v.color = "agent")

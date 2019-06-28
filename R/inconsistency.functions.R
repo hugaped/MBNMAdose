@@ -26,7 +26,7 @@
 #' # Using the triptans data
 #' network <- MBNMA.network(HF2PPITT)
 #'
-#' split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
 #'   method="common")
 #'
 #'
@@ -35,11 +35,11 @@
 #' # Check for closed loops of treatments with independent evidence sources
 #' loops <- inconsistency.loops(network$data.ab)
 #'
-#' split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
 #'   method="random", comparisons=rbind(c(6,23), c(6,12)))
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
-#' split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+#' split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
 #'   method="random", drop.discon=TRUE)
 #'
 #' # Plot results
@@ -50,7 +50,7 @@
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
 #' @export
-MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method="common",
+NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
                             drop.discon=FALSE, comparisons=NULL,
                             ...) {
 
@@ -261,7 +261,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
       nodesplit
   }
 
-  class(nodesplit.result) <- "MBNMA.nodesplit"
+  class(nodesplit.result) <- "NMA.nodesplit"
 
   return(nodesplit.result)
 }
@@ -281,7 +281,7 @@ MBNMA.nodesplit <- function(network, likelihood="binomial", link="logit", method
 #'   numeric codes) that indicate which treatments are used in which studies.
 #'
 #' @details Similar to \code{\link[gemtc]{mtc.nodesplit.comparisons}} but uses a fixed
-#'   reference treatment and therefore suggests fewer loops in which to test for
+#'   reference treatment and therefore identifies fewer loops in which to test for
 #'   inconsistency. Heterogeneity can also be parameterised as inconsistency and
 #'   so testing for inconsistency in additional loops whilst changing the
 #'   reference treatment would also be identifying heterogeneity. Depends on

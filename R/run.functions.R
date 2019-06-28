@@ -83,19 +83,19 @@
 #'   These will have an additional suffix that relates
 #'   to the name/number of the dose-response parameter to which they correspond
 #'   (e.g. `d.et50` or `d.1`):
-#'   * `d` The pooled relative effect for each agent for a given dose-response
+#'   * `d` The pooled effect for each agent for a given dose-response
 #'   parameter. Will be estimated by the model if dose-respones parameters (`beta.1`,
 #'   `beta.2`, `beta.3`) are set to `"rel"`.
 #'   * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 #'   `method="random"`.
-#'   * `D` The class relative effect for each class for a given dose-response
+#'   * `D` The class effect for each class for a given dose-response
 #'   parameter. Will be estimated by the model if specified in `class.effect`.
 #'   * `sd.D` The within-class SD for different agents within the same class. Will
 #'   be estimated by the model if any dose-response parameter in `class.effect` is
 #'   set to `"random"`.
 #'   * `beta` The absolute value of a given dose-response parameter across the whole
 #'   network (does not vary by agent/class). Will be estimated by the model if
-#'   dose-respones parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"`
+#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"`
 #'   or `"random"`.
 #'   * `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
 #'   parameters, reported if `beta.1`, `beta.2` or `beta.3` are set to `"random"`
@@ -110,8 +110,8 @@
 #'   users identify the source of the error.
 #'
 #' @section Dose-response parameters:
-#' * `"rel"` implies that relative effects should be estimated for this dose-resonse
-#' parameter that vary by agent.
+#' * `"rel"` implies that relative effects should be pooled for this dose-resonse
+#' parameter, that vary by agent.
 #' * `"common"` implies that all studies estimate the same true absolute effect
 #' (akin to a "fixed effect" meta-analysis) across the whole network
 #' * `"random"` implies that all studies estimate a separate true absolute effect, but
@@ -484,7 +484,8 @@ MBNMA.jags <- function(data.ab, model,
   if (grepl("maxtime", model)) {
     jagsdata[["maxtime"]] <- max(data.ab$time)
   } else if (grepl("maxdose", model)) {
-    jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
+    #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
+    jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
   }
 
   # Put data from jagsdata into separate R objects
@@ -620,6 +621,19 @@ gen.parameters.to.save <- function(model.params, model) {
 #'   assumption is valid.
 #'
 #' @examples
+#' # Run random effects NMA on the alogliptin dataset
+#' nma <- NMA.run(network, method="random")
+#' print(nma)
+#' plot(nma)
+#'
+#' # Run common effects NMA keeping treatments that are disconnected in the NMA
+#' network <- MBNMA.network(GoutSUA_2wkCFB)
+#' nma <- NMA.run(network, method="common", drop.discon=FALSE)
+#'
+#' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
+#' network <- MBNMA.network(HF2PPITT)
+#' ume <- NMA.run(network, method="random", UME=TRUE)
+#'
 #' @export
 NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
                     warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {

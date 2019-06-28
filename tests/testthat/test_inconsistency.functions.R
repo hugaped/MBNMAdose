@@ -19,12 +19,12 @@ testthat::test_that("test.inconsistency.loops", {
 
 
 
-testthat::test_that("test.MBNMA.nodesplit", {
+testthat::test_that("test.NMA.nodesplit", {
 
-  split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+  split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
                            method="common", n.iter=1000)
   expect_equal(nrow(inconsistency.loops(network$data.ab)), length(split))
-  expect_equal(class(split), "MBNMA.nodesplit")
+  expect_equal(class(split), "NMA.nodesplit")
   expect_identical(names(split[[1]]), c("comparison",
                                         "direct", "indirect", "nma",
                                         "overlap matrix", "p.values", "quantiles",
@@ -40,10 +40,10 @@ testthat::test_that("test.MBNMA.nodesplit", {
   expect_equal(class(summary(split)), "data.frame")
 
 
-  split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+  split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000)
   expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), length(split))
-  expect_equal(class(split), "MBNMA.nodesplit")
+  expect_equal(class(split), "NMA.nodesplit")
   expect_identical(names(split[[1]]), c("comparison",
                                         "direct", "indirect", "nma",
                                         "overlap matrix", "p.values", "quantiles",
@@ -60,10 +60,10 @@ testthat::test_that("test.MBNMA.nodesplit", {
 
 
   # Test drop.discon
-  split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+  split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE)
   expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), length(split))
-  expect_equal(class(split), "MBNMA.nodesplit")
+  expect_equal(class(split), "NMA.nodesplit")
   expect_identical(names(split[[1]]), c("comparison",
                                         "direct", "indirect", "nma",
                                         "overlap matrix", "p.values", "quantiles",
@@ -80,26 +80,26 @@ testthat::test_that("test.MBNMA.nodesplit", {
 
 
   # Test comparisons
-  split <- MBNMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+  split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE,
                            comparisons = rbind(c(18,20), c(17,20)))
   expect_equal(2, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")
 
-  split <- MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+  split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE,
                            comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5")))
   expect_equal(1, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")
 
-  expect_error(MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+  expect_error(NMA.nodesplit(network, likelihood = "binomial", link="logit",
                                method="random", n.iter=1000, drop.discon = FALSE,
                                comparisons = rbind(c("badger","rizatriptan_0.5"))),
                "Treatment names given")
 
-  expect_error(MBNMA.nodesplit(network, likelihood = "binomial", link="logit",
+  expect_error(NMA.nodesplit(network, likelihood = "binomial", link="logit",
                                method="random", n.iter=1000, drop.discon = FALSE,
                                comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                    c("zolmitriptan_4", "eletriptan_1"),
