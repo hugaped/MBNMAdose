@@ -405,7 +405,7 @@ emax <- MBNMA.emax(alognet, emax="rel", ed50="rel", method="random",
 
 Mathematical errors can be more likely for certain types of models. For dose-response relationships which include a dose-response parameter as an exponent (e.g. an exponential dose-response function), default prior distributions may result in numerical values that are too extreme for computation. One way to fix this problem is to use tighter priors for `d`'s. However, a contributing factor to this issue is that doses within a dataset can be very variable in magnitude, thus leading to excessively high/low exponents. A solution for this is is to standardise doses within an agent by some common value (i.e. the most commonly prescribed dose or the maximum dose investigated). This leads to all doses being relative to the standard dose, but can improve computation.
 
-```{r, , message=FALSE, warning=FALSE, error=TRUE}
+```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE}
 # Exponential model currently returns an error on gout dataset
 exponetial <- MBNMA.exponential(goutnet, lambda="rel")
 ```
