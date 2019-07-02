@@ -275,7 +275,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'
 #' Identify comparisons informed by both direct and indirect evidence from
 #' independent sources, which therefore fulfill the criteria for testing for
-#' inconsistency via node-splitting. Follows the method of van Valkenhoef \insertCite{RN35;textual}{MBNMAtime}.
+#' inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 #'
 #' @param data A data frame containing variables `studyID` and `treatment` (as
 #'   numeric codes) that indicate which treatments are used in which studies.

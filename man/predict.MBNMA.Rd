@@ -55,7 +55,7 @@ has been provided. Using \code{"random"} rather
 than \code{"fixed"} for \code{synth} will result in wider 95\% CrI for predictions.}
 
 \item{...}{Arguments to be sent to R2jags for synthesis of the network
-reference treatment effect (using \code{ref.synth()})}
+reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 }
 \value{
 An S3 object of class \code{MBNMA.predict} that contains the following
@@ -82,11 +82,11 @@ The range of doses on which to make predictions can be specified in one of two w
 \item Use \code{max.dose} and \code{n.doses} to specify the maximum dose for each agent and the
 number of doses within that agent for which to predict responses. Doses will be chosen
 that are equally spaced from zero to the maximum dose for each agent. This is useful
-for generating plots of predicted responses (using \code{plot.MBNMA.predict()}) as it will
+for generating plots of predicted responses (using \code{[plot-MBNMA.predict]}) as it will
 lead to fitting a smooth dose-response curve (provided \code{n.doses} is sufficiently high).
 \item Use \code{exact.doses} to specify the exact doses for which to predict responses for each
 agent. This may be more useful when ranking different predicted responses using
-\code{rank.MBNMA.predict()}
+\code{[rank-MBNMA.predict]}
 }
 }
 \examples{

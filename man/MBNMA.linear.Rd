@@ -39,13 +39,13 @@ modelled using relative effects.}
 \itemize{
 \item \code{pv} only pV will be reported (as automatically outputted by R2jags).
 \item \code{plugin} calculates pD by the plug-in
-method REF. It is faster, but may output negative
+method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence REF. This
+\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 will require running the model for additional iterations but
 will always produce a positive result.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance REF.
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 }}
 
 \item{parallel}{A boolean value that indicates whether JAGS should be run in
@@ -108,7 +108,7 @@ users identify the source of the error.
 \description{
 Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 dose-response function. Follows the methods
-of MAWDSLEY REF. This function acts as a wrapper for \code{MBNMA.run()} that
+of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for \code{MBNMA.run()} that
 uses more clearly defined parameter names.
 }
 \section{Dose-response parameters}{
@@ -187,6 +187,7 @@ summary(linear)
 
 # Plot forest plot of results
 plot(linear)
+
 
 }
 \references{

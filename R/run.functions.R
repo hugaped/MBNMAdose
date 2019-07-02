@@ -8,7 +8,7 @@
 #' Fits a Bayesian dose-response for model-based network meta-analysis
 #' (MBNMA) that can account for multiple doses of different agents by
 #' applying a desired dose-response function. Follows the methods
-#' of Mawdsley (REF).
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}.
 #'
 #' @param network An object of class `MBNMA.network`.
 #' @param parameters.to.save A character vector containing names of parameters
@@ -51,13 +51,13 @@
 #' @param pd Can take either:
 #'   * `pv` only pV will be reported (as automatically outputted by R2jags).
 #'   * `plugin` calculates pD by the plug-in
-#'   method REF. It is faster, but may output negative
+#'   method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence REF. This
+#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 #'   will require running the model for additional iterations but
 #'   will always produce a positive result.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
-#'   of the penalized expected deviance REF.
+#'   of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated.
@@ -135,9 +135,9 @@
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
 #'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
-#'   the method of OWENS REF)
+#'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
-#'   the method of OWENS REF)
+#'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"user"` (user-defined function: `user.fun` must be specified in arguments)
 #'
 #' @importFrom Rdpack reprompt
@@ -809,7 +809,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams MBNMA.run
@@ -818,6 +818,9 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @references
+#'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
@@ -879,6 +882,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' # Plot forest plot of results
 #' plot(linear)
 #'
+#'
 #' @export
 MBNMA.linear <- function(network, parameters.to.save=NULL,
                          slope="rel",
@@ -920,7 +924,7 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams MBNMA.run
@@ -929,6 +933,9 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @references
+#'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
@@ -1042,7 +1049,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams MBNMA.run
@@ -1053,6 +1060,9 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @references
+#'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
@@ -1176,7 +1186,7 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams MBNMA.run
@@ -1189,6 +1199,9 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @inheritSection MBNMA.run Dose-response parameters
+#'
+#' @references
+#'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
@@ -1320,7 +1333,7 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
 #' with repeated measurements
 #'
 #' Uses results from MBNMA JAGS models to calculate pD via the
-#' plugin method (Speigelhalter REF). Can only be used for models with known
+#' plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
 #' standard errors or covariance matrices (typically univariate).
 #'
 #' @param obs1 A matrix (study x arm) or array (study x arm x time point) containing
@@ -1353,16 +1366,18 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
 #' @return A single numeric value for pD calculated via the plugin method.
 #'
 #' @details Method for calculating pD via the plugin method proposed by
-#'   Spiegelhalter (REF). Standard errors / covariance matrices must be assumed
+#'   Spiegelhalter \insertCite{spiegelhalter2002}{MBNMAdose}. Standard errors / covariance matrices must be assumed
 #'   to be known. To obtain values for theta.result and resdev.result these
 #'   parameters must be monitored when running the JAGS model.
 #'
 #'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 #'   can lead to non-sensical results when calculating pD via the plugin method.
-#'   Alternative approaches are to use pV as an approximation (Plummer REF) or
-#'   pD calculated by Kullback–Leibler divergence (REF).
+#'   Alternative approaches are to use pV as an approximation or
+#'   pD calculated by Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 #'
-#' @references TO ADD pV REF
+#' @references
+#'   \insertAllCited
+#'
 #' @inherit MBNMA.run references
 #'
 #' @examples

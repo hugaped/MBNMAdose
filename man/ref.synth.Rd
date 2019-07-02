@@ -36,7 +36,7 @@ than \code{"fixed"} for \code{synth} will result in wider 95\% CrI for predictio
 \item{n.chains}{number of Markov chains (default: 3)}
 
 \item{...}{Arguments to be sent to R2jags for synthesis of the network
-reference treatment effect (using \code{ref.synth()})}
+reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 
 \item{A}{data frame of arm-level data in "long" format containing the
 columns:

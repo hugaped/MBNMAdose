@@ -50,19 +50,19 @@ A single numeric value for pD calculated via the plugin method.
 }
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
-plugin method (Speigelhalter REF). Can only be used for models with known
+plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
 standard errors or covariance matrices (typically univariate).
 }
 \details{
 Method for calculating pD via the plugin method proposed by
-Spiegelhalter (REF). Standard errors / covariance matrices must be assumed
+Spiegelhalter \insertCite{spiegelhalter2002}{MBNMAdose}. Standard errors / covariance matrices must be assumed
 to be known. To obtain values for theta.result and resdev.result these
 parameters must be monitored when running the JAGS model.
 
 For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 can lead to non-sensical results when calculating pD via the plugin method.
-Alternative approaches are to use pV as an approximation (Plummer REF) or
-pD calculated by Kullback–Leibler divergence (REF).
+Alternative approaches are to use pV as an approximation or
+pD calculated by Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 }
 \examples{
 # Using the triptans data
@@ -91,5 +91,5 @@ pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
 
 }
 \references{
-TO ADD pV REF
+\insertAllCited
 }

@@ -132,10 +132,10 @@ neatCrI <- function(vals, digits=3) {
 }
 
 
-#' Prints summary results from an MBNMA.nodesplit object
+#' Prints summary results from an NMA.nodesplit object
 #' @export
-print.MBNMA.nodesplit <- function(nodesplit) {
-  checkmate::assertClass(nodesplit, "MBNMA.nodesplit")
+print.NMA.nodesplit <- function(nodesplit) {
+  checkmate::assertClass(nodesplit, "NMA.nodesplit")
 
   width <- "\t\t"
   output <- "========================================\nNode-splitting analysis of inconsistency\n========================================\n"
@@ -165,7 +165,8 @@ print.MBNMA.nodesplit <- function(nodesplit) {
 
 #' Generates a summary data frame for MBNMA.nodesplit objects
 #' @export
-summary.MBNMA.nodesplit <- function(nodesplit) {
+summary.NMA.nodesplit <- function(nodesplit) {
+  checkmate::assertClass(nodesplit, "NMA.nodesplit")
 
   if ("quantiles" %in% names(nodesplit[[1]])) {
     type <- "dose"
@@ -591,4 +592,26 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
                   " which could be due to convergence issues:\n")
     warning(paste0(msg, paste(rhats, collapse="\n")))
   }
+}
+
+
+
+
+
+
+print.MBNMA.network <- function(x,...) {
+  nn <- names(x)
+  ll <- length(x)
+  if (length(nn) != ll)
+    nn <- paste("Component", seq.int(ll))
+  for (i in seq_len(ll)) {
+    cat(nn[i], ":\n")
+    if (is.data.frame((x[[i]]))) {
+      print(x[[i]], max=ncol(x[[i]])*6, ...)
+    } else {
+      print(x[[i]], ...)
+    }
+    cat("\n")
+  }
+  invisible(x)
 }

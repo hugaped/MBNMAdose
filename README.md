@@ -1,1 +1,91 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # MBNMAdose
+
+The goal of `MBNMAdose` is to provide a collection of useful commands
+that allow users to run dose-response Model-Based Network Meta-Analyses
+(MBNMA). This allows evidence synthesis of studies that compare multiple
+doses of different agents in a way that can account for the
+dose-response relationship.
+
+Whilst making use of all the available evidence in a statistically
+robust and biologically plausible framework, this also can help connect
+networks at the agent level that may otherwise be disconnected at the
+dose/treatment level, and help improve precision of estimates. It avoids
+“lumping” of doses that is often done in standard Network Meta-Analysis
+(NMA). All models and analyses are implemented in a Baysian framework,
+following an extension of the standrd NMA methodology presented by (Lu
+and Ades 2004) and are run in JAGS (JAGS Computer Program 2017). For
+full details of dose-response MBNMA methodology see Mawdsley et
+al. (2016). Throughout this package we refer to a **treatment** as a
+specific **dose** or a specific **agent**.
+
+## Installation
+
+Currently the package can be installed directly from GitHub using the
+`devtools` R package:
+
+``` r
+# First install devtools
+install.packages("devtools")
+
+# Then install MBNMAtime directly from GitHub
+devtools::install_github("hugopedder/MBNMAdose")
+```
+
+Once it is released on CRAN (i.e. **not yet\!**), you will (hopefully)
+be able to install the released version of `MBNMAdose` from
+[CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("MBNMAdose")
+```
+
+## Workflow
+
+Functions within `MBNMAdose` follow a clear pattern of use:
+
+1.  Load your data into the correct format using `MBNMA.network()`
+2.  Analyse your data using `MBNMA.run()`, or any of the available
+    wrapper dose-response functions
+3.  Test for consistency at the treatment-level using functions like
+    `NMA.nodesplit()` and `NMA.run()`
+4.  Examine model results using forest plots and treatment rankings
+5.  Use your model to predict responses using `predict.MBNMA()`
+
+At each of these stages there are a number of informative plots that can
+be generated to help understand the data and to make decisions regaring
+model fitting.
+
+![](man/figures/functionstructure.png
+"Graphic showing how different exported functions within MBNMAdose are connected")
+
+## References
+
+<div id="refs" class="references">
+
+<div id="ref-jags">
+
+JAGS Computer Program. 2017. <http://mcmc-jags.sourceforge.net>.
+
+</div>
+
+<div id="ref-lu2004">
+
+Lu, G., and A. E. Ades. 2004. “Combination of Direct and Indirect
+Evidence in Mixed Treatment Comparisons.” Journal Article. *Stat Med* 23
+(20): 3105–24. <https://doi.org/10.1002/sim.1875>.
+
+</div>
+
+<div id="ref-mawdsley2016">
+
+Mawdsley, D., M. Bennetts, S. Dias, M. Boucher, and N. J. Welton. 2016.
+“Model-Based Network Meta-Analysis: A Framework for Evidence Synthesis
+of Clinical Trial Data.” Journal Article. *CPT Pharmacometrics Syst
+Pharmacol* 5 (8): 393–401. <https://doi.org/10.1002/psp4.12091>.
+
+</div>
+
+</div>

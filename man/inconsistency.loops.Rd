@@ -19,7 +19,7 @@ to treatment codes.
 \description{
 Identify comparisons informed by both direct and indirect evidence from
 independent sources, which therefore fulfill the criteria for testing for
-inconsistency via node-splitting. Follows the method of van Valkenhoef \insertCite{RN35;textual}{MBNMAtime}.
+inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 }
 \details{
 Similar to \code{\link[gemtc]{mtc.nodesplit.comparisons}} but uses a fixed

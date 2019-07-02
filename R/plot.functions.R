@@ -1193,7 +1193,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 
   suppressWarnings(plot(g))
 
-  return(list("graph"=g, "fv"=theta.df))
+  return(invisible(list("graph"=g, "fv"=theta.df)))
 }
 
 
@@ -1350,8 +1350,6 @@ plot.NMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
       ggplot2::facet_wrap(~factor(comp))
-
-    plot(forest)
   }
   if ("density" %in% plot.type) {
 
@@ -1363,11 +1361,11 @@ plot.NMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
       ggplot2::facet_wrap(~factor(comp))
-
-    plot(density)
   }
 
   if (identical(sort(plot.type), c("density", "forest"))) {
+    plot(forest)
+    plot(density)
     return(invisible(list(forest, density)))
   } else {
     if (plot.type=="forest") {

@@ -1,10 +1,10 @@
 Package: MBNMAdose
 Type: Package
 Title: Run dose-response MBNMA models
-Version: 0.1.0
+Version: 0.2.0.9000
 Date: 2019-04-07
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
-  person("David", "Mawdsley", role = c("aut")),
+  person("David", "Mawdsley", role = c("ctb")),
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
   person("Meg", "Bennetts", role = c("ctb", "rev")),
@@ -26,7 +26,8 @@ Imports:
   rjags (>= 4-8),
   magrittr (>= 1.5),
   checkmate (>= 1.8.5),
-  testthat (>= 1.0.2)
+  testthat (>= 1.0.2),
+  Rdpack (>= 0.7)
 Suggests:
     overlapping (>= 1.5.0),
     ggplot2 (>= 2.2.1),
@@ -40,3 +41,4 @@ LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Roxygen: list(markdown = TRUE)
+RdMacros: Rdpack

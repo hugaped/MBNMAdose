@@ -53,13 +53,13 @@ modelled using relative effects.}
 \itemize{
 \item \code{pv} only pV will be reported (as automatically outputted by R2jags).
 \item \code{plugin} calculates pD by the plug-in
-method REF. It is faster, but may output negative
+method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence REF. This
+\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 will require running the model for additional iterations but
 will always produce a positive result.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance REF.
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 }}
 
 \item{parallel}{A boolean value that indicates whether JAGS should be run in
@@ -127,7 +127,7 @@ users identify the source of the error.
 Fits a Bayesian dose-response for model-based network meta-analysis
 (MBNMA) that can account for multiple doses of different agents by
 applying a desired dose-response function. Follows the methods
-of Mawdsley (REF).
+of \insertCite{mawdsley2016;textual}{MBNMAdose}.
 }
 \details{
 When relative effects are modelled on more than one dose-response parameter and
@@ -167,9 +167,9 @@ Emax parameter, \code{beta.2} refers to ET50 parameter
 \item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
 to ET50 parameter, \code{beta.3} refers to Hill parameter
 \item \code{"nonparam.up"} (monotonically increasing non-parametric dose-response relationship following
-the method of OWENS REF)
+the method of \insertCite{owen2015;textual}{MBNMAdose})
 \item \code{"nonparam.down"} (monotonically decreasing non-parametric dose-response relationship following
-the method of OWENS REF)
+the method of \insertCite{owen2015;textual}{MBNMAdose})
 \item \code{"user"} (user-defined function: \code{user.fun} must be specified in arguments)
 }
 }
