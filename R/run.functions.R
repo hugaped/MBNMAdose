@@ -10,7 +10,7 @@
 #' applying a desired dose-response function. Follows the methods
 #' of \insertCite{mawdsley2016;textual}{MBNMAdose}.
 #'
-#' @param network An object of class `MBNMA.network`.
+#' @param network An object of class `mbnma.network`.
 #' @param parameters.to.save A character vector containing names of parameters
 #'   to monitor in JAGS
 #' @param fun is a character specifying a functional form to be assigned to the
@@ -61,7 +61,7 @@
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated.
-#' @param arg.params Contains a list of arguments sent to `MBNMA.run()` by time-course
+#' @param arg.params Contains a list of arguments sent to `mbnma.run()` by time-course
 #' specific wrapper functions
 #' @param ... Arguments to be sent to R2jags.
 #'
@@ -73,7 +73,7 @@
 #' by specifying the relative scale of variances between the dose-response parameters using
 #' `var.scale`.
 #'
-#' @return An object of S3 class `c("MBNMA", "rjags")`` containing parameter
+#' @return An object of S3 class `c("mbnma", "rjags")`` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
 #'   traceplots using `traceplot()` (from the `R2jags` package).
 #'
@@ -105,7 +105,7 @@
 #'
 #'   If there are errors in the JAGS model code then the object will be a list
 #'   consisting of two elements - an error message from JAGS that can help with
-#'   debugging and `model.arg`, a list of arguments provided to `MBNMA.run()`
+#'   debugging and `model.arg`, a list of arguments provided to `mbnma.run()`
 #'   which includes `jagscode`, the JAGS code for the model that can help
 #'   users identify the source of the error.
 #'
@@ -148,31 +148,31 @@
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #'
 #' ######## Dose-response functions ########
 #'
 #' # Fit a dose-response MBNMA with a linear function and common treatment effects
-#' result <- MBNMA.run(network, fun="linear", beta.1="rel", method="common")
+#' result <- mbnma.run(network, fun="linear", beta.1="rel", method="common")
 #'
 #' # Fit a dose-response MBNMA with an exponential function and random treatment effects
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random")
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 #'
 #' # Fit a user-defined function (quadratic)
 #' fun.def <- "(beta.1 * dose) + (beta.2 * (dose^2))"
-#' result <- MBNMA.run(network, fun="user", user.fun=fun.def,
+#' result <- mbnma.run(network, fun="user", user.fun=fun.def,
 #'   beta.1="rel", beta.2="rel", method="common")
 #'
 #' # Fit an Emax function with a single random (exchangeable) parameter estimated
 #' #for ED50 and common treatment effects on relative Emax effects
-#' result <- MBNMA.run(network, fun="emax",
+#' result <- mbnma.run(network, fun="emax",
 #'   beta.1="rel", beta.2="random", method="common")
 #'
 #' # Fit an Emax function with a Hill parameter, with a fixed value for the Hill parameter
 #' #provided to the model and random relative effects on Emax and ED50 (which will
 #' #therefore be modelled with a correlation between them).
-#' result <- MBNMA.run(network, fun="emax.hill",
+#' result <- mbnma.run(network, fun="emax.hill",
 #'   beta.1="rel", beta.2="rel", beta.3=5, method="random")
 #'
 #'
@@ -181,11 +181,11 @@
 #' # Generate a dataset with one class for active treatments and one for placebo
 #' class.df <- HF2PPITT
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- MBNMA.network(class.df)
+#' netclass <- mbnma.network(class.df)
 #'
 #' # Fit an Emax function with common relative effects on Emax and ED50 and
 #' #a random class effect on ED50.
-#' result <- MBNMA.run(netclass, fun="emax",
+#' result <- mbnma.run(netclass, fun="emax",
 #'   beta.1="rel", beta.2="rel", method="common",
 #'   class.effect=list(beta.2="random"))
 #'
@@ -193,7 +193,7 @@
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax function with random relative effects on Emax and ED50
-#' result <- MBNMA.run(network, fun="emax",
+#' result <- mbnma.run(network, fun="emax",
 #'   beta.1="rel", beta.2="rel", method="random")
 #' print(result$model.arg$priors)
 #'
@@ -201,7 +201,7 @@
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
 #'                   inv.R = "dwish(Omega[,],100)")
 #'
-#' result <- MBNMA.run(network, fun="emax",
+#' result <- mbnma.run(network, fun="emax",
 #'   beta.1="rel", beta.2="rel", method="random",
 #'   priors=newpriors)
 #'
@@ -209,15 +209,15 @@
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   pd="pd.kl")
 #'
 #'
@@ -243,7 +243,7 @@
 #' plot(result)
 #'
 #' @export
-MBNMA.run <- function(network, parameters.to.save=NULL,
+mbnma.run <- function(network, parameters.to.save=NULL,
                       fun="linear", user.fun=NULL,
                       beta.1="rel",
                       beta.2=NULL, beta.3=NULL,
@@ -260,7 +260,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertCharacter(model.file, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
@@ -305,7 +305,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   }
 
   if (is.null(model.file)) {
-    model <- MBNMA.write(fun=fun, user.fun=user.fun,
+    model <- mbnma.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
                          method=method,
                          class.effect=class.effect,
@@ -385,7 +385,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
     data.ab <- network[["data.ab"]]
   }
 
-  result.jags <- MBNMA.jags(data.ab, model,
+  result.jags <- mbnma.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link,
@@ -443,7 +443,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
   }
 
   if (!("error" %in% names(result))) {
-    class(result) <- c("MBNMA", class(result))
+    class(result) <- c("mbnma", class(result))
   }
 
   return(result)
@@ -454,7 +454,7 @@ MBNMA.run <- function(network, parameters.to.save=NULL,
 
 
 
-MBNMA.jags <- function(data.ab, model,
+mbnma.jags <- function(data.ab, model,
                        class=FALSE, rho=NULL, covar=NULL,
                        parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL,
@@ -611,7 +611,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #' Results can also be compared between consistency (`UME=FALSE`) and inconsistency
 #' (`UME=TRUE`) models to test the validity of the consistency assumption.
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
 #' @param warn.rhat A boolean object to indicate whether to return a warning if Rhat values
 #' for any monitored parameter are >1.02 (suggestive of non-convergence).
 #' @param drop.discon A boolean object that indicates whether or not to drop disconnected
@@ -627,11 +627,11 @@ gen.parameters.to.save <- function(model.params, model) {
 #' plot(nma)
 #'
 #' # Run common effects NMA keeping treatments that are disconnected in the NMA
-#' network <- MBNMA.network(GoutSUA_2wkCFB)
+#' network <- mbnma.network(GoutSUA_2wkCFB)
 #' nma <- NMA.run(network, method="common", drop.discon=FALSE)
 #'
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #' ume <- NMA.run(network, method="random", UME=TRUE)
 #'
 #' @export
@@ -640,7 +640,7 @@ NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::assertLogical(warn.rhat, add=argcheck)
   checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
@@ -740,8 +740,8 @@ NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
 #' Checks that likelihood and link function is provided and confirm that the correct
 #' form of data is provided.
 #'
-#' @inheritParams MBNMA.run
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.run
+#' @inheritParams mbnma.network
 #'
 #' @export
 check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
@@ -801,7 +801,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 
 
 #######################################################
-#########   MBNMA.run Wrapper Functions   #############
+#########   mbnma.run Wrapper Functions   #############
 #######################################################
 
 
@@ -809,55 +809,55 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `.run()` that
 #' uses more clearly defined parameter names.
 #'
-#' @inheritParams MBNMA.run
-#' @inherit MBNMA.run return references
+#' @inheritParams .run
+#' @inherit .run return references
 #' @param slope Refers to the slope parameter of the linear dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection MBNMA.run Dose-response parameters
+#' @inheritSection .run Dose-response parameters
 #'
 #' @references
 #'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a linear dose-response MBNMA with random treatment effects
-#' linear <- MBNMA.linear(network, slope="rel", method="random")
+#' linear <- mbnma.linear(network, slope="rel", method="random")
 #'
 #' # Fit a linear dose-response MBNMA using a cloglog link function
-#' linear <- MBNMA.linear(network, slope="rel", link="cloglog")
+#' linear <- mbnma.linear(network, slope="rel", link="cloglog")
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from linear dose-response MBNMA
-#' linear <- MBNMA.linear(network, slope="rel", method="random")
+#' linear <- mbnma.linear(network, slope="rel", method="random")
 #' print(linear$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
-#' linear <- MBNMA.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(network, slope="rel", method="random",
 #'   priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' linear <- MBNMA.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(network, slope="rel", method="random",
 #'   n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' linear <- MBNMA.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(network, slope="rel", method="random",
 #'   pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
-#' linear <- MBNMA.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(network, slope="rel", method="random",
 #'   pd="pd.kl")
 #'
 #'
@@ -884,7 +884,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #'
 #' @export
-MBNMA.linear <- function(network, parameters.to.save=NULL,
+mbnma.linear <- function(network, parameters.to.save=NULL,
                          slope="rel",
                          method="common",
                          class.effect=list(),
@@ -901,7 +901,7 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
     run.params=c("beta.1")
   )
 
-  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+  result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
                       fun="linear", user.fun=NULL,
                       model.file=NULL,
                       beta.1=slope,
@@ -924,55 +924,55 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `mbnma.run()` that
 #' uses more clearly defined parameter names.
 #'
-#' @inheritParams MBNMA.run
-#' @inherit MBNMA.run return references
+#' @inheritParams mbnma.run
+#' @inherit mbnma.run return references
 #' @param lambda Refers to the rate of growth/decay of the exponential dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection MBNMA.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameters
 #'
 #' @references
 #'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a exponential dose-response MBNMA with random treatment effects
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random")
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random")
 #'
 #' # Fit a exponential dose-response MBNMA using a cloglog link function
-#' exponential <- MBNMA.exponential(network, lambda="rel", link="cloglog")
+#' exponential <- mbnma.exponential(network, lambda="rel", link="cloglog")
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from exponential dose-response MBNMA
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random")
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random")
 #' print(exponential$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
 #'   priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
 #'   n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
 #'   pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
-#' exponential <- MBNMA.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
 #'   pd="pd.kl")
 #'
 #'
@@ -999,7 +999,7 @@ MBNMA.linear <- function(network, parameters.to.save=NULL,
 #'
 #'
 #' @export
-MBNMA.exponential <- function(network, parameters.to.save=NULL,
+mbnma.exponential <- function(network, parameters.to.save=NULL,
                          lambda="rel",
                          method="common",
                          class.effect=list(),
@@ -1025,7 +1025,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
   #   priors <- list("d.lambda"=dist)
   # }
 
-  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+  result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
                       fun="exponential", user.fun=NULL,
                       model.file=NULL,
                       beta.1=lambda,
@@ -1049,31 +1049,31 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `mbnma.run()` that
 #' uses more clearly defined parameter names.
 #'
-#' @inheritParams MBNMA.run
-#' @inherit MBNMA.run return references
+#' @inheritParams mbnma.run
+#' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection MBNMA.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameters
 #'
 #' @references
 #'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit an Emax dose-response MBNMA with random treatment effects on Emax and ED50
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #'
 #' # Fit an Emax dose-response MBNMA with common treatment effects on Emax and
 #' #a single common parameter estimated for ED50
-#' emax <- MBNMA.emax(network, emax="rel", ed50="common", method="common")
+#' emax <- mbnma.emax(network, emax="rel", ed50="common", method="common")
 #'
 #'
 #' ########## Class effects ##########
@@ -1081,11 +1081,11 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' # Generate a dataset with one class for active treatments and one for placebo
 #' class.df <- HF2PPITT
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- MBNMA.network(class.df)
+#' netclass <- mbnma.network(class.df)
 #'
 #' # Fit an Emax function with common relative effects on Emax and ED50 and
 #' #a random class effect on ED50.
-#' emax <- MBNMA.emax(netclass,
+#' emax <- mbnma.emax(netclass,
 #'   emax="rel", ed50="rel", method="common",
 #'   class.effect=list(ed50="random"))
 #'
@@ -1093,7 +1093,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax function with random relative effects on Emax and ED50
-#' emax <- MBNMA.emax(network,
+#' emax <- mbnma.emax(network,
 #'   emax="rel", ed50="rel", method="random")
 #' print(emax$model.arg$priors)
 #'
@@ -1101,7 +1101,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
 #'                   inv.R = "dwish(Omega[,],100)")
 #'
-#' emax <- MBNMA.emax(network,
+#' emax <- mbnma.emax(network,
 #'   emax="rel", ed50="rel", method="random",
 #'   priors=newpriors)
 #'
@@ -1109,15 +1109,15 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel",
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
 #'   n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel",
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
 #'   pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel",
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
 #'   pd="pd.kl")
 #'
 #'
@@ -1143,7 +1143,7 @@ MBNMA.exponential <- function(network, parameters.to.save=NULL,
 #' plot(emax)
 #'
 #' @export
-MBNMA.emax <- function(network, parameters.to.save=NULL,
+mbnma.emax <- function(network, parameters.to.save=NULL,
                          emax="rel",
                          ed50="rel",
                          method="common",
@@ -1161,7 +1161,7 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
     run.params=c("beta.1", "beta.2")
   )
 
-  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+  result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
                       fun="emax", user.fun=NULL,
                       model.file=NULL,
                       beta.1=emax,
@@ -1186,11 +1186,11 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `MBNMA.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `mbnma.run()` that
 #' uses more clearly defined parameter names.
 #'
-#' @inheritParams MBNMA.run
-#' @inherit MBNMA.run return references
+#' @inheritParams mbnma.run
+#' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
@@ -1198,28 +1198,28 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #' @param hill Refers to the Hill parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection MBNMA.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameters
 #'
 #' @references
 #'   \insertAllCited
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with random treatment
 #' #effects on Emax, ED50 and Hill
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="rel", hill="rel",
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill="rel",
 #'   method="random")
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with common treatment
 #' #effects on Emax, a single random parameter estimated for ED50
 #' #and a single common parameter estimated for Hill
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="random", hill="common",
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="random", hill="common",
 #'   method="common")
 #'
 #' # Assign a specific numerical value for Hill parameter
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="rel", hill=5)
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=5)
 #'
 #'
 #' ########## Class effects ##########
@@ -1227,11 +1227,11 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #' # Generate a dataset with one class for active treatments and one for placebo
 #' class.df <- HF2PPITT
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- MBNMA.network(class.df)
+#' netclass <- mbnma.network(class.df)
 #'
 #' # Fit an Emax (with Hill parameter) function with common relative effects on
 #' #all parameters and common class effects on ED50 and Hill.
-#' emax.hill <- MBNMA.emax.hill(netclass,
+#' emax.hill <- mbnma.emax.hill(netclass,
 #'   emax="rel", ed50="rel", hill="rel", method="common",
 #'   class.effect=list(ed50="common", hill="common"))
 #'
@@ -1240,14 +1240,14 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #'
 #' # Obtain priors from an Emax (with Hill parameter) function with
 #' #relative effects on Emax and ED50 and a single common parameter for Hill
-#' emax.hill <- MBNMA.emax.hill(network,
+#' emax.hill <- mbnma.emax.hill(network,
 #'   emax="rel", ed50="rel", hill="common", method="common")
 #' print(emax.hill$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(beta.hill = "dnorm(0,0.5) T(,0)")
 #'
-#' emax.hill <- MBNMA.emax.hill(network,
+#' emax.hill <- mbnma.emax.hill(network,
 #'   emax="rel", ed50="rel", hill="common", method="common",
 #'   priors=newpriors)
 #'
@@ -1255,15 +1255,15 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="rel", hill=2,
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
 #'   n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="rel", hill=2,
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
 #'   pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
-#' emax.hill <- MBNMA.emax.hill(network, emax="rel", ed50="rel", hill=2,
+#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
 #'   pd="pd.kl")
 #'
 #'
@@ -1289,7 +1289,7 @@ MBNMA.emax <- function(network, parameters.to.save=NULL,
 #' plot(emax.hill)
 #'
 #' @export
-MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
+mbnma.emax.hill <- function(network, parameters.to.save=NULL,
                        emax="rel",
                        ed50="rel",
                        hill="common",
@@ -1308,7 +1308,7 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
     run.params=c("beta.1", "beta.2", "beta.3")
   )
 
-  result <- MBNMA.run(network=network, parameters.to.save=parameters.to.save,
+  result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
                       fun="emax.hill", user.fun=NULL,
                       model.file=NULL,
                       beta.1=emax,
@@ -1378,14 +1378,14 @@ MBNMA.emax.hill <- function(network, parameters.to.save=NULL,
 #' @references
 #'   \insertAllCited
 #'
-#' @inherit MBNMA.run references
+#' @inherit mbnma.run references
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   parameters.to.save=c("psi", "resdev"))
 #'
 #'
@@ -1487,7 +1487,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #'
 #' Useful for obtaining deviance contributions or fitted values
 #'
-#' @inheritParams predict.MBNMA
+#' @inheritParams predict.mbnma
 #' @param param Used to indicate which node to monitor in the model. Can be any parameter
 #' in the model code that varies by all arms within all studies. These are some typical
 #' parameters that it might be of interest to monitor, provided they are in the original
@@ -1512,10 +1512,10 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   parameters.to.save=c("psi", "resdev"))
 #'
 #' update.mbnma(result, param="theta") # monitor theta
@@ -1528,7 +1528,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 update.mbnma <- function(mbnma, param="theta") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertCharacter(param, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 

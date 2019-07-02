@@ -14,26 +14,26 @@ datalist <- list(HF2PPITT, osteopain_2wkabs, alog_pcfb)
 
 ################### Testing ################
 
-testthat::test_that("MBNMA.validate.data functions correctly", {
+testthat::test_that("mbnma.validate.data functions correctly", {
   df.err <- HF2PPITT[-1,]
-  expect_error(MBNMA.validate.data(df.err), regexp = "single study arm")
+  expect_error(mbnma.validate.data(df.err), regexp = "single study arm")
 
   df.err <- HF2PPITT
   df.err$dose[10] <- -1
-  expect_error(MBNMA.validate.data(df.err), regexp = "All values for `dose`")
+  expect_error(mbnma.validate.data(df.err), regexp = "All values for `dose`")
 
   df.err <- HF2PPITT[, names(HF2PPITT)!="r"]
-  expect_error(MBNMA.validate.data(df.err), regexp = "Required variable names are")
+  expect_error(mbnma.validate.data(df.err), regexp = "Required variable names are")
 
   df.err <- HF2PPITT
   df.err$r[20] <- NA
-  expect_error(MBNMA.validate.data(df.err), regexp = "NA values in:")
+  expect_error(mbnma.validate.data(df.err), regexp = "NA values in:")
 
   df.err <- df.class
   df.err$class[1] <- 2
-  expect_error(MBNMA.validate.data(df.err), regexp = "Class codes are different")
+  expect_error(mbnma.validate.data(df.err), regexp = "Class codes are different")
 
-  expect_silent(MBNMA.validate.data(df.class))
+  expect_silent(mbnma.validate.data(df.class))
 })
 
 
@@ -64,35 +64,35 @@ test_that("add_index functions correctly", {
 
 
 
-test_that("MBNMA.network functions correctly", {
-  expect_message(MBNMA.network(df1))
+test_that("mbnma.network functions correctly", {
+  expect_message(mbnma.network(df1))
 
-  expect_message(MBNMA.network(df2))
+  expect_message(mbnma.network(df2))
 
-  expect_message(MBNMA.network(df.class))
+  expect_message(mbnma.network(df.class))
 
   df.err <- HF2PPITT[-1,]
-  expect_error(MBNMA.network(df.err), regex="single study arm")
+  expect_error(mbnma.network(df.err), regex="single study arm")
 
   y <- 5
-  expect_error(MBNMA.network(y))
+  expect_error(mbnma.network(y))
 
-  expect_message(MBNMA.network(alog_pcfb))
-  expect_message(MBNMA.network(osteopain_2wkabs))
-  expect_message(MBNMA.network(GoutSUA_2wkCFB))
+  expect_message(mbnma.network(alog_pcfb))
+  expect_message(mbnma.network(osteopain_2wkabs))
+  expect_message(mbnma.network(GoutSUA_2wkCFB))
 })
 
 
 
 
-test_that("MBNMA.comparions functions correctly", {
+test_that("mbnma.comparions functions correctly", {
 
   for (i in seq_along(datalist)) {
-    network <- MBNMA.network(datalist[[i]])
+    network <- mbnma.network(datalist[[i]])
 
-    expect_error(MBNMA.comparisons(network))
+    expect_error(mbnma.comparisons(network))
 
-    comps <- MBNMA.comparisons(network$data.ab)
+    comps <- mbnma.comparisons(network$data.ab)
 
     expect_equal(names(comps), c("t1", "t2", "nr"))
     checkmate::assertDataFrame(comps, any.missing = FALSE, types="numeric")
@@ -108,13 +108,13 @@ test_that("drop.disconnected functions correctly", {
 
 
   # Creating a broken network
-  df.num <- MBNMA.network(df1)$data.ab
+  df.num <- mbnma.network(df1)$data.ab
   df.num$dose[df.num$studyID==3 & df.num$agent==1] <- 1
   df.num$agent[df.num$studyID==3 & df.num$agent==1] <- 5
   df.num <- df.num[!(df.num$studyID %in% c(3,11,14,16,21,29,31,37,39,40,43,44,51,63,70)),]
 
   fullrow <- nrow(df.num)
-  network <- MBNMA.network(df.num)
+  network <- mbnma.network(df.num)
 
   expect_warning(plot(network))
 
@@ -125,10 +125,10 @@ test_that("drop.disconnected functions correctly", {
 
 
   # With a complete network
-  df.num <- MBNMA.network(df1)$data.ab
+  df.num <- mbnma.network(df1)$data.ab
 
   fullrow <- nrow(df.num)
-  network <- MBNMA.network(df.num)
+  network <- mbnma.network(df.num)
 
   expect_warning(plot(network), NA)
 

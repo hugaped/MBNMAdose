@@ -4,8 +4,8 @@
 
 
 
-#' @describeIn MBNMA.network Generate a network plot
-#' @inheritParams MBNMA.run
+#' @describeIn mbnma.network Generate a network plot
+#' @inheritParams mbnma.run
 #'
 #' @param layout_in_circle A boolean value indicating whether the network plot
 #'   should be shown in a circle or left as the igraph default layout.
@@ -35,7 +35,7 @@
 #' to placebo via dose-response relationships will not be included.
 #' @param ... Options for plotting in `igraph`.
 #'
-#' @details The S3 method `plot()` on an `MBNMA.network` object generates a
+#' @details The S3 method `plot()` on an `mbnma.network` object generates a
 #'   network plot that shows how different treatments are connected within the
 #'   network via study comparisons. This can be used to identify how direct and
 #'   indirect evidence are informing different treatment comparisons. Depends on
@@ -45,8 +45,8 @@
 #' can be applied to this object to change its characteristics.
 #'
 #' @examples
-#' # Create an MBNMA.network object from the data
-#' network <- MBNMA.network(HF2PPITT)
+#' # Create an mbnma.network object from the data
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Generate a network plot from the data
 #' plot(network)
@@ -69,24 +69,24 @@
 #' #### Plot a network with no placebo data included ####
 #' # Make data with no placebo
 #' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-#' net.noplac <- MBNMA.network(noplac.df)
+#' net.noplac <- mbnma.network(noplac.df)
 #'
 #' # Plotting network automatically plots connections to Placebo via dose-response
 #' plot(net.noplac)
 #' @export
-plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
+plot.mbnma.network <- function(network, layout_in_circle = TRUE, edge.scale=1, label.distance=0,
                                level="treatment", remove.loops=FALSE, v.color="connect",
                                v.scale=NULL, doselink=NULL,
                                ...)
   # Requires igraph
-  #S3method(plot, MBNMA.network)
+  #S3method(plot, mbnma.network)
 
-  # network is an object of class MBNMA.network
+  # network is an object of class mbnma.network
 
 {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertLogical(layout_in_circle, len=1, add=argcheck)
   checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
@@ -96,7 +96,7 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
   checkmate::assertLogical(remove.loops, len=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Generate comparisons (using get.latest.time and MBNMA.contrast?
+  # Generate comparisons (using get.latest.time and mbnma.contrast?
   data.ab <- network$data.ab
 
   # Add "s" onto level to make consistent with network names
@@ -150,7 +150,7 @@ plot.MBNMA.network <- function(network, layout_in_circle = TRUE, edge.scale=1, l
     data.ab$treatment <- data.ab$agent
   }
 
-  comparisons <- MBNMA.comparisons(data.ab)
+  comparisons <- mbnma.comparisons(data.ab)
 
   # Add coloured vertices for plac if plac.incl!=TRUE
   if ((network$agents[1] != "Placebo" & network$treatments[1]!="Placebo_0")) {
@@ -325,7 +325,7 @@ genmaxcols <- function() {
 #'
 #' Generates a forest plot for dose-response parameters.
 #'
-#' @inheritParams predict.MBNMA
+#' @inheritParams predict.mbnma
 #' @param params A character vector of dose-response parameters to plot.
 #' Parameters must be given the same name as monitored nodes in `mbnma` and must be
 #' modelled as relative effects (`"rel"`). Can be set to
@@ -343,14 +343,14 @@ genmaxcols <- function() {
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an exponential dose-response MBNMA and generate the forest plot
-#' exponential <- MBNMA.run(network, fun="exponential")
+#' exponential <- mbnma.run(network, fun="exponential")
 #' plot(exponential)
 #'
 #' # Plot only Emax parameters from an Emax dose-response MBNMA
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #' plot(emax, params=c("d.emax"))
 #'
 #'
@@ -359,8 +359,8 @@ genmaxcols <- function() {
 #' class.df <- HF2PPITT
 #' class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
-#' netclass <- MBNMA.network(class.df)
-#' emax <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="random",
+#' netclass <- mbnma.network(class.df)
+#' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
 #'   class.effect=list("ed50"="common"))
 #'
 #' # Plot forest plot with different labels for classes
@@ -371,11 +371,11 @@ genmaxcols <- function() {
 #' ## ERROR ## plot(emax, class.labs=c("Other Active", "Eletriptan"))
 #'
 #' @export
-plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
+plot.mbnma <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertChoice(params, choices=mbnma[["parameters.to.save"]], null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -490,8 +490,8 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'
 #' Plots predicted responses on the natural scale from a dose-response MBNMA model.
 #'
-#' @param predict An object of class `"MBNMA.predict"` generated by
-#'   `predict("MBNMA")`
+#' @param predict An object of class `"mbnma.predict"` generated by
+#'   `predict("mbnma")`
 #' @param disp.obs A boolean object to indicate whether to mark which observed doses
 #'   were given in the data on the dose-response curves as shaded regions (`TRUE`) or
 #'   not (`FALSE`). If set to `TRUE` the original network object used for the model
@@ -511,8 +511,8 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'   in the final plot since placebo is the point within each plot at which dose = 0 (rather
 #'   than a separate agent).
 #' @param ... Arguments for `ggplot2`
-#' @inheritParams MBNMA.run
-#' @inheritParams plot.MBNMA.rank
+#' @inheritParams mbnma.run
+#' @inheritParams plot.mbnma.rank
 #' @inheritParams ggplot2::facet_wrap
 #'
 #' @details For the S3 method `plot()`, it is advisable to ensure predictions in
@@ -527,10 +527,10 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- MBNMA.emax(network, method="random")
+#' emax <- mbnma.emax(network, method="random")
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
@@ -561,13 +561,13 @@ plot.MBNMA <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
 #'
 #'
 #' @export
-plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
+plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
                                overlay.split=FALSE, method="common",
                                agent.labs=NULL, scales="free_x", ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(predict, "MBNMA.predict", add=argcheck)
+  checkmate::assertClass(predict, "mbnma.predict", add=argcheck)
   checkmate::assertLogical(disp.obs, len=1, add=argcheck)
   checkmate::assertLogical(overlay.split, len=1, add=argcheck)
   checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
@@ -599,7 +599,7 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
 
   # Plot observed data as shaded regions
   if (disp.obs==TRUE) {
-    checkmate::assertClass(network, "MBNMA.network", null.ok=TRUE)
+    checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
     if (!all(sum.pred$agent %in% network$agents)) {
@@ -611,7 +611,7 @@ plot.MBNMA.predict <- function(predict, network, disp.obs=FALSE,
 
   }
   if (overlay.split==TRUE) {
-    checkmate::assertClass(network, "MBNMA.network", null.ok=TRUE)
+    checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that placebo is included (or dose=0 in networks without placebo)
     if (network$agents[1]!="Placebo") {
@@ -655,8 +655,8 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(g, c("gg", "ggplot"), add=argcheck)
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
-  checkmate::assertClass(predict, "MBNMA.predict", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
+  checkmate::assertClass(predict, "mbnma.predict", add=argcheck)
   checkmate::assertInt(max.col.scale, lower=1, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -881,7 +881,7 @@ overlay.split <- function(g, network, method="common",
 #' @param facet A boolean object that indicates whether or not to facet (by agent for MBNMAdose
 #' and by treatment for MBNMAtime)
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_boxplot`
-#' @inheritParams predict.MBNMA
+#' @inheritParams predict.mbnma
 #'
 #' @return Generates a plot of deviance contributions and returns a list containing the
 #' plot (as an object of class `c("gg", "ggplot")`), and a data.frame of posterior mean
@@ -902,10 +902,10 @@ overlay.split <- function(g, network, method="common",
 #' ###########################
 #'
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- MBNMA.emax(network, method="random")
+#' emax <- mbnma.emax(network, method="random")
 #'
 #' # Plot deviances
 #' devplot(emax)
@@ -935,7 +935,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertChoice(dev.type, choices = c("dev", "resdev"), add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("scatter", "box"), add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -1009,7 +1009,7 @@ devplot <- function(mbnma, dev.type="resdev", plot.type="scatter", facet=TRUE,
 get.theta.dev <- function(mbnma, param="theta") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "MBNMA", add=argcheck)
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -1076,7 +1076,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' @param disp.obs A boolean object to indicate whether raw data responses should be
 #' plotted as points on the graph
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_line()`
-#' @inheritParams predict.MBNMA
+#' @inheritParams predict.mbnma
 #'
 #' @return Generates a plot of fitted values from the MBNMA model and returns a list containing
 #' the plot (as an object of class `c("gg", "ggplot")`), and a data.frame of posterior mean
@@ -1089,10 +1089,10 @@ get.theta.dev <- function(mbnma, param="theta") {
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- MBNMA.emax(network, method="random")
+#' emax <- mbnma.emax(network, method="random")
 #'
 #' # Plot fitted values and observed values
 #' fitplot(emax)
@@ -1393,7 +1393,7 @@ plot.NMA.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
 #' @param bydose A boolean object indicating whether to plot responses with dose
 #' on the x axis (`TRUE`) to be able to examine potential dose-response shapes, or
 #' to plot a conventional forest plot with all treatments on the same plot (`FALSE`)
-#' @inheritParams plot.MBNMA.predict
+#' @inheritParams plot.mbnma.predict
 #'
 plot.NMA <- function(nma, bydose=TRUE, scales="free_x") {
 

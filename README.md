@@ -30,7 +30,7 @@ Currently the package can be installed directly from GitHub using the
 # First install devtools
 install.packages("devtools")
 
-# Then install MBNMAtime directly from GitHub
+# Then install MBNMAdose directly from GitHub
 devtools::install_github("hugopedder/MBNMAdose")
 ```
 
@@ -46,13 +46,13 @@ install.packages("MBNMAdose")
 
 Functions within `MBNMAdose` follow a clear pattern of use:
 
-1.  Load your data into the correct format using `MBNMA.network()`
-2.  Analyse your data using `MBNMA.run()`, or any of the available
+1.  Load your data into the correct format using `mbnma.network()`
+2.  Analyse your data using `mbnma.run()`, or any of the available
     wrapper dose-response functions
 3.  Test for consistency at the treatment-level using functions like
     `NMA.nodesplit()` and `NMA.run()`
 4.  Examine model results using forest plots and treatment rankings
-5.  Use your model to predict responses using `predict.MBNMA()`
+5.  Use your model to predict responses using `predict()`
 
 At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regaring

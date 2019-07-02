@@ -19,14 +19,14 @@
 #' numerical (corresponding to treatment codes within the `network` - note that these
 #' may change if `drop.discon=TRUE`).
 #' @param ... Arguments to be sent to `R2jags`
-#' @inheritParams MBNMA.run
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.run
+#' @inheritParams mbnma.network
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
-#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'   method="common")
 #'
 #'
@@ -35,11 +35,11 @@
 #' # Check for closed loops of treatments with independent evidence sources
 #' loops <- inconsistency.loops(network$data.ab)
 #'
-#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'   method="random", comparisons=rbind(c(6,23), c(6,12)))
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
-#' split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+#' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
 #'   method="random", drop.discon=TRUE)
 #'
 #' # Plot results
@@ -50,13 +50,13 @@
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
 #' @export
-NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
+nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
                             drop.discon=FALSE, comparisons=NULL,
                             ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   #checkmate::assertDataFrame(comparisons, null.ok=TRUE, add=argcheck)
@@ -122,8 +122,8 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 
 
   ##### Run NMA #####
-  nma.net <- suppressMessages(MBNMA.network(data.ab))
-  nma.jags <- NMA.run(nma.net, method=method,
+  nma.net <- suppressMessages(mbnma.network(data.ab))
+  nma.jags <- nma.run(nma.net, method=method,
                       likelihood=likelihood, link=link,
                       warn.rhat=FALSE, drop.discon = FALSE)#, ...)
 
@@ -165,7 +165,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     # stoploop <- FALSE
     # while(stoploop==FALSE) {
     #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
-    #   temp.net <- MBNMA.network(temp)
+    #   temp.net <- mbnma.network(temp)
     #   nt <- length(temp.net$treatments)
     #   if (nt==length(nma.net$treatments)) {
     #     g <- plot(temp.net, doseparam=1000)
@@ -183,16 +183,16 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 
 
     # Run NMA
-    ind.net <- suppressMessages(MBNMA.network(ind.df))
-    ind.jags <- NMA.run(ind.net, method=method, likelihood=likelihood, link=link,
+    ind.net <- suppressMessages(mbnma.network(ind.df))
+    ind.jags <- nma.run(ind.net, method=method, likelihood=likelihood, link=link,
                         warn.rhat=FALSE, drop.discon = FALSE)#, ...)
     ind.res <- ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
       ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
 
 
     ##### Estimate Direct #####
-    dir.net <- suppressMessages(change.netref(MBNMA.network(data.ab), ref=comp[1]))
-    dir.jags <- NMA.run(dir.net, method=method, likelihood=likelihood, link=link,
+    dir.net <- suppressMessages(change.netref(mbnma.network(data.ab), ref=comp[1]))
+    dir.jags <- nma.run(dir.net, method=method, likelihood=likelihood, link=link,
                         warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE)#, ...)
     dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
       ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
@@ -261,7 +261,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       nodesplit
   }
 
-  class(nodesplit.result) <- "NMA.nodesplit"
+  class(nodesplit.result) <- "nma.nodesplit"
 
   return(nodesplit.result)
 }
@@ -475,7 +475,7 @@ drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
     temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
                           ind.df$treatment==comp[index+1]),]
 
-    temp.net <- suppressMessages(plot(MBNMA.network(temp.df), doseparam = 1000))
+    temp.net <- suppressMessages(plot(mbnma.network(temp.df), doseparam = 1000))
 
     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
                                                      to=comp[index+1])[
@@ -527,7 +527,7 @@ check.indirect.drops <- function(data=data, comp) {
   count <- 1
   while(stoploop==FALSE) {
     temp <- drop.comp(data, drops=dropcomp, comp=comp)
-    temp.net <- MBNMA.network(temp)
+    temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(data$treatment))) {
       g <- plot(temp.net, doseparam=1000)

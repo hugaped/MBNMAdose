@@ -9,8 +9,8 @@ rank <- function (x, ...) {
 
 #' Rank predicted doses of different agents
 #'
-#' @inheritParams rank.MBNMA
-#' @inheritParams predict.MBNMA
+#' @inheritParams rank.mbnma
+#' @inheritParams predict.mbnma
 #' @param rank.doses A list of numeric vectors. Each named element corresponds to an
 #' agent (as named/coded in `predict`), and each number within the vector for that element corresponds to the dose
 #' for that agent. Doses of agents specified in `rank.doses` *must* be a subset of those
@@ -21,41 +21,41 @@ rank <- function (x, ...) {
 #' If `predict` contains multiple predictions at dose=0, then only the first of these
 #' will be included, to avoid duplicating rankings.
 #'
-#' @return An object of `class("MBNMA.rank")` which is a list containing a summary data
+#' @return An object of `class("mbnma.rank")` which is a list containing a summary data
 #' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
 #' that each agent has a particular rank, for each parameter that has been ranked.
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Rank predictions from a linear dose-response MBNMA
-#' linear <- MBNMA.run(network, fun="linear")
+#' linear <- mbnma.run(network, fun="linear")
 #' pred <- predict(linear, E0 = 0.5)
 #' rank <- rank(pred)
 #' summary(rank)
 #'
 #' # Rank selected predictions from an Emax dose-response MBNMA
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
 #'   exact.doses=doses)
 #' rank <- rank(pred,
 #'   rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))
 #'
-#' # Print and generate summary data frame for `MBNMA.rank` object
+#' # Print and generate summary data frame for `mbnma.rank` object
 #' summary(rank)
 #' print(rank)
 #'
-#' # Plot `MBNMA.rank` object
+#' # Plot `mbnma.rank` object
 #' plot(rank)
 #'
 #' @export
-rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
+rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(predict, classes="MBNMA.predict", add=argcheck)
+  checkmate::assertClass(predict, classes="mbnma.predict", add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
   #checkmate::assertList(rank.doses, types="numeric", null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -141,7 +141,7 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
                  "direction"=direction)
   result <- list("Predictions"=result)
 
-  class(result) <- "MBNMA.rank"
+  class(result) <- "mbnma.rank"
 
   return(result)
 
@@ -165,25 +165,25 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' @param params A character vector of named parameters in the model that vary by either agent
 #' or class (depending on the value assigned to `level`). If left as `NULL` (the default), then
 #' ranking will be calculated for all available parameters that vary by agent/class.
-#' @inheritParams predict.MBNMA
+#' @inheritParams predict.mbnma
 #'
 #' @details Ranking cannot currently be performed on nonparametric dose-response MBNMA
 #'
-#' @return An object of `class("MBNMA.rank")` which is a list containing a summary data
+#' @return An object of `class("mbnma.rank")` which is a list containing a summary data
 #' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
 #' that each agent has a particular rank, for each parameter that has been ranked.
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Rank selected agents from a linear dose-response MBNMA
-#' linear <- MBNMA.run(network, fun="linear")
+#' linear <- mbnma.run(network, fun="linear")
 #' ranks <- rank(linear, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
 #' summary(ranks)
 #'
 #' # Rank only ED50 parameters from an Emax dose-response MBNMA
-#' emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #' ranks <- rank(emax, params="d.ed50")
 #' summary(ranks)
 #'
@@ -193,27 +193,27 @@ rank.MBNMA.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' class.df <- HF2PPITT
 #' class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
-#' netclass <- MBNMA.network(class.df)
-#' emax <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="random",
+#' netclass <- mbnma.network(class.df)
+#' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
 #'   class.effect=list("ed50"="common"))
 #'
 #' # Rank by class, with negative responses being "better"
 #' ranks <- rank(emax, level="class", direction=-1)
 #' print(ranks)
 #'
-#' # Print and generate summary data frame for `MBNMA.rank` object
+#' # Print and generate summary data frame for `mbnma.rank` object
 #' summary(rank)
 #' print(rank)
 #'
-#' # Plot `MBNMA.rank` object
+#' # Plot `mbnma.rank` object
 #' plot(rank)
 #'
 #' @export
-rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {
+rank.mbnma <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, classes="MBNMA", add=argcheck)
+  checkmate::assertClass(mbnma, classes="mbnma", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
   #checkmate::assertNumeric(to.rank, lower = 2, null.ok=TRUE, add=argcheck)
@@ -311,7 +311,7 @@ rank.MBNMA <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="age
 
     }
   }
-  class(rank.result) <- "MBNMA.rank"
+  class(rank.result) <- "mbnma.rank"
 
   if (length(rank.result)==0) {
     stop(paste0("There are no parameters saved in the model that vary by ", level))

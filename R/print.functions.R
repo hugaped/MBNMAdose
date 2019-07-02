@@ -4,14 +4,14 @@
 
 
 
-#' Produces a summary data frame from an MBNMA.predict object
+#' Produces a summary data frame from an mbnma.predict object
 #'
 #' @return A data frame containing posterior summary statistics from predicted responses
 #'   from a dose-response MBNMA model
 #' @export
-summary.MBNMA.predict <- function(predict) {
+summary.mbnma.predict <- function(predict) {
 
-  checkmate::assertClass(predict, "MBNMA.predict")
+  checkmate::assertClass(predict, "mbnma.predict")
 
   predict <- predict[["predicts"]]
 
@@ -32,11 +32,11 @@ summary.MBNMA.predict <- function(predict) {
 }
 
 
-#' Print summary information from an MBNMA.predict object
+#' Print summary information from an mbnma.predict object
 #' @export
-print.MBNMA.predict <- function(predict) {
+print.mbnma.predict <- function(predict) {
 
-  checkmate::assertClass(predict, "MBNMA.predict")
+  checkmate::assertClass(predict, "mbnma.predict")
 
   #predict <- predict[["predicts"]]
 
@@ -66,13 +66,13 @@ print.MBNMA.predict <- function(predict) {
 
 
 
-#' Generates summary data frames for an MBNMA.rank object
+#' Generates summary data frames for an mbnma.rank object
 #'
 #' @return A list in which each element represents a parameter that has been ranked
 #' in `mbnma.rank` and contains a data frame of summary ranking results.
 #'
 #' @export
-summary.MBNMA.rank <- function(mbnma.rank) {
+summary.mbnma.rank <- function(mbnma.rank) {
   checkmate::assertClass(mbnma.rank, "MBNMA.rank")
 
   output <- list()
@@ -163,7 +163,7 @@ print.NMA.nodesplit <- function(nodesplit) {
 
 
 
-#' Generates a summary data frame for MBNMA.nodesplit objects
+#' Generates a summary data frame for mbnma.nodesplit objects
 #' @export
 summary.NMA.nodesplit <- function(nodesplit) {
   checkmate::assertClass(nodesplit, "NMA.nodesplit")
@@ -541,7 +541,7 @@ print.modfit.str <- function(mbnma) {
 
 
 summary.MBNMA <- function(mbnma) {
-  checkmate::assertClass(mbnma, "MBNMA")
+  checkmate::assertClass(mbnma, "mbnma")
 
   # State that function does not work if "parameters.to.save" has been specified
   if (!is.null(mbnma$model.arg$parameters.to.save)) {
@@ -599,7 +599,7 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
 
 
 
-print.MBNMA.network <- function(x,...) {
+print.mbnma.network <- function(x,...) {
   nn <- names(x)
   ll <- length(x)
   if (length(nn) != ll)

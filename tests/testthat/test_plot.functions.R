@@ -1,35 +1,35 @@
 testthat::context("Testing plot.functions")
 
-network <- MBNMA.network(HF2PPITT)
-netgout <- MBNMA.network(GoutSUA_2wkCFB)
-netalog <- MBNMA.network(alog_pcfb)
+network <- mbnma.network(HF2PPITT)
+netgout <- mbnma.network(GoutSUA_2wkCFB)
+netalog <- mbnma.network(alog_pcfb)
 
 datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
 
 # Generate data without placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- MBNMA.network(noplac.df)
+net.noplac <- mbnma.network(noplac.df)
 
 netlist <- list(network, net.noplac)
 
 
 # Models
-linear <- MBNMA.run(MBNMA.network(alog_pcfb), fun="linear")
+linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear")
 
-emax <- MBNMA.emax(netgout, emax="rel", ed50="rel", method="random")
-emax.tript <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random")
+emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
-emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
+emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
                          class.effect=list(emax="random"))
 
-emax.class2 <- MBNMA.emax(netclass, emax="rel", ed50="rel", method="common",
+emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
                          class.effect=list(emax="random"))
 
-nonparam <- MBNMA.run(network, fun="nonparam.up")
+nonparam <- mbnma.run(network, fun="nonparam.up")
 
-emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
+emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random")
 
-resdev <- MBNMA.linear(network, parameters.to.save = "resdev")
+resdev <- mbnma.linear(network, parameters.to.save = "resdev")
 
 modellist <- list(linear, emax, emax.class, emax.noplac)
 
@@ -37,7 +37,7 @@ modellist <- list(linear, emax, emax.class, emax.noplac)
 ################## Run Tests ######################
 ###################################################
 
-test_that("plot.MBNMA.network functions correctly", {
+test_that("plot.mbnma.network functions correctly", {
 
   expect_silent(plot(network, layout_in_circle = TRUE,
                                edge.scale=1, label.distance=0))
@@ -88,7 +88,7 @@ test_that("plot.MBNMA.network functions correctly", {
 
 
 
-testthat::test_that("plot.MBNMA functions correctly", {
+testthat::test_that("plot.mbnma functions correctly", {
   for (i in seq_along(modellist)) {
     expect_silent(plot(modellist[[i]]))
   }
@@ -122,7 +122,7 @@ testthat::test_that("plot.MBNMA functions correctly", {
 
 
 
-testthat::test_that("plot.MBNMA.predict functions correctly", {
+testthat::test_that("plot.mbnma.predict functions correctly", {
   pred <- predict(linear, E0 = 0.5)
   expect_silent(plot(pred))
 
@@ -216,28 +216,28 @@ testthat::test_that("fitplot functions correctly", {
 
   expect_message(fitplot(emax.class, disp.obs=FALSE))
 
-  theta.run <- MBNMA.run(network, fun="linear", parameters.to.save = "theta")
+  theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta")
   expect_silent(fitplot(theta.run))
 
 })
 
 
-testthat::test_that("plot.MBNMA.rank functions correctly", {
-  rank <- rank.MBNMA(emax)
+testthat::test_that("plot.mbnma.rank functions correctly", {
+  rank <- rank.mbnma(emax)
   g <- plot(rank)
   expect_equal(length(g), 2)
 
-  rank <- rank.MBNMA(linear.run)
+  rank <- rank.mbnma(linear.run)
   expect_silent(plot(rank))
 
-  rank <- rank.MBNMA(emax.noplac)
+  rank <- rank.mbnma(emax.noplac)
   g <- plot(rank, params="d.emax")
   expect_equal(length(g), 1)
 
   expect_silent(plot(rank, treat.labs = net.noplac$agents))
   expect_error(plot(rank, treat.labs = network$agents))
 
-  rank <- rank.MBNMA(emax.noplac, to.rank=c(3,5,6))
+  rank <- rank.mbnma(emax.noplac, to.rank=c(3,5,6))
   expect_silent(plot(rank, treat.labs = network$agents[c(3,5,6)]))
   expect_error(plot(rank, treat.labs = net.noplac$agents))
 

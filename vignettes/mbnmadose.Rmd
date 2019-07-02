@@ -39,11 +39,11 @@ This package has been developed alongside `MBNMAtime`, a package that allows use
 
 Functions within `MBNMAdose` follow a clear pattern of use:
 
-1. Load your data into the correct format using `MBNMA.network()`
-2. Analyse your data using `MBNMA.run()`, or any of the available wrapper dose-response functions
+1. Load your data into the correct format using `mbnma.network()`
+2. Analyse your data using `mbnma.run()`, or any of the available wrapper dose-response functions
 3. Test for consistency at the treatment-level using functions like `NMA.nodesplit()` and `NMA.run()`
 4. Examine model results using forest plots and treatment rankings
-5. Use your model to predict responses using `predict.MBNMA()`
+5. Use your model to predict responses using `predict()`
 
 At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regaring model fitting.
 
@@ -88,11 +88,11 @@ kable(head(alog_pcfb), digits=2)
 
 ## Inspecting the data
 
-Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and dose-response relationship) are particularly important for MBNMA. For this we want to get our dataset into the right format for the package. We can do this using `MBNMA.network()`.
+Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and dose-response relationship) are particularly important for MBNMA. For this we want to get our dataset into the right format for the package. We can do this using `mbnma.network()`.
 
 ```{r}
 # Using the triptans dataset
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 print(network)
 ```
 
@@ -118,7 +118,7 @@ Depending on the type of data (and the likelihood) the following columns are req
 * `se` Numeric data incicating the standard error for a given observation
 * `treatment` Treatment identifiers (can be numeric, factor or character)
 
-Additional columns can be included in the dataset. These will simply be added to the `MBNMA.network` object, though will not affect the classification of the data.
+Additional columns can be included in the dataset. These will simply be added to the `mbnma.network` object, though will not affect the classification of the data.
 
 It then performs the following checks on the data:
 
@@ -130,14 +130,14 @@ It then performs the following checks on the data:
 * Studies have at least two arms
 * Studies do not only compare the same agent at the same dose
 
-Finally it converts the data frame into an object of `class("MBNMA.network")`, which contains indices for study arms, numeric variables for treatments, agents and classes, and stores a vector of treatment, agent and class names as an element within the object. By convention, agents are numbered alphabetically, though if the original data for agents is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAdose` functions.
+Finally it converts the data frame into an object of `class("mbnma.network")`, which contains indices for study arms, numeric variables for treatments, agents and classes, and stores a vector of treatment, agent and class names as an element within the object. By convention, agents are numbered alphabetically, though if the original data for agents is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAdose` functions.
 
 
 ### Network connectivity
 
 Looking at how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated and what information will be helping to inform those estimates. In particular, the complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available in the dataset.
 
-Network plots can be plotted which shows which treatments/agents have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment/agent (provided `N` is included as a variable in the original dataset for `MBNMA.network()`). 
+Network plots can be plotted which shows which treatments/agents have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment/agent (provided `N` is included as a variable in the original dataset for `mbnma.network()`). 
 
 In `MBNMAdose` these plots are generated using `igraph`, and can be plotted by calling `plot()`. The generated plots are objects of `class("igraph")` meaning that, in addition to the options specified in `plot()`, various `igraph` functions can subsequently be used to make more detailed edits to them.
 
@@ -145,7 +145,7 @@ Within these network plots, vertices are automatically alligned in a circle (as 
 
 ```{r, error = TRUE, purl = FALSE}
 # Prepare data using the triptans dataset
-tripnet <- MBNMA.network(HF2PPITT)
+tripnet <- mbnma.network(HF2PPITT)
 
 # Draw network plot
 plot(tripnet)
@@ -155,7 +155,7 @@ If some vertices are not connected to the network reference treatment through an
 
 ```{r, message=FALSE, warning=FALSE}
 # Prepare data using the gout dataset
-goutnet <- MBNMA.network(GoutSUA_2wkCFB)
+goutnet <- mbnma.network(GoutSUA_2wkCFB)
 ```
 ```{r}
 plot(goutnet, label.distance = 5)
@@ -190,8 +190,8 @@ In order to consider which functional forms may be appropriate for modelling the
 
 ```{r, results="hide", message=FALSE, warning=FALSE}
 # Run a random effect split NMA using the alogliptin dataset
-alognet <- MBNMA.network(alog_pcfb)
-nma.alog <- NMA.run(alognet, method="random")
+alognet <- mbnma.network(alog_pcfb)
+nma.alog <- nma.run(alognet, method="random")
 ```
 ```{r}
 print(nma.alog)
@@ -205,14 +205,14 @@ In the alogliptin dataset there appears to be a dose-response relationship, and 
 One additional use of `NMA.run()` is that is can be used after fitting an MBNMA to ensure that a fitting a dose-response function is not leading to poorer model fit than when conducting a conventional NMA. Comparing the total residual deviance between NMA and MBNMA models is useful to identify if introducing a dose-response relationship is leading to poorer model fit. However, it is important to note that if treatments are disconnected in the NMA and have been dropped (`drop.discon=TRUE`), there will be fewer observations present in the dataset, which will subsequently lead to lower pD and lower residual deviance, meaning that model fit statistics from NMA and MBNMA may not be directly comparable.
 
 
-## Analysis using `MBNMA.run()`
+## Analysis using `mbnma.run()`
 
-MBNMA is performed in `MBNMAdose` by applying `MBNMA.run()`. A `"MBNMA.network"` object must be provided as the data for `MBNMA.run()`. The key arguments within `MBNMA.run()` involve specifying the functional form used to model the dose-response, and the dose-response parameters that comprise that functional form.
+MBNMA is performed in `MBNMAdose` by applying `mbnma.run()`. A `"mbnma.network"` object must be provided as the data for `mbnma.run()`. The key arguments within `mbnma.run()` involve specifying the functional form used to model the dose-response, and the dose-response parameters that comprise that functional form.
 
 
 #### Dose-response functions
 
-Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `MBNMA.run()`:
+Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `mbnma.run()`:
 
 * `"linear"`
 * `"exponential"`
@@ -220,31 +220,31 @@ Several different functional forms are implemented within `MBNMAdose`, that allo
 * `"emax.hill"` - Emax with a Hill parameter
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
-* `"user"` - A function that can be explictly specified by the user within `user.fun` (see `?MBNMA.run()`)
+* `"user"` - A function that can be explictly specified by the user within `user.fun` (see `?mbnma.run()`)
 
 
 #### Dose-response parameters
 
-In `MBNMA.run()` it is possible to specify up to three different dose-response parameters, depending on the dose-response function used. These are named `beta.1`, `beta.2`, and `beta.3`, and their interpretation varies depending on the dose-response function used (see `?MBNMA.run()`). 
+In `mbnma.run()` it is possible to specify up to three different dose-response parameters, depending on the dose-response function used. These are named `beta.1`, `beta.2`, and `beta.3`, and their interpretation varies depending on the dose-response function used (see `?mbnma.run()`). 
 
-For simplification and interpretability, both in the way in which dose-response parameters are defined and in how they are reported in the output, there are wrapper functions for `MBNMA.run()` for each of the provided time-course functions. For example, `MBNMA.emax()` is equivalent to `MBNMA.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `ed50` instead of `beta.2`) . A number of these will be shown in other examples in this vignette.
+For simplification and interpretability, both in the way in which dose-response parameters are defined and in how they are reported in the output, there are wrapper functions for `mbnma.run()` for each of the provided time-course functions. For example, `mbnma.emax()` is equivalent to `mbnma.run(fun="emax")`, but with a different naming of time-course parameters (`emax` instead of `beta.1` and `ed50` instead of `beta.2`) . A number of these will be shown in other examples in this vignette.
 
 Dose-response parameters can be assigned different specifications which define the key parameters estimated by the model and are dependent on the assumptions made within the model. Three different specifications are available for each parameter:
 
 * `"rel"` indicates that relative effects should be pooled for this dose-response parameter. This preserves randomisation within included studies and is likely to vary less between studies (only due to effect modification).
-* `"common"` indicates that a single absolute value for this dose-response parameter should be estimated across the whole network *that does not vary by agent*. This is particularly useful for parameters expected to be constant (e.g. Hill parameters in `MBNMA.emax.hill()`).
+* `"common"` indicates that a single absolute value for this dose-response parameter should be estimated across the whole network *that does not vary by agent*. This is particularly useful for parameters expected to be constant (e.g. Hill parameters in `mbnma.emax.hill()`).
 * `"random"` indicates that a single absolute value should be estimated separately for each agent, but that all the agent values vary randomly around a single mean absolute network effect. It is similar to `"common"` but makes slightly less strong assumptions.
 * `numeric()` Assigned a numeric value - this is similar to assigning `"common"`, but the single absolute value is assigned as a numeric value by the user, rather than estimated from the data.
 
 
-In `MBNMA.run()`, an additional argument, `method`, indicates what method to use for pooling relative effects and can take either the values `"common"`, implying that all studies estimate the same true effect (akin to a "fixed effects" meta-analysis), or `"random"`, implying that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
+In `mbnma.run()`, an additional argument, `method`, indicates what method to use for pooling relative effects and can take either the values `"common"`, implying that all studies estimate the same true effect (akin to a "fixed effects" meta-analysis), or `"random"`, implying that all studies estimate a separate true effect, but that each of these true effects vary randomly around a true mean effect. This approach allows for modelling of between-study heterogeneity.
 
 If relative effects (`"rel"`) are modelled on more than one dose-response parameter then by default, a correlation will be assumed between the dose-response parameters, which will typically improve estimation (provided the parameters are correlated...they usually are). This can be prevented by setting `cor=FALSE`. 
 
 
 ### Output
 
-`MBNMA.run()` returns an object of class `c("MBNMA", "rjags")`. `summary()` provides posterior medians and 95% credible intervals for different parameters in the model, with some explanation of the way in which the model has been defined. `print()` can also be used to give summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
+`mbnma.run()` returns an object of class `c("mbnma", "rjags")`. `summary()` provides posterior medians and 95% credible intervals for different parameters in the model, with some explanation of the way in which the model has been defined. `print()` can also be used to give summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
 
 Nodes that are automatically monitored (if present in the model) have the following interpretation. They will have an additional suffix that relates to the name/number of the time-course paramter to which they correspond (e.g. `d.et50` or `beta.1`):
 
@@ -266,15 +266,15 @@ An example MBNMA of the triptans dataset using an Emax dose-response function an
 
 ```{r, results="hide"}
 # Run an Emax dose-response MBNMA
-mbnma <- MBNMA.run(tripnet, fun="emax", 
+mbnma <- mbnma.run(tripnet, fun="emax", 
                    beta.1="rel", beta.2="rel", method="common")
 ```
 ```{r, message=FALSE, warning=FALSE}
 summary(mbnma)
 ```
 ```{r, eval=FALSE}
-# An alternative would be to use an Emax wrapper for MBNMA.run() which would give the same result but with more easily interpretable parameter names
-MBNMA.emax(tripnet, emax="rel", ed50="rel", method="common")
+# An alternative would be to use an Emax wrapper for mbnma.run() which would give the same result but with more easily interpretable parameter names
+mbnma.emax(tripnet, emax="rel", ed50="rel", method="common")
 ```
 
 In this case the `d.1`/`d.emax` parameters correspond to the effects of each agent for the dose-response parameter `beta.1`/`emax`, which corresponds (for this dose-reponse function) to the maximum response that can be achieved for a particular agent. The `d.2`/`d.ed50` parameters correspond to the effects for `beta.2`/`ed50`, which (in this case) corresponds to the dose at which 50% of the maximum response is achieved (results are given on the log scale for thsi parameter as it is constraned to be >0).
@@ -283,7 +283,7 @@ Instead of pooling relative effects and estimating a separate relative effect fo
 
 ```{r, eval=FALSE}
 # Emax model with single parameter estimated for Emax
-emax <- MBNMA.emax(tripnet, emax="rel", ed50="common", method="random")
+emax <- mbnma.emax(tripnet, emax="rel", ed50="common", method="random")
 summary(emax)
 ```
 
@@ -292,26 +292,26 @@ In this case the `d.1`/`d.emax` parameters correspond to the effect of each agen
 However, although the total residual deviance (`totresdev`) is lower in this model, indicating a better fit, the effective number of parameters (pD) is much greater, and overall the DIC is higher, suggesting that the first model is a better compromise of fit and complexity.
 
 
-### Additional arguments for `MBNMA.run()`
+### Additional arguments for `mbnma.run()`
 
-Several additional arguments can be given to `MBNMA.run()` that require further explanation.
+Several additional arguments can be given to `mbnma.run()` that require further explanation.
 
 #### Class effects
 
 Shared effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
 
-Class effects can only be applied to dose-response parameters which are modelled using relative effects (`"rel"`). In `MBNMA.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the function. The names will therefore differ when using wrapper functions for `MBNMA.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
+Class effects can only be applied to dose-response parameters which are modelled using relative effects (`"rel"`). In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
-When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `MBNMA.network()`.
+When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`.
 
 ```{r, results="hide", message=FALSE, warning=FALSE}
 # Using the osteoarthritis dataset (contains info on classes)
-painnet <- MBNMA.network(osteopain_2wkabs)
+painnet <- mbnma.network(osteopain_2wkabs)
 ```
 ```{r, results="hide"}
 # Emax MBNMA with a single absolute parameter for Emax and random relative effects on ED50
 # Common class effects on ED50
-emax <- MBNMA.emax(painnet, emax="common", ed50="rel", method="random",
+emax <- mbnma.emax(painnet, emax="common", ed50="rel", method="random",
                    class.effect=list(ed50="common"))
 ```
 ```{r}
@@ -325,7 +325,7 @@ If we had specified that the class effects were `"random"`, each treatment effec
 
 #### Correlation between dose-response parameters
 
-`MBNMA.run()` automatically models correlation between relative effects dose-response parameters (unless `cor=FALSE`). The correlation is modelled using a vague Wishart prior, but this can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects. 
+`mbnma.run()` automatically models correlation between relative effects dose-response parameters (unless `cor=FALSE`). The correlation is modelled using a vague Wishart prior, but this can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects. 
 
 `var.scale` can be used for this - it takes a numeric vector the same length as the number of relative effect dose-response parameters, and the relative magnitude of the numbers indicates the relative magnitude of the scales. Each element of `var.scale` corresponds to the relevant dose-response parameter (i.e. `var.scale[1]` will correspond to `beta.1`)
 
@@ -335,14 +335,14 @@ For example, with the triptans dataset we might expect that values for Emax migh
 # Define relative magnitudes of Emax and ED50
 rel.size <- c(4,1)
 
-MBNMA.emax(tripnet, emax="rel", ed50="rel", method="random", 
+mbnma.emax(tripnet, emax="rel", ed50="rel", method="random", 
            var.scale=rel.size)
 ```
 
 
 #### User-specified time-course function
 
-If users want to write their own dose-response function rather than using one of the ones specified in `MBNMA.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `beta` parameters and `dose`. This allows a huge amount of addtional flexibility when defining the dose-response function.
+If users want to write their own dose-response function rather than using one of the ones specified in `mbnma.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `beta` parameters and `dose`. This allows a huge amount of addtional flexibility when defining the dose-response function.
 
 The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
 * `dose` must always be included in the function
@@ -354,7 +354,7 @@ The string assigned to `user.fun` needs to fulfill a few criteria to be valid:
 # An example specifying a quadratic dose-response function
 quad <- "(beta.1 * dose) + (beta.2 * (dose^2))"
 
-MBNMA.run(tripnet, fun="user", user.fun=quad, 
+mbnma.run(tripnet, fun="user", user.fun=quad, 
           beta.1 = "rel", beta.2 = "rel")
 
 ```
@@ -379,7 +379,7 @@ $$
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 
-If the model fails during compilation/updating (i.e. due to a problem in JAGS), `MBNMA.run()` will generate an error and return a list of arguments that `MBNMA.run()` used to generate the model. Within this (as within a model that has run successfully), the priors used by the model (in JAGS syntax) are stored within `"model.arg"`:
+If the model fails during compilation/updating (i.e. due to a problem in JAGS), `mbnma.run()` will generate an error and return a list of arguments that `mbnma.run()` used to generate the model. Within this (as within a model that has run successfully), the priors used by the model (in JAGS syntax) are stored within `"model.arg"`:
 
 ```{r, eval=FALSE}
 print(mbnma$model.arg$priors)
@@ -387,7 +387,7 @@ print(mbnma$model.arg$priors)
 
 In this way a model can first be run with vague priors and then rerun with different priors, perhaps to allow successful computation, perhaps to provide more informative priors, or perhaps to run a sensitivity analysis with different priors. Increasing the precison of prior distributions only a little can also often improve convergence considerably.
 
-To change priors within a model, a list of replacements can be provided to `priors` in `MBNMA.run()`. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren't specified will take default values.
+To change priors within a model, a list of replacements can be provided to `priors` in `mbnma.run()`. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren't specified will take default values.
 
 For example, if we want to use tighter priors for the half-normal SD parameters we could increase the precision:
 
@@ -398,7 +398,7 @@ new.priors <- list(
   )
 
 # Run an MBNMA model with new priors
-emax <- MBNMA.emax(alognet, emax="rel", ed50="rel", method="random",
+emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
                    priors=new.priors)
 ```
 
@@ -407,22 +407,22 @@ Mathematical errors can be more likely for certain types of models. For dose-res
 
 ```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE}
 # Exponential model currently returns an error on gout dataset
-exponetial <- MBNMA.exponential(goutnet, lambda="rel")
+exponetial <- mbnma.exponential(goutnet, lambda="rel")
 ```
 ```{r, eval=FALSE}
 # Standardise gout dataset doses relative to maximum investigated dose
 std.gout <- GoutSUA_2wkCFB
 std.gout <- std.gout %>% group_by(agent) %>% mutate(dose=dose/max(dose))
 std.gout$dose[std.gout$agent=="Plac"] <- 0
-std.gout <- MBNMA.network(std.gout)
+std.gout <- mbnma.network(std.gout)
 
-exponential <- MBNMA.exponential(std.gout, lambda="rel")
+exponential <- mbnma.exponential(std.gout, lambda="rel")
 ```
 
 
 #### pD (effective number of parameters)
 
-The default value in for `pd` in `MBNMA.run()` is `"pv"`, which uses the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is numerically less stable than `pD` and may perform more poorly in certain conditions [@gelman2014].
+The default value in for `pd` in `mbnma.run()` is `"pv"`, which uses the value automatically calculated in the `R2jags` package as `pv = var(deviance)/2`. Whilst this is easy to calculate, it is numerically less stable than `pD` and may perform more poorly in certain conditions [@gelman2014].
 
 A commonly-used approach for calculating pD is the plug-in method (`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result in negative non-sensical values due to skewed posterior distributions for deviance contributions that can arise when fitting non-linear models.
 
@@ -433,7 +433,7 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 #### Arguments to be sent to JAGS
 
-In addition to the arguments specific to `MBNMA.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
+In addition to the arguments specific to `mbnma.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
 
 * `n.chains` The number of Markov chains to run (default is 3)
 * `n.iter` The total number of iterations per MCMC chain
@@ -451,8 +451,8 @@ One of the strengths of dose-response MBNMA is that it allows treatments to be c
 noplac.gout <- GoutSUA_2wkCFB[!GoutSUA_2wkCFB$studyID %in% c(2001, 3102),] # Drop two-arm placebo studies
 noplac.gout <- noplac.gout[noplac.gout$agent!="Plac",] # Drop placebo arm from multi-arm studies
 
-# Create MBNMA.network object
-noplac.net <- MBNMA.network(noplac.gout)
+# Create mbnma.network object
+noplac.net <- mbnma.network(noplac.gout)
 ```
 ```{r}
 # Plot network
@@ -468,7 +468,7 @@ plot(noplac.net, level="agent", remove.loops = TRUE, label.distance = 4)
 
 There are still two agents that do not connect to the network because they involve comparisons of different doses of the same agent. However, multiple doses of an agent within a study allow us to estimate the dose-response relationship and tell us something about the placebo (dose = 0) response - the number of different doses of an agent within a study will determine the degrees of freedom with which we are able to estimate a given dose-response function. Although the placebo response is not estimated directly in the MBNMA framework (it is modelled as a nuisance parameter), it allows us to connect the dose-response function estimated for an agent in one study, with that in another.
 
-To visualise this, we can use the `doselink` argument in `plot(MBNMA.network)`. The integer given to this argument indicates the  minimum number of doses from which a dose-response function could be estimated, and is equivalent to the number of parameters in the desired dose-response function plus one. For example for an exponential function, we would require at least two doses on a dose-response curve (including placebo), since this would allow one degree of freedom with which to estimate the one-parameter dose-response function. By modifying the `doselink` argument we can determine the complexity of a dose-response function that we might expect to be able to estimate whilst still connecting all agents within the network.
+To visualise this, we can use the `doselink` argument in `plot(mbnma.network)`. The integer given to this argument indicates the  minimum number of doses from which a dose-response function could be estimated, and is equivalent to the number of parameters in the desired dose-response function plus one. For example for an exponential function, we would require at least two doses on a dose-response curve (including placebo), since this would allow one degree of freedom with which to estimate the one-parameter dose-response function. By modifying the `doselink` argument we can determine the complexity of a dose-response function that we might expect to be able to estimate whilst still connecting all agents within the network.
 
 If placebo is not included in the original dataset then this argument will also add a node for placebo to illustrate the connection.
 
@@ -489,14 +489,14 @@ In this way we can fully connect up treatments in an otherwise disconnected netw
 
 ### Non-parametric dose-response functions
 
-Two non-parametric monotonic dose-response functions, `"nonparam.up"` and `"nonparam.down"` can be specified in `MBNMA.run()`. They impose restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater (most positive for `"nonparam.up"` and more negative for `"nonparam.down"`) than the previous dose, following the method of Owen et al. [-@owen2015]. By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modelled, it cannot be used to connect networks that are disconnected at the treatment-level, but connected at the agent-level.
+Two non-parametric monotonic dose-response functions, `"nonparam.up"` and `"nonparam.down"` can be specified in `mbnma.run()`. They impose restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater (most positive for `"nonparam.up"` and more negative for `"nonparam.down"`) than the previous dose, following the method of Owen et al. [-@owen2015]. By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modelled, it cannot be used to connect networks that are disconnected at the treatment-level, but connected at the agent-level.
 
 In the case of MBNMA, it may be useful to compare the fit of a non-parametric model to that of a parametric dose-response function, to ensure that fitting a parametric dose-response function does not lead to significantly poorer model fit.
 
 When fitting a non-parametric dose-response model, there is no need to specify arguments for dose-response parameters (`beta.1`, `beta.2`, `beta.3`), as these are ignored in this modelling approach. `method` can still be used to specify either `"common"` or `"random"` effects. It is important to correctly choose either `"nonparam.up"` or `"nonparam.down"` depending on the expected direction of effect, or this can lead to computation errors.
 
 ```{r, results="hide"}
-nonparam <- MBNMA.run(tripnet, fun="nonparam.up", method="random")
+nonparam <- mbnma.run(tripnet, fun="nonparam.up", method="random")
 ```
 ```{r}
 print(nonparam)
@@ -512,8 +512,8 @@ Note that post-estimation functions and plots (e.g. ranking, prediction) cannot 
 For looking at post-estimation in MBNMA we will demonstrate using results from an Emax MBNMA on the triptans dataset unless specified otherwise:
 
 ```{r, results="hide"}
-tripnet <- MBNMA.network(HF2PPITT)
-trip.emax <- MBNMA.emax(tripnet, emax="rel", ed50="rel") 
+tripnet <- mbnma.network(HF2PPITT)
+trip.emax <- mbnma.emax(tripnet, emax="rel", ed50="rel") 
 ```
 
 ### Deviance plots
@@ -546,7 +546,7 @@ Fitted values are plotted as connecting lines and observed values in the origina
 
 ### Forest plots
 
-Forest plots can be easily generated from MBNMA models using the `plot()` method on an `"MBNMA"` object. By default this will plot a separate panel for each dose-response parameter in the model. Forest plots can only be generated for parameters which are modelled using relative effects and that vary by agent/class.
+Forest plots can be easily generated from MBNMA models using the `plot()` method on an `"mbnma"` object. By default this will plot a separate panel for each dose-response parameter in the model. Forest plots can only be generated for parameters which are modelled using relative effects and that vary by agent/class.
 
 ```{r, results="hide"}
 plot(trip.emax)
@@ -555,16 +555,16 @@ plot(trip.emax)
 
 ### Ranking
 
-Rankings can be calculated for different dose-response parameters from MBNMA models by using `rank()` on an `"MBNMA"` object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative responses should be ranked as "better" (`-1`) or "worse" (`1`).
+Rankings can be calculated for different dose-response parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative responses should be ranked as "better" (`-1`) or "worse" (`1`).
 
 ```{r}
 ranks <- rank(trip.emax, direction=1)
 summary(ranks)
 ```
 
-The output is an object of `class("MBNMA.rank")`, containing a list for each ranked parameter in `params`, which consists of a summary table of rankings and raw information on agent/class (depending on argument given to `level`) ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `summary()`.
+The output is an object of `class("mbnma.rank")`, containing a list for each ranked parameter in `params`, which consists of a summary table of rankings and raw information on agent/class (depending on argument given to `level`) ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using `summary()`.
 
-Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results stored in `MBNMA.rank` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
+Histograms for ranking results can also be plotted using the `plot()` method, which takes the raw MCMC ranking results stored in `mbnma.rank` and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.
 
 ```{r}
 # Ranking histograms for Emax
@@ -577,7 +577,7 @@ plot(ranks, params = "d.ed50")
 
 ### Prediction
 
-After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"MBNMA"` object. A number of important arguments should be specified for prediction.
+After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"mbnma"` object. A number of important arguments should be specified for prediction.
 
 `E0` This is the response at dose = 0 (equivalent to the placebo response). Since relative effects are the parameters estimated in MBNMA, the placebo response is not explicitly modelled and therefore must be provided by the user in some way. The simplest approach is to provide either a single numeric value for `E0` (deterministic approach), or a string representing a distribution for `E0` that can take any Random Number Generator (RNG) distribution for which a function exists in R (stochastic approach). Values should be given on the natural scale. For example for a binomial outcome:
 
@@ -618,7 +618,7 @@ pred <- predict(trip.emax, E0=E0.data,
                       exact.doses=doses)
 ```
 
-An object of class `"MBNMA.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment (combination of dose and agent). The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
+An object of class `"mbnma.predict"` is returned, which is a list of summary tables and MCMC prediction matrices for each treatment (combination of dose and agent). The `summary()` method can be used to print mean posterior predictions at each time point for each treatment.
 
 ```{r}
 summary(pred)
@@ -627,7 +627,7 @@ summary(pred)
 
 ### Plotting predicted responses
 
-Predicted responses can also be plotted using the `plot()` method on an object of `class("MBNMA.predict")`. The predicted responses are joined by a line to form the dose-response curve for each agent predicted, with 95% credible intervals (CrI). Therefore, when plotting the response it is important to predict a sufficient number of doses (using `n.doses`) to get a smooth curve.
+Predicted responses can also be plotted using the `plot()` method on an object of `class("mbnma.predict")`. The predicted responses are joined by a line to form the dose-response curve for each agent predicted, with 95% credible intervals (CrI). Therefore, when plotting the response it is important to predict a sufficient number of doses (using `n.doses`) to get a smooth curve.
 
 ```{r}
 # Predict responses using default doses up to the maximum of each agent in the dataset
@@ -636,7 +636,7 @@ pred <- predict(trip.emax, E0=0.2, n.dose=20)
 plot(pred)
 ```
 
-Shaded counts of the number of studies in the original dataset that investigate each dose of an agent can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`, though this requires that the original `"MBNMA.network"` object used to estimate the MBNMA be provided via `network`.
+Shaded counts of the number of studies in the original dataset that investigate each dose of an agent can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`, though this requires that the original `"mbnma.network"` object used to estimate the MBNMA be provided via `network`.
 
 ```{r}
 plot(pred, disp.obs = TRUE, network=tripnet)
@@ -644,7 +644,7 @@ plot(pred, disp.obs = TRUE, network=tripnet)
 
 This can be used to identify any extrapolation/interpretation of the dose-response that might be ocurring for a particular agent. As you can see, more observations typically leads to tighter 95% CrI for the predicted response at a particular point along the dose-response curve.
 
-We can also plot the results of a "split" Network Meta-Analysis (NMA) in which all doses of an agent are assumed to be independent. As with `disp.obs` we also need to provide the original `MBNMA.network` object to be able to estimate this, and we can also specify if we want to perform a common or random effects NNMA using `method`. Treatments that are only connected to the network via the dose-response relationship (rather than by a direct head-to-head comparison) will not be included.
+We can also plot the results of a "split" Network Meta-Analysis (NMA) in which all doses of an agent are assumed to be independent. As with `disp.obs` we also need to provide the original `mbnma.network` object to be able to estimate this, and we can also specify if we want to perform a common or random effects NNMA using `method`. Treatments that are only connected to the network via the dose-response relationship (rather than by a direct head-to-head comparison) will not be included.
 
 ```{r, results="hide", warning=FALSE, message=FALSE}
 plot(pred, overlay.split = TRUE, network=tripnet, method="common")
@@ -655,7 +655,7 @@ By plotting these, as well as observing how responses can be extrapolated/interp
 
 ### Ranking predicted responses
 
-Predicted responses from an object of `class("MBNMA.predict")` can also be ranked using the `rank()` method. As when applied to an object of `class("MBNMA")`, this method will rank parameters (in this case predictions) in order from either highest to lowest (`direction=1`) or lowest to highest (`direction=-1`), and return an object of `class("MBNMA.rank")`.
+Predicted responses from an object of `class("mbnma.predict")` can also be ranked using the `rank()` method. As when applied to an object of `class("mbnma")`, this method will rank parameters (in this case predictions) in order from either highest to lowest (`direction=1`) or lowest to highest (`direction=-1`), and return an object of `class("mbnma.rank")`.
 
 If there have been predictions at dose = 0 for several agents only one of these will be included in the rankings, in order to avoid duplication (since the predicted response at dose = 0 is the same for all agents).
 
@@ -693,9 +693,9 @@ To check for consistency at the treatment level using UME we fit an NMA that doe
 
 ```{r, results="hide", warning=FALSE, message=FALSE}
 # Using the alogliptin dataset
-alognet <- MBNMA.network(alog_pcfb)
-nma <- NMA.run(alognet, method="random")
-ume <- NMA.run(alognet, method="random", UME = TRUE)
+alognet <- mbnma.network(alog_pcfb)
+nma <- nma.run(alognet, method="random")
+ume <- nma.run(alognet, method="random", UME = TRUE)
 ```
 ```{r, echo=FALSE}
 kable(data.frame(
@@ -721,10 +721,10 @@ As several NMA models will need to be run for each treatment comparison to split
 
 ```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide"}
 # Using the triptans dataset
-tripnet <- MBNMA.network(HF2PPITT)
+tripnet <- mbnma.network(HF2PPITT)
 
 # Nodesplit using a random effects model
-nodesplit <- NMA.nodesplit(tripnet, method="random")
+nodesplit <- nma.nodesplit(tripnet, method="random")
 ```
 ```{r}
 print(nodesplit)

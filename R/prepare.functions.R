@@ -2,9 +2,9 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-07
 
-#' Create an MBNMA.network object
+#' Create an mbnma.network object
 #'
-#' Creates an object of class `MBNMA.network`. Various MBNMA functions can subsequently be applied
+#' Creates an object of class `mbnma.network`. Various MBNMA functions can subsequently be applied
 #' to this object.
 #'
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
@@ -29,7 +29,7 @@
 #' Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
 #' be included.
 #'
-#' @return An object of class `MBNMA.network` which is a list containing:
+#' @return An object of class `mbnma.network` which is a list containing:
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
@@ -45,13 +45,13 @@
 #' print(HF2PPITT)
 #'
 #' # Define network
-#' network <- MBNMA.network(HF2PPITT, description="Example")
+#' network <- mbnma.network(HF2PPITT, description="Example")
 #'
 #' # Plot network
 #' plot(network)
 #'
 #' @export
-MBNMA.network <- function(data.ab, description="Network") {
+mbnma.network <- function(data.ab, description="Network") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -59,7 +59,7 @@ MBNMA.network <- function(data.ab, description="Network") {
   checkmate::assertCharacter(description, len=1, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  MBNMA.validate.data(data.ab)
+  mbnma.validate.data(data.ab)
 
   # Add indices for arms and narms and change agent/class codes
   index.data <- add_index(data.ab)
@@ -67,7 +67,7 @@ MBNMA.network <- function(data.ab, description="Network") {
   network <- index.data
   network <- c(list("description" = description), network)
 
-  class(network) <- "MBNMA.network"
+  class(network) <- "mbnma.network"
   return(network)
 }
 
@@ -75,7 +75,7 @@ MBNMA.network <- function(data.ab, description="Network") {
 
 #' Validates that a dataset fulfills requirements for MBNMA
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
 #'
 #' @details Checks done within the validation:
 #' * Checks data.ab has required column names
@@ -90,7 +90,7 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' * Checks that each study includes at least two treatments
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
-MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
+mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   # data.ab must have columns c("studyID", "agent", "dose", and either "y" and "se" or "r" and "N")
   # optional column of class
 
@@ -269,7 +269,7 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
 #' Adds arm (`arms`, `narms`) indices to a dataset and adds numeric identifiers for
 #' agent and class (if included in the data).
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
 #'
 #' @return A data frame similar to `data.ab` but with additional columns:
 #' * `arm` Arm identifiers coded for each study
@@ -461,8 +461,8 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' Converts MBNMA data frame to a list for use in JAGS model
 #'
-#' @inheritParams MBNMA.run
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.run
+#' @inheritParams mbnma.network
 #' @param class A boolean object indicating whether or not `data.ab` contains
 #'   information on different classes of treatments
 #' @param level Can take either `"agent"` to indicate that data should be at the agent-
@@ -494,7 +494,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 #'
@@ -502,13 +502,13 @@ recode.agent <- function(data.ab, level="agent") {
 #' # Get JAGS data with class
 #' df <- HF2PPITT
 #' df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-#' netclass <- MBNMA.network(df)
+#' netclass <- mbnma.network(df)
 #'
 #' jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 #'
 #'
 #' # Get JAGS data at the treatment level for Network Meta-Analysis
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
@@ -665,15 +665,15 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #'   )
 #'
 #' # Identify unique comparisons within the data
-#' MBNMA.comparisons(data)
+#' mbnma.comparisons(data)
 #'
 #'
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT) # Adds treatment identifiers
-#' MBNMA.comparisons(network$data.ab)
+#' network <- mbnma.network(HF2PPITT) # Adds treatment identifiers
+#' mbnma.comparisons(network$data.ab)
 #'
 #' @export
-MBNMA.comparisons <- function(data)
+mbnma.comparisons <- function(data)
 {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -730,14 +730,14 @@ MBNMA.comparisons <- function(data)
 #' @param connect.dose A boolean object to indicate whether treatments should be
 #' kept in the network if they connect via the simplest possible dose-response
 #' relationship (`TRUE`) or not (`FALSE`)
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
 #'
 #' @return A list containing a single row per arm data frame containing only studies that are
 #' connected to the network reference treatment, and a character vector of treatment labels
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #' drops <- drop.disconnected(network)
 #'
 #' # No studies have been dropped since network is fully connected
@@ -746,7 +746,7 @@ MBNMA.comparisons <- function(data)
 #'
 #' # Make data with no placebo
 #' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-#' net.noplac <- MBNMA.network(noplac.df)
+#' net.noplac <- mbnma.network(noplac.df)
 #'
 #' # Studies are dropped as some only connect via the dose-response function
 #' drops <- drop.disconnected(net.noplac, connect.dose=FALSE)
@@ -761,7 +761,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertLogical(connect.dose, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -872,16 +872,16 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 #' @param ref A positive integer indicating the *treatment* code of the new reference
 #' treatment to use
 #'
-#' @return An object of `class("MBNMA.network")` that has a new reference treatment.
+#' @return An object of `class("mbnma.network")` that has a new reference treatment.
 #' The new object is only really used as an intermediate in other package functions
 #' and it should not be used separately, as some characteristics of the dataset may
 #' not be properly encoded.
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
 change.netref <- function(network, ref=1) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertIntegerish(ref, len=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 

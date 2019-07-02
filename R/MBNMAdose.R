@@ -20,11 +20,11 @@
 #' @section Workflow:
 #' Functions within `MBNMAdose` follow a clear pattern of use:
 #'
-#' 1. Load your data into the correct format using `MBNMA.network()`
-#' 2. Analyse your data using `MBNMA.run()`, or any of the available wrapper dose-response functions
+#' 1. Load your data into the correct format using `mbnma.network()`
+#' 2. Analyse your data using `mbnma.run()`, or any of the available wrapper dose-response functions
 #' 3. Test for consistency at the treatment-level using functions like `NMA.nodesplit()` and `NMA.run()`
 #' 4. Examine model results using forest plots and treatment rankings
-#' 5. Use your model to predict responses using `predict.MBNMA()`
+#' 5. Use your model to predict responses using `predict()`
 #'
 #' At each of these stages there are a number of informative plots that can be generated to help understand
 #' the data and to make decisions regaring model fitting.
@@ -33,8 +33,8 @@
 #' \insertAllCited{}
 #'
 #' @examples
-#' # Generate an "MBNMA.network" object that stores data in the correct format
-#' network <- MBNMA.network(HF2PPITT)
+#' # Generate an "mbnma.network" object that stores data in the correct format
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Generate a network plot at the dose/treatment level
 #' plot(network, level="treatment")
@@ -46,13 +46,13 @@
 #' nma <- NMA.run(network)
 #' plot(nma)
 #'
-#' # Analyse data using MBNMA.run()
-#' result <- MBNMA.run(network, fun="emax",
+#' # Analyse data using mbnma.run()
+#' result <- mbnma.run(network, fun="emax",
 #'   beta.1="rel", beta.2="rel",
 #'   method="common")
 #'
-#' # ...or achieve the same result by using a wrapper function for MBNMA.run()
-#' result <- MBNMA.emax(network,
+#' # ...or achieve the same result by using a wrapper function for mbnma.run()
+#' result <- mbnma.emax(network,
 #'   emax="rel", ed50="rel",
 #'   method="common")
 #'
