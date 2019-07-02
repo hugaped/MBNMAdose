@@ -5,6 +5,7 @@ network <- mbnma.network(HF2PPITT)
 netgout <- mbnma.network(GoutSUA_2wkCFB)
 netalog <- mbnma.network(alog_pcfb)
 netpain <- mbnma.network(osteopain_2wkabs)
+netclass <- mbnma.network(osteopain_2wkabs)
 
 # Generate data without placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]

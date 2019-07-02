@@ -10,7 +10,7 @@ net.noplac <- mbnma.network(noplac.df)
 
 testthat::test_that("test.inconsistency.loops", {
   expect_equal(nrow(inconsistency.loops(network$data.ab)), 4)
-  expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), 8) # more loops since ref treatment has changed
+  expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), 7) # more loops since ref treatment has changed
 
   incon <- inconsistency.loops(network$data.ab)
   expect_identical(names(incon), c("t1", "t2", "path"))
@@ -82,7 +82,7 @@ testthat::test_that("test.nma.nodesplit", {
   # Test comparisons
   split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE,
-                           comparisons = rbind(c(18,20), c(17,20)))
+                           comparisons = rbind(c(9,10), c(7,11)))
   expect_equal(2, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")

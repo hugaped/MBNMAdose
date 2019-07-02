@@ -55,7 +55,7 @@ test_that("add_index functions correctly", {
     lvl <- c("treatment", "agent", "class")
     for (i in seq_along(lvls)) {
       expect_equal(length(index[[lvls[i]]]), length(unique(index$data.ab[[lvl[i]]])))
-      assertNumeric(index$data.ab[[lvl[i]]], lower=1, any.missing = FALSE, finite=TRUE)
+      checkmate::assertNumeric(index$data.ab[[lvl[i]]], lower=1, any.missing = FALSE, finite=TRUE)
     }
   }
 

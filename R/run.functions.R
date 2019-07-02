@@ -622,20 +622,20 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @examples
 #' # Run random effects NMA on the alogliptin dataset
-#' nma <- NMA.run(network, method="random")
+#' nma <- nma.run(network, method="random")
 #' print(nma)
 #' plot(nma)
 #'
 #' # Run common effects NMA keeping treatments that are disconnected in the NMA
 #' network <- mbnma.network(GoutSUA_2wkCFB)
-#' nma <- NMA.run(network, method="common", drop.discon=FALSE)
+#' nma <- nma.run(network, method="common", drop.discon=FALSE)
 #'
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
 #' network <- mbnma.network(HF2PPITT)
-#' ume <- NMA.run(network, method="random", UME=TRUE)
+#' ume <- nma.run(network, method="random", UME=TRUE)
 #'
 #' @export
-NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
+nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
                     warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {
 
   # Run checks
@@ -654,7 +654,7 @@ NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
   link <- likelink[["link"]]
 
   #### Write model for NMA ####
-  model <- write.NMA(method=method, likelihood=likelihood, link=link, UME=UME)
+  model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME)
 
 
   #### Parameters ####
@@ -724,7 +724,7 @@ NMA.run <- function(network, method="common", likelihood=NULL, link=NULL,
   }
 
   output <- list("jagsresult"=out, "trt.labs"=trt.labs)
-  class(output) <- "NMA"
+  class(output) <- "nma"
   return(output)
 
 }

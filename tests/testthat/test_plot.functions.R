@@ -3,6 +3,7 @@ testthat::context("Testing plot.functions")
 network <- mbnma.network(HF2PPITT)
 netgout <- mbnma.network(GoutSUA_2wkCFB)
 netalog <- mbnma.network(alog_pcfb)
+netclass <- mbnma.network(osteopain_2wkabs)
 
 datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
 
@@ -20,10 +21,10 @@ emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random")
 emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
 emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                         class.effect=list(emax="random"))
+                        class.effect=list(emax="random"))
 
 emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-                         class.effect=list(emax="random"))
+                        class.effect=list(emax="random"))
 
 nonparam <- mbnma.run(network, fun="nonparam.up")
 
@@ -56,12 +57,12 @@ test_that("plot.mbnma.network functions correctly", {
   expect_silent(plot(g1))
   expect_silent(plot(g2))
 
-  expect_equal(length(V(g1))==length(V(g2)), FALSE)
+  expect_equal(length(igraph::V(g1))==length(igraph::V(g2)), FALSE)
 
   expect_silent(plot(network, layout_in_circle = TRUE,
                      level="agent", remove.loops = TRUE))
 
-  expect_message(plot(net.noplac, layout_in_circle = TRUE,
+  expect_warning(plot(net.noplac, layout_in_circle = TRUE,
                      level="agent"))
 
   expect_warning(plot(net.noplac, layout_in_circle = TRUE,
@@ -70,16 +71,16 @@ test_that("plot.mbnma.network functions correctly", {
   g1 <- plot(network, layout_in_circle = TRUE,
             level="treatment", v.color = "agent")
   g2 <- plot(net.noplac, layout_in_circle = TRUE,
-             level="treatment", v.color="agent")
+             level="treatment", v.color="agent", doselink = 1)
 
-  expect_equal("Placebo_0" %in% names(V(g1)), TRUE)
-  expect_equal(length(network$treatments), length(V(g1)))
-  expect_equal(length(unique(V(g1)$color)), length(network$agents))
+  expect_equal("Placebo_0" %in% names(igraph::V(g1)), TRUE)
+  expect_equal(length(network$treatments), length(igraph::V(g1)))
+  expect_equal(length(unique(igraph::V(g1)$color)), length(network$agents))
 
-  expect_equal("Placebo" %in% names(V(g2)), TRUE)
-  expect_equal(length(net.noplac$treatments), length(V(g2))-1)
-  expect_equal(length(unique(V(g2)$color)), length(net.noplac$agents)+1)
-  expect_equal(length(unique(E(g2)$color)), 2)
+  #expect_equal("Placebo" %in% names(igraph::V(g2)), TRUE)
+  expect_equal(length(net.noplac$treatments), length(igraph::V(g2))-1)
+  expect_equal(length(unique(igraph::V(g2)$color)), length(net.noplac$agents)+1)
+  expect_equal(length(unique(igraph::E(g2)$color)), 2)
 
   expect_error(plot(network, layout_in_circle = TRUE,
                               level="class"))
@@ -112,7 +113,7 @@ testthat::test_that("plot.mbnma functions correctly", {
 
   # Class labs
   expect_silent(
-    plot(emax.class2, agent.labs = network$agents, class.labs=netclass$classes))
+    plot(emax.class2, agent.labs = netclass$agents, class.labs=netclass$classes))
 
   # No relative effects saved
   expect_error(plot(resdev))
@@ -227,7 +228,7 @@ testthat::test_that("plot.mbnma.rank functions correctly", {
   g <- plot(rank)
   expect_equal(length(g), 2)
 
-  rank <- rank.mbnma(linear.run)
+  rank <- rank.mbnma(emax.class2)
   expect_silent(plot(rank))
 
   rank <- rank.mbnma(emax.noplac)

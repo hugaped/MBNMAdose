@@ -73,7 +73,7 @@ print.mbnma.predict <- function(predict) {
 #'
 #' @export
 summary.mbnma.rank <- function(mbnma.rank) {
-  checkmate::assertClass(mbnma.rank, "MBNMA.rank")
+  checkmate::assertClass(mbnma.rank, "mbnma.rank")
 
   output <- list()
   for (i in seq_along(mbnma.rank)) {
@@ -85,10 +85,10 @@ summary.mbnma.rank <- function(mbnma.rank) {
 
 
 
-#' Prints summary information about an MBNMA.rank object
+#' Prints summary information about an mbnma.rank object
 #' @export
-print.MBNMA.rank <- function(mbnma.rank) {
-  checkmate::assertClass(mbnma.rank, "MBNMA.rank")
+print.mbnma.rank <- function(mbnma.rank) {
+  checkmate::assertClass(mbnma.rank, "mbnma.rank")
 
   head <- "\n###### Ranking of dose-response MBNMA ######"
 
@@ -132,10 +132,10 @@ neatCrI <- function(vals, digits=3) {
 }
 
 
-#' Prints summary results from an NMA.nodesplit object
+#' Prints summary results from an nma.nodesplit object
 #' @export
-print.NMA.nodesplit <- function(nodesplit) {
-  checkmate::assertClass(nodesplit, "NMA.nodesplit")
+print.nma.nodesplit <- function(nodesplit) {
+  checkmate::assertClass(nodesplit, "nma.nodesplit")
 
   width <- "\t\t"
   output <- "========================================\nNode-splitting analysis of inconsistency\n========================================\n"
@@ -165,8 +165,8 @@ print.NMA.nodesplit <- function(nodesplit) {
 
 #' Generates a summary data frame for mbnma.nodesplit objects
 #' @export
-summary.NMA.nodesplit <- function(nodesplit) {
-  checkmate::assertClass(nodesplit, "NMA.nodesplit")
+summary.nma.nodesplit <- function(nodesplit) {
+  checkmate::assertClass(nodesplit, "nma.nodesplit")
 
   if ("quantiles" %in% names(nodesplit[[1]])) {
     type <- "dose"
@@ -333,61 +333,64 @@ print.treat.str <- function(mbnma) {
   treat.sect <- c()
   # DR parameters for each agent (generate treat.str)
   for (i in seq_along(betanames)) {
-    sect.head <- paste("####", betanames[[i]], "dose-response parameter results ####", sep=" ")
+    if (!(names(betanames)[i] %in% names(mbnma$model.arg$class.effect))) {
 
-    data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
-    data.head <- paste(data.head, "---------------------------------", sep="\n")
+      sect.head <- paste("####", betanames[[i]], "dose-response parameter results ####", sep=" ")
 
-    if (is.character(mbnma$model.arg[[names(betanames)[i]]])) {
+      data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
+      data.head <- paste(data.head, "---------------------------------", sep="\n")
 
-      if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
-        param <- "d"
-      } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
-        param <- "beta"
-      }
+      if (is.character(mbnma$model.arg[[names(betanames)[i]]])) {
 
-      data.tab <- get.timeparam.str(mbnma, beta=paste0("beta.",i), param = param)
-      if (!is.null(data.tab)) {
-        data.str <- paste(data.head,
-                          data.tab,
-                          sep="")
-      }
-
-      if (mbnma$model.arg[[names(betanames)[i]]]=="random") {
-        sd.name <- paste0("sd.", betanames[[i]])
-        sd.vals <- neatCrI(mbnma$BUGSoutput$summary[
-          rownames(mbnma$BUGSoutput$summary)==sd.name, c(3,5,7)])
-        sd.str <- paste(sd.name, sd.vals, sep="\t")
-        data.str <- paste(data.str, sd.str, sep="\n")
-      }
-
-      # Parameters on exponential scale
-      if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
-        if (names(betanames)[i] %in% c("beta.2", "et50")) {
-          sect.head <- paste(sect.head,
-                             "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
+        if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
+          param <- "d"
+        } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
+          param <- "beta"
         }
+
+        data.tab <- get.timeparam.str(mbnma, beta=paste0("beta.",i), param = param)
+        if (!is.null(data.tab)) {
+          data.str <- paste(data.head,
+                            data.tab,
+                            sep="")
+        }
+
+        if (mbnma$model.arg[[names(betanames)[i]]]=="random") {
+          sd.name <- paste0("sd.", betanames[[i]])
+          sd.vals <- neatCrI(mbnma$BUGSoutput$summary[
+            rownames(mbnma$BUGSoutput$summary)==sd.name, c(3,5,7)])
+          sd.str <- paste(sd.name, sd.vals, sep="\t")
+          data.str <- paste(data.str, sd.str, sep="\n")
+        }
+
+        # Parameters on exponential scale
+        if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
+          if (names(betanames)[i] %in% c("beta.2", "et50")) {
+            sect.head <- paste(sect.head,
+                               "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
+          }
+        }
+
+        # String for pooling
+        if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
+          pool <- "relative effects"
+        } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
+          pool <- "absolute single parameter"
+        }
+        pool.str <- paste("Pooling:", pool, "\n", sep=" ")
+
+        treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
+
+      } else if (is.numeric(mbnma$model.arg[[names(betanames)[i]]])) {
+        data.str <- paste("Assigned a numeric value:",
+                          mbnma$model.arg[[names(betanames)[i]]],
+                          sep=" ")
+
+        treat.str <- paste(sect.head, data.str)
       }
 
-      # String for pooling
-      if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
-        pool <- "relative effects"
-      } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
-        pool <- "absolute single parameter"
-      }
-      pool.str <- paste("Pooling:", pool, "\n", sep=" ")
-
-      treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
-
-    } else if (is.numeric(mbnma$model.arg[[names(betanames)[i]]])) {
-      data.str <- paste("Assigned a numeric value:",
-                      mbnma$model.arg[[names(betanames)[i]]],
-                      sep=" ")
-
-      treat.str <- paste(sect.head, data.str)
+      treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
     }
-
-    treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
   }
   return(treat.sect)
 }
@@ -540,7 +543,7 @@ print.modfit.str <- function(mbnma) {
 
 
 
-summary.MBNMA <- function(mbnma) {
+summary.mbnma <- function(mbnma) {
   checkmate::assertClass(mbnma, "mbnma")
 
   # State that function does not work if "parameters.to.save" has been specified

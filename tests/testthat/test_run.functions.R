@@ -155,18 +155,18 @@ test_that("check.likelink function correctly", {
 
 
 
-test_that("NMA.run function correctly", {
+test_that("nma.run function correctly", {
   n.iter <- 500
 
-  expect_warning(NMA.run(network, method="common", n.iter=n.iter, warn.rhat = TRUE))
+  expect_warning(nma.run(network, method="common", n.iter=n.iter, warn.rhat = TRUE))
 
-  expect_warning(NMA.run(network, method="common", n.iter=n.iter, warn.rhat = FALSE), NA)
+  expect_warning(nma.run(network, method="common", n.iter=n.iter, warn.rhat = FALSE), NA)
 
-  result <- NMA.run(network, method="random", n.iter=n.iter, warn.rhat = FALSE)
+  result <- nma.run(network, method="random", n.iter=n.iter, warn.rhat = FALSE)
   expect_equal(names(result), c("jagsresult", "trt.labs"))
   expect_equal(all(c("d", "sd") %in% result$jagsresult$parameters.to.save), TRUE)
 
-  result <- NMA.run(network, method="random", n.iter=n.iter, warn.rhat = FALSE,
+  result <- nma.run(network, method="random", n.iter=n.iter, warn.rhat = FALSE,
                     UME=TRUE)
   expect_equal("d[1,1]" %in% rownames(result$jagsresult$BUGSoutput$summary), TRUE)
 
@@ -180,11 +180,11 @@ test_that("NMA.run function correctly", {
   fullrow <- nrow(df.num)
   network.disc <- mbnma.network(df.num)
 
-  result.1 <- NMA.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
+  result.1 <- nma.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
                     UME=TRUE, drop.discon = TRUE)
-  result.2 <- NMA.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
+  result.2 <- nma.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
                       UME=TRUE, drop.discon = FALSE)
-  result.3 <- NMA.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
+  result.3 <- nma.run(network.disc, method="random", n.iter=n.iter, warn.rhat = FALSE,
                       UME=TRUE, drop.discon = TRUE)
   expect_equal(length(result.1$trt.labs)!=length(result.2$trt.labs), TRUE)
   expect_equal(length(result.1$trt.labs)==length(result.3$trt.labs), TRUE)
