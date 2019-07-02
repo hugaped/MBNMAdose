@@ -49,7 +49,7 @@ At each of these stages there are a number of informative plots that can be gene
 
 ### Triptans for migraine pain relief
 
-`HF2PPITT` is from a systematic review of interventions for pain relief in migraine [@thorlund2014]. The outcome is binary, and represents (as aggregate data) the proportion of participants who were headache-free at 2-hours. Data are from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses are standardised as relative to a "common" dose, and in total there are 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
+`HF2PPITT` is from a systematic review of interventions for pain relief in migraine [@thorlund2014]. The outcome is binary, and represents (as aggregate data) the proportion of participants who were headache-free at 2 hours. Data are from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses are standardised as relative to a "common" dose, and in total there are 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
 
 ```{r, echo=FALSE}
 kable(head(HF2PPITT), digits=2) 
