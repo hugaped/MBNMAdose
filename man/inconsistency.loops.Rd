@@ -7,14 +7,14 @@
 inconsistency.loops(data)
 }
 \arguments{
-\item{data}{A data frame containing variables `studyID` and `treatment` (as
+\item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as
 numeric codes) that indicate which treatments are used in which studies.}
 }
 \value{
 A data frame of comparisons that are informed by direct and indirect
-  evidence from independent sources. Each row of the data frame is a
-  different treatment comparison. Numerical codes in `t1` and `t2` correspond
-  to treatment codes.
+evidence from independent sources. Each row of the data frame is a
+different treatment comparison. Numerical codes in \code{t1} and \code{t2} correspond
+to treatment codes.
 }
 \description{
 Identify comparisons informed by both direct and indirect evidence from
@@ -23,11 +23,11 @@ inconsistency via node-splitting. Follows the method of van Valkenhoef \insertCi
 }
 \details{
 Similar to \code{\link[gemtc]{mtc.nodesplit.comparisons}} but uses a fixed
-  reference treatment and therefore identifies fewer loops in which to test for
-  inconsistency. Heterogeneity can also be parameterised as inconsistency and
-  so testing for inconsistency in additional loops whilst changing the
-  reference treatment would also be identifying heterogeneity. Depends on
-  \code{\link[igraph]{igraph}}.
+reference treatment and therefore identifies fewer loops in which to test for
+inconsistency. Heterogeneity can also be parameterised as inconsistency and
+so testing for inconsistency in additional loops whilst changing the
+reference treatment would also be identifying heterogeneity. Depends on
+\code{\link[igraph]{igraph}}.
 }
 \examples{
 data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),

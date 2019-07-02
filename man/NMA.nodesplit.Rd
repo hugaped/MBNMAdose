@@ -11,41 +11,41 @@ NMA.nodesplit(network, likelihood = NULL, link = NULL,
 \method{plot}{NMA.nodesplit}(nodesplit, plot.type = NULL, ...)
 }
 \arguments{
-\item{network}{An object of class `MBNMA.network`.}
+\item{network}{An object of class \code{MBNMA.network}.}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 
 \item{drop.discon}{A boolean object that indicates whether to drop treatments
-that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
+that are disconnected at the treatment level. Default is \code{TRUE}. If set to \code{FALSE} then
 this could lead to indentification of nodesplit comparisons that are not connected
 to the network reference treatment.}
 
 \item{comparisons}{A matrix specifying the comparisons to be split (one row per comparison).
 The matrix must have two columns indicating each treatment for each comparison. Values can
-either be character (corresponding to the treatment names given in `network`) or
-numerical (corresponding to treatment codes within the `network` - note that these
-may change if `drop.discon=TRUE`).}
+either be character (corresponding to the treatment names given in \code{network}) or
+numerical (corresponding to treatment codes within the \code{network} - note that these
+may change if \code{drop.discon=TRUE}).}
 
-\item{...}{Arguments to be sent to `R2jags`}
+\item{...}{Arguments to be sent to \code{R2jags}}
 
-\item{nodesplit}{An object of `class("NMA.nodesplit")`}
+\item{nodesplit}{An object of \code{class("NMA.nodesplit")}}
 
-\item{plot.type}{A character string that can take the value of `"forest"` to plot
-only forest plots, `"density"` to plot only density plots, or left as `NULL` (the
+\item{plot.type}{A character string that can take the value of \code{"forest"} to plot
+only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
 default) to plot both types of plot.}
 }
 \value{
 Plots the desired graph(s) and returns an object (or list of object if
-`plot.type=NULL`) of `class(c("gg", "ggplot"))`
+\code{plot.type=NULL}) of \code{class(c("gg", "ggplot"))}
 }
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
@@ -53,7 +53,7 @@ indirect evidence. A discrepancy between the two suggests that the consistency
 assumption required for NMA and MBNMA may violated.
 }
 \details{
-The S3 method `plot()` on an `NMA.nodesplit` object generates either
+The S3 method \code{plot()} on an \code{NMA.nodesplit} object generates either
 forest plots of posterior medians and 95% credible intervals, or density plots
 of posterior densities for direct and indirect evidence.
 }

@@ -10,17 +10,17 @@ write.likelihood(model, likelihood = "binomial", link = NULL)
 \arguments{
 \item{model}{A character object of JAGS MBNMA model code}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }
 \value{
 A character object of JAGS MBNMA model code that includes likelihood
-  components of the model
+components of the model
 }
 \description{
 Adds sections of JAGS code for an MBNMA model that correspond to the

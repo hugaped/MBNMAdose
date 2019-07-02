@@ -9,60 +9,70 @@ getjagsdata(data.ab, class = FALSE, likelihood = "binomial",
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
-* `studyID` Study identifiers
-* `dose` Numeric data indicating the dose (must take positive values)
-* `agent` Agent identifiers (can be numeric, factor or character)
-* `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{dose} Numeric data indicating the dose (must take positive values)
+\item \code{agent} Agent identifiers (can be numeric, factor or character)
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
 continuous data.
-* `se` Numeric data indicating the standard error for a given observation. Required for
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
 continuous data.
-* `r` Numeric data indicating the number of responders within a study arm. Required for
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-* `N` Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
-* `E` Numeric data indicating the total exposure time for participants within a study arm. Required
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
-* `class` An optional column indicating a particular class code. Agents with the same identifier
-must also have the same class code.}
+\item \code{class} An optional column indicating a particular class code. Agents with the same identifier
+must also have the same class code.
+}}
 
-\item{class}{A boolean object indicating whether or not `data.ab` contains
+\item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
-\item{level}{Can take either `"agent"` to indicate that data should be at the agent-
-level (for MBNMA) or `"treatment"` to indicate that data should be at the treatent-
+\item{level}{Can take either \code{"agent"} to indicate that data should be at the agent-
+level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatent-
 level (for NMA)}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to
-  JAGS. List elements are:
-  * If `likelihood="normal"`:
-    - `y` An array of mean responses for each arm within each study
-    - `se` An array of standard errors for each arm within each study
-  * If `likelihood="binomial"`:
-    - `r` An array of the number of responses/count for each each arm within each study
-    - `N` An array of the number of participants for each arm within each study
-  * If `likelihood="poisson"`:
-    - `r` An array of the number of responses/count for each each arm within each study
-    - `E` An array of the total exposure time for each arm within each study
-  * `dose` A matrix of doses for each arm within each study (if `level="agent"`)
-  * `narm` A numeric vector with the number of arms per study
-  * `NS` The total number of studies in the dataset
-  * `Nagent` The total number of agents in the dataset (if `level="agent"`)
-  * `agent` A matrix of agent codes within each study (if `level="agent"`)
-  * `NT` The total number of treatment in the dataset (if `level="treatment"`)
-  * `treatment` A matrix of treatment codes within each study (if `level="treatment"`)
-  * `Nclass` Optional. The total number of classes in the dataset
-  * `class` Optional. A matrix of class codes within each study
-  * `classkey` Optional. A vector of class codes that correspond to agent codes.
-  Same length as the number of agent codes.
+JAGS. List elements are:
+\itemize{
+\item If \code{likelihood="normal"}:
+\itemize{
+\item \code{y} An array of mean responses for each arm within each study
+\item \code{se} An array of standard errors for each arm within each study
+}
+\item If \code{likelihood="binomial"}:
+\itemize{
+\item \code{r} An array of the number of responses/count for each each arm within each study
+\item \code{N} An array of the number of participants for each arm within each study
+}
+\item If \code{likelihood="poisson"}:
+\itemize{
+\item \code{r} An array of the number of responses/count for each each arm within each study
+\item \code{E} An array of the total exposure time for each arm within each study
+}
+\item \code{dose} A matrix of doses for each arm within each study (if \code{level="agent"})
+\item \code{narm} A numeric vector with the number of arms per study
+\item \code{NS} The total number of studies in the dataset
+\item \code{Nagent} The total number of agents in the dataset (if \code{level="agent"})
+\item \code{agent} A matrix of agent codes within each study (if \code{level="agent"})
+\item \code{NT} The total number of treatment in the dataset (if \code{level="treatment"})
+\item \code{treatment} A matrix of treatment codes within each study (if \code{level="treatment"})
+\item \code{Nclass} Optional. The total number of classes in the dataset
+\item \code{class} Optional. A matrix of class codes within each study
+\item \code{classkey} Optional. A vector of class codes that correspond to agent codes.
+Same length as the number of agent codes.
+}
 }
 \description{
 Converts MBNMA data frame to a list for use in JAGS model

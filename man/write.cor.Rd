@@ -12,30 +12,30 @@ write.cor(model, cor = TRUE, cor.prior = "wishart", var.scale = NULL,
 \item{model}{A character object of JAGS MBNMA model code}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
-between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-automatically set to `FALSE` if class effects are modelled.}
+between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
+automatically set to \code{FALSE} if class effects are modelled.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.}
+(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
 }
 \description{
 This uses a Wishart prior as default for modelling the correlation

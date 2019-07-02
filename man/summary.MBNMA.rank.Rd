@@ -8,7 +8,7 @@
 }
 \value{
 A list in which each element represents a parameter that has been ranked
-in `mbnma.rank` and contains a data frame of summary ranking results.
+in \code{mbnma.rank} and contains a data frame of summary ranking results.
 }
 \description{
 Generates summary data frames for an MBNMA.rank object

@@ -9,12 +9,12 @@ rescale.link(x, direction = "link", link = "logit")
 \arguments{
 \item{x}{A numeric vector of data to be rescaled}
 
-\item{direction}{Can take either `"link"` to convert data to a particular scale
-as defined by the `link` function, or `"natural"` to return it to the natural scale.}
+\item{direction}{Can take either \code{"link"} to convert data to a particular scale
+as defined by the \code{link} function, or \code{"natural"} to return it to the natural scale.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }
 \value{

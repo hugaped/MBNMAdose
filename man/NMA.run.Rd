@@ -12,27 +12,27 @@ NMA.run(network, method = "common", likelihood = NULL, link = NULL,
   UME = FALSE, ...)
 }
 \arguments{
-\item{nma}{An object of `class("NMA")`}
+\item{nma}{An object of \code{class("NMA")}}
 
 \item{bydose}{A boolean object indicating whether to plot responses with dose
-on the x axis (`TRUE`) to be able to examine potential dose-response shapes, or
-to plot a conventional forest plot with all treatments on the same plot (`FALSE`)}
+on the x axis (\code{TRUE}) to be able to examine potential dose-response shapes, or
+to plot a conventional forest plot with all treatments on the same plot (\code{FALSE})}
 
 \item{scales}{Should scales be fixed (\code{"fixed"}, the default),
 free (\code{"free"}), or free in one dimension (\code{"free_x"},
 \code{"free_y"})?}
 
-\item{network}{An object of class `MBNMA.network`.}
+\item{network}{An object of class \code{MBNMA.network}.}
 
-\item{method}{Indicates the type of split NMA to perform when `overlay.split=TRUE`. Can
-take either `"common"` or `"random"`.}
+\item{method}{Indicates the type of split NMA to perform when \code{overlay.split=TRUE}. Can
+take either \code{"common"} or \code{"random"}.}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
@@ -45,13 +45,13 @@ studies from the network.}
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
 
-\item{...}{Arguments for `ggplot2`}
+\item{...}{Arguments for \code{ggplot2}}
 }
 \description{
 Used for calculating split NMA results, either when comparing models that do not
-account for dose-response relationship, or to estimate split results for `overlay.split`.
-Results can also be compared between consistency (`UME=FALSE`) and inconsistency
-(`UME=TRUE`) models to test the validity of the consistency assumption.
+account for dose-response relationship, or to estimate split results for \code{overlay.split}.
+Results can also be compared between consistency (\code{UME=FALSE}) and inconsistency
+(\code{UME=TRUE}) models to test the validity of the consistency assumption.
 }
 \section{Methods (by generic)}{
 \itemize{

@@ -8,33 +8,37 @@ add_index(data.ab)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
-* `studyID` Study identifiers
-* `dose` Numeric data indicating the dose (must take positive values)
-* `agent` Agent identifiers (can be numeric, factor or character)
-* `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{dose} Numeric data indicating the dose (must take positive values)
+\item \code{agent} Agent identifiers (can be numeric, factor or character)
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
 continuous data.
-* `se` Numeric data indicating the standard error for a given observation. Required for
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
 continuous data.
-* `r` Numeric data indicating the number of responders within a study arm. Required for
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-* `N` Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
-* `E` Numeric data indicating the total exposure time for participants within a study arm. Required
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
-* `class` An optional column indicating a particular class code. Agents with the same identifier
-must also have the same class code.}
+\item \code{class} An optional column indicating a particular class code. Agents with the same identifier
+must also have the same class code.
+}}
 }
 \value{
-A data frame similar to `data.ab` but with additional columns:
-* `arm` Arm identifiers coded for each study
-* `narm` The total number of arms in each study
+A data frame similar to \code{data.ab} but with additional columns:
+\itemize{
+\item \code{arm} Arm identifiers coded for each study
+\item \code{narm} The total number of arms in each study
+}
 
-If `agent` or `class` are non-numeric or non-sequential (i.e. with missing numeric codes),
+If \code{agent} or \code{class} are non-numeric or non-sequential (i.e. with missing numeric codes),
 agents/classes in the returned data frame will be numbered and recoded to enforce sequential
 numbering (a warning will be shown stating this).
 }
 \description{
-Adds arm (`arms`, `narms`) indices to a dataset and adds numeric identifiers for
+Adds arm (\code{arms}, \code{narms}) indices to a dataset and adds numeric identifiers for
 agent and class (if included in the data).
 }
 \examples{

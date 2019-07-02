@@ -7,6 +7,6 @@
 E0.validate(data.ab, likelihood = NULL)
 }
 \description{
-Ensures `E0` takes the correct form to allow for synthesis of network
+Ensures \code{E0} takes the correct form to allow for synthesis of network
 reference treatment response
 }

@@ -11,48 +11,48 @@ MBNMA.write(fun = "linear", user.fun = NULL, beta.1 = "rel",
 }
 \arguments{
 \item{fun}{is a character specifying a functional form to be assigned to the
-dose-response. Options are given in `details`.}
+dose-response. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including `dose` and
-one/several of: `beta.1`, `beta.2`, `beta.3`.}
+\item{user.fun}{A character specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
-between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-automatically set to `FALSE` if class effects are modelled.}
+between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
+automatically set to \code{FALSE} if class effects are modelled.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.}
+(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }
 \value{
 A single long character string containing the JAGS model generated
-  based on the arguments passed to the function.
+based on the arguments passed to the function.
 }
 \description{
 Writes JAGS code for a Bayesian time-course model for model-based network
@@ -60,10 +60,10 @@ meta-analysis (MBNMA).
 }
 \details{
 When relative effects are modelled on more than one dose-response parameter and
-`cor=TRUE`, correlation between the dose-response parameters is automatically
+\code{cor=TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-`var.scale`.
+\code{var.scale}.
 }
 \examples{
 # Write model code for a model with an exponential dose-response function,

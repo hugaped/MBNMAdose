@@ -7,20 +7,20 @@
 MBNMA.comparisons(data)
 }
 \arguments{
-\item{data}{A data frame containing variables `studyID` and `treatment` (as numeric codes) that
+\item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as numeric codes) that
 indicate which treatments are used in which studies.}
 }
 \value{
 A data frame of unique comparisons in which each row represents a different comparison.
-`t1` and `t2` indicate the treatment codes that make up the comparison. `nr` indicates the number
+\code{t1} and \code{t2} indicate the treatment codes that make up the comparison. \code{nr} indicates the number
 of times the given comparison is made within the network.
 
 If there is only a single observation for each study within the dataset (i.e. as for standard
-network meta-analysis) `nr` will represent the number of studies that compare treatments `t1` and
-`t2`.
+network meta-analysis) \code{nr} will represent the number of studies that compare treatments \code{t1} and
+\code{t2}.
 
 If there are multiple observations for each study within the dataset (as in time-course MBNMA)
-`nr` will represent the number of time points in the dataset in which treatments `t1` and `t2` are
+\code{nr} will represent the number of time points in the dataset in which treatments \code{t1} and \code{t2} are
 compared.
 }
 \description{

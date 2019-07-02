@@ -9,15 +9,15 @@ write.dose.fun(fun = "linear", user.fun = NULL, effect = "rel")
 }
 \arguments{
 \item{fun}{is a character specifying a functional form to be assigned to the
-dose-response. Options are given in `details`.}
+dose-response. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including `dose` and
-one/several of: `beta.1`, `beta.2`, `beta.3`.}
+\item{user.fun}{A character specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
 }
 \value{
 A single character string containing JAGS model representing the
-  dose-response function component of an MBNMA dose-response model, generated
-  based on the arguments passed to the function.
+dose-response function component of an MBNMA dose-response model, generated
+based on the arguments passed to the function.
 }
 \description{
 Writes a single line of JAGS code representing the dose-response function
@@ -26,10 +26,10 @@ string.
 }
 \details{
 When relative effects are modelled on more than one dose-response parameter and
-`cor=TRUE`, correlation between the dose-response parameters is automatically
+\code{cor=TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-`var.scale`.
+\code{var.scale}.
 }
 \examples{
 # Write a linear dose-response function

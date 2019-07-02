@@ -8,21 +8,23 @@ MBNMA.validate.data(data.ab, single.arm = FALSE)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
-* `studyID` Study identifiers
-* `dose` Numeric data indicating the dose (must take positive values)
-* `agent` Agent identifiers (can be numeric, factor or character)
-* `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{dose} Numeric data indicating the dose (must take positive values)
+\item \code{agent} Agent identifiers (can be numeric, factor or character)
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
 continuous data.
-* `se` Numeric data indicating the standard error for a given observation. Required for
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
 continuous data.
-* `r` Numeric data indicating the number of responders within a study arm. Required for
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-* `N` Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
-* `E` Numeric data indicating the total exposure time for participants within a study arm. Required
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
-* `class` An optional column indicating a particular class code. Agents with the same identifier
-must also have the same class code.}
+\item \code{class} An optional column indicating a particular class code. Agents with the same identifier
+must also have the same class code.
+}}
 }
 \value{
 An error if checks are not passed. Runs silently if checks are passed
@@ -32,14 +34,16 @@ Validates that a dataset fulfills requirements for MBNMA
 }
 \details{
 Checks done within the validation:
-* Checks data.ab has required column names
-* Checks there are no NAs
-* Checks that all SEs are >0 (if variables are included in dataset)
-* Checks that all doses are >=0
-* Checks that all r and N are positive (if variables are included in dataset)
-* Checks that all y, se, r, N and E are numeric
-* Checks that class codes are consistent within each agent
-* Checks that agent/class names do not contain restricted characters
-* Checks that studies have at least two arms (if `single.arm = FALSE`)
-* Checks that each study includes at least two treatments
+\itemize{
+\item Checks data.ab has required column names
+\item Checks there are no NAs
+\item Checks that all SEs are >0 (if variables are included in dataset)
+\item Checks that all doses are >=0
+\item Checks that all r and N are positive (if variables are included in dataset)
+\item Checks that all y, se, r, N and E are numeric
+\item Checks that class codes are consistent within each agent
+\item Checks that agent/class names do not contain restricted characters
+\item Checks that studies have at least two arms (if \code{single.arm = FALSE})
+\item Checks that each study includes at least two treatments
+}
 }

@@ -8,16 +8,16 @@
 }
 \arguments{
 \item{direction}{Indicates whether negative responses are better (taking the
-value `-1`) or positive responses are better (taking the value `1`)}
+value \code{-1}) or positive responses are better (taking the value \code{1})}
 
 \item{rank.doses}{A list of numeric vectors. Each named element corresponds to an
-agent (as named/coded in `predict`), and each number within the vector for that element corresponds to the dose
-for that agent. Doses of agents specified in `rank.doses` *must* be a subset of those
-for which responses have been predicted in `predict`. If left as `NULL` (the default)
-then all doses of all agents in `predict` will be ranked.}
+agent (as named/coded in \code{predict}), and each number within the vector for that element corresponds to the dose
+for that agent. Doses of agents specified in \code{rank.doses} \emph{must} be a subset of those
+for which responses have been predicted in \code{predict}. If left as \code{NULL} (the default)
+then all doses of all agents in \code{predict} will be ranked.}
 }
 \value{
-An object of `class("MBNMA.rank")` which is a list containing a summary data
+An object of \code{class("MBNMA.rank")} which is a list containing a summary data
 frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
 that each agent has a particular rank, for each parameter that has been ranked.
 }
@@ -25,7 +25,7 @@ that each agent has a particular rank, for each parameter that has been ranked.
 Rank predicted doses of different agents
 }
 \details{
-If `predict` contains multiple predictions at dose=0, then only the first of these
+If \code{predict} contains multiple predictions at dose=0, then only the first of these
 will be included, to avoid duplicating rankings.
 }
 \examples{

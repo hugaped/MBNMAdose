@@ -13,32 +13,32 @@
 MBNMA.network(data.ab, description = "Network")
 }
 \arguments{
-\item{network}{An object of class `MBNMA.network`.}
+\item{network}{An object of class \code{MBNMA.network}.}
 
 \item{layout_in_circle}{A boolean value indicating whether the network plot
 should be shown in a circle or left as the igraph default layout.}
 
 \item{edge.scale}{A number to scale the thickness of connecting lines
 (edges). Line thickness is proportional to the number of studies for a
-given comparison. Set to `0` to make thickness equal for all comparisons.}
+given comparison. Set to \code{0} to make thickness equal for all comparisons.}
 
 \item{label.distance}{A number scaling the distance of labels from the nodes
 to improve readability. The labels will be directly on top of the nodes if
-the defauls of `0` is used. Option only applicable if `layout_in_circle` is
-set to `TRUE`.}
+the defauls of \code{0} is used. Option only applicable if \code{layout_in_circle} is
+set to \code{TRUE}.}
 
-\item{level}{A string indicating whether nodes/facets should represent `treatment`
-or `agent` in the plot. Can be used to examine the expected impact of modelling
+\item{level}{A string indicating whether nodes/facets should represent \code{treatment}
+or \code{agent} in the plot. Can be used to examine the expected impact of modelling
 dose-response in terms of network connectivity.}
 
 \item{remove.loops}{A boolean value indicating whether to include loops that
 indicate comparisons within a node.}
 
-\item{v.color}{Can take either `"connect"` (the default) to indicate that nodes should
+\item{v.color}{Can take either \code{"connect"} (the default) to indicate that nodes should
 only be coloured if they are connected to the network reference treatment (indicates
-network connectivity) or `"agent"` to colour nodes by agent.}
+network connectivity) or \code{"agent"} to colour nodes by agent.}
 
-\item{v.scale}{A number with which to scale the size of the nodes. If the variable `N`
+\item{v.scale}{A number with which to scale the size of the nodes. If the variable \code{N}
 (to indicate the numbers of participants in each study arm) is included in the
 dataset then the size of the nodes will be proportional to the number of participants
 within a treatment/agent in the network.}
@@ -46,58 +46,62 @@ within a treatment/agent in the network.}
 \item{doselink}{If given an integer value it indicates that connections via the dose-response
 relationship with placebo should be plotted. The integer represents the minimum number of doses
 from which a dose-response function could be estimated and is equivalent to the number of
-parameters in the desired dose-response function plus one. If left as `NULL` (the default), connections
+parameters in the desired dose-response function plus one. If left as \code{NULL} (the default), connections
 to placebo via dose-response relationships will not be included.}
 
-\item{...}{Options for plotting in `igraph`.}
+\item{...}{Options for plotting in \code{igraph}.}
 
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
-* `studyID` Study identifiers
-* `dose` Numeric data indicating the dose (must take positive values)
-* `agent` Agent identifiers (can be numeric, factor or character)
-* `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{dose} Numeric data indicating the dose (must take positive values)
+\item \code{agent} Agent identifiers (can be numeric, factor or character)
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
 continuous data.
-* `se` Numeric data indicating the standard error for a given observation. Required for
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
 continuous data.
-* `r` Numeric data indicating the number of responders within a study arm. Required for
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-* `N` Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
-* `E` Numeric data indicating the total exposure time for participants within a study arm. Required
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
-* `class` An optional column indicating a particular class code. Agents with the same identifier
-must also have the same class code.}
+\item \code{class} An optional column indicating a particular class code. Agents with the same identifier
+must also have the same class code.
+}}
 
 \item{description}{Optional. Short description of the network.}
 }
 \value{
-An object of `class("igraph")` - any functions from the `igraph` package
+An object of \code{class("igraph")} - any functions from the \code{igraph} package
 can be applied to this object to change its characteristics.
 
-An object of class `MBNMA.network` which is a list containing:
-* `description` A short description of the network
-* `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
+An object of class \code{MBNMA.network} which is a list containing:
+\itemize{
+\item \code{description} A short description of the network
+\item \code{data.ab} A data frame containing the arm-level network data (treatment identifiers will have
 been recoded to a sequential numeric code)
-* `agents` A character vector indicating the agent identifiers that correspond to the
+\item \code{agents} A character vector indicating the agent identifiers that correspond to the
 new agent codes.
-* `treatments` A character vector indicating the treatment identifiers that correspond
+\item \code{treatments} A character vector indicating the treatment identifiers that correspond
 to the new treatment codes.
-* `classes` A character vector indicating the class identifiers (if included in the original data)
+\item \code{classes} A character vector indicating the class identifiers (if included in the original data)
 that correspond to the new class codes.
 }
+}
 \description{
-Creates an object of class `MBNMA.network`. Various MBNMA functions can subsequently be applied
+Creates an object of class \code{MBNMA.network}. Various MBNMA functions can subsequently be applied
 to this object.
 }
 \details{
-The S3 method `plot()` on an `MBNMA.network` object generates a
-  network plot that shows how different treatments are connected within the
-  network via study comparisons. This can be used to identify how direct and
-  indirect evidence are informing different treatment comparisons. Depends on
-  \code{\link[igraph]{igraph}}.
+The S3 method \code{plot()} on an \code{MBNMA.network} object generates a
+network plot that shows how different treatments are connected within the
+network via study comparisons. This can be used to identify how direct and
+indirect evidence are informing different treatment comparisons. Depends on
+\code{\link[igraph]{igraph}}.
 
-Agents/classes for arms that have dose = 0 will be relabelled as `"Placebo"`.
-Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
+Agents/classes for arms that have dose = 0 will be relabelled as \code{"Placebo"}.
+Missing values (\code{NA}) cannot be included in the dataset. Single arm studies cannot
 be included.
 }
 \section{Methods (by generic)}{

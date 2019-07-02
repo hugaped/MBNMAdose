@@ -11,32 +11,32 @@ write.check(fun = "linear", user.fun = NULL, beta.1 = list(pool =
 }
 \arguments{
 \item{fun}{is a character specifying a functional form to be assigned to the
-dose-response. Options are given in `details`.}
+dose-response. Options are given in \code{details}.}
 
-\item{user.fun}{A character specifying any relationship including `dose` and
-one/several of: `beta.1`, `beta.2`, `beta.3`.}
+\item{user.fun}{A character specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.}
+(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
 }
 \value{
 Returns an error if any conditions are not met. Otherwise returns NULL.
@@ -46,5 +46,5 @@ Checks validity of arguments for MBNMA.write
 }
 \details{
 Used to check if the arguments given to MBNMA.write are valid. The
-  function will return informative errors if arguments are misspecified.
+function will return informative errors if arguments are misspecified.
 }

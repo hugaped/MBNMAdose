@@ -12,7 +12,7 @@ write.remove.loops(model)
 }
 \value{
 A character object of JAGS MBNMA model code that has had empty loops
-  removed from it
+removed from it
 }
 \description{
 Removes any loops from MBNMA model JAGS code that do not contain any

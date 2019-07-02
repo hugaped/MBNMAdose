@@ -11,13 +11,13 @@ radian.rescale(x, start = 0, direction = 1)
 
 \item{start}{A number giving the offset from 12 o'clock in radians for the label locations.}
 
-\item{direction}{Either `1` for clockwise numbering (based on the order of `x`) or `-1` for
+\item{direction}{Either \code{1} for clockwise numbering (based on the order of \code{x}) or \code{-1} for
 anti-clockwise.}
 }
 \description{
-Useful for graphs drawn using `igraph` to reposition labels relative to vertices when vertices
-are laid out in a circle (as is common in network plots). `igraph` interprets position within
-`vertex.label.degree` as radians, so it is necessary to convert locations into radian values. This
+Useful for graphs drawn using \code{igraph} to reposition labels relative to vertices when vertices
+are laid out in a circle (as is common in network plots). \code{igraph} interprets position within
+\code{vertex.label.degree} as radians, so it is necessary to convert locations into radian values. This
 is the main role of this function.
 }
 \examples{

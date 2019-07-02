@@ -7,11 +7,11 @@
 recode.agent(data.ab, level = "agent")
 }
 \arguments{
-\item{level}{Can take either `"agent"` or `"class"`}
+\item{level}{Can take either \code{"agent"} or \code{"class"}}
 }
 \value{
 A list containing a data frame with recoded agent/class identifiers and
-  a character vector of original agent/class names
+a character vector of original agent/class names
 }
 \description{
 Assigns agent or class variables numeric identifiers

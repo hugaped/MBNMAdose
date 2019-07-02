@@ -8,9 +8,9 @@ write.inserts()
 }
 \value{
 A list with named elements containing character strings that match
-  points in MBNMA JAGS code. These points can therefore be used to insert
-  other lines of JAGS code into the correct section within the overall model
-  code.
+points in MBNMA JAGS code. These points can therefore be used to insert
+other lines of JAGS code into the correct section within the overall model
+code.
 }
 \description{
 Writes insert points for RegEx in MBNMA JAGS code

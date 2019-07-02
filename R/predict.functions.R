@@ -22,7 +22,7 @@
 #'   of predictions will be calculated for different doses (the number is determined by `n.doses`).
 #'   Can only take positive values. If left as `NULL` (the default) results will be predicted based on the
 #'   maximum dose of each agent given in the data.
-#' @param n.dose A number indicating the number of doses at which to make predictions
+#' @param n.doses A number indicating the number of doses at which to make predictions
 #'   within each agent. The default is `15`.
 #' @param exact.doses A list of numeric vectors. Each named element in the list correponds to an
 #'   agent (either named similarly to agent names given in the data, or named
@@ -33,33 +33,35 @@
 #'   placebo) in the prediction. This can take a number of different formats depending
 #'   on how it will be used/calculated. The default is `0` but this will typically lead
 #'   to non-sensical predictions.
-#'   * `numeric` A single numeric value representing the deterministic response at dose = 0,
+#'   * `numeric()` A single numeric value representing the deterministic response at dose = 0,
 #'   given on the natural scale - so for binomial data, proportions should be given and
 #'   for Poisson data, a rate should be given.
-#'   * `character` A single string respresenting a stochastic distribution for the response
+#'   * `character()` A single string respresenting a stochastic distribution for the response
 #'   at dose = 0, given on the natural scale - so for binomial data, proportions should be given and
 #'   for Poisson data, a rate should be given. This is specified as a random number generator
 #'   (RNG) given as a string, and can take any RNG distribution for which a function exists
 #'   in R. For example: `"rnorm(n, 7, 0.5)"`.
-#'   * `data.frame` A data frame containing data in the long format (one row per study arm) to be meta-analysed
+#'   * `data.frame()` A data frame containing data in the long format (one row per study arm) to be meta-analysed
 #'   to estimate the dose = 0 (placebo) response. This could be a set of observational
 #'   studies that are specific to the population on which to make
 #'   predictions, or it can be a subset of the study arms within the MBNMA dataset
-#'   that investigate placebo. See `ref.synth()`
+#'   that investigate placebo. See [ref.synth()]
 #' @param synth A character object that can take the value `"fixed"` or `"random"` that
 #'   specifies the the type of pooling to use for synthesis of `E0` if a data frame
 #'   has been provided. Using `"random"` rather
 #'   than `"fixed"` for `synth` will result in wider 95\\% CrI for predictions.
 #' @param ... Arguments to be sent to R2jags for synthesis of the network
-#'   reference treatment effect (using `ref.synth()`)
+#'   reference treatment effect (using [ref.synth()])
 #'
 #'
 #' @return An S3 object of class `MBNMA.predict` that contains the following
 #'   elements:
-#'   * `summary` A named list of data frames. Each data frame contains
+#'
+#' * `summary` A named list of data frames. Each data frame contains
 #'   a summary of predicted responses at follow-up times specified in `times`
 #'   for each treatment specified in `treats`
-#'   * `pred.mat` A named list of
+#'
+#' * `pred.mat` A named list of
 #'   matrices. Each matrix contains the MCMC results of predicted responses at
 #'   follow-up times specified in `times` for each treatment specified in
 #'   `treats`
@@ -70,12 +72,12 @@
 #' 1. Use `max.dose` and `n.doses` to specify the maximum dose for each agent and the
 #' number of doses within that agent for which to predict responses. Doses will be chosen
 #' that are equally spaced from zero to the maximum dose for each agent. This is useful
-#' for generating plots of predicted responses (using `plot.MBNMA.predict()`) as it will
+#' for generating plots of predicted responses (using `[plot-MBNMA.predict]`) as it will
 #' lead to fitting a smooth dose-response curve (provided `n.doses` is sufficiently high).
 #'
 #' 2. Use `exact.doses` to specify the exact doses for which to predict responses for each
 #' agent. This may be more useful when ranking different predicted responses using
-#' `rank.MBNMA.predict()`
+#' `[rank-MBNMA.predict]`
 #'
 #' @examples
 #' # Using the triptans data
@@ -278,7 +280,7 @@ predict.MBNMA <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
   if ((is.numeric(E0) | is.character(E0))) {
     E0 <- rescale.link(E0, direction="link", link=link)
   } else if (is.data.frame(E0)) {
-    E0 <- ref.synth(data.ab=E0, mbnma=mbnma, synth=synth)
+    E0 <- ref.synth(data.ab=E0, mbnma=mbnma, synth=synth, ...)
 
     if (!("sd.mu" %in% names(E0))) {
       E0 <- E0$m.mu

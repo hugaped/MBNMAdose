@@ -8,7 +8,7 @@
 }
 \value{
 A data frame containing posterior summary statistics from predicted responses
-  from a dose-response MBNMA model
+from a dose-response MBNMA model
 }
 \description{
 Produces a summary data frame from an MBNMA.predict object

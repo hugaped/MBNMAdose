@@ -12,20 +12,20 @@ write.delta(model, beta.1, beta.2 = NULL, beta.3 = NULL,
 \item{model}{A character object of JAGS MBNMA model code}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 }
 \value{
 A character object of JAGS MBNMA model code that includes delta
-  parameter components of the model
+parameter components of the model
 }
 \description{
 Adds sections of JAGS code for an MBNMA model that correspond to delta

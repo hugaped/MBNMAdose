@@ -7,5 +7,5 @@
 gen.parameters.to.save(model.params, model)
 }
 \description{
-Identical to `gen.parameters.to.save()` in MBNMAtime
+Identical to \code{gen.parameters.to.save()} in MBNMAtime
 }

@@ -11,125 +11,128 @@ MBNMA.emax.hill(network, parameters.to.save = NULL, emax = "rel",
   arg.params = NULL, ...)
 }
 \arguments{
-\item{network}{An object of class `MBNMA.network`.}
+\item{network}{An object of class \code{MBNMA.network}.}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
 
 \item{emax}{Refers to the Emax parameter of the Emax dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{ed50}{Refers to the ED50 parameter of the Emax dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{hill}{Refers to the Hill parameter of the Emax dose-response function.
-Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).}
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{method}{Can take either `"common"` or `"random"` to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK `Details`).}
+\item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
+should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.}
+(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
-between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-automatically set to `FALSE` if class effects are modelled.}
+between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
+automatically set to \code{FALSE} if class effects are modelled.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
 \item{pd}{Can take either:
-* `pv` only pV will be reported (as automatically outputted by R2jags).
-* `plugin` calculates pD by the plug-in
+\itemize{
+\item \code{pv} only pV will be reported (as automatically outputted by R2jags).
+\item \code{plugin} calculates pD by the plug-in
 method REF. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
-* `pd.kl` calculates pD by the Kullback–Leibler divergence REF. This
+\item \code{pd.kl} calculates pD by the Kullback–Leibler divergence REF. This
 will require running the model for additional iterations but
 will always produce a positive result.
-* `popt` calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance REF.}
+\item \code{popt} calculates pD using an optimism adjustment which allows for calculation
+of the penalized expected deviance REF.
+}}
 
 \item{parallel}{A boolean value that indicates whether JAGS should be run in
-parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
+parallel (\code{TRUE}) or not (\code{FALSE}). If \code{TRUE} then the number of cores to
 use is automatically calculated.}
 
-\item{likelihood}{A string indicating the likelihood to use in the model. Can take either `"binomial"`,
-`"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.}
+\item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
+\code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-and identity link function. If left as `NULL` the link function will be automatically assigned based
+defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-**using distributions as specified in JAGS syntax**.}
+\strong{using distributions as specified in JAGS syntax}.}
 
-\item{arg.params}{Contains a list of arguments sent to `MBNMA.run()` by time-course
+\item{arg.params}{Contains a list of arguments sent to \code{MBNMA.run()} by time-course
 specific wrapper functions}
 
 \item{...}{Arguments to be sent to R2jags.}
 }
 \value{
-An object of S3 class `c("MBNMA", "rjags")`` containing parameter
-  results from the model. Can be summarized by `print()` and can check
-  traceplots using `traceplot()` (from the `R2jags` package).
+An object of S3 class \code{c("MBNMA", "rjags")`` containing parameter results from the model. Can be summarized by }print()\code{and can check traceplots using}traceplot()\code{(from the}R2jags` package).
 
-  Nodes that are automatically monitored (if present in the model) have the
-  following interpretation.
+Nodes that are automatically monitored (if present in the model) have the
+following interpretation.
 
-  These will have an additional suffix that relates
-  to the name/number of the dose-response parameter to which they correspond
-  (e.g. `d.et50` or `d.1`):
-  * `d` The pooled effect for each agent for a given dose-response
-  parameter. Will be estimated by the model if dose-respones parameters (`beta.1`,
-  `beta.2`, `beta.3`) are set to `"rel"`.
-  * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
-  `method="random"`.
-  * `D` The class effect for each class for a given dose-response
-  parameter. Will be estimated by the model if specified in `class.effect`.
-  * `sd.D` The within-class SD for different agents within the same class. Will
-  be estimated by the model if any dose-response parameter in `class.effect` is
-  set to `"random"`.
-  * `beta` The absolute value of a given dose-response parameter across the whole
-  network (does not vary by agent/class). Will be estimated by the model if
-  dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"`
-  or `"random"`.
-  * `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-  parameters, reported if `beta.1`, `beta.2` or `beta.3` are set to `"random"`
-  * `totresdev` The residual deviance of the model
-  * `deviance` The deviance of the model
+These will have an additional suffix that relates
+to the name/number of the dose-response parameter to which they correspond
+(e.g. \code{d.et50} or \code{d.1}):
+\itemize{
+\item \code{d} The pooled effect for each agent for a given dose-response
+parameter. Will be estimated by the model if dose-respones parameters (\code{beta.1},
+\code{beta.2}, \code{beta.3}) are set to \code{"rel"}.
+\item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
+\code{method="random"}.
+\item \code{D} The class effect for each class for a given dose-response
+parameter. Will be estimated by the model if specified in \code{class.effect}.
+\item \code{sd.D} The within-class SD for different agents within the same class. Will
+be estimated by the model if any dose-response parameter in \code{class.effect} is
+set to \code{"random"}.
+\item \code{beta} The absolute value of a given dose-response parameter across the whole
+network (does not vary by agent/class). Will be estimated by the model if
+dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}) are set to \code{"common"}
+or \code{"random"}.
+\item \code{sd} (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
+parameters, reported if \code{beta.1}, \code{beta.2} or \code{beta.3} are set to \code{"random"}
+\item \code{totresdev} The residual deviance of the model
+\item \code{deviance} The deviance of the model
+}
 
-
-  If there are errors in the JAGS model code then the object will be a list
-  consisting of two elements - an error message from JAGS that can help with
-  debugging and `model.arg`, a list of arguments provided to `MBNMA.run()`
-  which includes `jagscode`, the JAGS code for the model that can help
-  users identify the source of the error.
+If there are errors in the JAGS model code then the object will be a list
+consisting of two elements - an error message from JAGS that can help with
+debugging and \code{model.arg}, a list of arguments provided to \code{MBNMA.run()}
+which includes \code{jagscode}, the JAGS code for the model that can help
+users identify the source of the error.
 }
 \description{
 Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 dose-response function. Follows the methods
-of MAWDSLEY REF. This function acts as a wrapper for `MBNMA.run()` that
+of MAWDSLEY REF. This function acts as a wrapper for \code{MBNMA.run()} that
 uses more clearly defined parameter names.
 }
 \section{Dose-response parameters}{
 
-* `"rel"` implies that relative effects should be pooled for this dose-resonse
+\itemize{
+\item \code{"rel"} implies that relative effects should be pooled for this dose-resonse
 parameter, that vary by agent.
-* `"common"` implies that all studies estimate the same true absolute effect
+\item \code{"common"} implies that all studies estimate the same true absolute effect
 (akin to a "fixed effect" meta-analysis) across the whole network
-* `"random"` implies that all studies estimate a separate true absolute effect, but
+\item \code{"random"} implies that all studies estimate a separate true absolute effect, but
 that each of these true effects vary randomly around a true mean effect. This
 approach allows for modelling of between-study heterogeneity.
-* `numeric()` Assigned a numeric value. It indicates that
+\item \code{numeric()} Assigned a numeric value. It indicates that
 this dose-response parameter should not be estimated from the data but should be
 assigned the numeric value determined by the user. This can be useful for fixing
 specific dose-response parameters (e.g. Hill parameters in Emax functions) to a value.
+}
 }
 
 \examples{

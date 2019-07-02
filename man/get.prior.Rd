@@ -11,19 +11,19 @@ get.prior(model)
 }
 \value{
 A character vector, each element of which is a line of JAGS code
-  corresponding to a prior in the JAGS code.
+corresponding to a prior in the JAGS code.
 }
 \description{
-Identical to `get.prior()` in MBNMAtime.
+Identical to \code{get.prior()} in MBNMAtime.
 This function takes JAGS model presented as a string and identifies what
 prior values have been used for calculation.
 }
 \details{
 Even if an MBNMA model that has not initialised successfully and
-  results have not been calculated, the JAGS model for it is saved in
-  MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
-  This allows for priors to be changed even in failing models, which may help
-  solve issues with initialisation.
+results have not been calculated, the JAGS model for it is saved in
+MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
+This allows for priors to be changed even in failing models, which may help
+solve issues with initialisation.
 }
 \examples{
 # Using the triptans data
