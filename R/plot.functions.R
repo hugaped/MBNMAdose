@@ -252,6 +252,11 @@ plot.mbnma.network <- function(network, level="treatment", v.color="connect", do
 
 
 #' Check if all nodes in the network are connected (identical to function in `MBNMAtime`)
+#'
+#' @param g An network plot of `class("igraph")`
+#' @param reference A numeric value indicating which treatment code to use as the reference treatment for
+#' testing that all other treatments connect to it
+#'
 check.network <- function(g, reference=1) {
 
   # Can add component to test for if placebo is missing:
@@ -650,7 +655,13 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 
 
 
-#' Overlays observations as shaded regions on a time-course plot
+#' Overlays observations as shaded regions on a time-course
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams plot.mbnma.predict
+#' @param g An object of `class("ggplot")`
+#' @param max.col.scale The maximum rgb numeric value to use for the colour scale
+#'
 disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -753,6 +764,10 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 #' Generates colours with varying degrees of transparency
 #'
 #' Identical to function in `MBNMAtime` package
+#'
+#' @param ncut A number indicating the number of different counts in the dataset
+#' @param col Colour to use for shading
+#'
 alpha.scale <- function(n.cut, col="blue") {
   # Run checks
   checkmate::assertIntegerish(n.cut, lower=1, len=1)
@@ -804,6 +819,9 @@ alpha.scale <- function(n.cut, col="blue") {
 #' Overlays results of split (treatment-level) NMA on a plot
 #'
 #' Requires automatically running an NMA
+#'
+#' @inheritParams plot.mbnma.predict
+#' @inheritParams disp.obs
 overlay.split <- function(g, network, method="common",
                           likelihood="binomial", link="logit", ...) {
 
@@ -1016,6 +1034,9 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
 
 
 #' Extracts fitted values or deviance contributions into a data.frame with indices
+#'
+#' @inheritParams predict.mbnma
+#' @param The parameter for which to extract values - can take either `"theta"`, `"dev"` or `"resdev"`
 get.theta.dev <- function(mbnma, param="theta") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()

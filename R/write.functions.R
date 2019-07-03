@@ -10,6 +10,8 @@
 #' meta-analysis (MBNMA).
 #'
 #' @inheritParams mbnma.run
+#' @params cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+#' between relative effects. Must be kept as `"wishart"`
 #'
 #' @return A single long character string containing the JAGS model generated
 #'   based on the arguments passed to the function.
@@ -231,6 +233,7 @@ write.inserts <- function() {
 #' string.
 #'
 #' @inheritParams mbnma.run
+#' @param effect Can take either `"rel"` for relative effects or `"abs"` for absolute (arm-pooled) effects
 #'
 #' @return A single character string containing JAGS model representing the
 #'   dose-response function component of an MBNMA dose-response model, generated
@@ -301,6 +304,8 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #' Checks validity of arguments for mbnma.write
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams nma.run
+#' @inheritParams mbnma.write
 #'
 #' @return Returns an error if any conditions are not met. Otherwise returns `NULL`.
 #'
@@ -754,8 +759,6 @@ write.beta <- function(model,
 
 
 
-#' Adds sections of JAGS code for a nonparametric MBNMA model that correspond to beta
-#' parameters
 write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
   inserts <- write.inserts()
 
@@ -787,6 +790,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #'
 #' @inheritParams mbnma.run
 #' @inheritParams write.beta
+#' @inheritParams mbnma.write
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
                       method="random", class.effect=list()) {
@@ -841,6 +845,8 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 #' @param sufparams A numeric vector of dose-response/time-course parameter suffixes. It
 #'  should be the same length as the number of relative effects (i.e. the covariance
 #'  matrix size).
+#' @inheritParams mbnma.write
+#' @inheritParams get.prior
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
                           var.scale=NULL) {
 
@@ -1108,6 +1114,8 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
 
 #' Write E0 synthesis JAGS model
+#'
+#' @inheritParams predict.mbnma
 write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
   model <-
 "
@@ -1155,6 +1163,8 @@ m.mu ~ dnorm(0,0.0001)
 
 
 #' Write JAGS code for split NMA
+#'
+#' @inheritParams nma.run
 write.nma <- function(method="common", likelihood="binomial", link="logit",
                       UME=FALSE) {
   model <- "

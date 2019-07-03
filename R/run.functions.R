@@ -541,6 +541,11 @@ mbnma.jags <- function(data.ab, model,
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
 #' Identical to `gen.parameters.to.save()` in `MBNMAtime`
+#'
+#' @param model.params A character or numeric vector containing the names of the
+#' dose-response parameters in the model
+#' @param model A JAGS model written as a character object
+#'
 gen.parameters.to.save <- function(model.params, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
@@ -623,6 +628,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
 #'   that does not assume consistency and so can be used to test if the consistency
 #'   assumption is valid.
+#' @param n.iter number of total iterations per chain (including burn in; default: 10000)
 #'
 #' @examples
 #' # Run random effects NMA on the alogliptin dataset

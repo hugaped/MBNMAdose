@@ -6,6 +6,8 @@
 
 #' Produces a summary data frame from an mbnma.predict object
 #'
+#' @inheritParams plot.mbnma.predict
+#'
 #' @return A data frame containing posterior summary statistics from predicted responses
 #'   from a dose-response MBNMA model
 #' @export
@@ -33,6 +35,9 @@ summary.mbnma.predict <- function(predict) {
 
 
 #' Print summary information from an mbnma.predict object
+#'
+#' @inheritParams plot.mbnma.predict
+#'
 #' @export
 print.mbnma.predict <- function(predict) {
 
@@ -68,6 +73,8 @@ print.mbnma.predict <- function(predict) {
 
 #' Generates summary data frames for an mbnma.rank object
 #'
+#' @inheritParams plot.mbnma.rank
+#'
 #' @return A list in which each element represents a parameter that has been ranked
 #' in `mbnma.rank` and contains a data frame of summary ranking results.
 #'
@@ -86,6 +93,9 @@ summary.mbnma.rank <- function(mbnma.rank) {
 
 
 #' Prints summary information about an mbnma.rank object
+#'
+#' @inheritParams plot.mbnma.rank
+#'
 #' @export
 print.mbnma.rank <- function(mbnma.rank) {
   checkmate::assertClass(mbnma.rank, "mbnma.rank")
@@ -133,6 +143,9 @@ neatCrI <- function(vals, digits=3) {
 
 
 #' Prints summary results from an nma.nodesplit object
+#'
+#' @inheritParams plot.nma.nodesplit
+#'
 #' @export
 print.nma.nodesplit <- function(nodesplit) {
   checkmate::assertClass(nodesplit, "nma.nodesplit")
@@ -164,6 +177,9 @@ print.nma.nodesplit <- function(nodesplit) {
 
 
 #' Generates a summary data frame for mbnma.nodesplit objects
+#'
+#' @inheritParams plot.nma.nodesplit
+#'
 #' @export
 summary.nma.nodesplit <- function(nodesplit) {
   checkmate::assertClass(nodesplit, "nma.nodesplit")
@@ -327,6 +343,8 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 
 
 #' Neatly prints a summary of results
+#'
+#' @inheritParams predict.mbnma
 print.treat.str <- function(mbnma) {
   betanames <- get.beta.names(mbnma)
 

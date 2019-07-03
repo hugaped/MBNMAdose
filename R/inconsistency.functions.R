@@ -483,6 +483,14 @@ ref.comparisons <- function(data)
 #'
 #' Drops arms in a way which preserves connectivity and equally removes
 #' data from each treatment in a nodesplit comparison (so as to maximise precision)
+#'
+#' @param ind.df A data frame in long format (one arm per row) from which to drop treatments
+#' @param drops A vector of study identifiers from which to drop treatments
+#' @param comp A numeric vector of length 2 that contains treatment codes corresponding to the comparison
+#' for node-splitting
+#' @param start Can take either 0 or 1 to indicate whether to drop the treatment
+#' in `comp[1]`` (`0``) or `comp[2]`` (1)
+#'
 drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
   #print(index)
@@ -524,6 +532,11 @@ drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
 #'
 #' Requires repeatedly compiling `mbnma.network` objects to identify whether
 #' nodes remain connected by indirect evidence.
+#'
+#' @param A data frame containing arm data (one arm per row)
+#' @param comp The comparison in which the function will check that both treatments are connected by studies
+#' in `data`
+#'
 check.indirect.drops <- function(data=data, comp) {
 
   # Drop studies/comparisons that compare comps

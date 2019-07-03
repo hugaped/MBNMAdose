@@ -76,6 +76,8 @@ mbnma.network <- function(data.ab, description="Network") {
 #' Validates that a dataset fulfills requirements for MBNMA
 #'
 #' @inheritParams mbnma.network
+#' @param single.arm A boolean object to indicate whether to allow single arm studies in the dataset (`TRUE`)
+#' or not (`FALSE`)
 #'
 #' @details Checks done within the validation:
 #' * Checks data.ab has required column names
@@ -371,6 +373,7 @@ add_index <- function(data.ab) {
 #' Assigns agent or class variables numeric identifiers
 #'
 #' @param level Can take either `"agent"` or `"class"`
+#' @inheritParams add_index
 #'
 #' @details Also relabels the agent for any arms in which dose = 0 to "Placebo_0"
 #'
@@ -804,6 +807,9 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
 
 #' Replace doses with indices of doses in order
+#'
+#' @inheritParams add_index
+#'
 index.dose <- function(data.ab) {
   agents <- sort(unique(data.ab$agent))
   maxdose <- vector()
@@ -829,6 +835,11 @@ index.dose <- function(data.ab) {
 #' Function adds additional rows to a data.frame of comparisons in a network that account
 #' for the relationship between placebo and other agents via the dose-response
 #' relationship.
+#'
+#' @param data.ab A data frame stored in `mbnma.network` object (`mbnma.network$data.ab`)
+#' @param level A character that can take either `"treatment"` or `"agent"` to indicate the level of the
+#' network for which to identify dose-response
+#' @inheritParams mbnma.network
 #'
 DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   t1 <- vector()

@@ -3,6 +3,8 @@
 # Date created: 2019-04-26
 
 #' Set rank as a method
+#'
+#' @param x An object on which to apply the rank method
 rank <- function (x, ...) {
   UseMethod("rank", x)
 }
@@ -16,6 +18,7 @@ rank <- function (x, ...) {
 #' for that agent. Doses of agents specified in `rank.doses` **must** be a subset of those
 #' for which responses have been predicted in `predict`. If left as `NULL` (the default)
 #' then all doses of all agents in `predict` will be ranked.
+#' @inheritParams plot.mbnma.predict
 #'
 #' @details
 #' If `predict` contains multiple predictions at dose=0, then only the first of these
@@ -326,6 +329,10 @@ rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=N
 
 #' Calculates a matrix of ranking probabilities from a matrix of treatment/agent/class
 #' rankings
+#'
+#' @param rank.mat Numeric matrix of treatment/agent/class rankings
+#' @param treats A numeric vector of treatment codes for which to calculate ranking probabilities
+#'
 calcprob <- function(rank.mat, treats=NULL) {
   NT <- ncol(rank.mat)
   rank.prob <- vector(length=NT)
@@ -352,6 +359,8 @@ calcprob <- function(rank.mat, treats=NULL) {
 
 
 #' Generates a summary data frame from a matrix of treatment/agent/class rankings
+#'
+#' @inheritParams calcprob
 sumrank <- function(rank.mat) {
   if (is.null(colnames(rank.mat))) {
     colnames(rank.mat) <- c(1:ncol(rank.mat))

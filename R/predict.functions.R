@@ -371,6 +371,8 @@ predict.mbnma <- function(mbnma, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
 
 #' Get MBNMA model values for dose-response parameters
+#'
+#' @inheritParams predict.mbnma
 get.model.vals <- function(mbnma) {
 
   betaparams <- list()
@@ -537,6 +539,8 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
 #'
 #' Ensures `E0` takes the correct form to allow for synthesis of network
 #' reference treatment response
+#'
+#' @param likelihood A character object that can take any of `"normal"`, `"binomial"` or `"poisson"`
 #'
 #' @inheritParams ref.synth
 E0.validate <- function(data.ab, likelihood=NULL) {
