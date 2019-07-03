@@ -257,6 +257,7 @@ plot.mbnma.network <- function(network, level="treatment", v.color="connect", do
 #' @param reference A numeric value indicating which treatment code to use as the reference treatment for
 #' testing that all other treatments connect to it
 #'
+#' @noRd
 check.network <- function(g, reference=1) {
 
   # Can add component to test for if placebo is missing:
@@ -296,6 +297,8 @@ check.network <- function(g, reference=1) {
 #' @examples
 #' radian.rescale(c(1:10), start=0, direction=1)
 #'
+#' @noRd
+#'
 #' @references
 #' https://gist.github.com/kjhealy/834774/a4e677401fd6e4c319135dabeaf9894393f9392c
 radian.rescale <- function(x, start=0, direction=1) {
@@ -307,6 +310,7 @@ radian.rescale <- function(x, start=0, direction=1) {
 
 
 #' Get large vector of distinct colours using Rcolorbrewer
+#' @noRd
 genmaxcols <- function() {
 
   cols1 <- RColorBrewer::brewer.pal(9, "Set1")
@@ -661,7 +665,7 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 #' @inheritParams plot.mbnma.predict
 #' @param g An object of `class("ggplot")`
 #' @param max.col.scale The maximum rgb numeric value to use for the colour scale
-#'
+#' @noRd
 disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -761,7 +765,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 #'
 #' @param ncut A number indicating the number of different counts in the dataset
 #' @param col Colour to use for shading
-#'
+#' @noRd
 alpha.scale <- function(n.cut, col="blue") {
   # Run checks
   checkmate::assertIntegerish(n.cut, lower=1, len=1)
@@ -816,6 +820,7 @@ alpha.scale <- function(n.cut, col="blue") {
 #'
 #' @inheritParams plot.mbnma.predict
 #' @inheritParams disp.obs
+#' @noRd
 overlay.split <- function(g, network, method="common",
                           likelihood="binomial", link="logit", ...) {
 
@@ -1031,6 +1036,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
 #'
 #' @inheritParams predict.mbnma
 #' @param The parameter for which to extract values - can take either `"theta"`, `"dev"` or `"resdev"`
+#' @noRd
 get.theta.dev <- function(mbnma, param="theta") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1421,6 +1427,7 @@ plot.nma.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
 #' to plot a conventional forest plot with all treatments on the same plot (`FALSE`)
 #' @inheritParams plot.mbnma.predict
 #'
+#' @export
 plot.nma <- function(nma, bydose=TRUE, scales="free_x") {
 
   # Run checks

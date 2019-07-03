@@ -545,7 +545,7 @@ mbnma.jags <- function(data.ab, model,
 #' @param model.params A character or numeric vector containing the names of the
 #' dose-response parameters in the model
 #' @param model A JAGS model written as a character object
-#'
+#' @noRd
 gen.parameters.to.save <- function(model.params, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")

@@ -345,6 +345,7 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 #' Neatly prints a summary of results
 #'
 #' @inheritParams predict.mbnma
+#' @noRd
 print.treat.str <- function(mbnma) {
   betanames <- get.beta.names(mbnma)
 
@@ -560,7 +561,9 @@ print.modfit.str <- function(mbnma) {
 
 
 
-
+#' Print summary of MBNMA results to the console
+#' @inheritParams predict.mbnma
+#' @export
 summary.mbnma <- function(mbnma) {
   checkmate::assertClass(mbnma, "mbnma")
 
@@ -619,7 +622,9 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
 
 
 
-
+#' Print mbnma.network information to the console
+#' @inheritParams mbnma.run
+#' @export
 print.mbnma.network <- function(x,...) {
   nn <- names(x)
   ll <- length(x)

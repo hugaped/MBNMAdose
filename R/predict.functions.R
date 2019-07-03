@@ -373,6 +373,7 @@ predict.mbnma <- function(mbnma, n.doses=15, max.doses=NULL, exact.doses=NULL,
 #' Get MBNMA model values for dose-response parameters
 #'
 #' @inheritParams predict.mbnma
+#' @noRd
 get.model.vals <- function(mbnma) {
 
   betaparams <- list()
@@ -543,6 +544,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
 #' @param likelihood A character object that can take any of `"normal"`, `"binomial"` or `"poisson"`
 #'
 #' @inheritParams ref.synth
+#' @noRd
 E0.validate <- function(data.ab, likelihood=NULL) {
 
   argcheck <- checkmate::makeAssertCollection()

@@ -142,7 +142,7 @@ mbnma.write <- function(fun="linear",
 #' code can be added
 #'
 #' @return A character object of JAGS model code
-#'
+#' @noRd
 #' @examples
 #' model <- write.model()
 #' cat(model)
@@ -197,7 +197,7 @@ totresdev <- sum(resstudydev[])
 #'   points in MBNMA JAGS code. These points can therefore be used to insert
 #'   other lines of JAGS code into the correct section within the overall model
 #'   code.
-#'
+#' @noRd
 #' @examples
 #' inserts <- write.inserts()
 #'
@@ -238,7 +238,7 @@ write.inserts <- function() {
 #' @return A single character string containing JAGS model representing the
 #'   dose-response function component of an MBNMA dose-response model, generated
 #'   based on the arguments passed to the function.
-#'
+#' @noRd
 #'
 #' @examples
 #' # Write a linear dose-response function
@@ -308,7 +308,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #' @inheritParams mbnma.write
 #'
 #' @return Returns an error if any conditions are not met. Otherwise returns `NULL`.
-#'
+#' @noRd
 #' @details Used to check if the arguments given to mbnma.write are valid. The
 #'   function will return informative errors if arguments are misspecified.
 #'
@@ -447,7 +447,7 @@ write.check <- function(fun="linear",
 #'
 #' @inheritParams mbnma.run
 #' @inheritParams write.beta
-#'
+#' @noRd
 #' @return A character object of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
@@ -509,6 +509,7 @@ resdev[i,k] <- 2*((lambda[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/lambda[i,k]))
 
 
 #' Generate objects required for write.beta and write.beta.ref
+#' @noRd
 write.beta.vars <- function() {
 
   delta.ref <- "\ndelta[i,1] <- 0\n"
@@ -643,6 +644,7 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 #' @param model A character object of JAGS MBNMA model code
 #'
 #' @inheritParams mbnma.run
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes delta
 #'   parameter components of the model
@@ -685,6 +687,7 @@ write.delta <- function(model,
 #' @param model A character object of JAGS MBNMA model code
 #'
 #' @inheritParams mbnma.run
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes beta
 #'   parameter components of the model
@@ -791,6 +794,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #' @inheritParams mbnma.run
 #' @inheritParams write.beta
 #' @inheritParams mbnma.write
+#' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
                       method="random", class.effect=list()) {
@@ -847,6 +851,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 #'  matrix size).
 #' @inheritParams mbnma.write
 #' @inheritParams get.prior
+#' @noRd
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
                           var.scale=NULL) {
 
@@ -951,7 +956,7 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 #'
 #' @return A character object of JAGS MBNMA model code that has had empty loops
 #'   removed from it
-#'
+#' @noRd
 write.remove.loops <- function(model) {
   # Remove empty loops
   empty.loops <- list(
@@ -1053,6 +1058,7 @@ get.prior <- function(model) {
 #'
 #' @details Values in `priors` can include any JAGS functions/distributions
 #'   (e.g. censoring/truncation).
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes the new
 #'   priors in place of original priors
@@ -1116,6 +1122,7 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 #' Write E0 synthesis JAGS model
 #'
 #' @inheritParams predict.mbnma
+#' @noRd
 write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
   model <-
 "
@@ -1165,6 +1172,7 @@ m.mu ~ dnorm(0,0.0001)
 #' Write JAGS code for split NMA
 #'
 #' @inheritParams nma.run
+#' @noRd
 write.nma <- function(method="common", likelihood="binomial", link="logit",
                       UME=FALSE) {
   model <- "

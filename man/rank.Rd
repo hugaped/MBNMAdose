@@ -8,6 +8,8 @@ rank(x, ...)
 }
 \arguments{
 \item{x}{An object on which to apply the rank method}
+
+\item{...}{Arguments to be passed to methods}
 }
 \description{
 Set rank as a method

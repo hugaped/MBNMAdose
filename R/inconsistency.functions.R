@@ -421,6 +421,7 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
 #'   `MBNMAtime`) `nr` will represent the number of time points in the
 #'   dataset in which treatments `t1` and `t2` are compared.
 #'
+#' @noRd
 #' @examples
 #' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
 #'             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
@@ -490,7 +491,7 @@ ref.comparisons <- function(data)
 #' for node-splitting
 #' @param start Can take either `0` or `1` to indicate whether to drop the treatment
 #' in `comp[1]` (`0`) or `comp[2]` (`1`)
-#'
+#' @noRd
 drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
   #print(index)
@@ -536,7 +537,7 @@ drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
 #' @param A data frame containing arm data (one arm per row)
 #' @param comp The comparison in which the function will check that both treatments are connected by studies
 #' in `data`
-#'
+#' @noRd
 check.indirect.drops <- function(data=data, comp) {
 
   # Drop studies/comparisons that compare comps

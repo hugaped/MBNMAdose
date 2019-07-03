@@ -77,10 +77,6 @@ defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"
 and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
-\item{priors}{A named list of parameter values (without indices) and
-replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see examples).}
-
 \item{model.file}{A JAGS model written as a character object that can be used
 to overwrite the JAGS model that is automatically written based on the
 specified options.}

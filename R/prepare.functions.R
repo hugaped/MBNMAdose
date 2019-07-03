@@ -379,6 +379,8 @@ add_index <- function(data.ab) {
 #'
 #' @return A list containing a data frame with recoded agent/class identifiers and
 #'   a character vector of original agent/class names
+#'
+#' @noRd
 recode.agent <- function(data.ab, level="agent") {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
@@ -809,7 +811,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 #' Replace doses with indices of doses in order
 #'
 #' @inheritParams add_index
-#'
+#' @noRd
 index.dose <- function(data.ab) {
   agents <- sort(unique(data.ab$agent))
   maxdose <- vector()
@@ -890,6 +892,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 #' not be properly encoded.
 #'
 #' @inheritParams mbnma.network
+#' @noRd
 change.netref <- function(network, ref=1) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()

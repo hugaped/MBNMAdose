@@ -19,8 +19,8 @@ knitr::opts_chunk$set(
   include=TRUE
 )
 
-#library(MBNMAdose)
-devtools::load_all()
+library(MBNMAdose)
+#devtools::load_all()
 library(rmarkdown)
 library(knitr)
 library(dplyr)
@@ -198,7 +198,7 @@ nma.alog <- nma.run(alognet, method="random")
 print(nma.alog)
 
 # Draw plot of NMA estimates plotted by dose
-plot(nma.alog)
+#plot.nma(nma.alog)
 ```
 
 In the alogliptin dataset there appears to be a dose-response relationship, and it also appears to be non-linear.
@@ -559,7 +559,7 @@ plot(trip.emax)
 Rankings can be calculated for different dose-response parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative responses should be ranked as "better" (`-1`) or "worse" (`1`).
 
 ```{r}
-ranks <- rank(trip.emax, direction=1)
+ranks <- rank(trip.emax, direction = 1)
 summary(ranks)
 ```
 
