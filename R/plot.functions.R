@@ -598,8 +598,8 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 
 
   # Plot predictions
-  g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(sum.df$dose)),
-                                            y=sum.df$`50%`, ymin=sum.df$`2.5%`, ymax=sum.df$`97.5%`), ...)
+  g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(dose)),
+                                            y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
 
 
   # Plot observed data as shaded regions
@@ -637,11 +637,11 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 
   # Add overlayed lines and legends
   g <- g +
-    ggplot2::geom_line(ggplot2::aes(y=sum.df$`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=sum.df$`97.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI")) +
     ggplot2::geom_line(ggplot2::aes(linetype="Posterior Median"))
 
-  g <- g + ggplot2::facet_wrap(~sum.df$agent, scales=scales) +
+  g <- g + ggplot2::facet_wrap(~agent, scales=scales) +
     ggplot2::labs(y="Predicted response", x="Dose")
 
   g <- g + ggplot2::scale_linetype_manual(name="",
@@ -741,15 +741,9 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
       g <- g + ggplot2::geom_ribbon(data=subset[subset$dose<=subset$dose[m] &
                                                   subset$dose>=subset$dose[m-1]
                                                 ,],
-                                    ggplot2::aes(x=subset[subset$dose<=subset$dose[m] &
-                                                            subset$dose>=subset$dose[m-1]
-                                                          ,]$dose,
-                                                 ymin=subset[subset$dose<=subset$dose[m] &
-                                                               subset$dose>=subset$dose[m-1]
-                                                             ,]$`2.5%`,
-                                                 ymax=subset[subset$dose<=subset$dose[m] &
-                                                               subset$dose>=subset$dose[m-1]
-                                                             ,]$`97.5%`),
+                                    ggplot2::aes(x=dose,
+                                                 ymin=`2.5%`,
+                                                 ymax=`97.5%`),
                                     fill=cols[subset$count[m]+1])
     }
 

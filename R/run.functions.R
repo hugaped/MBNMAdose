@@ -477,7 +477,7 @@ mbnma.jags <- function(data.ab, model,
     # For MBNMAtime
     #jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
     jagsdata <- getjagsdata(data.ab, class=class) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
-  } else if (is.null(rho) & is.null(covar)) {
+  } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
                             likelihood=likelihood, link=link) # get data into jags correct format

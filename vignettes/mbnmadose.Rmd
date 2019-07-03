@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
   include=TRUE
 )
 
-library(MBNMAdose)
+#library(MBNMAdose)
+devtools::load_all()
 library(rmarkdown)
 library(knitr)
 library(dplyr)
