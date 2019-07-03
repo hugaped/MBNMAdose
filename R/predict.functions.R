@@ -18,8 +18,8 @@
 #' @param max.doses A list of numbers. Each named element in the list correponds to an
 #'   agent (either named similarly to agent names given in the data, or named
 #'   correspondingly to the codes for agents given in `mbnma`)
-#'   and each number for that elemnt corresponds to the maximum dose of the given agent, below which a number
-#'   of predictions will be calculated for different doses (the number is determined by `n.doses`).
+#'   and each number for that element corresponds to the maximum dose of the given agent, below which several
+#'   predictions will be calculated at different doses (the number of these is determined by `n.doses`).
 #'   Can only take positive values. If left as `NULL` (the default) results will be predicted based on the
 #'   maximum dose of each agent given in the data.
 #' @param n.doses A number indicating the number of doses at which to make predictions
@@ -46,9 +46,9 @@
 #'   studies that are specific to the population on which to make
 #'   predictions, or it can be a subset of the study arms within the MBNMA dataset
 #'   that investigate placebo. See [ref.synth()]
-#' @param synth A character object that can take the value `"fixed"` or `"random"` that
-#'   specifies the the type of pooling to use for synthesis of `E0` if a data frame
-#'   has been provided. Using `"random"` rather
+#' @param synth A character object that can take the value `"fixed"` or `"random"` to
+#'   specify the the type of pooling to use for synthesis of `E0` if a data frame
+#'   has been provided for it. Using `"random"` rather
 #'   than `"fixed"` for `synth` will result in wider 95\\% CrI for predictions.
 #' @param ... Arguments to be sent to R2jags for synthesis of the network
 #'   reference treatment effect (using [ref.synth()])
@@ -130,12 +130,12 @@
 #' # Change the range of predicted doses to be the same for all agents
 #' # But only predict responses for a subset of agents
 #' pred <- predict(emax, E0 = 0.2,
-#'   max.doses=list("Placebo"=0, "eletriptan"=5, "sumatriptan"=5))
+#'             max.doses=list("Placebo"=0, "eletriptan"=5, "sumatriptan"=5))
 #' plot(pred) # Plot predictions
 #'
 #' # Specify several exact combinations of doses and agents to predict
 #' pred <- predict(emax, E0 = 0.2,
-#'   exact.doses=list("eletriptan"=c(0:5), "sumatriptan"=c(1,3,5)))
+#'             exact.doses=list("eletriptan"=c(0:5), "sumatriptan"=c(1,3,5)))
 #' plot(pred) # Plot predictions
 #'
 #' # Print and summarise `mbnma.predict` object
@@ -146,7 +146,7 @@
 #' plot(pred)
 #'
 #' @export
-predict.mbnma <- function(mbnma, max.doses=NULL, n.doses=15, exact.doses=NULL,
+predict.mbnma <- function(mbnma, n.doses=15, max.doses=NULL, exact.doses=NULL,
                           E0=0, synth="fixed",
                           ...) {
   ######## CHECKS ########
@@ -421,7 +421,7 @@ get.model.vals <- function(mbnma) {
 #'
 #' @inheritParams predict.mbnma
 #' @inheritParams R2jags::jags
-#' @param A data frame of arm-level data in "long" format containing the
+#' @param data.ab A data frame of arm-level data in "long" format containing the
 #'   columns:
 #'   * `studyID` Study identifiers
 #'   * `y` Numeric data indicating the aggregate response for a continuous outcome. Required for
@@ -442,8 +442,11 @@ get.model.vals <- function(mbnma) {
 #'   available, the data used to estimate the MBNMA model can be used by
 #'   selecting only the studies and arms that investigate dose = 0 (placebo).
 #'
-#' @return A list of named elements corresponding to E0 and the between-study SD for
-#'   E0 if `synth="random"`. Each elemnt contains the full MCMC results from the synthesis.
+#'   Defaults for `n.iter`, `n.burnin`, `n.thin` and `n.chains` are those used to estimate
+#'   `mbnma`.
+#'
+#' @return A list of named elements corresponding to E0 and the between-study standard deviation for
+#'   E0 if `synth="random"`. Each element contains the full MCMC results from the synthesis.
 #'
 #' @examples
 #' # Using the triptans data

@@ -21,34 +21,34 @@
 #' # relative effects modelled on the rate of growth/decay (beta.1) with a random
 #' # effects model
 #' model <- mbnma.write(fun="exponential",
-#'   beta.1="rel",
-#'   method="random",
-#'   likelihood="binomial",
-#'   link="logit"
-#'   )
+#'              beta.1="rel",
+#'              method="random",
+#'              likelihood="binomial",
+#'              link="logit"
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax (beta.1) with a random effects model,
 #' # a single parameter estimated for ED50 (beta.2) with a common effects model
 #' model <- mbnma.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="common",
-#'   likelihood="normal",
-#'   link="identity"
-#'   )
+#'              beta.1="rel",
+#'              beta.2="common",
+#'              likelihood="normal",
+#'              link="identity"
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax (beta.1) and ED50 (beta.2).
 #' # Class effects modelled on ED50 with common effects
 #' model <- mbnma.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="rel",
-#'   likelihood="normal",
-#'   link="identity",
-#'   class.effect=list("beta.2"="common")
-#'   )
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              likelihood="normal",
+#'              link="identity",
+#'              class.effect=list("beta.2"="common")
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
@@ -56,21 +56,22 @@
 #' # random effects model that automatically models a correlation between
 #' # both parameters.
 #' model <- mbnma.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="rel",
-#'   method="random",
-#'   likelihood="normal",
-#'   link="identity",
-#'   )
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              method="random",
+#'              likelihood="normal",
+#'              link="identity",
+#'              )
 #' cat(model)
 #' @export
-mbnma.write <- function(fun="linear", user.fun=NULL,
+mbnma.write <- function(fun="linear",
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
                         method="common",
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
                         class.effect=list(),
+                        user.fun=NULL,
                         likelihood="binomial", link=NULL
                         ) {
 
@@ -235,7 +236,6 @@ write.inserts <- function() {
 #'   dose-response function component of an MBNMA dose-response model, generated
 #'   based on the arguments passed to the function.
 #'
-#' @inherit mbnma.run details
 #'
 #' @examples
 #' # Write a linear dose-response function
@@ -302,12 +302,12 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #'
 #' @inheritParams mbnma.run
 #'
-#' @return Returns an error if any conditions are not met. Otherwise returns NULL.
+#' @return Returns an error if any conditions are not met. Otherwise returns `NULL`.
 #'
 #' @details Used to check if the arguments given to mbnma.write are valid. The
 #'   function will return informative errors if arguments are misspecified.
 #'
-write.check <- function(fun="linear", user.fun=NULL,
+write.check <- function(fun="linear",
                         beta.1=list(pool="rel", method="common"),
                         beta.2=NULL,
                         beta.3=NULL,
@@ -315,6 +315,7 @@ write.check <- function(fun="linear", user.fun=NULL,
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
+                        user.fun=NULL,
                         class.effect=list()) {
   parameters <- c("beta.1", "beta.2", "beta.3")
 
@@ -972,7 +973,7 @@ write.remove.loops <- function(model) {
 
 #' Get current priors from JAGS model code
 #'
-#' Identical to `get.prior()` in MBNMAtime.
+#' Identical to `get.prior()` in `MBNMAtime` package.
 #' This function takes JAGS model presented as a string and identifies what
 #' prior values have been used for calculation.
 #'
@@ -983,9 +984,9 @@ write.remove.loops <- function(model) {
 #'
 #' @details Even if an MBNMA model that has not initialised successfully and
 #'   results have not been calculated, the JAGS model for it is saved in
-#'   mbnma$model.arg$jagscode" and therefore priors can still be obtained.
+#'   `mbnma$model.arg$jagscode` and therefore priors can still be obtained.
 #'   This allows for priors to be changed even in failing models, which may help
-#'   solve issues with initialisation.
+#'   solve issues with compiling or updating.
 #'
 #' @examples
 #' # Using the triptans data
@@ -1031,7 +1032,7 @@ get.prior <- function(model) {
 
 #' Replace original priors in an MBNMA model with new priors
 #'
-#' Identical to `get.prior()` in MBNMAtime.
+#' Identical to `get.prior()` in `MBNMAtime` package.
 #'
 #' This function takes new priors, as specified by the user, and adds them to
 #' the JAGS code from an MBNMA model. New priors replace old priors in the JAGS
@@ -1042,7 +1043,7 @@ get.prior <- function(model) {
 #'   dose-response MBNMA model.
 #' @param priors A named list of parameter values (without indices) and
 #'   replacement prior distribution values given as strings
-#'   **using distributions as specified in JAGS syntax**.
+#'   **using distributions as specified in JAGS syntax** (see examples).
 #'
 #' @details Values in `priors` can include any JAGS functions/distributions
 #'   (e.g. censoring/truncation).

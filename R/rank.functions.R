@@ -13,7 +13,7 @@ rank <- function (x, ...) {
 #' @inheritParams predict.mbnma
 #' @param rank.doses A list of numeric vectors. Each named element corresponds to an
 #' agent (as named/coded in `predict`), and each number within the vector for that element corresponds to the dose
-#' for that agent. Doses of agents specified in `rank.doses` *must* be a subset of those
+#' for that agent. Doses of agents specified in `rank.doses` **must** be a subset of those
 #' for which responses have been predicted in `predict`. If left as `NULL` (the default)
 #' then all doses of all agents in `predict` will be ranked.
 #'
@@ -39,9 +39,9 @@ rank <- function (x, ...) {
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
-#'   exact.doses=doses)
+#'             exact.doses=doses)
 #' rank <- rank(pred,
-#'   rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))
+#'             rank.doses=list("eletriptan"=c(0,2), "rizatriptan"=2))
 #'
 #' # Print and generate summary data frame for `mbnma.rank` object
 #' summary(rank)
@@ -158,8 +158,8 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #'   value `-1`) or positive responses are better (taking the value `1`)
 #' @param to.rank A numeric vector containing the codes for the agents/classes you wish to rank.
 #' If left `NULL` then all agents/classes (depending on the value assigned to `level`) in
-#' the model will be ranked. Numbers must be greater than
-#' 2 if placebo has been modelled, since placebo will not be included in the ranking
+#' the model will be ranked. Included codes must be greater than
+#' `2` if placebo has been modelled, since placebo cannot be included in the ranking
 #' @param level Can be set to `"agent"` to rank across different agents or `"class"` to rank
 #' across different classes.
 #' @param params A character vector of named parameters in the model that vary by either agent
@@ -167,7 +167,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' ranking will be calculated for all available parameters that vary by agent/class.
 #' @inheritParams predict.mbnma
 #'
-#' @details Ranking cannot currently be performed on nonparametric dose-response MBNMA
+#' @details Ranking cannot currently be performed on non-parametric dose-response MBNMA
 #'
 #' @return An object of `class("mbnma.rank")` which is a list containing a summary data
 #' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
@@ -195,7 +195,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
 #' netclass <- mbnma.network(class.df)
 #' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
-#'   class.effect=list("ed50"="common"))
+#'             class.effect=list("ed50"="common"))
 #'
 #' # Rank by class, with negative responses being "better"
 #' ranks <- rank(emax, level="class", direction=-1)
@@ -209,7 +209,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' plot(rank)
 #'
 #' @export
-rank.mbnma <- function(mbnma, params=NULL, direction=1, to.rank=NULL, level="agent") {
+rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=NULL) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()

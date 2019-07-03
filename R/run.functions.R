@@ -13,13 +13,13 @@
 #' @param network An object of class `mbnma.network`.
 #' @param parameters.to.save A character vector containing names of parameters
 #'   to monitor in JAGS
-#' @param fun is a character specifying a functional form to be assigned to the
+#' @param fun A string specifying a functional form to be assigned to the
 #'   dose-response. Options are given in `details`.
-#' @param user.fun A character specifying any relationship including `dose` and
+#' @param user.fun A string specifying any relationship including `dose` and
 #'   one/several of: `beta.1`, `beta.2`, `beta.3`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
-#'   specified options. Useful when ammending priors using replace.prior()
+#'   specified options.
 #'
 #' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
@@ -29,14 +29,17 @@
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
-#'   should be modelled with between-study heterogeneity or not (see LINK `Details`).
+#'   should be modelled with between-study heterogeneity or not (see details).
 #' @param class.effect A list of named strings that determines which dose-response
 #'   parameters to model with a class effect and what that effect should be
-#'   (`"common"` or `"random"`). For example: `list("beta.2"="fixed", "beta.3"="random")`.
+#'   (`"common"` or `"random"`). Element names should match dose-response parameter names (which will therefore
+#'   depend on whether or not a wrapper function has been used for `mbnma.run()`).
+#'   For example: `list("beta.2"="fixed", "beta.3"="random")` when using
+#'   `mbnma.run()` or `list("ed50"="fixed", "hill"="random")` when using `mbnma.emax.hill()`.
 #' @param likelihood A string indicating the likelihood to use in the model. Can take either `"binomial"`,
 #'   `"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.
 #' @param link A string indicating the link function to use in the model. Can take any link function
-#'   defined within JAGS (`"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
+#'   defined within JAGS (e.g. `"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
 #'   and identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
 #' @param cor A boolean object that indicates whether correlation should be modelled
@@ -44,16 +47,16 @@
 #' automatically set to `FALSE` if class effects are modelled.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than
-#' one dose-response parameter and `cor=TRUE` (see `Details` LINK). Each element of
+#' one dose-response parameter and `cor=TRUE` (see details). Each element of
 #' the vector refers to the relative scale of each of the dose-response parameters that is
 #' modelled using relative effects.
 #'
 #' @param pd Can take either:
-#'   * `pv` only pV will be reported (as automatically outputted by R2jags).
+#'   * `pv` only pV will be reported (as automatically outputted by `R2jags`).
 #'   * `plugin` calculates pD by the plug-in
 #'   method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` calculates pD by the Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
+#'   * `pd.kl` calculates pD by the Kullback\\–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 #'   will require running the model for additional iterations but
 #'   will always produce a positive result.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
@@ -61,28 +64,26 @@
 #' @param parallel A boolean value that indicates whether JAGS should be run in
 #'   parallel (`TRUE`) or not (`FALSE`). If `TRUE` then the number of cores to
 #'   use is automatically calculated.
-#' @param arg.params Contains a list of arguments sent to `mbnma.run()` by time-course
+#' @param arg.params Contains a list of arguments sent to `mbnma.run()` by dose-response
 #' specific wrapper functions
 #' @param ... Arguments to be sent to R2jags.
 #'
 #' @inheritParams replace.prior
 #'
 #' @details When relative effects are modelled on more than one dose-response parameter and
-#' `cor=TRUE`, correlation between the dose-response parameters is automatically
+#' `cor = TRUE`, correlation between the dose-response parameters is automatically
 #' estimated using a vague Wishart prior. This prior can be made slightly more informative
 #' by specifying the relative scale of variances between the dose-response parameters using
 #' `var.scale`.
 #'
-#' @return An object of S3 class `c("mbnma", "rjags")`` containing parameter
+#' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
-#'   traceplots using `traceplot()` (from the `R2jags` package).
+#'   traceplots using `R2jags::traceplot()`.
 #'
 #'   Nodes that are automatically monitored (if present in the model) have the
-#'   following interpretation.
-#'
-#'   These will have an additional suffix that relates
+#'   following interpretation. These will have an additional suffix that relates
 #'   to the name/number of the dose-response parameter to which they correspond
-#'   (e.g. `d.et50` or `d.1`):
+#'   (e.g. `d.ed50` or `d.1`):
 #'   * `d` The pooled effect for each agent for a given dose-response
 #'   parameter. Will be estimated by the model if dose-respones parameters (`beta.1`,
 #'   `beta.2`, `beta.3`) are set to `"rel"`.
@@ -113,7 +114,7 @@
 #' * `"rel"` implies that relative effects should be pooled for this dose-resonse
 #' parameter, that vary by agent.
 #' * `"common"` implies that all studies estimate the same true absolute effect
-#' (akin to a "fixed effect" meta-analysis) across the whole network
+#' (akin to a "fixed effects" meta-analysis) across the whole network
 #' * `"random"` implies that all studies estimate a separate true absolute effect, but
 #' that each of these true effects vary randomly around a true mean effect. This
 #' approach allows for modelling of between-study heterogeneity.
@@ -162,18 +163,18 @@
 #' # Fit a user-defined function (quadratic)
 #' fun.def <- "(beta.1 * dose) + (beta.2 * (dose^2))"
 #' result <- mbnma.run(network, fun="user", user.fun=fun.def,
-#'   beta.1="rel", beta.2="rel", method="common")
+#'               beta.1="rel", beta.2="rel", method="common")
 #'
 #' # Fit an Emax function with a single random (exchangeable) parameter estimated
 #' #for ED50 and common treatment effects on relative Emax effects
 #' result <- mbnma.run(network, fun="emax",
-#'   beta.1="rel", beta.2="random", method="common")
+#'               beta.1="rel", beta.2="random", method="common")
 #'
 #' # Fit an Emax function with a Hill parameter, with a fixed value for the Hill parameter
 #' #provided to the model and random relative effects on Emax and ED50 (which will
 #' #therefore be modelled with a correlation between them).
 #' result <- mbnma.run(network, fun="emax.hill",
-#'   beta.1="rel", beta.2="rel", beta.3=5, method="random")
+#'               beta.1="rel", beta.2="rel", beta.3=5, method="random")
 #'
 #'
 #' ########## Class effects ##########
@@ -186,39 +187,39 @@
 #' # Fit an Emax function with common relative effects on Emax and ED50 and
 #' #a random class effect on ED50.
 #' result <- mbnma.run(netclass, fun="emax",
-#'   beta.1="rel", beta.2="rel", method="common",
-#'   class.effect=list(beta.2="random"))
+#'               beta.1="rel", beta.2="rel", method="common",
+#'               class.effect=list(beta.2="random"))
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax function with random relative effects on Emax and ED50
 #' result <- mbnma.run(network, fun="emax",
-#'   beta.1="rel", beta.2="rel", method="random")
+#'               beta.1="rel", beta.2="rel", method="random")
 #' print(result$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
-#'                   inv.R = "dwish(Omega[,],100)")
+#'                  inv.R = "dwish(Omega[,],100)")
 #'
 #' result <- mbnma.run(network, fun="emax",
-#'   beta.1="rel", beta.2="rel", method="random",
-#'   priors=newpriors)
+#'               beta.1="rel", beta.2="rel", method="random",
+#'               priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-#'   n.iter=5000, n.thin=5, n.chains=4)
+#'               n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-#'   pd="plugin")
+#'               pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-#'   pd="pd.kl")
+#'               pd="pd.kl")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -243,14 +244,16 @@
 #' plot(result)
 #'
 #' @export
-mbnma.run <- function(network, parameters.to.save=NULL,
-                      fun="linear", user.fun=NULL,
+mbnma.run <- function(network,
+                      fun="linear",
                       beta.1="rel",
                       beta.2=NULL, beta.3=NULL,
                       method="common",
                       class.effect=list(),
                       cor=TRUE,
                       var.scale=NULL,
+                      user.fun=NULL,
+                      parameters.to.save=NULL,
                       pd="pv", parallel=TRUE,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
@@ -536,7 +539,7 @@ mbnma.jags <- function(data.ab, model,
 
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
-#' Identical to `gen.parameters.to.save()` in MBNMAtime
+#' Identical to `gen.parameters.to.save()` in `MBNMAtime`
 gen.parameters.to.save <- function(model.params, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
@@ -809,15 +812,15 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
-#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `.run()` that
+#' of \insertCite{mawdsley2016;textual}{MBNMAdose}. This function acts as a wrapper for `mbnma.run()` that
 #' uses more clearly defined parameter names.
 #'
-#' @inheritParams .run
-#' @inherit .run return references
+#' @inheritParams mbnma.run
+#' @inherit mbnma.run return references
 #' @param slope Refers to the slope parameter of the linear dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection .run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameters
 #'
 #' @references
 #'   \insertAllCited
@@ -843,22 +846,22 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
 #' linear <- mbnma.linear(network, slope="rel", method="random",
-#'   priors=newpriors)
+#'               priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
 #' linear <- mbnma.linear(network, slope="rel", method="random",
-#'   n.iter=5000, n.thin=5, n.chains=4)
+#'               n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
 #' linear <- mbnma.linear(network, slope="rel", method="random",
-#'   pd="plugin")
+#'               pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
 #' linear <- mbnma.linear(network, slope="rel", method="random",
-#'   pd="pd.kl")
+#'               pd="pd.kl")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -884,12 +887,13 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #'
 #' @export
-mbnma.linear <- function(network, parameters.to.save=NULL,
+mbnma.linear <- function(network,
                          slope="rel",
                          method="common",
                          class.effect=list(),
                          cor=TRUE,
                          var.scale=NULL,
+                         parameters.to.save=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
@@ -958,22 +962,22 @@ mbnma.linear <- function(network, parameters.to.save=NULL,
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
 #' exponential <- mbnma.exponential(network, lambda="rel", method="random",
-#'   priors=newpriors)
+#'                    priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
 #' exponential <- mbnma.exponential(network, lambda="rel", method="random",
-#'   n.iter=5000, n.thin=5, n.chains=4)
+#'                    n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
 #' exponential <- mbnma.exponential(network, lambda="rel", method="random",
-#'   pd="plugin")
+#'                    pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
 #' exponential <- mbnma.exponential(network, lambda="rel", method="random",
-#'   pd="pd.kl")
+#'                    pd="pd.kl")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -999,12 +1003,13 @@ mbnma.linear <- function(network, parameters.to.save=NULL,
 #'
 #'
 #' @export
-mbnma.exponential <- function(network, parameters.to.save=NULL,
+mbnma.exponential <- function(network,
                          lambda="rel",
                          method="common",
                          class.effect=list(),
                          cor=TRUE,
                          var.scale=NULL,
+                         parameters.to.save=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
@@ -1086,39 +1091,39 @@ mbnma.exponential <- function(network, parameters.to.save=NULL,
 #' # Fit an Emax function with common relative effects on Emax and ED50 and
 #' #a random class effect on ED50.
 #' emax <- mbnma.emax(netclass,
-#'   emax="rel", ed50="rel", method="common",
-#'   class.effect=list(ed50="random"))
+#'             emax="rel", ed50="rel", method="common",
+#'             class.effect=list(ed50="random"))
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax function with random relative effects on Emax and ED50
 #' emax <- mbnma.emax(network,
-#'   emax="rel", ed50="rel", method="random")
+#'             emax="rel", ed50="rel", method="random")
 #' print(emax$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
-#'                   inv.R = "dwish(Omega[,],100)")
+#'                  inv.R = "dwish(Omega[,],100)")
 #'
 #' emax <- mbnma.emax(network,
-#'   emax="rel", ed50="rel", method="random",
-#'   priors=newpriors)
+#'             emax="rel", ed50="rel", method="random",
+#'             priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel",
-#'   n.iter=5000, n.thin=5, n.chains=4)
+#'             n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel",
-#'   pd="plugin")
+#'             pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel",
-#'   pd="pd.kl")
+#'             pd="pd.kl")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1143,13 +1148,14 @@ mbnma.exponential <- function(network, parameters.to.save=NULL,
 #' plot(emax)
 #'
 #' @export
-mbnma.emax <- function(network, parameters.to.save=NULL,
+mbnma.emax <- function(network,
                          emax="rel",
                          ed50="rel",
                          method="common",
                          class.effect=list(),
                          cor=TRUE,
                          var.scale=NULL,
+                         parameters.to.save=NULL,
                          pd="pv", parallel=TRUE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
@@ -1210,13 +1216,13 @@ mbnma.emax <- function(network, parameters.to.save=NULL,
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with random treatment
 #' #effects on Emax, ED50 and Hill
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill="rel",
-#'   method="random")
+#'                  method="random")
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with common treatment
 #' #effects on Emax, a single random parameter estimated for ED50
 #' #and a single common parameter estimated for Hill
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="random", hill="common",
-#'   method="common")
+#'                  method="common")
 #'
 #' # Assign a specific numerical value for Hill parameter
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=5)
@@ -1232,8 +1238,8 @@ mbnma.emax <- function(network, parameters.to.save=NULL,
 #' # Fit an Emax (with Hill parameter) function with common relative effects on
 #' #all parameters and common class effects on ED50 and Hill.
 #' emax.hill <- mbnma.emax.hill(netclass,
-#'   emax="rel", ed50="rel", hill="rel", method="common",
-#'   class.effect=list(ed50="common", hill="common"))
+#'                  emax="rel", ed50="rel", hill="rel", method="common",
+#'                  class.effect=list(ed50="common", hill="common"))
 #'
 #'
 #' ####### Priors #######
@@ -1241,30 +1247,30 @@ mbnma.emax <- function(network, parameters.to.save=NULL,
 #' # Obtain priors from an Emax (with Hill parameter) function with
 #' #relative effects on Emax and ED50 and a single common parameter for Hill
 #' emax.hill <- mbnma.emax.hill(network,
-#'   emax="rel", ed50="rel", hill="common", method="common")
+#'                  emax="rel", ed50="rel", hill="common", method="common")
 #' print(emax.hill$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(beta.hill = "dnorm(0,0.5) T(,0)")
 #'
 #' emax.hill <- mbnma.emax.hill(network,
-#'   emax="rel", ed50="rel", hill="common", method="common",
-#'   priors=newpriors)
+#'                  emax="rel", ed50="rel", hill="common", method="common",
+#'                  priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
-#'   n.iter=5000, n.thin=5, n.chains=4)
+#'                  n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
-#'   pd="plugin")
+#'                  pd="plugin")
 #'
 #' # Calculate effective number of parameters via Kullback-Leibler method
 #' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
-#'   pd="pd.kl")
+#'                  pd="pd.kl")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1289,7 +1295,7 @@ mbnma.emax <- function(network, parameters.to.save=NULL,
 #' plot(emax.hill)
 #'
 #' @export
-mbnma.emax.hill <- function(network, parameters.to.save=NULL,
+mbnma.emax.hill <- function(network,
                        emax="rel",
                        ed50="rel",
                        hill="common",
@@ -1297,6 +1303,7 @@ mbnma.emax.hill <- function(network, parameters.to.save=NULL,
                        class.effect=list(),
                        cor=TRUE,
                        var.scale=NULL,
+                       parameters.to.save=NULL,
                        pd="pv", parallel=TRUE,
                        likelihood=NULL, link=NULL,
                        priors=NULL,
@@ -1334,7 +1341,7 @@ mbnma.emax.hill <- function(network, parameters.to.save=NULL,
 #'
 #' Uses results from MBNMA JAGS models to calculate pD via the
 #' plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
-#' standard errors or covariance matrices (typically univariate).
+#' standard errors or covariance matrices (typically univariate likelihoods).
 #'
 #' @param obs1 A matrix (study x arm) or array (study x arm x time point) containing
 #'   observed data for `y` (normal likelihood) or `r` (binomial or poisson likelihood)
@@ -1358,22 +1365,22 @@ mbnma.emax.hill <- function(network, parameters.to.save=NULL,
 #'   study. This will be estimated by the JAGS model.
 #'
 #' @param likelihood A character object of any of the following likelihoods:
-#' * `univariate`
+#' * `normal`
 #' * `binomial` (does not work with time-course MBNMA models)
-#' * `multivar.normal` (does not work with time-course MBNMA models)
+#' * `poisson` (does not work with time-course MBNMA models)
 #' @param type The type of MBNMA model fitted. Can be either `"time"` or `"dose"`
 #'
 #' @return A single numeric value for pD calculated via the plugin method.
 #'
 #' @details Method for calculating pD via the plugin method proposed by
 #'   Spiegelhalter \insertCite{spiegelhalter2002}{MBNMAdose}. Standard errors / covariance matrices must be assumed
-#'   to be known. To obtain values for theta.result and resdev.result these
-#'   parameters must be monitored when running the JAGS model.
+#'   to be known. To obtain values for `theta.result` and `resdev.result` these
+#'   parameters must be monitored when running the MBNMA model (using `parameters.to.save`).
 #'
 #'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 #'   can lead to non-sensical results when calculating pD via the plugin method.
 #'   Alternative approaches are to use pV as an approximation or
-#'   pD calculated by Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
+#'   pD calculated by Kullback\\–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 #'
 #' @references
 #'   \insertAllCited
@@ -1386,7 +1393,7 @@ mbnma.emax.hill <- function(network, parameters.to.save=NULL,
 #'
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-#'   parameters.to.save=c("psi", "resdev"))
+#'               parameters.to.save=c("psi", "resdev"))
 #'
 #'
 #' #### Calculate pD for binomial data ####
@@ -1402,8 +1409,8 @@ mbnma.emax.hill <- function(network, parameters.to.save=NULL,
 #'
 #' # Calculate pD via plugin method
 #' pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
-#'   theta.result=psi, resdev.result=resdevs,
-#'   likelihood="binomial", type="dose")
+#'           theta.result=psi, resdev.result=resdevs,
+#'           likelihood="binomial", type="dose")
 #'
 #' @export
 pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,

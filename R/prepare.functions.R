@@ -29,7 +29,7 @@
 #' Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
 #' be included.
 #'
-#' @return An object of class `mbnma.network` which is a list containing:
+#' @return `mbnma.network()`: An object of `class("mbnma.network")` which is a list containing:
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
@@ -266,7 +266,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
 
 #' Add arm indices and agent identifiers to a dataset
 #'
-#' Adds arm (`arms`, `narms`) indices to a dataset and adds numeric identifiers for
+#' Adds arm indices (`arms`, `narms`) to a dataset and adds numeric identifiers for
 #' agent and class (if included in the data).
 #'
 #' @inheritParams mbnma.network
@@ -651,7 +651,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' `t1` and `t2` indicate the treatment codes that make up the comparison. `nr` indicates the number
 #' of times the given comparison is made within the network.
 #'
-#' If there is only a single observation for each study within the dataset (i.e. as for standard
+#' If there is only a single follow-up observation for each study within the dataset (i.e. as for standard
 #' network meta-analysis) `nr` will represent the number of studies that compare treatments `t1` and
 #' `t2`.
 #'
@@ -729,7 +729,8 @@ mbnma.comparisons <- function(data)
 #'
 #' @param connect.dose A boolean object to indicate whether treatments should be
 #' kept in the network if they connect via the simplest possible dose-response
-#' relationship (`TRUE`) or not (`FALSE`)
+#' relationship (`TRUE`) or not (`FALSE`). Simplest possible dose-response relationship
+#' is any function with a single dose-response parameter (e.g. linear, exponential)
 #' @inheritParams mbnma.run
 #'
 #' @return A list containing a single row per arm data frame containing only studies that are
