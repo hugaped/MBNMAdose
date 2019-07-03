@@ -1532,14 +1532,14 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'   parameters.to.save=c("psi", "resdev"))
 #'
-#' update.mbnma(result, param="theta") # monitor theta
+#' mbnma.update(result, param="theta") # monitor theta
 #'
-#' update.mbnma(result, param="rhat") # monitor rhat
+#' mbnma.update(result, param="rhat") # monitor rhat
 #'
-#' update.mbnma(result, param="delta") # monitor delta
+#' mbnma.update(result, param="delta") # monitor delta
 #'
 #' @export
-update.mbnma <- function(mbnma, param="theta") {
+mbnma.update <- function(mbnma, param="theta") {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)

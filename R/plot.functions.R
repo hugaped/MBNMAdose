@@ -978,7 +978,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
                   "additional iterations will be run in order to obtain results for `", dev.type, "`")
     message(msg)
 
-    dev.df <- update.mbnma(mbnma, param=dev.type)
+    dev.df <- mbnma.update(mbnma, param=dev.type)
 
   } else {
 
@@ -1149,7 +1149,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
                   "additional iterations will be run in order to obtain results")
     message(msg)
 
-    theta.df <- update.mbnma(mbnma, param="theta")
+    theta.df <- mbnma.update(mbnma, param="theta")
   } else {
     theta.df <- get.theta.dev(mbnma, param="theta")
   }

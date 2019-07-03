@@ -240,17 +240,17 @@ test_that("pDcalc functions correctly", {
 
 
 
-test_that("update.mbnma function correctly", {
+test_that("mbnma.update function correctly", {
 
   result <- mbnma.run(network, fun="emax", beta.1="rel", beta.2="rel", method="common",
                       n.iter=500)
 
-  expect_error(update.mbnma(result, param="test"))
+  expect_error(mbnma.update(result, param="test"))
 
-  update <- update.mbnma(result, param="resdev")
+  update <- mbnma.update(result, param="resdev")
   expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
 
-  update <- update.mbnma(result, param="theta")
+  update <- mbnma.update(result, param="theta")
   expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
 
 })
