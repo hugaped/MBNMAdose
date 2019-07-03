@@ -559,7 +559,7 @@ E0.validate <- function(data.ab, likelihood=NULL) {
   data.ab <- dplyr::arrange(data.ab, studyID)
 
   data.ab <- data.ab %>%
-    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=dplyr::n())
 
   if (any(data.ab$narm>1)) {

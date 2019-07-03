@@ -195,7 +195,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   # Generate narms index for checking if studies are only single-arm
   if (single.arm==FALSE) {
     data.ab <- data.ab %>%
-      dplyr::group_by(data.ab$studyID) %>%
+      dplyr::group_by(studyID) %>%
       dplyr::mutate(narms = n())
   }
 
@@ -320,11 +320,11 @@ add_index <- function(data.ab) {
 
   # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
-    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::group_by(studyID) %>%
     dplyr::mutate(arm = sequence(dplyr::n()))
 
   data.ab <- data.ab %>%
-    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=dplyr::n())
 
 
@@ -849,7 +849,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   for (i in seq_along(studies)) {
     subset <- data.ab[data.ab$studyID==studies[i],]
     subset <- subset %>%
-      dplyr::group_by(data.ab$agent) %>%
+      dplyr::group_by(agent) %>%
       dplyr::mutate(nagent=dplyr::n())
 
     if (any(subset$nagent>=doselink)) {

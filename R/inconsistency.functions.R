@@ -323,11 +323,11 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
   treatments <- factor(unique(data$treatment))
 
   data <- data %>%
-    dplyr::group_by(data$studyID) %>%
+    dplyr::group_by(studyID) %>%
     dplyr::mutate(design=list(as.numeric(data$treatment)))
 
   data <- data %>%
-    dplyr::group_by(data$studyID) %>%
+    dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=dplyr::n())
 
 
@@ -488,8 +488,8 @@ ref.comparisons <- function(data)
 #' @param drops A vector of study identifiers from which to drop treatments
 #' @param comp A numeric vector of length 2 that contains treatment codes corresponding to the comparison
 #' for node-splitting
-#' @param start Can take either 0 or 1 to indicate whether to drop the treatment
-#' in `comp[1]`` (`0``) or `comp[2]`` (1)
+#' @param start Can take either `0` or `1` to indicate whether to drop the treatment
+#' in `comp[1]` (`0`) or `comp[2]` (`1`)
 #'
 drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
