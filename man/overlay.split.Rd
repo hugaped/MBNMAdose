@@ -7,6 +7,16 @@
 overlay.split(g, network, method = "common", likelihood = "binomial",
   link = "logit", ...)
 }
+\arguments{
+\item{g}{An object of \code{class("ggplot")}}
+
+\item{network}{An object of class \code{mbnma.network}.}
+
+\item{method}{Indicates the type of split (treatment-level) NMA to perform when \code{overlay.split=TRUE}. Can
+take either \code{"common"} or \code{"random"}.}
+
+\item{...}{Arguments for \code{ggplot2}}
+}
 \description{
 Requires automatically running an NMA
 }

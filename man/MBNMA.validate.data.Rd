@@ -25,6 +25,9 @@ for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.
 }}
+
+\item{single.arm}{A boolean object to indicate whether to allow single arm studies in the dataset (\code{TRUE})
+or not (\code{FALSE})}
 }
 \value{
 An error if checks are not passed. Runs silently if checks are passed

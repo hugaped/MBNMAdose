@@ -22,6 +22,8 @@ binomial data
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
 }}
+
+\item{likelihood}{A character object that can take any of \code{"normal"}, \code{"binomial"} or \code{"poisson"}}
 }
 \description{
 Ensures \code{E0} takes the correct form to allow for synthesis of network

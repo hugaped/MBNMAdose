@@ -7,6 +7,25 @@
 \method{recode}{agent}(data.ab, level = "agent")
 }
 \arguments{
+\item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{dose} Numeric data indicating the dose (must take positive values)
+\item \code{agent} Agent identifiers (can be numeric, factor or character)
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
+continuous data.
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
+continuous data.
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
+binomial or poisson data.
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+binomial data
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
+for poisson data.
+\item \code{class} An optional column indicating a particular class code. Agents with the same identifier
+must also have the same class code.
+}}
+
 \item{level}{Can take either \code{"agent"} or \code{"class"}}
 }
 \value{

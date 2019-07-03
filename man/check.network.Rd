@@ -6,6 +6,12 @@
 \usage{
 check.network(g, reference = 1)
 }
+\arguments{
+\item{g}{An network plot of \code{class("igraph")}}
+
+\item{reference}{A numeric value indicating which treatment code to use as the reference treatment for
+testing that all other treatments connect to it}
+}
 \description{
 Check if all nodes in the network are connected (identical to function in \code{MBNMAtime})
 }

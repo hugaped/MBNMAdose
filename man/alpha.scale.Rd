@@ -6,6 +6,11 @@
 \usage{
 alpha.scale(n.cut, col = "blue")
 }
+\arguments{
+\item{col}{Colour to use for shading}
+
+\item{ncut}{A number indicating the number of different counts in the dataset}
+}
 \description{
 Identical to function in \code{MBNMAtime} package
 }

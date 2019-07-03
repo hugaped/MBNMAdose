@@ -38,6 +38,8 @@ on the likelihood.}
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
 for any monitored parameter are >1.02 (suggestive of non-convergence).}
 
+\item{n.iter}{number of total iterations per chain (including burn in; default: 10000)}
+
 \item{drop.discon}{A boolean object that indicates whether or not to drop disconnected
 studies from the network.}
 

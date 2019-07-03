@@ -6,6 +6,9 @@
 \usage{
 sumrank(rank.mat)
 }
+\arguments{
+\item{rank.mat}{Numeric matrix of treatment/agent/class rankings}
+}
 \description{
 Generates a summary data frame from a matrix of treatment/agent/class rankings
 }

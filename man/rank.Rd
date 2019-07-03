@@ -6,6 +6,9 @@
 \usage{
 rank(x, ...)
 }
+\arguments{
+\item{x}{An object on which to apply the rank method}
+}
 \description{
 Set rank as a method
 }

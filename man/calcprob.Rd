@@ -7,6 +7,11 @@ rankings}
 \usage{
 calcprob(rank.mat, treats = NULL)
 }
+\arguments{
+\item{rank.mat}{Numeric matrix of treatment/agent/class rankings}
+
+\item{treats}{A numeric vector of treatment codes for which to calculate ranking probabilities}
+}
 \description{
 Calculates a matrix of ranking probabilities from a matrix of treatment/agent/class
 rankings

@@ -10,7 +10,7 @@
 #' meta-analysis (MBNMA).
 #'
 #' @inheritParams mbnma.run
-#' @params cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+#' @param cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
 #' between relative effects. Must be kept as `"wishart"`
 #'
 #' @return A single long character string containing the JAGS model generated

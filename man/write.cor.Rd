@@ -15,6 +15,9 @@ write.cor(model, cor = TRUE, cor.prior = "wishart", var.scale = NULL,
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
 automatically set to \code{FALSE} if class effects are modelled.}
 
+\item{cor.prior}{NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+between relative effects. Must be kept as \code{"wishart"}}
+
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
 one dose-response parameter and \code{cor=TRUE} (see details). Each element of

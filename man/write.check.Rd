@@ -25,6 +25,13 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
 
+\item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
+that does not assume consistency and so can be used to test if the consistency
+assumption is valid.}
+
+\item{cor.prior}{NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+between relative effects. Must be kept as \code{"wishart"}}
+
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
 one dose-response parameter and \code{cor=TRUE} (see details). Each element of

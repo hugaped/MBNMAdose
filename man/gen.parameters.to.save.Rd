@@ -6,6 +6,12 @@
 \usage{
 gen.parameters.to.save(model.params, model)
 }
+\arguments{
+\item{model.params}{A character or numeric vector containing the names of the
+dose-response parameters in the model}
+
+\item{model}{A JAGS model written as a character object}
+}
 \description{
 Identical to \code{gen.parameters.to.save()} in \code{MBNMAtime}
 }

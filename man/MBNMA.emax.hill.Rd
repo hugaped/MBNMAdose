@@ -51,7 +51,7 @@ to monitor in JAGS}
 \item \code{plugin} calculates pD by the plug-in
 method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
+\item \code{pd.kl} calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 will require running the model for additional iterations but
 will always produce a positive result.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation

@@ -6,6 +6,9 @@
 \usage{
 \method{print}{nma.nodesplit}(nodesplit)
 }
+\arguments{
+\item{nodesplit}{An object of \code{class("nma.nodesplit")}}
+}
 \description{
 Prints summary results from an nma.nodesplit object
 }

@@ -50,7 +50,7 @@ plot(network, level="treatment")
 plot(network, level="agent", remove.loops=TRUE)
 
 # Perform "split" NMA to examine dose-response relationship
-nma <- NMA.run(network)
+nma <- nma.run(network)
 plot(nma)
 
 # Analyse data using mbnma.run()

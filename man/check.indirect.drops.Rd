@@ -7,6 +7,12 @@ within inconsistency.loops}
 \usage{
 check.indirect.drops(data = data, comp)
 }
+\arguments{
+\item{comp}{The comparison in which the function will check that both treatments are connected by studies
+in \code{data}}
+
+\item{A}{data frame containing arm data (one arm per row)}
+}
 \description{
 Requires repeatedly compiling \code{mbnma.network} objects to identify whether
 nodes remain connected by indirect evidence.

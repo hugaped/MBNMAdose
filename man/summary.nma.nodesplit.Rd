@@ -6,6 +6,9 @@
 \usage{
 \method{summary}{nma.nodesplit}(nodesplit)
 }
+\arguments{
+\item{nodesplit}{An object of \code{class("nma.nodesplit")}}
+}
 \description{
 Generates a summary data frame for mbnma.nodesplit objects
 }

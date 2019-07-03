@@ -4,7 +4,18 @@
 \alias{drop.comp}
 \title{Drop treatments from multi-arm (>2) studies for node-splitting}
 \usage{
-drop.comp(ind.df, drops, comp, start = rbinom(1, 1, 0.5))
+drop.comp(ind.df, drops, comp, start = stats::rbinom(1, 1, 0.5))
+}
+\arguments{
+\item{ind.df}{A data frame in long format (one arm per row) from which to drop treatments}
+
+\item{drops}{A vector of study identifiers from which to drop treatments}
+
+\item{comp}{A numeric vector of length 2 that contains treatment codes corresponding to the comparison
+for node-splitting}
+
+\item{start}{Can take either 0 or 1 to indicate whether to drop the treatment
+in \code{comp[1]`` (}0\code{) or `comp[2]} (1)}
 }
 \description{
 Drops arms in a way which preserves connectivity and equally removes

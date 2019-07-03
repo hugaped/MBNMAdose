@@ -13,6 +13,8 @@ dose-response. Options are given in \code{details}.}
 
 \item{user.fun}{A string specifying any relationship including \code{dose} and
 one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
+
+\item{effect}{Can take either \code{"rel"} for relative effects or \code{"abs"} for absolute (arm-pooled) effects}
 }
 \value{
 A single character string containing JAGS model representing the

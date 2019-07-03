@@ -62,7 +62,7 @@ parameters must be monitored when running the MBNMA model (using \code{parameter
 For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 can lead to non-sensical results when calculating pD via the plugin method.
 Alternative approaches are to use pV as an approximation or
-pD calculated by Kullback Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
+pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 }
 \examples{
 # Using the triptans data
