@@ -89,7 +89,7 @@ testthat::test_that("test.nma.nodesplit", {
 
   split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = FALSE,
-                           comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5")))
+                           comparisons = rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
   expect_equal(1, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")
