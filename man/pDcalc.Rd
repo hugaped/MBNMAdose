@@ -38,9 +38,9 @@ study. This will be estimated by the JAGS model.}
 
 \item{likelihood}{A character object of any of the following likelihoods:
 \itemize{
-\item \code{univariate}
+\item \code{normal}
 \item \code{binomial} (does not work with time-course MBNMA models)
-\item \code{multivar.normal} (does not work with time-course MBNMA models)
+\item \code{poisson} (does not work with time-course MBNMA models)
 }}
 
 \item{type}{The type of MBNMA model fitted. Can be either \code{"time"} or \code{"dose"}}
@@ -51,26 +51,26 @@ A single numeric value for pD calculated via the plugin method.
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
 plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
-standard errors or covariance matrices (typically univariate).
+standard errors or covariance matrices (typically univariate likelihoods).
 }
 \details{
 Method for calculating pD via the plugin method proposed by
 Spiegelhalter \insertCite{spiegelhalter2002}{MBNMAdose}. Standard errors / covariance matrices must be assumed
-to be known. To obtain values for theta.result and resdev.result these
-parameters must be monitored when running the JAGS model.
+to be known. To obtain values for \code{theta.result} and \code{resdev.result} these
+parameters must be monitored when running the MBNMA model (using \code{parameters.to.save}).
 
 For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 can lead to non-sensical results when calculating pD via the plugin method.
 Alternative approaches are to use pV as an approximation or
-pD calculated by Kullback–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
+pD calculated by Kullback Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 }
 \examples{
 # Using the triptans data
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random",
-  parameters.to.save=c("psi", "resdev"))
+result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+              parameters.to.save=c("psi", "resdev"))
 
 
 #### Calculate pD for binomial data ####
@@ -86,8 +86,8 @@ resdevs <- result$BUGSoutput$median$resdev
 
 # Calculate pD via plugin method
 pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
-  theta.result=psi, resdev.result=resdevs,
-  likelihood="binomial", type="dose")
+          theta.result=psi, resdev.result=resdevs,
+          likelihood="binomial", type="dose")
 
 }
 \references{

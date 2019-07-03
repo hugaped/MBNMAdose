@@ -2,10 +2,10 @@
 % Please edit documentation in R/plot.functions.R
 \name{check.network}
 \alias{check.network}
-\title{Check if all nodes in the network are connected (identical to MBNMAtime)}
+\title{Check if all nodes in the network are connected (identical to function in \code{MBNMAtime})}
 \usage{
 check.network(g, reference = 1)
 }
 \description{
-Check if all nodes in the network are connected (identical to MBNMAtime)
+Check if all nodes in the network are connected (identical to function in \code{MBNMAtime})
 }

@@ -14,29 +14,29 @@ A character vector, each element of which is a line of JAGS code
 corresponding to a prior in the JAGS code.
 }
 \description{
-Identical to \code{get.prior()} in MBNMAtime.
+Identical to \code{get.prior()} in \code{MBNMAtime} package.
 This function takes JAGS model presented as a string and identifies what
 prior values have been used for calculation.
 }
 \details{
 Even if an MBNMA model that has not initialised successfully and
 results have not been calculated, the JAGS model for it is saved in
-MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
+\code{mbnma$model.arg$jagscode} and therefore priors can still be obtained.
 This allows for priors to be changed even in failing models, which may help
-solve issues with initialisation.
+solve issues with compiling or updating.
 }
 \examples{
 # Using the triptans data
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 
 # Run an Emax dose-response MBNMA
-result <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+result <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
 # Obtain model prior values
 print(result$model.arg$priors)
 
-# Priors when using MBNMA.run with an exponential function
-result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random")
+# Priors when using mbnma.run with an exponential function
+result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 print(result$model.arg$priors)
 
 }

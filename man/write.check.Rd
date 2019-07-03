@@ -2,19 +2,16 @@
 % Please edit documentation in R/write.functions.R
 \name{write.check}
 \alias{write.check}
-\title{Checks validity of arguments for MBNMA.write}
+\title{Checks validity of arguments for mbnma.write}
 \usage{
-write.check(fun = "linear", user.fun = NULL, beta.1 = list(pool =
-  "rel", method = "common"), beta.2 = NULL, beta.3 = NULL,
-  method = "common", UME = FALSE, cor.prior = "wishart",
-  var.scale = NULL, class.effect = list())
+write.check(fun = "linear", beta.1 = list(pool = "rel", method =
+  "common"), beta.2 = NULL, beta.3 = NULL, method = "common",
+  UME = FALSE, cor.prior = "wishart", var.scale = NULL,
+  user.fun = NULL, class.effect = list())
 }
 \arguments{
-\item{fun}{is a character specifying a functional form to be assigned to the
+\item{fun}{A string specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
-
-\item{user.fun}{A character specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
@@ -26,25 +23,31 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
+should be modelled with between-study heterogeneity or not (see details).}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see details). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
+\item{user.fun}{A string specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
+
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). Element names should match dose-response parameter names (which will therefore
+depend on whether or not a wrapper function has been used for \code{mbnma.run()}).
+For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
+\code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
 }
 \value{
-Returns an error if any conditions are not met. Otherwise returns NULL.
+Returns an error if any conditions are not met. Otherwise returns \code{NULL}.
 }
 \description{
-Checks validity of arguments for MBNMA.write
+Checks validity of arguments for mbnma.write
 }
 \details{
-Used to check if the arguments given to MBNMA.write are valid. The
+Used to check if the arguments given to mbnma.write are valid. The
 function will return informative errors if arguments are misspecified.
 }

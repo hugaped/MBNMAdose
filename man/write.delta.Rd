@@ -21,7 +21,7 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
+should be modelled with between-study heterogeneity or not (see details).}
 }
 \value{
 A character object of JAGS MBNMA model code that includes delta

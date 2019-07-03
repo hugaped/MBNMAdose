@@ -30,7 +30,7 @@ must also have the same class code.
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
 and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }

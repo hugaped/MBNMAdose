@@ -8,6 +8,6 @@ within inconsistency.loops}
 check.indirect.drops(data = data, comp)
 }
 \description{
-Ensures indirect evidence can be estimated for comparisons identified
-within inconsistency.loops
+Requires repeatedly compiling \code{mbnma.network} objects to identify whether
+nodes remain connected by indirect evidence.
 }

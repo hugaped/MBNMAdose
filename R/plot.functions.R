@@ -139,7 +139,7 @@ plot.mbnma.network <- function(network, level="treatment", v.color="connect", do
     size.vec <- size.vec/ (max(size.vec)/20)
 
     node.size <-
-      setNames(size.vec, nodes)
+      stats::setNames(size.vec, nodes)
     node.size <- as.matrix(node.size*v.scale)
   } else {
     node.size <- NULL
@@ -467,12 +467,12 @@ plot.mbnma <- function(mbnma, params=NULL, agent.labs=NULL, class.labs=NULL) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
     ggplot2::geom_point() +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +
     ggplot2::coord_flip()
 
-  g <- g + ggplot2::facet_wrap(~doseparam, scales="free")
+  g <- g + ggplot2::facet_wrap(~plotdata$doseparam, scales="free")
 
   # Axis labels
   g <- g + ggplot2::xlab("Agent / Class") +
@@ -593,8 +593,8 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 
 
   # Plot predictions
-  g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(dose)),
-                                            y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
+  g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(sum.df$dose)),
+                                            y=sum.df$`50%`, ymin=sum.df$`2.5%`, ymax=sum.df$`97.5%`), ...)
 
 
   # Plot observed data as shaded regions
@@ -632,11 +632,11 @@ plot.mbnma.predict <- function(predict, network, disp.obs=FALSE,
 
   # Add overlayed lines and legends
   g <- g +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=sum.df$`2.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=sum.df$`97.5%`, linetype="95% CrI")) +
     ggplot2::geom_line(ggplot2::aes(linetype="Posterior Median"))
 
-  g <- g + ggplot2::facet_wrap(~agent, scales=scales) +
+  g <- g + ggplot2::facet_wrap(~sum.df$agent, scales=scales) +
     ggplot2::labs(y="Predicted response", x="Dose")
 
   g <- g + ggplot2::scale_linetype_manual(name="",
@@ -730,7 +730,15 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
       g <- g + ggplot2::geom_ribbon(data=subset[subset$dose<=subset$dose[m] &
                                                   subset$dose>=subset$dose[m-1]
                                                 ,],
-                                    ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`),
+                                    ggplot2::aes(x=subset[subset$dose<=subset$dose[m] &
+                                                            subset$dose>=subset$dose[m-1]
+                                                          ,]$dose,
+                                                 ymin=subset[subset$dose<=subset$dose[m] &
+                                                               subset$dose>=subset$dose[m-1]
+                                                             ,]$`2.5%`,
+                                                 ymax=subset[subset$dose<=subset$dose[m] &
+                                                               subset$dose>=subset$dose[m-1]
+                                                             ,]$`97.5%`),
                                     fill=cols[subset$count[m]+1])
     }
 
@@ -782,7 +790,7 @@ alpha.scale <- function(n.cut, col="blue") {
 
   hexcol <- vector()
   for (i in 1:(n.cut+1)) {
-    hexcol <- append(hexcol, rgb(hue[1], hue[2],
+    hexcol <- append(hexcol, grDevices::rgb(hue[1], hue[2],
                                  hue[3], alpha.vec[i], maxColorValue=255
     ))
   }
@@ -845,8 +853,8 @@ overlay.split <- function(g, network, method="common",
 
 
   # Add split NMAs to plot
-  g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=dose, y=`50%`)) +
-    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`))
+  g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=split.df$dose, y=split.df$`50%`)) +
+    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=split.df$dose, ymin=split.df$`2.5%`, ymax=split.df$`97.5%`))
 
 
   #### Report split NMA model fit statistics ####
@@ -983,10 +991,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   }
 
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean), group=groupvar) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=dev.df$fupdose, y=mean), group=dev.df$groupvar) +
       ggplot2::geom_point(...)
   } else if (plot.type=="box") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fupdose), y=mean)) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(dev.df$fupdose), y=mean)) +
       ggplot2::geom_boxplot(...)
   }
 
@@ -999,7 +1007,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
       ggplot2::expand_limits(x=0)
   }
 
-  plot(g)
+  graphics::plot(g)
   return(invisible(list("graph"=g, "dev.data"=dev.df)))
 }
 
@@ -1037,7 +1045,7 @@ get.theta.dev <- function(mbnma, param="theta") {
     # Treatment as facet
     temp <- replicate(max(dev.df$fupdose), mbnma$model$data()$treatment)
     dev.df$facet <- as.vector(temp)[
-      complete.cases(as.vector(temp))
+      stats::complete.cases(as.vector(temp))
       ]
 
   } else if (mbnma$type=="dose") {
@@ -1136,7 +1144,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
   }
 
   theta <- rescale.link(theta, direction="link", link=mbnma$model.arg$link)
-  theta.df$y <- as.vector(theta)[complete.cases(as.vector(theta))]
+  theta.df$y <- as.vector(theta)[stats::complete.cases(as.vector(theta))]
 
   # Add E0 for each agent and drop dose==0
   E0 <- mean(theta.df$mean[theta.df$fupdose==0])
@@ -1153,7 +1161,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
     }
   }
 
-  theta.df <- dplyr::arrange(theta.df, study, facet, fupdose)
+  theta.df <- dplyr::arrange(theta.df, theta.df$study, theta.df$facet, theta.df$fupdose)
 
   # Axis labels
   if (mbnma$type=="time") {
@@ -1178,22 +1186,22 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
-                       ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
+                       ggplot2::aes(x=theta.df$fupdose, y=mean, group=theta.df$groupvar)) +
     ggplot2::geom_line()
 
   # Overlay observed responses
   if (disp.obs==TRUE) {
-    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
+    g <- g + ggplot2::geom_point(ggplot2::aes(y=theta.df$y), size=1)
   }
 
   # Add facets
-  g <- g + ggplot2::facet_wrap(~facet, scales = facetscale)
+  g <- g + ggplot2::facet_wrap(~theta.df$facet, scales = facetscale)
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab)
 
-  suppressWarnings(plot(g))
+  suppressWarnings(graphics::plot(g))
 
   return(invisible(list("graph"=g, "fv"=theta.df)))
 }
@@ -1282,7 +1290,7 @@ plot.mbnma.rank <- function(rank.mbnma, params=NULL, treat.labs=NULL, ...) {
       ggplot2::facet_wrap(~treat) +
       ggplot2::ggtitle(params[param])
 
-    plot(g)
+    graphics::plot(g)
 
     output[[params[param]]] <- g
   }
@@ -1342,7 +1350,8 @@ plot.nma.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
 
   if ("forest" %in% plot.type) {
     forest <-
-      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
+      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=forestdata$source, y=forestdata$med,
+                                                    ymin=forestdata$l95, ymax=forestdata$u95)) +
       ggplot2::geom_pointrange() +
       ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
       ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
@@ -1350,30 +1359,31 @@ plot.nma.nodesplit <- function(nodesplit, plot.type=NULL, ...) {
                      axis.title = ggplot2::element_text(size=12),
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::facet_wrap(~factor(comp))
+      ggplot2::facet_wrap(~factor(forestdata$comp))
   }
   if ("density" %in% plot.type) {
 
-    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
+    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=densitydata$value,
+                                                         linetype=densitydata$Estimate, fill=densitydata$Estimate)) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab("Treatment effect (95% CrI)") +
       ggplot2::ylab("Posterior density") +
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(comp))
+      ggplot2::facet_wrap(~factor(densitydata$comp))
   }
 
   if (identical(sort(plot.type), c("density", "forest"))) {
-    plot(forest)
-    plot(density)
+    graphics::plot(forest)
+    graphics::plot(density)
     return(invisible(list(forest, density)))
   } else {
     if (plot.type=="forest") {
-      plot(forest)
+      graphics::plot(forest)
       return(invisible(forest))
     } else if (plot.type=="density") {
-      plot(density)
+      graphics::plot(density)
       return(invisible(density))
     }
   }
@@ -1450,10 +1460,10 @@ plot.nma <- function(nma, bydose=TRUE, scales="free_x") {
       split.df[,1:3] <- split.df[,1:3] + intercept
     }
 
-    g <- ggplot2::ggplot(split.df, ggplot2::aes(x=dose, y=`50%`)) +
+    g <- ggplot2::ggplot(split.df, ggplot2::aes(x=split.df$dose, y=split.df$`50%`)) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
-      ggplot2::facet_wrap(~factor(agent), scales = scales) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=split.df$`2.5%`, ymax=split.df$`97.5%`)) +
+      ggplot2::facet_wrap(~factor(split.df$agent), scales = scales) +
       ggplot2::xlab("Dose") +
       ggplot2::ylab("Effect size on link scale")
 
@@ -1461,9 +1471,9 @@ plot.nma <- function(nma, bydose=TRUE, scales="free_x") {
     # Plot conventional forest plot
     split.df$treatment <- factor(split.df$treatment, levels=nma[["trt.labs"]])
 
-    g <- ggplot2::ggplot(split.df, ggplot2::aes(y=`50%`, x=treatment)) +
+    g <- ggplot2::ggplot(split.df, ggplot2::aes(y=split.df$`50%`, x=split.df$treatment)) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=split.df$`2.5%`, ymax=split.df$`97.5%`)) +
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
       ggplot2::xlab("Treatment")

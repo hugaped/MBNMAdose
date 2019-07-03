@@ -98,7 +98,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   var_norm <- c("y", "se")
   var_bin <- c("r", "N")
   var_pois <- c("r", "E")
-  data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
+  data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$agent, data.ab$dose)
 
   # Check data.ab has required column names
   msg <- "Required variable names are: 'studyID', 'agent', 'dose' and either `y` and `se` for data with a normal likelihood, `r` and `N` for data with a binomial likelihood, or `r` and `E` for data with a poisson likelihood"
@@ -193,7 +193,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   # Generate narms index for checking if studies are only single-arm
   if (single.arm==FALSE) {
     data.ab <- data.ab %>%
-      dplyr::group_by(studyID) %>%
+      dplyr::group_by(data.ab$studyID) %>%
       dplyr::mutate(narms = n())
   }
 
@@ -297,7 +297,7 @@ add_index <- function(data.ab) {
     # Generate treatment labels
     treatments.df <- recoded[["data.ab"]]
     treatments.df$agent <- factor(treatments.df$agent, labels=agents)
-    treatments.df <- dplyr::arrange(treatments.df, agent, dose)
+    treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent, treatments.df$dose)
     treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
 
     # Generate treatment variable
@@ -318,12 +318,12 @@ add_index <- function(data.ab) {
 
   # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
-    dplyr::group_by(studyID) %>%
-    dplyr::mutate(arm = sequence(n()))
+    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::mutate(arm = sequence(dplyr::n()))
 
   data.ab <- data.ab %>%
-    dplyr::group_by(studyID) %>%
-    dplyr::mutate(narm=n())
+    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::mutate(narm=dplyr::n())
 
 
   # Reorder columns in data.ab
@@ -559,7 +559,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     stop(msg)
   }
 
-  df <- dplyr::arrange(df, dplyr::desc(narm), studyID, arm)
+  df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
 
   df <- transform(df,studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
@@ -598,7 +598,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     Nclass <- max(df$class)
 
     codes <- data.frame(df$agent, df$class)
-    codes <- dplyr::arrange(codes, df.agent)
+    codes <- dplyr::arrange(codes, codes$df.agent)
     classcode <- unique(codes)$df.class
 
     datalist[["Nclass"]] <- Nclass
@@ -682,7 +682,7 @@ mbnma.comparisons <- function(data)
   #checkmate::assertInt(doselink, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  data <- dplyr::arrange(data, studyID, treatment)
+  data <- dplyr::arrange(data, data$studyID, data$treatment)
 
   t1 <- vector()
   t2 <- vector()
@@ -710,7 +710,7 @@ mbnma.comparisons <- function(data)
 
   comparisons <- comparisons %>%
     dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr=n())
+    dplyr::mutate(nr=dplyr::n())
 
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
@@ -772,9 +772,9 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
   trt.labs <- network$treatments
   #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-  png("NUL")
-  discon <- suppressMessages(suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect", doselink=doselink))))
-  dev.off()
+  grDevices::png("NUL")
+  discon <- suppressMessages(suppressWarnings(check.network(graphics::plot(network, level="treatment", v.color = "connect", doselink=doselink))))
+  grDevices::dev.off()
 
   data.ab <- network$data.ab
 
@@ -838,8 +838,8 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   for (i in seq_along(studies)) {
     subset <- data.ab[data.ab$studyID==studies[i],]
     subset <- subset %>%
-      dplyr::group_by(agent) %>%
-      dplyr::mutate(nagent=n())
+      dplyr::group_by(data.ab$agent) %>%
+      dplyr::mutate(nagent=dplyr::n())
 
     if (any(subset$nagent>=doselink)) {
       # temp <- subset[subset$nagent>=doselink,]
@@ -901,7 +901,7 @@ change.netref <- function(network, ref=1) {
 
   data.ab$treatment <- trtcodes
   data.ab$agent <- NULL
-  data.ab <- dplyr::arrange(data.ab, studyID, treatment)
+  data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
   data.ab <- add_index(data.ab)
 
   network$data.ab <- data.ab$data.ab

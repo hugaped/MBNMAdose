@@ -1,7 +1,7 @@
 Package: MBNMAdose
 Type: Package
 Title: Run dose-response MBNMA models
-Version: 0.2.1.9000
+Version: 0.2.1.9001
 Date: 2019-04-07
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
   person("David", "Mawdsley", role = c("ctb")),
@@ -21,6 +21,10 @@ Description: This package fits Bayesian dose-response model-based network meta-a
 License: GPL-3
 Depends: R (>= 3.0.2)
 Imports:
+  grDevices,
+  stats,
+  graphics,
+  utils,
   dplyr (>= 0.7.4),
   R2jags (>= 0.5-7), 
   rjags (>= 4-8),

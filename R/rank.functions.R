@@ -358,11 +358,11 @@ sumrank <- function(rank.mat) {
   }
 
   quantiles.rank <- apply(X=rank.mat, MARGIN = 2,
-                          function(x) quantile(x, probs=c(0.025, 0.25, 0.5, 0.75, 0.975)))
+                          function(x) stats::quantile(x, probs=c(0.025, 0.25, 0.5, 0.75, 0.975)))
   summary.rank <- data.frame(
     "rank.param"=colnames(rank.mat),
     "mean"= apply(X=rank.mat, MARGIN = 2, mean),
-    "sd"= apply(X=rank.mat, MARGIN = 2, sd)
+    "sd"= apply(X=rank.mat, MARGIN = 2, stats::sd)
   )
   summary.rank <- cbind(summary.rank, t(quantiles.rank))
   rownames(summary.rank) <- NULL

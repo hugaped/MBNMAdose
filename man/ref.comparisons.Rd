@@ -22,7 +22,7 @@ If there is only a single observation for each study within the dataset
 of studies that compare treatments \code{t1} and \code{t2}.
 
 If there are multiple observations for each study within the dataset (as in
-MBNMAtime) \code{nr} will represent the number of time points in the
+\code{MBNMAtime}) \code{nr} will represent the number of time points in the
 dataset in which treatments \code{t1} and \code{t2} are compared.
 }
 \description{
@@ -31,8 +31,8 @@ Repetitions of the same treatment comparison are grouped together.
 }
 \examples{
 data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-  treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-  )
+            treatment=c(1,2,1,3,2,3,3,4,1,2,4)
+            )
 
 # Identify comparisons informed by direct and indirect evidence
 ref.comparisons(data)

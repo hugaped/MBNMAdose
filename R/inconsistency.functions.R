@@ -207,10 +207,10 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     p.values <- overlap$OV
 
     # Quantiles
-    quantile_dif <- quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
-    quantile_dir <- quantile(dir.res, c(0.025, 0.5, 0.975))
-    quantile_ind <- quantile(ind.res, c(0.025, 0.5, 0.975))
-    quantile_nma <- quantile(nma.res, c(0.025, 0.5, 0.975))
+    quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
+    quantile_dir <- stats::quantile(dir.res, c(0.025, 0.5, 0.975))
+    quantile_ind <- stats::quantile(ind.res, c(0.025, 0.5, 0.975))
+    quantile_nma <- stats::quantile(nma.res, c(0.025, 0.5, 0.975))
     quantiles <- list("difference" = quantile_dif, "nma"=quantile_nma,
                       "direct"=quantile_dir, "indirect"=quantile_ind)
 
@@ -225,7 +225,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
 
     gg <-
-      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
+      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
       ggplot2::geom_pointrange() +
       ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
       ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
@@ -241,7 +241,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     linetypes <- c("solid", "dash")
     levels(molten$Estimate) <- c("Indirect", "Direct")
 
-    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
+    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab(title) +
       ggplot2::ylab("Posterior density") +
@@ -323,12 +323,12 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
   treatments <- factor(unique(data$treatment))
 
   data <- data %>%
-    dplyr::group_by(studyID) %>%
-    dplyr::mutate(design=list(as.numeric(treatment)))
+    dplyr::group_by(data$studyID) %>%
+    dplyr::mutate(design=list(as.numeric(data$treatment)))
 
   data <- data %>%
-    dplyr::group_by(studyID) %>%
-    dplyr::mutate(narm=n())
+    dplyr::group_by(data$studyID) %>%
+    dplyr::mutate(narm=dplyr::n())
 
 
   comparisons <- ref.comparisons(data)
@@ -338,9 +338,9 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
   paths <- vector()
   loops <- vector()
 
-  pb <- txtProgressBar(0, nrow(comparisons), style = 3)
+  pb <- utils::txtProgressBar(0, nrow(comparisons), style = 3)
   for (i in 1:nrow(comparisons)) {
-    setTxtProgressBar(pb, i)
+    utils::setTxtProgressBar(pb, i)
 
     drops <- comparisons[-i,]
 
@@ -449,7 +449,7 @@ ref.comparisons <- function(data)
   #   stop("`treatment` must be either factor or numeric")
   # }
 
-  data <- dplyr::arrange(data, studyID, treatment)
+  data <- dplyr::arrange(data, data$studyID, data$treatment)
 
   t1 <- vector()
   t2 <- vector()
@@ -466,7 +466,7 @@ ref.comparisons <- function(data)
 
   comparisons <- data.frame(t1 = t1, t2 = t2)
   comparisons <- comparisons %>% dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr = n())
+    dplyr::mutate(nr = dplyr::n())
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
 
@@ -483,7 +483,7 @@ ref.comparisons <- function(data)
 #'
 #' Drops arms in a way which preserves connectivity and equally removes
 #' data from each treatment in a nodesplit comparison (so as to maximise precision)
-drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
+drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
   #print(index)
   for (i in seq_along(drops)) {
@@ -494,7 +494,7 @@ drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
     temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
                           ind.df$treatment==comp[index+1]),]
 
-    temp.net <- suppressMessages(plot(mbnma.network(temp.df), doseparam = 1000))
+    temp.net <- suppressMessages(graphics::plot(mbnma.network(temp.df), doseparam = 1000))
 
     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
                                                      to=comp[index+1])[
@@ -552,7 +552,7 @@ check.indirect.drops <- function(data=data, comp) {
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(data$treatment))) {
-      g <- plot(temp.net, doseparam=1000)
+      g <- graphics::plot(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])

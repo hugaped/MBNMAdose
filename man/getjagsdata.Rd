@@ -34,7 +34,7 @@ information on different classes of treatments}
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (\code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
 and identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
@@ -79,7 +79,7 @@ Converts MBNMA data frame to a list for use in JAGS model
 }
 \examples{
 # Using the triptans headache dataset
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 
 jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 
@@ -87,13 +87,13 @@ jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 # Get JAGS data with class
 df <- HF2PPITT
 df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-netclass <- MBNMA.network(df)
+netclass <- mbnma.network(df)
 
 jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 
 # Get JAGS data at the treatment level for Network Meta-Analysis
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 
 jagsdat <- getjagsdata(network$data.ab, level="treatment")
 

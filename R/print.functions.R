@@ -18,11 +18,11 @@ summary.mbnma.predict <- function(predict) {
   output <- data.frame()
   for (i in seq_along(predict)) {
     for (k in seq_along(predict[[i]])) {
-      quant <- quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975))
+      quant <- stats::quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975))
       df <- data.frame("agent"=names(predict)[i],
                        "dose"=as.numeric(as.character(names(predict[[i]])[k])),
                        "mean"=mean(predict[[i]][[k]]),
-                       "sd"=sd(predict[[i]][[k]])
+                       "sd"=stats::sd(predict[[i]][[k]])
       )
       output <- rbind(output, cbind(df, t(quant)))
     }
@@ -511,7 +511,7 @@ print.modfit.str <- function(mbnma) {
   } else if (mbnma$model.arg$pd=="plugin") {
     pd <- "pD calculated using the plug-in method ="
   } else if (mbnma$model.arg$pd=="pd.kl") {
-    pd <- "pD calculated using the Kullback–Leibler divergence ="
+    pd <- "pD calculated using the Kullback-Leibler divergence ="
   } else if (mbnma$model.arg$pd=="popt") {
     pd <- "pD calculated using an optimism adjustment ="
   }

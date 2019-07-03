@@ -6,6 +6,23 @@
 \usage{
 E0.validate(data.ab, likelihood = NULL)
 }
+\arguments{
+\item{data.ab}{A data frame of arm-level data in "long" format containing the
+columns:
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{y} Numeric data indicating the aggregate response for a continuous outcome. Required for
+continuous data.
+\item \code{se} Numeric data indicating the standard error for a given observation. Required for
+continuous data.
+\item \code{r} Numeric data indicating the number of responders within a study arm. Required for
+binomial or poisson data.
+\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+binomial data
+\item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
+for poisson data.
+}}
+}
 \description{
 Ensures \code{E0} takes the correct form to allow for synthesis of network
 reference treatment response

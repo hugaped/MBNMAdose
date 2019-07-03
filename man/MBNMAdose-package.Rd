@@ -19,7 +19,7 @@ this also can help connect networks at the agent level that may otherwise be dis
 level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard
 Network Meta-Analysis (NMA). All models and analyses are implemented
 in a Baysian framework, following an extension of the standrd NMA methodology presented by
-\insertCite{lu2004}{MBNMAdose} and are run in JAGS \insertCite{jags}{MBNMAdose}. For full details of
+\insertCite{lu2004}{MBNMAdose} and are run in \insertCite{jags, textual}{MBNMAdose}. For full details of
 dose-response MBNMA methodology see \insertCite{mawdsley2016;textual}{MBNMAdose}. Within this package we
 refer to a \strong{treatment} as a specific \strong{dose} or a specific \strong{agent}.
 }
@@ -28,11 +28,11 @@ refer to a \strong{treatment} as a specific \strong{dose} or a specific \strong{
 
 Functions within \code{MBNMAdose} follow a clear pattern of use:
 \enumerate{
-\item Load your data into the correct format using \code{MBNMA.network()}
-\item Analyse your data using \code{MBNMA.run()}, or any of the available wrapper dose-response functions
+\item Load your data into the correct format using \code{mbnma.network()}
+\item Analyse your data using \code{mbnma.run()}, or any of the available wrapper dose-response functions
 \item Test for consistency at the treatment-level using functions like \code{NMA.nodesplit()} and \code{NMA.run()}
 \item Examine model results using forest plots and treatment rankings
-\item Use your model to predict responses using \code{predict.MBNMA()}
+\item Use your model to predict responses using \code{predict()}
 }
 
 At each of these stages there are a number of informative plots that can be generated to help understand
@@ -40,8 +40,8 @@ the data and to make decisions regaring model fitting.
 }
 
 \examples{
-# Generate an "MBNMA.network" object that stores data in the correct format
-network <- MBNMA.network(HF2PPITT)
+# Generate an "mbnma.network" object that stores data in the correct format
+network <- mbnma.network(HF2PPITT)
 
 # Generate a network plot at the dose/treatment level
 plot(network, level="treatment")
@@ -53,13 +53,13 @@ plot(network, level="agent", remove.loops=TRUE)
 nma <- NMA.run(network)
 plot(nma)
 
-# Analyse data using MBNMA.run()
-result <- MBNMA.run(network, fun="emax",
+# Analyse data using mbnma.run()
+result <- mbnma.run(network, fun="emax",
   beta.1="rel", beta.2="rel",
   method="common")
 
-# ...or achieve the same result by using a wrapper function for MBNMA.run()
-result <- MBNMA.emax(network,
+# ...or achieve the same result by using a wrapper function for mbnma.run()
+result <- mbnma.emax(network,
   emax="rel", ed50="rel",
   method="common")
 

@@ -56,7 +56,7 @@
 #'   * `plugin` calculates pD by the plug-in
 #'   method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
-#'   * `pd.kl` calculates pD by the Kullback\\–Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
+#'   * `pd.kl` calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
 #'   will require running the model for additional iterations but
 #'   will always produce a positive result.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
@@ -458,7 +458,7 @@ mbnma.run <- function(network,
 
 
 mbnma.jags <- function(data.ab, model,
-                       class=FALSE, rho=NULL, covar=NULL,
+                       class=FALSE,
                        parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL,
                        warn.rhat=FALSE, ...) {
@@ -475,7 +475,8 @@ mbnma.jags <- function(data.ab, model,
 
   if (is.null(likelihood) & is.null(link)) {
     # For MBNMAtime
-    jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    #jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    jagsdata <- getjagsdata(data.ab, class=class) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
   } else if (is.null(rho) & is.null(covar)) {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
@@ -1380,7 +1381,7 @@ mbnma.emax.hill <- function(network,
 #'   For non-linear time-course MBNMA models residual deviance contributions may be skewed, which
 #'   can lead to non-sensical results when calculating pD via the plugin method.
 #'   Alternative approaches are to use pV as an approximation or
-#'   pD calculated by Kullback\\–Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
+#'   pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 #'
 #' @references
 #'   \insertAllCited
@@ -1567,12 +1568,12 @@ update.mbnma <- function(mbnma, param="theta") {
     names(update.df) <- c("study", "arm", "fupdose", "mean")
 
     # Remove missing values
-    update.df <- update.df[complete.cases(update.df),]
+    update.df <- update.df[stats::complete.cases(update.df),]
 
     # Treatment as facet
     temp <- replicate(max(update.df$fupdose), mbnma$model$data()$treatment)
     update.df$facet <- as.vector(temp)[
-      complete.cases(as.vector(temp))
+      stats::complete.cases(as.vector(temp))
       ]
 
     # Studyarm as group
@@ -1584,15 +1585,15 @@ update.mbnma <- function(mbnma, param="theta") {
     names(update.df) <- c("study", "arm", "mean")
 
     # Remove missing values
-    update.df <- update.df[complete.cases(update.df),]
+    update.df <- update.df[stats::complete.cases(update.df),]
 
     # Agent as facet
     update.df$facet <- as.vector(mbnma$model$data()$agent)[
-      complete.cases(as.vector(mbnma$model$data()$agent))
+      stats::complete.cases(as.vector(mbnma$model$data()$agent))
       ]
 
     update.df$fupdose <- as.vector(mbnma$model$data()$dose)[
-      complete.cases(as.vector(mbnma$model$data()$dose))
+      stats::complete.cases(as.vector(mbnma$model$data()$dose))
       ]
 
     # Study as group

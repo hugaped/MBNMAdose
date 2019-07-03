@@ -17,7 +17,7 @@ automatically set to \code{FALSE} if class effects are modelled.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and \code{cor=TRUE} (see \code{Details} LINK). Each element of
+one dose-response parameter and \code{cor=TRUE} (see details). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
@@ -31,11 +31,14 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
-should be modelled with between-study heterogeneity or not (see LINK \code{Details}).}
+should be modelled with between-study heterogeneity or not (see details).}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). For example: \code{list("beta.2"="fixed", "beta.3"="random")}.}
+(\code{"common"} or \code{"random"}). Element names should match dose-response parameter names (which will therefore
+depend on whether or not a wrapper function has been used for \code{mbnma.run()}).
+For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
+\code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
 }
 \description{
 This uses a Wishart prior as default for modelling the correlation

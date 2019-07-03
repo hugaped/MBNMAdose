@@ -4,7 +4,7 @@
 \alias{recode.agent}
 \title{Assigns agent or class variables numeric identifiers}
 \usage{
-recode.agent(data.ab, level = "agent")
+\method{recode}{agent}(data.ab, level = "agent")
 }
 \arguments{
 \item{level}{Can take either \code{"agent"} or \code{"class"}}

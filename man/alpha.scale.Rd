@@ -7,5 +7,5 @@
 alpha.scale(n.cut, col = "blue")
 }
 \description{
-Identical to MBNMAtime
+Identical to function in \code{MBNMAtime} package
 }

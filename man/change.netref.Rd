@@ -7,13 +7,13 @@
 change.netref(network, ref = 1)
 }
 \arguments{
-\item{network}{An object of class \code{MBNMA.network}.}
+\item{network}{An object of class \code{mbnma.network}.}
 
 \item{ref}{A positive integer indicating the \emph{treatment} code of the new reference
 treatment to use}
 }
 \value{
-An object of \code{class("MBNMA.network")} that has a new reference treatment.
+An object of \code{class("mbnma.network")} that has a new reference treatment.
 The new object is only really used as an intermediate in other package functions
 and it should not be used separately, as some characteristics of the dataset may
 not be properly encoded.

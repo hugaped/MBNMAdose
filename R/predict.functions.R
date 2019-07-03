@@ -226,7 +226,7 @@ predict.mbnma <- function(mbnma, n.doses=15, max.doses=NULL, exact.doses=NULL,
     agent <- as.vector(agents)
 
     df <- data.frame("agent"=agent, "dose"=dose)
-    df <- unique(df[complete.cases(df),])
+    df <- unique(df[stats::complete.cases(df),])
     df <- dplyr::arrange(df, agent, dose)
     df$agent <- factor(df$agent, labels=mbnma.agents)
 
@@ -285,7 +285,7 @@ predict.mbnma <- function(mbnma, n.doses=15, max.doses=NULL, exact.doses=NULL,
     if (!("sd.mu" %in% names(E0))) {
       E0 <- E0$m.mu
     } else {
-      E0 <- dnorm(E0$m.mu, E0$sd.mu)
+      E0 <- stats::dnorm(E0$m.mu, E0$sd.mu)
     }
   }
 
@@ -395,7 +395,7 @@ get.model.vals <- function(mbnma) {
       } else if (temp$pool=="common") {
         temp$result <- res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))]
       } else if (temp$pool=="random") {
-        temp$result <- dnorm(res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))],
+        temp$result <- stats::dnorm(res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))],
                              res.mat[,grepl(paste0("^sd.", temp$name), colnames(res.mat))]
         )
       } else if (is.numeric(temp$pool)) {
@@ -555,8 +555,8 @@ E0.validate <- function(data.ab, likelihood=NULL) {
   data.ab <- dplyr::arrange(data.ab, studyID)
 
   data.ab <- data.ab %>%
-    dplyr::group_by(studyID) %>%
-    dplyr::mutate(narm=n())
+    dplyr::group_by(data.ab$studyID) %>%
+    dplyr::mutate(narm=dplyr::n())
 
   if (any(data.ab$narm>1)) {
     stop("Studies in `data.ab` contain >1 arm. ref.synth() only pools single arms.")
@@ -608,11 +608,11 @@ rescale.link <- function(x, direction="link", link="logit") {
 
   if (direction=="link") {
     if (link=="logit") {
-      x <- qlogis(x)
+      x <- stats::qlogis(x)
     } else if (link=="log") {
       x <- log(x)
     } else if (link=="probit") {
-      x <- qnorm(x)
+      x <- stats::qnorm(x)
     } else if (link=="cloglog") {
       x <- log(-log(1-x))
     }
@@ -625,7 +625,7 @@ rescale.link <- function(x, direction="link", link="logit") {
     } else if (link=="cloglog") {
       x <- 1-exp(-exp(x))
     } else if (link=="probit") {
-      x <- pnorm(x)
+      x <- stats::pnorm(x)
     }
   }
   return(x)
