@@ -367,16 +367,16 @@ Default vague priors for the model are as follows:
 
 $$
 \begin{aligned}
-  &d_{\phi,a} \sim N(0,10000)\\
-  &beta_{\phi} \sim N(0,10000)\\
+  &d_{p,a} \sim N(0,10000)\\
+  &beta_{p} \sim N(0,10000)\\
   &\sigma \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
-  &\sigma_{\phi} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
-  &D_{\phi,c} \sim N(0,1000)\\
-  &\sigma_{\phi} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+  &\sigma_{p} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &D_{p,c} \sim N(0,1000)\\
+  &\sigma_{p} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
 \end{aligned}
 $$
 
-...where $\phi$ is an identifier for the dose-response parameter (e.g. 1 for Emax and 2 for ED50), $a$ is an agent identifier and $c$ is a class identifier
+...where $p$ is an identifier for the dose-response parameter (e.g. 1 for Emax and 2 for ED50), $a$ is an agent identifier and $c$ is a class identifier
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 

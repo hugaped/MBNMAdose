@@ -57,11 +57,11 @@ rank <- function (x, ...) {
 #' plot(rank)
 #'
 #' @export
-rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
+rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(predict, classes="mbnma.predict", add=argcheck)
+  checkmate::assertClass(x, classes="mbnma.predict", add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
   #checkmate::assertList(rank.doses, types="numeric", null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -76,8 +76,8 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
   if (is.null(rank.doses)) {
     rank.doses <- list()
     incl.zero <- FALSE
-    for (i in seq_along(predict$predicts)) {
-      doses <- as.numeric(names(predict$predicts[[i]]))
+    for (i in seq_along(x$predicts)) {
+      doses <- as.numeric(names(x$predicts[[i]]))
 
       # Drop zero doses from all but one agent
       if (incl.zero==TRUE) {
@@ -86,7 +86,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
         incl.zero <- TRUE
       }
 
-      rank.doses[[names(predict$predicts)[i]]] <- doses
+      rank.doses[[names(x$predicts)[i]]] <- doses
     }
 
   } else if (!is.null(rank.doses)) {
@@ -96,11 +96,11 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
     new.ranks <- rank.doses
     for (i in seq_along(rank.doses)) {
       doses.missing <- vector()
-      if (!(names(rank.doses)[i] %in% names(predict[["predicts"]]))) {
+      if (!(names(rank.doses)[i] %in% names(x[["predicts"]]))) {
         stop(paste0("Agent ", names(rank.doses)[i], " not in `predicts` so cannot be included in ranking"))
         new.ranks[[i]] <- NULL
       } else {
-        doses <- as.numeric(names(predict[["predicts"]][[names(rank.doses)[i]]]))
+        doses <- as.numeric(names(x[["predicts"]][[names(rank.doses)[i]]]))
         for (k in seq_along(rank.doses[[i]])) {
           if (!(rank.doses[[i]][k] %in% doses)) {
             doses.missing <- append(doses.missing, rank.doses[[i]][k])
@@ -110,7 +110,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
       }
 
       if (length(doses.missing)>0) {
-        stop(paste0("For ", names(rank.doses)[i], " in `rank.doses`, the following doses are missing from `predict` and cannot be included in ranking: ", paste(doses.missing, collapse=", ")))
+        stop(paste0("For ", names(rank.doses)[i], " in `rank.doses`, the following doses are missing from `x` and cannot be included in ranking: ", paste(doses.missing, collapse=", ")))
       }
     }
     rank.doses <- new.ranks
@@ -122,7 +122,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
   for (i in seq_along(rank.doses)) {
     for (k in seq_along(rank.doses[[i]])) {
       treats <- append(treats, paste(names(rank.doses)[i], rank.doses[[i]][k], sep="_"))
-      temp <- predict$predicts[[
+      temp <- x$predicts[[
         names(rank.doses)[i]
         ]][[
           as.character(rank.doses[[i]][k])
@@ -172,6 +172,7 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' or class (depending on the value assigned to `level`). If left as `NULL` (the default), then
 #' ranking will be calculated for all available parameters that vary by agent/class.
 #' @inheritParams predict.mbnma
+#' @inheritParams rank
 #'
 #' @details Ranking cannot currently be performed on non-parametric dose-response MBNMA
 #'
@@ -215,18 +216,18 @@ rank.mbnma.predict <- function(predict, direction=1, rank.doses=NULL) {
 #' plot(rank)
 #'
 #' @export
-rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=NULL) {
+rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL, ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, classes="mbnma", add=argcheck)
+  checkmate::assertClass(x, classes="mbnma", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
   #checkmate::assertNumeric(to.rank, lower = 2, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (mbnma$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+  if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
     stop("Ranking cannot currently be performed for non-parametric models")
   }
 
@@ -234,7 +235,7 @@ rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=N
   levels <- ifelse(level=="agent", "agents", "classes")
 
   if (level=="class") {
-    if (is.null(mbnma[["model"]][["data"]]()[["class"]])) {
+    if (is.null(x[["model"]][["data"]]()[["class"]])) {
       stop("`level` has been set to `class` but classes have not been used in the model")
     }
     if (!is.null(to.rank)) {
@@ -243,30 +244,30 @@ rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=N
   }
 
   # If treats have not been specified then select all of them - WONT WORK IF PLACEBO NOT INCLUDED
-  starttrt <- ifelse(mbnma$agents[1]=="Placebo", 2, 1)
-  codes.mod <- c(starttrt:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE))
+  starttrt <- ifelse(x$agents[1]=="Placebo", 2, 1)
+  codes.mod <- c(starttrt:max(x[["model"]][["data"]]()[[level]], na.rm=TRUE))
   if (is.null(to.rank)) {
     to.rank <- codes.mod
   } else if (is.numeric(to.rank)) {
-    if (!all(to.rank %in% seq(1:max(mbnma[["model"]][["data"]]()[[level]], na.rm=TRUE)))) {
+    if (!all(to.rank %in% seq(1:max(x[["model"]][["data"]]()[[level]], na.rm=TRUE)))) {
       stop("`to.rank` codes must match those in the dataset for either `agent` or `class`")
     }
   } else if (is.character(to.rank)) {
-    if (!all(to.rank %in% mbnma[[levels]])) {
+    if (!all(to.rank %in% x[[levels]])) {
       stop("`to.rank` agent/class names must match those in the network for either `agent` or `class`")
     }
-    to.rank <- as.numeric(factor(to.rank, levels=mbnma[[levels]]))
+    to.rank <- as.numeric(factor(to.rank, levels=x[[levels]]))
   }
 
-  if (mbnma$agents[1]=="Placebo") {
+  if (x$agents[1]=="Placebo") {
     to.rank <- to.rank-1
     if (any(to.rank==0)) {
       warning("Placebo (d[1] or D[1]) cannot be included in the ranking for relative effects and will therefore be excluded")
       to.rank <- to.rank[to.rank!=0]
     }
-    agents <- mbnma[[levels]][to.rank+1]
+    agents <- x[[levels]][to.rank+1]
   } else {
-    agents <- mbnma[[levels]][to.rank]
+    agents <- x[[levels]][to.rank]
   }
 
 
@@ -277,14 +278,14 @@ rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=N
   } else {stop("`direction` must be either -1 or 1 for ranking")}
 
   if (is.null(params)) {
-    for (i in seq_along(mbnma$BUGSoutput$root.short)) {
-      if (length(mbnma$BUGSoutput$long.short[i][[1]])==length(codes.mod)) {
-        params <- append(params, mbnma$BUGSoutput$root.short[i])
+    for (i in seq_along(x$BUGSoutput$root.short)) {
+      if (length(x$BUGSoutput$long.short[i][[1]])==length(codes.mod)) {
+        params <- append(params, x$BUGSoutput$root.short[i])
       }
     }
   } else {
     for (i in seq_along(params)) {
-      if (!(params[i] %in% mbnma[["parameters.to.save"]])) {
+      if (!(params[i] %in% x[["parameters.to.save"]])) {
         stop(paste0(params[i], " has not been monitored by the model. `params` can only include model parameters that have been monitored and vary by agent/class"))
       }
     }
@@ -292,8 +293,8 @@ rank.mbnma <- function(mbnma, params=NULL, direction=1, level="agent", to.rank=N
 
   rank.result <- list()
   for (i in seq_along(params)) {
-    if (params[i] %in% mbnma[["parameters.to.save"]]) {
-      param.mod <- mbnma[["BUGSoutput"]][["sims.list"]][[params[i]]]
+    if (params[i] %in% x[["parameters.to.save"]]) {
+      param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
 
       # Check that selected parameter is different over multiple treatments
       if (!is.matrix(param.mod) | ncol(param.mod)!=length(codes.mod)) {

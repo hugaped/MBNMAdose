@@ -4,10 +4,12 @@
 \alias{print.nma.nodesplit}
 \title{Prints summary results from an nma.nodesplit object}
 \usage{
-\method{print}{nma.nodesplit}(nodesplit)
+\method{print}{nma.nodesplit}(x, ...)
 }
 \arguments{
-\item{nodesplit}{An object of \code{class("nma.nodesplit")}}
+\item{x}{An object of \code{class("nma.nodesplit")}}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Prints summary results from an nma.nodesplit object

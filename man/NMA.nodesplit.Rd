@@ -8,7 +8,7 @@
 nma.nodesplit(network, likelihood = NULL, link = NULL,
   method = "common", drop.discon = FALSE, comparisons = NULL, ...)
 
-\method{plot}{nma.nodesplit}(nodesplit, plot.type = NULL, ...)
+\method{plot}{nma.nodesplit}(x, plot.type = NULL, ...)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
@@ -37,11 +37,13 @@ may change if \code{drop.discon = TRUE}).}
 
 \item{...}{Arguments to be sent to \code{R2jags}}
 
-\item{nodesplit}{An object of \code{class("nma.nodesplit")}}
+\item{x}{An object of \code{class("nma.nodesplit")}}
 
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
 only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
 default) to plot both types of plot.}
+
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
 }
 \value{
 Plots the desired graph(s) and returns an object (or list of object if

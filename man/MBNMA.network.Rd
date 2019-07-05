@@ -5,7 +5,7 @@
 \alias{mbnma.network}
 \title{Create an mbnma.network object}
 \usage{
-\method{plot}{mbnma.network}(network, level = "treatment",
+\method{plot}{mbnma.network}(x, level = "treatment",
   v.color = "connect", doselink = NULL, layout_in_circle = TRUE,
   remove.loops = FALSE, edge.scale = 1, v.scale = NULL,
   label.distance = 0, ...)
@@ -13,7 +13,7 @@
 mbnma.network(data.ab, description = "Network")
 }
 \arguments{
-\item{network}{An object of class \code{mbnma.network}.}
+\item{x}{An object of class \code{mbnma.network}.}
 
 \item{level}{A string indicating whether nodes/facets should represent \code{"treatment"}
 or \code{"agent"} in the plot. Can be used to examine the expected impact of modelling

@@ -5,14 +5,14 @@
 \alias{nma.run}
 \title{Run an NMA model}
 \usage{
-\method{plot}{nma}(nma, bydose = TRUE, scales = "free_x")
+\method{plot}{nma}(x, bydose = TRUE, scales = "free_x", ...)
 
 nma.run(network, method = "common", likelihood = NULL, link = NULL,
   warn.rhat = TRUE, n.iter = 10000, drop.discon = TRUE,
   UME = FALSE, ...)
 }
 \arguments{
-\item{nma}{An object of \code{class("nma")}}
+\item{x}{An object of \code{class("nma")}}
 
 \item{bydose}{A boolean object indicating whether to plot responses with dose
 on the x-axis (\code{TRUE}) to be able to examine potential dose-response shapes, or
@@ -21,6 +21,8 @@ to plot a conventional forest plot with all treatments on the same plot (\code{F
 \item{scales}{Should scales be fixed (\code{"fixed"}, the default),
 free (\code{"free"}), or free in one dimension (\code{"free_x"},
 \code{"free_y"})?}
+
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
 
 \item{network}{An object of class \code{mbnma.network}.}
 
@@ -46,8 +48,6 @@ studies from the network.}
 \item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
-
-\item{...}{Arguments for \code{ggplot2}}
 }
 \description{
 Used for calculating split NMA results, either when comparing models that do not

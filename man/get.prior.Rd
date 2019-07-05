@@ -6,6 +6,9 @@
 \usage{
 get.prior(model)
 }
+\arguments{
+\item{model}{A character object of JAGS MBNMA model code}
+}
 \value{
 A character vector, each element of which is a line of JAGS code
 corresponding to a prior in the JAGS code.

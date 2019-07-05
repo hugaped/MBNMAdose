@@ -50,6 +50,9 @@
 #' one dose-response parameter and `cor=TRUE` (see details). Each element of
 #' the vector refers to the relative scale of each of the dose-response parameters that is
 #' modelled using relative effects.
+#' @param priors A named list of parameter values (without indices) and
+#'   replacement prior distribution values given as strings
+#'   **using distributions as specified in JAGS syntax** (see examples).
 #'
 #' @param pd Can take either:
 #'   * `pv` only pV will be reported (as automatically outputted by `R2jags`).
@@ -68,7 +71,6 @@
 #' specific wrapper functions
 #' @param ... Arguments to be sent to R2jags.
 #'
-#' @inheritParams replace.prior
 #'
 #' @details When relative effects are modelled on more than one dose-response parameter and
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
