@@ -4,12 +4,12 @@
 \alias{print.mbnma.network}
 \title{Print mbnma.network information to the console}
 \usage{
-\method{print}{mbnma.network}(network, ...)
+\method{print}{mbnma.network}(x, ...)
 }
 \arguments{
-\item{...}{further arguments passed to or from other methods}
-
 \item{x}{An object of class \code{mbnma.network}.}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \description{
 Print mbnma.network information to the console

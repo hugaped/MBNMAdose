@@ -2,6 +2,8 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-30
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 #' Node-splitting model for testing consistency at the treatment level
 #'
@@ -18,9 +20,7 @@
 #' either be character (corresponding to the treatment names given in `network`) or
 #' numeric (corresponding to treatment codes within the `network` - note that these
 #' may change if `drop.discon = TRUE`).
-#' @param ... Arguments to be sent to [R2jags::jags()]
 #' @inheritParams mbnma.run
-#' @inheritParams mbnma.network
 #'
 #' @examples
 #' # Using the triptans data
@@ -44,6 +44,10 @@
 #'
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
+#' # Generate data without placebo
+#' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+#' net.noplac <- mbnma.network(noplac.df)
+#'
 #' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
 #'              method="random", drop.discon=TRUE)
 #'

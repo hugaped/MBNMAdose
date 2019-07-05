@@ -2,7 +2,8 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-16
 
-
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 #' Write MBNMA dose-response model JAGS code
 #'

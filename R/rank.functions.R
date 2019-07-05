@@ -2,6 +2,9 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-26
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
 #' Set rank as a method
 #'
 #' @param x An object on which to apply the rank method

@@ -4,10 +4,10 @@
 \alias{summary.nma.nodesplit}
 \title{Generates a summary data frame for mbnma.nodesplit objects}
 \usage{
-\method{summary}{nma.nodesplit}(x, ...)
+\method{summary}{nma.nodesplit}(object, ...)
 }
 \arguments{
-\item{x}{An object of \code{class("nma.nodesplit")}}
+\item{object}{An object of \code{class("nma.nodesplit")}}
 
 \item{...}{further arguments passed to or from other methods}
 }

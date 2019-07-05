@@ -18,7 +18,7 @@ Description: This package fits Bayesian dose-response model-based network meta-a
   and assumptions can be flexibly added to the models, such as shared class effects. The consistency 
   of direct and indirect evidence in the network can be assessed using unrelated mean effects models 
   and/or by node-splitting at the treatment level.
-License: GPL-3
+License: file LICENSE
 Depends: R (>= 3.0.2)
 Imports:
   grDevices,

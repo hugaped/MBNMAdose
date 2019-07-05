@@ -35,15 +35,13 @@ either be character (corresponding to the treatment names given in \code{network
 numeric (corresponding to treatment codes within the \code{network} - note that these
 may change if \code{drop.discon = TRUE}).}
 
-\item{...}{Arguments to be sent to \code{R2jags}}
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
 
 \item{x}{An object of \code{class("nma.nodesplit")}}
 
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
 only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
 default) to plot both types of plot.}
-
-\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
 }
 \value{
 Plots the desired graph(s) and returns an object (or list of object if
@@ -77,10 +75,19 @@ split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 # Check for closed loops of treatments with independent evidence sources
 loops <- inconsistency.loops(network$data.ab)
 
+# This...
 split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-             method="random", comparisons=rbind(c(6,23), c(6,12)))
+             method="random", comparisons=rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
+#...is the same as...
+split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+             method="random", comparisons=rbind(c(2, 5)))
+
 
 # Drop treatments that are disconnected from the network in the analysis
+# Generate data without placebo
+noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+net.noplac <- mbnma.network(noplac.df)
+
 split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
              method="random", drop.discon=TRUE)
 

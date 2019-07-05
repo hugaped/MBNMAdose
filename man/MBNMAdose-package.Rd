@@ -30,7 +30,7 @@ Functions within \code{MBNMAdose} follow a clear pattern of use:
 \enumerate{
 \item Load your data into the correct format using \code{mbnma.network()}
 \item Analyse your data using \code{mbnma.run()}, or any of the available wrapper dose-response functions
-\item Test for consistency at the treatment-level using functions like \code{NMA.nodesplit()} and \code{NMA.run()}
+\item Test for consistency at the treatment-level using functions like \code{nma.nodesplit()} and \code{nma.run()}
 \item Examine model results using forest plots and treatment rankings
 \item Use your model to predict responses using \code{predict()}
 }

@@ -2,6 +2,9 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-07
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
 #' Create an mbnma.network object
 #'
 #' Creates an object of class `mbnma.network`. Various MBNMA functions can subsequently be applied
