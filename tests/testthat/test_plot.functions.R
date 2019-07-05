@@ -97,15 +97,15 @@ testthat::test_that("plot.mbnma functions correctly", {
 
   # Test number of panels is equal to number of rel effect parameters
   g <- plot(emax)
-  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 2)
+  expect_equal(length(unique(g$data$doseparam)), 2)
 
   g <- plot(emax.class)
-  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 1)
+  expect_equal(length(unique(g$data$doseparam)), 1)
 
   # params argument
   expect_error(plot(emax, params="rabbit"))
   g <- plot(emax, params = "d.emax")
-  expect_equal(length(unique(g$data[[names(g$facet$params$facets)]])), 1)
+  expect_equal(length(unique(g$data$doseparam)), 1)
 
   # Agent labs
   expect_silent(plot(emax, agent.labs = netgout$agents))

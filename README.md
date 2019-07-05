@@ -50,7 +50,7 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 2.  Analyse your data using `mbnma.run()`, or any of the available
     wrapper dose-response functions
 3.  Test for consistency at the treatment-level using functions like
-    `NMA.nodesplit()` and `NMA.run()`
+    `nma.nodesplit()` and `nma.run()`
 4.  Examine model results using forest plots and treatment rankings
 5.  Use your model to predict responses using `predict()`
 

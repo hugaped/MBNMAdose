@@ -171,6 +171,7 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 #' @param params A character vector of named parameters in the model that vary by either agent
 #' or class (depending on the value assigned to `level`). If left as `NULL` (the default), then
 #' ranking will be calculated for all available parameters that vary by agent/class.
+#' @param ... Arguments to be passed to methods
 #' @inheritParams predict.mbnma
 #' @inheritParams rank
 #'

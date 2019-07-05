@@ -18,7 +18,7 @@
 #' either be character (corresponding to the treatment names given in `network`) or
 #' numeric (corresponding to treatment codes within the `network` - note that these
 #' may change if `drop.discon = TRUE`).
-#' @param ... Arguments to be sent to `R2jags`
+#' @param ... Arguments to be sent to [R2jags::jags()]
 #' @inheritParams mbnma.run
 #' @inheritParams mbnma.network
 #'
@@ -35,8 +35,13 @@
 #' # Check for closed loops of treatments with independent evidence sources
 #' loops <- inconsistency.loops(network$data.ab)
 #'
+#' # This...
 #' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-#'              method="random", comparisons=rbind(c(6,23), c(6,12)))
+#'              method="random", comparisons=rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
+#' #...is the same as...
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c(2, 5)))
+#'
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
 #' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
@@ -125,7 +130,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   nma.net <- suppressMessages(mbnma.network(data.ab))
   nma.jags <- nma.run(nma.net, method=method,
                       likelihood=likelihood, link=link,
-                      warn.rhat=FALSE, drop.discon = FALSE)#, ...)
+                      warn.rhat=FALSE, drop.discon = FALSE, ...)
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
@@ -185,7 +190,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     # Run NMA
     ind.net <- suppressMessages(mbnma.network(ind.df))
     ind.jags <- nma.run(ind.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon = FALSE)#, ...)
+                        warn.rhat=FALSE, drop.discon = FALSE, ...)
     ind.res <- ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
       ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
 
@@ -193,7 +198,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     ##### Estimate Direct #####
     dir.net <- suppressMessages(change.netref(mbnma.network(data.ab), ref=comp[1]))
     dir.jags <- nma.run(dir.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE)#, ...)
+                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
     dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
       ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
     ]

@@ -638,19 +638,19 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
 #' @param ... further arguments passed to or from other methods
 #'
 #' @export
-print.mbnma.network <- function(network,...) {
-  nn <- names(network)
-  ll <- length(network)
+print.mbnma.network <- function(x,...) {
+  nn <- names(x)
+  ll <- length(x)
   if (length(nn) != ll)
     nn <- paste("Component", seq.int(ll))
   for (i in seq_len(ll)) {
     cat(nn[i], ":\n")
-    if (is.data.frame((network[[i]]))) {
-      print(network[[i]], max=ncol(network[[i]])*6, ...)
+    if (is.data.frame((x[[i]]))) {
+      print(x[[i]], max=ncol(x[[i]])*6, ...)
     } else {
-      print(network[[i]], ...)
+      print(x[[i]], ...)
     }
     cat("\n")
   }
-  invisible(network)
+  invisible(x)
 }
