@@ -636,6 +636,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @examples
 #' # Run random effects NMA on the alogliptin dataset
+#' network <- MBNMA.network(alog_pcfb)
 #' nma <- nma.run(network, method="random")
 #' print(nma)
 #' plot(nma)
