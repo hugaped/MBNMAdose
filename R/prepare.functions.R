@@ -3,7 +3,7 @@
 # Date created: 2019-04-07
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose"))
 
 #' Create an mbnma.network object
 #'
@@ -199,7 +199,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   if (single.arm==FALSE) {
     data.ab <- data.ab %>%
       dplyr::group_by(studyID) %>%
-      dplyr::mutate(narms = n())
+      dplyr::mutate(narms = dplyr::n())
   }
 
   singlearm.studyID <- vector()
@@ -569,7 +569,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
 
-  df <- transform(df,studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
+  df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
   for (i in seq_along(datavars)) {
     assign(datavars[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
@@ -874,7 +874,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 
   comparisons <- comparisons %>%
     dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr=n())
+    dplyr::mutate(nr=dplyr::n())
 
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)

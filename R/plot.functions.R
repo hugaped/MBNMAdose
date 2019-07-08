@@ -3,7 +3,8 @@
 # Date created: 2019-04-18
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "50%",
+                                                        "treatment"))
 
 #' @describeIn mbnma.network Generate a network plot
 #' @inheritParams mbnma.run
