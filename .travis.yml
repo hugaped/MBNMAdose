@@ -3,16 +3,7 @@
 language: R
 sudo: required
 cache: packages
-matrix:
-  include:
-  - r: release
-    before_install:
-      - sudo add-apt-repository ppa:marutter/rrutter -y
-      - sudo apt-get update
-      - sudo apt-get install r-cran-rjags
-  - r: release
-    os: osx
-    before_install:
+before_install:
       - sudo add-apt-repository ppa:marutter/rrutter -y
       - sudo apt-get update
       - sudo apt-get install r-cran-rjags
