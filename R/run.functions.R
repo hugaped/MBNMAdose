@@ -292,6 +292,11 @@ mbnma.run <- function(network,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Ensure rjags parameters make sense
+  if (n.iter<=n.burnin) {
+    stop(paste0("`n.iter` must be greater than `n.burnin`. `n.burnin` = ", n.burnin))
+  }
+
   # Check if placebo has been included
   if (network$agents[1]=="Placebo" & network$treatments[1]=="Placebo_0") {
     plac.incl <- TRUE

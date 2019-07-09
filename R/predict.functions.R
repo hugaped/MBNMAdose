@@ -480,6 +480,10 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
                       n.chains=mbnma$BUGSoutput$n.chains,
                       ...) {
 
+  if (n.iter<=n.burnin) {
+    stop(paste0("`n.iter` must be greater than `n.burnin`. `n.burnin` = ", n.burnin))
+  }
+
   # First need to validate data.frame to check dataset is in correct format...maybe another function for this
   # Change it to correct format if it is not already
   data.ab <- E0.validate(data.ab, likelihood=mbnma$model.arg$likelihood)[["data.ab"]]
