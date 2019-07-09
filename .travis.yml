@@ -1,17 +1,15 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
-language: R
-sudo: required
-cache: packages
-os:
-  - linux
-  - osx
-install: travis_wait 20 mvn install
-before_install:
-  - sudo add-apt-repository ppa:marutter/rrutter -y
-  - sudo apt-get update
-  - sudo apt-get install r-cran-rjags
-script:
-  - |
-    R CMD build .
-    travis_wait 30 R CMD check packageName*tar.gz
+matrix:
+  include:
+  - r: release
+    before_install:
+      - sudo add-apt-repository ppa:marutter/rrutter -y
+      - sudo apt-get update
+      - sudo apt-get install r-cran-rjags
+  - r: release
+    os: osx
+    before_install:
+      - sudo add-apt-repository ppa:marutter/rrutter -y
+      - sudo apt-get update
+      - sudo apt-get install r-cran-rjags
