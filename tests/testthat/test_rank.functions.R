@@ -1,34 +1,34 @@
 testthat::context("Testing rank.functions")
 
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 
 # Make class data
 df <- HF2PPITT
 df$class <- ifelse(df$agent=="placebo", "placebo", "active")
 df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
-netclass <- MBNMA.network(df)
+netclass <- mbnma.network(df)
 
 # Make data with no placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- MBNMA.network(noplac.df)
+net.noplac <- mbnma.network(noplac.df)
 
 # Models
-linear.run <- MBNMA.run(MBNMA.network(GoutSUA_2wkCFB), fun="linear")
+linear.run <- mbnma.run(mbnma.network(GoutSUA_2wkCFB), fun="linear")
 
-exponential <- MBNMA.exponential(MBNMA.network(osteopain_2wkabs), lambda="rel", method="common")
+exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", method="common")
 
-emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
-emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
+emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
                          class.effect=list(emax="random"))
 
-nonparam <- MBNMA.run(network, fun="nonparam.up")
+nonparam <- mbnma.run(network, fun="nonparam.up")
 
-emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
+emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random")
 
-testthat::test_that("rank.MBNMA functions correctly", {
+testthat::test_that("rank.mbnma functions correctly", {
 
-  rank <- rank.MBNMA(linear.run)
+  rank <- rank.mbnma(linear.run)
   expect_equal(names(rank), "d.1")
   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank[[1]]$summary), "data.frame")
@@ -38,7 +38,7 @@ testthat::test_that("rank.MBNMA functions correctly", {
   expect_equal(class(summary(rank)[[1]]), "data.frame")
 
 
-  rank <- rank.MBNMA(emax)
+  rank <- rank.mbnma(emax)
   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank[[2]]$summary), "data.frame")
@@ -60,31 +60,31 @@ testthat::test_that("rank.MBNMA functions correctly", {
   to.ranks <- c(2,5,6)
   rank <- rank(exponential, to.rank = to.ranks)
   expect_equal(ncol(rank$d.lambda$rank.matrix), length(to.ranks))
-  expect_warning(rank.MBNMA(exponential, to.rank = c(1,5,6)))
-  expect_error(rank.MBNMA(exponential, to.rank = c("eletriptan", "sumatriptan")))
+  expect_warning(rank.mbnma(exponential, to.rank = c(1,5,6)))
+  expect_error(rank.mbnma(exponential, to.rank = c("eletriptan", "sumatriptan")))
 
   # Test classes
-  expect_error(rank.MBNMA(emax, level="class"))
-  expect_error(rank.MBNMA(emax.class, level="agent"))
-  rank <- rank.MBNMA(emax.class, level="class")
+  expect_error(rank.mbnma(emax, level="class"))
+  expect_error(rank.mbnma(emax.class, level="agent"))
+  rank <- rank.mbnma(emax.class, level="class")
   expect_equal(ncol(rank$D.emax$rank.matrix), 2)
   expect_error(print(rank), NA)
   expect_equal(class(summary(rank)[[1]]), "data.frame")
 
-  expect_error(rank.MBNMA(nonparam))
+  expect_error(rank.mbnma(nonparam))
 
 
   # Test params
-  rank <- rank.MBNMA(emax)
+  rank <- rank.mbnma(emax)
   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
-  rank <- rank.MBNMA(emax, params="d.ed50")
+  rank <- rank.mbnma(emax, params="d.ed50")
   expect_equal(names(rank), c("d.ed50"))
-  expect_error(rank.MBNMA(emax, params="test"))
+  expect_error(rank.mbnma(emax, params="test"))
   expect_error(print(rank), NA)
   expect_equal(class(summary(rank)[[1]]), "data.frame")
 
   # With no placebo data
-  rank <- rank.MBNMA(emax.noplac)
+  rank <- rank.mbnma(emax.noplac)
   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank[[2]]$summary), "data.frame")
@@ -100,10 +100,10 @@ testthat::test_that("rank.MBNMA functions correctly", {
 
 
 
-testthat::test_that("rank.MBNMA.predict functions correctly", {
+testthat::test_that("rank.mbnma.predict functions correctly", {
 
   pred <- predict(linear.run, E0 = 0.5)
-  rank <- rank.MBNMA.predict(pred)
+  rank <- rank.mbnma.predict(pred)
   expect_equal(names(rank), "Predictions")
   expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank$Predictions$summary), "data.frame")
@@ -114,7 +114,7 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
   pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
                   exact.doses=doses)
-  rank <- rank.MBNMA.predict(pred)
+  rank <- rank.mbnma.predict(pred)
   expect_equal(names(rank), "Predictions")
   expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
   expect_equal(class(rank$Predictions$summary), "data.frame")
@@ -124,8 +124,8 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
   expect_equal(nrow(rank$Predictions$summary), length(unlist(doses)))
 
   # Test direction
-  rank.up <- rank.MBNMA.predict(pred, direction=-1)
-  rank.down <- rank.MBNMA.predict(pred, direction=1)
+  rank.up <- rank.mbnma.predict(pred, direction=-1)
+  rank.down <- rank.mbnma.predict(pred, direction=1)
   expect_equal(rank.down$Predictions$summary$rank.param[rank.down$Predictions$summary$`50%`==min(rank.down$Predictions$summary$`50%`)],
                rank.up$Predictions$summary$rank.param[rank.up$Predictions$summary$`50%`==max(rank.up$Predictions$summary$`50%`)]
                )
@@ -134,11 +134,11 @@ testthat::test_that("rank.MBNMA.predict functions correctly", {
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
   pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
                   exact.doses=doses)
-  rank <- rank.MBNMA.predict(pred, rank.doses = list("eletriptan"=2, "rizatriptan"=2))
+  rank <- rank.mbnma.predict(pred, rank.doses = list("eletriptan"=2, "rizatriptan"=2))
   expect_equal(nrow(rank$Predictions$summary), 2)
 
-  expect_error(rank.MBNMA.predict(pred, rank.doses = list("badger"=2, "rizatriptan"=2)), "badger")
+  expect_error(rank.mbnma.predict(pred, rank.doses = list("badger"=2, "rizatriptan"=2)), "badger")
 
-  expect_error(rank.MBNMA.predict(pred, rank.doses = list("eletriptan"=c(2, 50, 100), "rizatriptan"=2)), "cannot be included in ranking: 50\\, 100")
+  expect_error(rank.mbnma.predict(pred, rank.doses = list("eletriptan"=c(2, 50, 100), "rizatriptan"=2)), "cannot be included in ranking: 50\\, 100")
 
 })

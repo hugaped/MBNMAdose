@@ -2,75 +2,79 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-16
 
-
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 #' Write MBNMA dose-response model JAGS code
 #'
 #' Writes JAGS code for a Bayesian time-course model for model-based network
 #' meta-analysis (MBNMA).
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
+#' @param cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+#' between relative effects. Must be kept as `"wishart"`
 #'
 #' @return A single long character string containing the JAGS model generated
 #'   based on the arguments passed to the function.
 #'
-#' @inherit MBNMA.run details
+#' @inherit mbnma.run details
 #'
 #' @examples
 #' # Write model code for a model with an exponential dose-response function,
 #' # relative effects modelled on the rate of growth/decay (beta.1) with a random
 #' # effects model
-#' model <- MBNMA.write(fun="exponential",
-#'   beta.1="rel",
-#'   method="random",
-#'   likelihood="binomial",
-#'   link="logit"
-#'   )
+#' model <- mbnma.write(fun="exponential",
+#'              beta.1="rel",
+#'              method="random",
+#'              likelihood="binomial",
+#'              link="logit"
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax (beta.1) with a random effects model,
 #' # a single parameter estimated for ED50 (beta.2) with a common effects model
-#' model <- MBNMA.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="common",
-#'   likelihood="normal",
-#'   link="identity"
-#'   )
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="common",
+#'              likelihood="normal",
+#'              link="identity"
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax (beta.1) and ED50 (beta.2).
 #' # Class effects modelled on ED50 with common effects
-#' model <- MBNMA.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="rel",
-#'   likelihood="normal",
-#'   link="identity",
-#'   class.effect=list("beta.2"="common")
-#'   )
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              likelihood="normal",
+#'              link="identity",
+#'              class.effect=list("beta.2"="common")
+#'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax (beta.1) and ED50 (beta.2) with a
 #' # random effects model that automatically models a correlation between
 #' # both parameters.
-#' model <- MBNMA.write(fun="emax",
-#'   beta.1="rel",
-#'   beta.2="rel",
-#'   method="random",
-#'   likelihood="normal",
-#'   link="identity",
-#'   )
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              method="random",
+#'              likelihood="normal",
+#'              link="identity",
+#'              )
 #' cat(model)
 #' @export
-MBNMA.write <- function(fun="linear", user.fun=NULL,
+mbnma.write <- function(fun="linear",
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL,
                         method="common",
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
                         class.effect=list(),
+                        user.fun=NULL,
                         likelihood="binomial", link=NULL
                         ) {
 
@@ -139,7 +143,7 @@ MBNMA.write <- function(fun="linear", user.fun=NULL,
 #' code can be added
 #'
 #' @return A character object of JAGS model code
-#'
+#' @noRd
 #' @examples
 #' model <- write.model()
 #' cat(model)
@@ -194,7 +198,7 @@ totresdev <- sum(resstudydev[])
 #'   points in MBNMA JAGS code. These points can therefore be used to insert
 #'   other lines of JAGS code into the correct section within the overall model
 #'   code.
-#'
+#' @noRd
 #' @examples
 #' inserts <- write.inserts()
 #'
@@ -229,13 +233,13 @@ write.inserts <- function() {
 #' component of an MBNMA dose-response model, returned as a single character
 #' string.
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
+#' @param effect Can take either `"rel"` for relative effects or `"abs"` for absolute (arm-pooled) effects
 #'
 #' @return A single character string containing JAGS model representing the
 #'   dose-response function component of an MBNMA dose-response model, generated
 #'   based on the arguments passed to the function.
-#'
-#' @inherit MBNMA.run details
+#' @noRd
 #'
 #' @examples
 #' # Write a linear dose-response function
@@ -298,16 +302,18 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
 
 
-#' Checks validity of arguments for MBNMA.write
+#' Checks validity of arguments for mbnma.write
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
+#' @inheritParams nma.run
+#' @inheritParams mbnma.write
 #'
-#' @return Returns an error if any conditions are not met. Otherwise returns NULL.
-#'
-#' @details Used to check if the arguments given to MBNMA.write are valid. The
+#' @return Returns an error if any conditions are not met. Otherwise returns `NULL`.
+#' @noRd
+#' @details Used to check if the arguments given to mbnma.write are valid. The
 #'   function will return informative errors if arguments are misspecified.
 #'
-write.check <- function(fun="linear", user.fun=NULL,
+write.check <- function(fun="linear",
                         beta.1=list(pool="rel", method="common"),
                         beta.2=NULL,
                         beta.3=NULL,
@@ -315,6 +321,7 @@ write.check <- function(fun="linear", user.fun=NULL,
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
+                        user.fun=NULL,
                         class.effect=list()) {
   parameters <- c("beta.1", "beta.2", "beta.3")
 
@@ -439,9 +446,9 @@ write.check <- function(fun="linear", user.fun=NULL,
 #' Adds sections of JAGS code for an MBNMA model that correspond to the
 #' likelihood
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
 #' @inheritParams write.beta
-#'
+#' @noRd
 #' @return A character object of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
@@ -503,6 +510,7 @@ resdev[i,k] <- 2*((lambda[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/lambda[i,k]))
 
 
 #' Generate objects required for write.beta and write.beta.ref
+#' @noRd
 write.beta.vars <- function() {
 
   delta.ref <- "\ndelta[i,1] <- 0\n"
@@ -636,7 +644,8 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 #'
 #' @param model A character object of JAGS MBNMA model code
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes delta
 #'   parameter components of the model
@@ -676,9 +685,9 @@ write.delta <- function(model,
 #' Adds sections of JAGS code for an MBNMA model that correspond to beta
 #' parameters
 #'
-#' @param model A character object of JAGS MBNMA model code
-#'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
+#' @inheritParams get.prior
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes beta
 #'   parameter components of the model
@@ -753,8 +762,6 @@ write.beta <- function(model,
 
 
 
-#' Adds sections of JAGS code for a nonparametric MBNMA model that correspond to beta
-#' parameters
 write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
   inserts <- write.inserts()
 
@@ -784,8 +791,10 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #'
 #' This uses a Wishart prior as default for modelling the correlation
 #'
-#' @inheritParams MBNMA.run
+#' @inheritParams mbnma.run
 #' @inheritParams write.beta
+#' @inheritParams mbnma.write
+#' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL,
                       method="random", class.effect=list()) {
@@ -840,6 +849,9 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 #' @param sufparams A numeric vector of dose-response/time-course parameter suffixes. It
 #'  should be the same length as the number of relative effects (i.e. the covariance
 #'  matrix size).
+#' @inheritParams mbnma.write
+#' @inheritParams get.prior
+#' @noRd
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
                           var.scale=NULL) {
 
@@ -944,7 +956,7 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 #'
 #' @return A character object of JAGS MBNMA model code that has had empty loops
 #'   removed from it
-#'
+#' @noRd
 write.remove.loops <- function(model) {
   # Remove empty loops
   empty.loops <- list(
@@ -972,33 +984,34 @@ write.remove.loops <- function(model) {
 
 #' Get current priors from JAGS model code
 #'
-#' Identical to `get.prior()` in MBNMAtime.
+#' Identical to `get.prior()` in `MBNMAtime` package.
 #' This function takes JAGS model presented as a string and identifies what
 #' prior values have been used for calculation.
 #'
 #' @inheritParams write.beta
+#' @param model A character object of JAGS MBNMA model code
 #'
 #' @return A character vector, each element of which is a line of JAGS code
 #'   corresponding to a prior in the JAGS code.
 #'
 #' @details Even if an MBNMA model that has not initialised successfully and
 #'   results have not been calculated, the JAGS model for it is saved in
-#'   MBNMA$model.arg$jagscode" and therefore priors can still be obtained.
+#'   `mbnma$model.arg$jagscode` and therefore priors can still be obtained.
 #'   This allows for priors to be changed even in failing models, which may help
-#'   solve issues with initialisation.
+#'   solve issues with compiling or updating.
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA
-#' result <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
+#' result <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #'
 #' # Obtain model prior values
 #' print(result$model.arg$priors)
 #'
-#' # Priors when using MBNMA.run with an exponential function
-#' result <- MBNMA.run(network, fun="exponential", beta.1="rel", method="random")
+#' # Priors when using mbnma.run with an exponential function
+#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 #' print(result$model.arg$priors)
 #'
 #' @export
@@ -1031,21 +1044,19 @@ get.prior <- function(model) {
 
 #' Replace original priors in an MBNMA model with new priors
 #'
-#' Identical to `get.prior()` in MBNMAtime.
+#' Identical to `get.prior()` in `MBNMAtime` package.
 #'
 #' This function takes new priors, as specified by the user, and adds them to
 #' the JAGS code from an MBNMA model. New priors replace old priors in the JAGS
 #' model.
 #'
 #' @inheritParams get.prior
-#' @param mbnma An S3 object of class `c("MBNMA", "rjags")` generated by running a
-#'   time-course MBNMA model.
-#' @param priors A named list of parameter values (without indices) and
-#'   replacement prior distribution values given as strings
-#'   **using distributions as specified in JAGS syntax**.
+#' @param mbnma An S3 object of class `c("mbnma", "rjags")` generated by running a
+#'   dose-response MBNMA model.
 #'
 #' @details Values in `priors` can include any JAGS functions/distributions
 #'   (e.g. censoring/truncation).
+#' @noRd
 #'
 #' @return A character object of JAGS MBNMA model code that includes the new
 #'   priors in place of original priors
@@ -1059,7 +1070,7 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "MBNMA", null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(model, len=1, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -1107,6 +1118,9 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
 
 #' Write E0 synthesis JAGS model
+#'
+#' @inheritParams predict.mbnma
+#' @noRd
 write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
   model <-
 "
@@ -1154,7 +1168,10 @@ m.mu ~ dnorm(0,0.0001)
 
 
 #' Write JAGS code for split NMA
-write.NMA <- function(method="common", likelihood="binomial", link="logit",
+#'
+#' @inheritParams nma.run
+#' @noRd
+write.nma <- function(method="common", likelihood="binomial", link="logit",
                       UME=FALSE) {
   model <- "
 model{ 			# Begin Model Code

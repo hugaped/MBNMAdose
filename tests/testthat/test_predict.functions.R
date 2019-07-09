@@ -1,29 +1,30 @@
 testthat::context("Testing predict.functions")
 
 ### Datasets ####
-network <- MBNMA.network(HF2PPITT)
-netgout <- MBNMA.network(GoutSUA_2wkCFB)
-netalog <- MBNMA.network(alog_pcfb)
-netpain <- MBNMA.network(osteopain_2wkabs)
+network <- mbnma.network(HF2PPITT)
+netgout <- mbnma.network(GoutSUA_2wkCFB)
+netalog <- mbnma.network(alog_pcfb)
+netpain <- mbnma.network(osteopain_2wkabs)
+netclass <- mbnma.network(osteopain_2wkabs)
 
 # Generate data without placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- MBNMA.network(noplac.df)
+net.noplac <- mbnma.network(noplac.df)
 
 
 #### Models ####
 
-linear <- MBNMA.run(netpain, fun="linear")
+linear <- mbnma.run(netpain, fun="linear")
 
-emax <- MBNMA.emax(network, emax="rel", ed50="rel", method="random")
-emax.gout <- MBNMA.emax(netgout, emax="rel", ed50="rel", method="random")
+emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax.gout <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random")
 
-emax.class <- MBNMA.emax(netclass, emax="rel", ed50="random", method="common",
+emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
                          class.effect=list(emax="random"))
 
-nonparam <- MBNMA.run(network, fun="nonparam.up")
+nonparam <- mbnma.run(network, fun="nonparam.up")
 
-emax.noplac <- MBNMA.emax(net.noplac, emax="rel", ed50="rel", method="random")
+emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random")
 
 
 
@@ -72,7 +73,7 @@ testthat::test_that("rescale.link functions correctly", {
 
 
 
-testthat::test_that("predict.MBNMA functions correctly", {
+testthat::test_that("predict.mbnma functions correctly", {
   #ref.df <- network$data.ab[network$data.ab$agent==1,]
 
   # Estimating E0

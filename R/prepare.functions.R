@@ -2,9 +2,12 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-07
 
-#' Create an MBNMA.network object
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose"))
+
+#' Create an mbnma.network object
 #'
-#' Creates an object of class `MBNMA.network`. Various MBNMA functions can subsequently be applied
+#' Creates an object of class `mbnma.network`. Various MBNMA functions can subsequently be applied
 #' to this object.
 #'
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
@@ -29,7 +32,7 @@
 #' Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
 #' be included.
 #'
-#' @return An object of class `MBNMA.network` which is a list containing:
+#' @return `mbnma.network()`: An object of `class("mbnma.network")` which is a list containing:
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
@@ -45,13 +48,13 @@
 #' print(HF2PPITT)
 #'
 #' # Define network
-#' network <- MBNMA.network(HF2PPITT, description="Example")
+#' network <- mbnma.network(HF2PPITT, description="Example")
 #'
 #' # Plot network
 #' plot(network)
 #'
 #' @export
-MBNMA.network <- function(data.ab, description="Network") {
+mbnma.network <- function(data.ab, description="Network") {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -59,7 +62,7 @@ MBNMA.network <- function(data.ab, description="Network") {
   checkmate::assertCharacter(description, len=1, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  MBNMA.validate.data(data.ab)
+  mbnma.validate.data(data.ab)
 
   # Add indices for arms and narms and change agent/class codes
   index.data <- add_index(data.ab)
@@ -67,7 +70,7 @@ MBNMA.network <- function(data.ab, description="Network") {
   network <- index.data
   network <- c(list("description" = description), network)
 
-  class(network) <- "MBNMA.network"
+  class(network) <- "mbnma.network"
   return(network)
 }
 
@@ -75,7 +78,9 @@ MBNMA.network <- function(data.ab, description="Network") {
 
 #' Validates that a dataset fulfills requirements for MBNMA
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
+#' @param single.arm A boolean object to indicate whether to allow single arm studies in the dataset (`TRUE`)
+#' or not (`FALSE`)
 #'
 #' @details Checks done within the validation:
 #' * Checks data.ab has required column names
@@ -90,7 +95,7 @@ MBNMA.network <- function(data.ab, description="Network") {
 #' * Checks that each study includes at least two treatments
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
-MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
+mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   # data.ab must have columns c("studyID", "agent", "dose", and either "y" and "se" or "r" and "N")
   # optional column of class
 
@@ -98,7 +103,7 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   var_norm <- c("y", "se")
   var_bin <- c("r", "N")
   var_pois <- c("r", "E")
-  data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
+  data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$agent, data.ab$dose)
 
   # Check data.ab has required column names
   msg <- "Required variable names are: 'studyID', 'agent', 'dose' and either `y` and `se` for data with a normal likelihood, `r` and `N` for data with a binomial likelihood, or `r` and `E` for data with a poisson likelihood"
@@ -194,7 +199,7 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
   if (single.arm==FALSE) {
     data.ab <- data.ab %>%
       dplyr::group_by(studyID) %>%
-      dplyr::mutate(narms = n())
+      dplyr::mutate(narms = dplyr::n())
   }
 
   singlearm.studyID <- vector()
@@ -266,10 +271,10 @@ MBNMA.validate.data <- function(data.ab, single.arm=FALSE) {
 
 #' Add arm indices and agent identifiers to a dataset
 #'
-#' Adds arm (`arms`, `narms`) indices to a dataset and adds numeric identifiers for
+#' Adds arm indices (`arms`, `narms`) to a dataset and adds numeric identifiers for
 #' agent and class (if included in the data).
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
 #'
 #' @return A data frame similar to `data.ab` but with additional columns:
 #' * `arm` Arm identifiers coded for each study
@@ -297,7 +302,7 @@ add_index <- function(data.ab) {
     # Generate treatment labels
     treatments.df <- recoded[["data.ab"]]
     treatments.df$agent <- factor(treatments.df$agent, labels=agents)
-    treatments.df <- dplyr::arrange(treatments.df, agent, dose)
+    treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent, treatments.df$dose)
     treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
 
     # Generate treatment variable
@@ -319,11 +324,11 @@ add_index <- function(data.ab) {
   # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
     dplyr::group_by(studyID) %>%
-    dplyr::mutate(arm = sequence(n()))
+    dplyr::mutate(arm = sequence(dplyr::n()))
 
   data.ab <- data.ab %>%
     dplyr::group_by(studyID) %>%
-    dplyr::mutate(narm=n())
+    dplyr::mutate(narm=dplyr::n())
 
 
   # Reorder columns in data.ab
@@ -371,11 +376,14 @@ add_index <- function(data.ab) {
 #' Assigns agent or class variables numeric identifiers
 #'
 #' @param level Can take either `"agent"` or `"class"`
+#' @inheritParams add_index
 #'
 #' @details Also relabels the agent for any arms in which dose = 0 to "Placebo_0"
 #'
 #' @return A list containing a data frame with recoded agent/class identifiers and
 #'   a character vector of original agent/class names
+#'
+#' @noRd
 recode.agent <- function(data.ab, level="agent") {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
@@ -461,8 +469,8 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' Converts MBNMA data frame to a list for use in JAGS model
 #'
-#' @inheritParams MBNMA.run
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.run
+#' @inheritParams mbnma.network
 #' @param class A boolean object indicating whether or not `data.ab` contains
 #'   information on different classes of treatments
 #' @param level Can take either `"agent"` to indicate that data should be at the agent-
@@ -494,7 +502,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 #'
@@ -502,13 +510,13 @@ recode.agent <- function(data.ab, level="agent") {
 #' # Get JAGS data with class
 #' df <- HF2PPITT
 #' df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-#' netclass <- MBNMA.network(df)
+#' netclass <- mbnma.network(df)
 #'
 #' jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 #'
 #'
 #' # Get JAGS data at the treatment level for Network Meta-Analysis
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
@@ -559,9 +567,9 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     stop(msg)
   }
 
-  df <- dplyr::arrange(df, dplyr::desc(narm), studyID, arm)
+  df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
 
-  df <- transform(df,studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
+  df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
   for (i in seq_along(datavars)) {
     assign(datavars[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
@@ -598,7 +606,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     Nclass <- max(df$class)
 
     codes <- data.frame(df$agent, df$class)
-    codes <- dplyr::arrange(codes, df.agent)
+    codes <- dplyr::arrange(codes, codes$df.agent)
     classcode <- unique(codes)$df.class
 
     datalist[["Nclass"]] <- Nclass
@@ -651,7 +659,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' `t1` and `t2` indicate the treatment codes that make up the comparison. `nr` indicates the number
 #' of times the given comparison is made within the network.
 #'
-#' If there is only a single observation for each study within the dataset (i.e. as for standard
+#' If there is only a single follow-up observation for each study within the dataset (i.e. as for standard
 #' network meta-analysis) `nr` will represent the number of studies that compare treatments `t1` and
 #' `t2`.
 #'
@@ -665,15 +673,15 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #'   )
 #'
 #' # Identify unique comparisons within the data
-#' MBNMA.comparisons(data)
+#' mbnma.comparisons(data)
 #'
 #'
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT) # Adds treatment identifiers
-#' MBNMA.comparisons(network$data.ab)
+#' network <- mbnma.network(HF2PPITT) # Adds treatment identifiers
+#' mbnma.comparisons(network$data.ab)
 #'
 #' @export
-MBNMA.comparisons <- function(data)
+mbnma.comparisons <- function(data)
 {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -682,7 +690,7 @@ MBNMA.comparisons <- function(data)
   #checkmate::assertInt(doselink, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  data <- dplyr::arrange(data, studyID, treatment)
+  data <- dplyr::arrange(data, data$studyID, data$treatment)
 
   t1 <- vector()
   t2 <- vector()
@@ -710,7 +718,7 @@ MBNMA.comparisons <- function(data)
 
   comparisons <- comparisons %>%
     dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr=n())
+    dplyr::mutate(nr=dplyr::n())
 
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
@@ -729,15 +737,16 @@ MBNMA.comparisons <- function(data)
 #'
 #' @param connect.dose A boolean object to indicate whether treatments should be
 #' kept in the network if they connect via the simplest possible dose-response
-#' relationship (`TRUE`) or not (`FALSE`)
-#' @inheritParams MBNMA.run
+#' relationship (`TRUE`) or not (`FALSE`). Simplest possible dose-response relationship
+#' is any function with a single dose-response parameter (e.g. linear, exponential)
+#' @inheritParams mbnma.run
 #'
 #' @return A list containing a single row per arm data frame containing only studies that are
 #' connected to the network reference treatment, and a character vector of treatment labels
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #' drops <- drop.disconnected(network)
 #'
 #' # No studies have been dropped since network is fully connected
@@ -746,7 +755,7 @@ MBNMA.comparisons <- function(data)
 #'
 #' # Make data with no placebo
 #' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-#' net.noplac <- MBNMA.network(noplac.df)
+#' net.noplac <- mbnma.network(noplac.df)
 #'
 #' # Studies are dropped as some only connect via the dose-response function
 #' drops <- drop.disconnected(net.noplac, connect.dose=FALSE)
@@ -761,7 +770,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertLogical(connect.dose, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -771,9 +780,9 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
   trt.labs <- network$treatments
   #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-  png("NUL")
-  discon <- suppressMessages(suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect", doselink=doselink))))
-  dev.off()
+  grDevices::png("NUL")
+  discon <- suppressMessages(suppressWarnings(check.network(graphics::plot(network, level="treatment", v.color = "connect", doselink=doselink))))
+  grDevices::dev.off()
 
   data.ab <- network$data.ab
 
@@ -803,6 +812,9 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
 
 
 #' Replace doses with indices of doses in order
+#'
+#' @inheritParams add_index
+#' @noRd
 index.dose <- function(data.ab) {
   agents <- sort(unique(data.ab$agent))
   maxdose <- vector()
@@ -829,6 +841,11 @@ index.dose <- function(data.ab) {
 #' for the relationship between placebo and other agents via the dose-response
 #' relationship.
 #'
+#' @param data.ab A data frame stored in `mbnma.network` object (`mbnma.network$data.ab`)
+#' @param level A character that can take either `"treatment"` or `"agent"` to indicate the level of the
+#' network for which to identify dose-response
+#' @inheritParams mbnma.network
+#'
 DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   t1 <- vector()
   t2 <- vector()
@@ -838,7 +855,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
     subset <- data.ab[data.ab$studyID==studies[i],]
     subset <- subset %>%
       dplyr::group_by(agent) %>%
-      dplyr::mutate(nagent=n())
+      dplyr::mutate(nagent=dplyr::n())
 
     if (any(subset$nagent>=doselink)) {
       # temp <- subset[subset$nagent>=doselink,]
@@ -857,7 +874,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 
   comparisons <- comparisons %>%
     dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr=n())
+    dplyr::mutate(nr=dplyr::n())
 
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
@@ -872,16 +889,17 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 #' @param ref A positive integer indicating the *treatment* code of the new reference
 #' treatment to use
 #'
-#' @return An object of `class("MBNMA.network")` that has a new reference treatment.
+#' @return An object of `class("mbnma.network")` that has a new reference treatment.
 #' The new object is only really used as an intermediate in other package functions
 #' and it should not be used separately, as some characteristics of the dataset may
 #' not be properly encoded.
 #'
-#' @inheritParams MBNMA.network
+#' @inheritParams mbnma.network
+#' @noRd
 change.netref <- function(network, ref=1) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertIntegerish(ref, len=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -900,7 +918,7 @@ change.netref <- function(network, ref=1) {
 
   data.ab$treatment <- trtcodes
   data.ab$agent <- NULL
-  data.ab <- dplyr::arrange(data.ab, studyID, treatment)
+  data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
   data.ab <- add_index(data.ab)
 
   network$data.ab <- data.ab$data.ab

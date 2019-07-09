@@ -7,11 +7,12 @@
 drop.disconnected(network, connect.dose = FALSE)
 }
 \arguments{
-\item{network}{An object of class \code{MBNMA.network}.}
+\item{network}{An object of class \code{mbnma.network}.}
 
 \item{connect.dose}{A boolean object to indicate whether treatments should be
 kept in the network if they connect via the simplest possible dose-response
-relationship (\code{TRUE}) or not (\code{FALSE})}
+relationship (\code{TRUE}) or not (\code{FALSE}). Simplest possible dose-response relationship
+is any function with a single dose-response parameter (e.g. linear, exponential)}
 }
 \value{
 A list containing a single row per arm data frame containing only studies that are
@@ -22,7 +23,7 @@ Drop studies that are not connected to the network reference treatment
 }
 \examples{
 # Using the triptans headache dataset
-network <- MBNMA.network(HF2PPITT)
+network <- mbnma.network(HF2PPITT)
 drops <- drop.disconnected(network)
 
 # No studies have been dropped since network is fully connected
@@ -31,7 +32,7 @@ length(unique(network$data.ab$studyID))==length(unique(drops$data.ab$studyID))
 
 # Make data with no placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- MBNMA.network(noplac.df)
+net.noplac <- mbnma.network(noplac.df)
 
 # Studies are dropped as some only connect via the dose-response function
 drops <- drop.disconnected(net.noplac, connect.dose=FALSE)

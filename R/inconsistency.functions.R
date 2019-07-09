@@ -2,6 +2,8 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-30
 
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 #' Node-splitting model for testing consistency at the treatment level
 #'
@@ -16,18 +18,16 @@
 #' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
 #' The matrix must have two columns indicating each treatment for each comparison. Values can
 #' either be character (corresponding to the treatment names given in `network`) or
-#' numerical (corresponding to treatment codes within the `network` - note that these
-#' may change if `drop.discon=TRUE`).
-#' @param ... Arguments to be sent to `R2jags`
-#' @inheritParams MBNMA.run
-#' @inheritParams MBNMA.network
+#' numeric (corresponding to treatment codes within the `network` - note that these
+#' may change if `drop.discon = TRUE`).
+#' @inheritParams mbnma.run
 #'
 #' @examples
 #' # Using the triptans data
-#' network <- MBNMA.network(HF2PPITT)
+#' network <- mbnma.network(HF2PPITT)
 #'
-#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
-#'   method="common")
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="common")
 #'
 #'
 #' #### To perform nodesplit on selected comparisons ####
@@ -35,12 +35,21 @@
 #' # Check for closed loops of treatments with independent evidence sources
 #' loops <- inconsistency.loops(network$data.ab)
 #'
-#' split <- NMA.nodesplit(network, likelihood = "binomial", link="logit",
-#'   method="random", comparisons=rbind(c(6,23), c(6,12)))
+#' # This...
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
+#' #...is the same as...
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c(2, 5)))
+#'
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
-#' split <- NMA.nodesplit(net.noplac, likelihood = "binomial", link="logit",
-#'   method="random", drop.discon=TRUE)
+#' # Generate data without placebo
+#' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+#' net.noplac <- mbnma.network(noplac.df)
+#'
+#' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
+#'              method="random", drop.discon=TRUE)
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities
@@ -50,13 +59,13 @@
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
 #' @export
-NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
+nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
                             drop.discon=FALSE, comparisons=NULL,
                             ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(network, "MBNMA.network", add=argcheck)
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   #checkmate::assertDataFrame(comparisons, null.ok=TRUE, add=argcheck)
@@ -122,10 +131,10 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 
 
   ##### Run NMA #####
-  nma.net <- suppressMessages(MBNMA.network(data.ab))
-  nma.jags <- NMA.run(nma.net, method=method,
+  nma.net <- suppressMessages(mbnma.network(data.ab))
+  nma.jags <- nma.run(nma.net, method=method,
                       likelihood=likelihood, link=link,
-                      warn.rhat=FALSE, drop.discon = FALSE)#, ...)
+                      warn.rhat=FALSE, drop.discon = FALSE, ...)
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
@@ -165,7 +174,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     # stoploop <- FALSE
     # while(stoploop==FALSE) {
     #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
-    #   temp.net <- MBNMA.network(temp)
+    #   temp.net <- mbnma.network(temp)
     #   nt <- length(temp.net$treatments)
     #   if (nt==length(nma.net$treatments)) {
     #     g <- plot(temp.net, doseparam=1000)
@@ -183,17 +192,17 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 
 
     # Run NMA
-    ind.net <- suppressMessages(MBNMA.network(ind.df))
-    ind.jags <- NMA.run(ind.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon = FALSE)#, ...)
+    ind.net <- suppressMessages(mbnma.network(ind.df))
+    ind.jags <- nma.run(ind.net, method=method, likelihood=likelihood, link=link,
+                        warn.rhat=FALSE, drop.discon = FALSE, ...)
     ind.res <- ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[2]] -
       ind.jags$jagsresult$BUGSoutput$sims.list$d[,comp[1]]
 
 
     ##### Estimate Direct #####
-    dir.net <- suppressMessages(change.netref(MBNMA.network(data.ab), ref=comp[1]))
-    dir.jags <- NMA.run(dir.net, method=method, likelihood=likelihood, link=link,
-                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE)#, ...)
+    dir.net <- suppressMessages(change.netref(mbnma.network(data.ab), ref=comp[1]))
+    dir.jags <- nma.run(dir.net, method=method, likelihood=likelihood, link=link,
+                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
     dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
       ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
     ]
@@ -207,10 +216,10 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     p.values <- overlap$OV
 
     # Quantiles
-    quantile_dif <- quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
-    quantile_dir <- quantile(dir.res, c(0.025, 0.5, 0.975))
-    quantile_ind <- quantile(ind.res, c(0.025, 0.5, 0.975))
-    quantile_nma <- quantile(nma.res, c(0.025, 0.5, 0.975))
+    quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
+    quantile_dir <- stats::quantile(dir.res, c(0.025, 0.5, 0.975))
+    quantile_ind <- stats::quantile(ind.res, c(0.025, 0.5, 0.975))
+    quantile_nma <- stats::quantile(nma.res, c(0.025, 0.5, 0.975))
     quantiles <- list("difference" = quantile_dif, "nma"=quantile_nma,
                       "direct"=quantile_dir, "indirect"=quantile_ind)
 
@@ -225,7 +234,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
 
     gg <-
-      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=source, y=med, ymin=l95, ymax=u95)) +
+      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
       ggplot2::geom_pointrange() +
       ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
       ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
@@ -241,7 +250,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     linetypes <- c("solid", "dash")
     levels(molten$Estimate) <- c("Indirect", "Direct")
 
-    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=value, linetype=Estimate, fill=Estimate)) +
+    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab(title) +
       ggplot2::ylab("Posterior density") +
@@ -261,7 +270,7 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       nodesplit
   }
 
-  class(nodesplit.result) <- "NMA.nodesplit"
+  class(nodesplit.result) <- "nma.nodesplit"
 
   return(nodesplit.result)
 }
@@ -278,9 +287,15 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 #'
 #' @param data A data frame containing variables `studyID` and `treatment` (as
-#'   numeric codes) that indicate which treatments are used in which studies.
+#'   numeric codes) that indicate which treatments are used in which studies. If `checkindirect = TRUE`
+#'   then variables `agent` and `dose` are also required.
+#' @param checkindirect A boolean object to indicate whether or not to perform an additional
+#'   check to ensure network remains connected even after dropping direct evidence on a comparison.
+#'   Default is `TRUE` and should be kept as `TRUE` if working with dose-response data, though this requires
+#'   further computational iterations to confirm. If set to `FALSE`, additional comparisons may be identified, though computation will be much more
+#'   rapid.
 #'
-#' @details Similar to \code{\link[gemtc]{mtc.nodesplit.comparisons}} but uses a fixed
+#' @details Similar to [gemtc::mtc.nodesplit.comparisons()] but uses a fixed
 #'   reference treatment and therefore identifies fewer loops in which to test for
 #'   inconsistency. Heterogeneity can also be parameterised as inconsistency and
 #'   so testing for inconsistency in additional loops whilst changing the
@@ -296,23 +311,33 @@ NMA.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' \insertAllCited{}
 #'
 #' @examples
-#' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-#'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-#'   )
-#'
 #' # Identify comparisons informed by direct and indirect evidence
-#' inconsistency.loops(data)
+#' #in triptans dataset
+#' network <- mbnma.network(HF2PPITT)
+#' inconsistency.loops(network$data.ab)
+#'
+#'
+#' # Do not perform additional connectivity check on data
+#' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
+#'             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
+#'             )
+#' inconsistency.loops(data, checkindirect=FALSE)
 #' @export
-inconsistency.loops <- function(data)
+inconsistency.loops <- function(data, checkindirect=TRUE)
 {
   # Assert checks
   checkmate::assertDataFrame(data)
+  checkmate::assertLogical(checkindirect)
 
   treatments <- factor(unique(data$treatment))
 
   data <- data %>%
     dplyr::group_by(studyID) %>%
-    dplyr::mutate(design=list(as.numeric(treatment)))
+    dplyr::mutate(design=list(as.numeric(data$treatment)))
+
+  data <- data %>%
+    dplyr::group_by(studyID) %>%
+    dplyr::mutate(narm=dplyr::n())
 
 
   comparisons <- ref.comparisons(data)
@@ -322,9 +347,9 @@ inconsistency.loops <- function(data)
   paths <- vector()
   loops <- vector()
 
-  pb <- txtProgressBar(0, nrow(comparisons), style = 3)
+  pb <- utils::txtProgressBar(0, nrow(comparisons), style = 3)
   for (i in 1:nrow(comparisons)) {
-    setTxtProgressBar(pb, i)
+    utils::setTxtProgressBar(pb, i)
 
     drops <- comparisons[-i,]
 
@@ -343,10 +368,13 @@ inconsistency.loops <- function(data)
 
       # Check if dropping 2-arm studies with both treatments and then either arm from multi-arm
       #would lead to disconnected network
-      check <- suppressMessages(suppressWarnings(
-        check.indirect.drops(data, comp=c(as.numeric(comparisons[i,1]),
-                                       as.numeric(comparisons[i,2])))
-      ))
+      check <- 1
+      if (checkindirect==TRUE) {
+        check <- suppressMessages(suppressWarnings(
+          check.indirect.drops(data, comp=c(as.numeric(comparisons[i,1]),
+                                            as.numeric(comparisons[i,2])))
+        ))
+      }
 
       if (!is.null(check)) {
         # Identify the path made by the indirect evidence
@@ -399,13 +427,14 @@ inconsistency.loops <- function(data)
 #'   of studies that compare treatments `t1` and `t2`.
 #'
 #'   If there are multiple observations for each study within the dataset (as in
-#'   MBNMAtime) `nr` will represent the number of time points in the
+#'   `MBNMAtime`) `nr` will represent the number of time points in the
 #'   dataset in which treatments `t1` and `t2` are compared.
 #'
+#' @noRd
 #' @examples
 #' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-#'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-#'   )
+#'             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
+#'             )
 #'
 #' # Identify comparisons informed by direct and indirect evidence
 #' ref.comparisons(data)
@@ -430,7 +459,7 @@ ref.comparisons <- function(data)
   #   stop("`treatment` must be either factor or numeric")
   # }
 
-  data <- dplyr::arrange(data, studyID, treatment)
+  data <- dplyr::arrange(data, data$studyID, data$treatment)
 
   t1 <- vector()
   t2 <- vector()
@@ -447,7 +476,7 @@ ref.comparisons <- function(data)
 
   comparisons <- data.frame(t1 = t1, t2 = t2)
   comparisons <- comparisons %>% dplyr::group_by(t1, t2) %>%
-    dplyr::mutate(nr = n())
+    dplyr::mutate(nr = dplyr::n())
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
 
@@ -464,7 +493,15 @@ ref.comparisons <- function(data)
 #'
 #' Drops arms in a way which preserves connectivity and equally removes
 #' data from each treatment in a nodesplit comparison (so as to maximise precision)
-drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
+#'
+#' @param ind.df A data frame in long format (one arm per row) from which to drop treatments
+#' @param drops A vector of study identifiers from which to drop treatments
+#' @param comp A numeric vector of length 2 that contains treatment codes corresponding to the comparison
+#' for node-splitting
+#' @param start Can take either `0` or `1` to indicate whether to drop the treatment
+#' in `comp[1]` (`0`) or `comp[2]` (`1`)
+#' @noRd
+drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
   #print(index)
   for (i in seq_along(drops)) {
@@ -475,7 +512,7 @@ drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
     temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
                           ind.df$treatment==comp[index+1]),]
 
-    temp.net <- suppressMessages(plot(MBNMA.network(temp.df), doseparam = 1000))
+    temp.net <- suppressMessages(graphics::plot(mbnma.network(temp.df), doseparam = 1000))
 
     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
                                                      to=comp[index+1])[
@@ -502,6 +539,14 @@ drop.comp <- function(ind.df, drops, comp, start=rbinom(1,1,0.5)) {
 
 #' Ensures indirect evidence can be estimated for comparisons identified
 #' within inconsistency.loops
+#'
+#' Requires repeatedly compiling `mbnma.network` objects to identify whether
+#' nodes remain connected by indirect evidence.
+#'
+#' @param A data frame containing arm data (one arm per row)
+#' @param comp The comparison in which the function will check that both treatments are connected by studies
+#' in `data`
+#' @noRd
 check.indirect.drops <- function(data=data, comp) {
 
   # Drop studies/comparisons that compare comps
@@ -527,10 +572,10 @@ check.indirect.drops <- function(data=data, comp) {
   count <- 1
   while(stoploop==FALSE) {
     temp <- drop.comp(data, drops=dropcomp, comp=comp)
-    temp.net <- MBNMA.network(temp)
+    temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(data$treatment))) {
-      g <- plot(temp.net, doseparam=1000)
+      g <- graphics::plot(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])

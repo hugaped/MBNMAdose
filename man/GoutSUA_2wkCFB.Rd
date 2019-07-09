@@ -20,7 +20,7 @@ GoutSUA_2wkCFB
 }
 \description{
 A dataset from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in
-patients with gout \strong{\link{not published prevously}}. The outcome is continuous, and aggregate data responses
+patients with gout \strong{(not published prevously)}. The outcome is continuous, and aggregate data responses
 correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10
 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA)
 arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total

@@ -38,7 +38,7 @@ agents/classes in the returned data frame will be numbered and recoded to enforc
 numbering (a warning will be shown stating this).
 }
 \description{
-Adds arm (\code{arms}, \code{narms}) indices to a dataset and adds numeric identifiers for
+Adds arm indices (\code{arms}, \code{narms}) to a dataset and adds numeric identifiers for
 agent and class (if included in the data).
 }
 \examples{

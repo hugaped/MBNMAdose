@@ -4,11 +4,18 @@
 \alias{inconsistency.loops}
 \title{Identify comparisons in loops that fulfill criteria for node-splitting}
 \usage{
-inconsistency.loops(data)
+inconsistency.loops(data, checkindirect = TRUE)
 }
 \arguments{
 \item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as
-numeric codes) that indicate which treatments are used in which studies.}
+numeric codes) that indicate which treatments are used in which studies. If \code{checkindirect = TRUE}
+then variables \code{agent} and \code{dose} are also required.}
+
+\item{checkindirect}{A boolean object to indicate whether or not to perform an additional
+check to ensure network remains connected even after dropping direct evidence on a comparison.
+Default is \code{TRUE} and should be kept as \code{TRUE} if working with dose-response data, though this requires
+further computational iterations to confirm. If set to \code{FALSE}, additional comparisons may be identified, though computation will be much more
+rapid.}
 }
 \value{
 A data frame of comparisons that are informed by direct and indirect
@@ -22,7 +29,7 @@ independent sources, which therefore fulfill the criteria for testing for
 inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 }
 \details{
-Similar to \code{\link[gemtc]{mtc.nodesplit.comparisons}} but uses a fixed
+Similar to \code{\link[gemtc:mtc.nodesplit.comparisons]{gemtc::mtc.nodesplit.comparisons()}} but uses a fixed
 reference treatment and therefore identifies fewer loops in which to test for
 inconsistency. Heterogeneity can also be parameterised as inconsistency and
 so testing for inconsistency in additional loops whilst changing the
@@ -30,12 +37,17 @@ reference treatment would also be identifying heterogeneity. Depends on
 \code{\link[igraph]{igraph}}.
 }
 \examples{
-data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
-  treatment=c(1,2,1,3,2,3,3,4,1,2,4)
-  )
-
 # Identify comparisons informed by direct and indirect evidence
-inconsistency.loops(data)
+#in triptans dataset
+network <- mbnma.network(HF2PPITT)
+inconsistency.loops(network$data.ab)
+
+
+# Do not perform additional connectivity check on data
+data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
+            treatment=c(1,2,1,3,2,3,3,4,1,2,4)
+            )
+inconsistency.loops(data, checkindirect=FALSE)
 }
 \references{
 \insertAllCited{}
