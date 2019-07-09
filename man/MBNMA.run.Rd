@@ -9,7 +9,9 @@ mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = NULL,
   cor = TRUE, var.scale = NULL, user.fun = NULL,
   parameters.to.save = NULL, pd = "pv", parallel = TRUE,
   likelihood = NULL, link = NULL, priors = NULL, model.file = NULL,
-  arg.params = NULL, ...)
+  n.iter = 10000, n.chains = 3, n.burnin = floor(n.iter/2),
+  n.thin = max(1, floor((n.iter - n.burnin)/1000)), arg.params = NULL,
+  ...)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
@@ -84,6 +86,17 @@ replacement prior distribution values given as strings
 \item{model.file}{A JAGS model written as a character object that can be used
 to overwrite the JAGS model that is automatically written based on the
 specified options.}
+
+\item{n.iter}{number of total iterations per chain (including burn in; default: 15000)}
+
+\item{n.chains}{number of Markov chains (default: 3)}
+
+\item{n.burnin}{length of burn in, i.e. number of iterations to discard at the
+beginning. Default is `n.iter/2``, that is, discarding the first half of the
+simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.}
+
+\item{n.thin}{thinning rate. Must be a positive integer. Set \code{n.thin > 1`` to save memory and computation time if n.iter is large. Default is }max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
+simulations.}
 
 \item{arg.params}{Contains a list of arguments sent to \code{mbnma.run()} by dose-response
 specific wrapper functions}

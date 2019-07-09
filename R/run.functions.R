@@ -71,6 +71,15 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   use is automatically calculated.
 #' @param arg.params Contains a list of arguments sent to `mbnma.run()` by dose-response
 #' specific wrapper functions
+#' @param n.iter number of total iterations per chain (including burn in; default: 15000)
+#' @param n.thin thinning rate. Must be a positive integer. Set `n.thin > 1`` to save memory
+#' and computation time if n.iter is large. Default is
+#' `max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
+#' simulations.
+#' @param n.chains number of Markov chains (default: 3)
+#' @param n.burnin length of burn in, i.e. number of iterations to discard at the
+#' beginning. Default is `n.iter/2``, that is, discarding the first half of the
+#' simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.
 #' @param ... Arguments to be sent to R2jags.
 #'
 #'
@@ -262,6 +271,8 @@ mbnma.run <- function(network,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
                       model.file=NULL,
+                      n.iter=10000, n.chains=3,
+                      n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       arg.params=NULL, ...
 ) {
 
@@ -396,6 +407,10 @@ mbnma.run <- function(network,
                             class=class,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link,
+                            n.iter=n.iter,
+                            n.thin=n.thin,
+                            n.chains=n.chains,
+                            n.burnin=n.burnin,
                             ...)
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
