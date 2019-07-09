@@ -6,6 +6,7 @@ cache: packages
 os:
   - linux
   - osx
+install: travis_wait 20 mvn install
 before_install:
   - sudo add-apt-repository ppa:marutter/rrutter -y
   - sudo apt-get update
