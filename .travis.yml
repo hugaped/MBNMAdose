@@ -6,7 +6,6 @@ cache: packages
 os:
   - linux
   - osx
-  - windows
 before_install:
   - sudo add-apt-repository ppa:marutter/rrutter -y
   - sudo apt-get update
