@@ -50,8 +50,8 @@ plot(emax, params=c("d.emax"))
 #### Forest plots including class effects ####
 # Generate some classes for the data
 class.df <- HF2PPITT
-class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
-class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
+class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
+class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 netclass <- mbnma.network(class.df)
 emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
             class.effect=list("ed50"="common"))

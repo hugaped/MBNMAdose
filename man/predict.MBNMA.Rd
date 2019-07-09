@@ -105,9 +105,9 @@ emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 # Data is binomial so we specify E0 on the natural scale as a probability
 pred <- predict(emax, E0 = 0.2)
 
-# Specifying non-sensical values will return an error
+# Specifying non-sensical values will return a warning or error
 #pred <- predict(emax, E0 = -10)
-### ERROR ###
+### WARNING ###
 
 #### Predict responses using stochastic value for E0 ####
 # Data is binomial so we might want to draw from a beta distribution

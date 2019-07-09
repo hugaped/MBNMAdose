@@ -1,7 +1,7 @@
 Package: MBNMAdose
 Type: Package
 Title: Run dose-response MBNMA models
-Version: 0.2.1.9004
+Version: 0.2.1.9005
 Date: 2019-04-07
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
   person("David", "Mawdsley", role = c("ctb")),

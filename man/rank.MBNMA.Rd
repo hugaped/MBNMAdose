@@ -56,8 +56,8 @@ summary(ranks)
 #### Ranking by class ####
 # Generate some classes for the data
 class.df <- HF2PPITT
-class.df$class <- ifelse(df$agent=="placebo", "placebo", "active1")
-class.df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
+class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
+class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 netclass <- mbnma.network(class.df)
 emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
             class.effect=list("ed50"="common"))
@@ -67,10 +67,10 @@ ranks <- rank(emax, level="class", direction=-1)
 print(ranks)
 
 # Print and generate summary data frame for `mbnma.rank` object
-summary(rank)
-print(rank)
+summary(ranks)
+print(ranks)
 
 # Plot `mbnma.rank` object
-plot(rank)
+plot(ranks)
 
 }
