@@ -57,6 +57,7 @@ by including the original \code{mbnma.network} object used to estimate the model
 argument.
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -89,6 +90,6 @@ plot(pred, agent.labs=c("Elet", "Suma", "Frov", "Almo", "Zolmi",
 # then the plotted responses are less smooth and can be misleading
 pred <- predict(emax, E0 = 0.5, n.doses=3)
 plot(pred)
-
+}
 
 }

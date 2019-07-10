@@ -9,7 +9,11 @@
 
 ## R CMD check results
 
-There were no ERRORs, WARNINGs or NOTEs
+There was 1 NOTE:
+"Found the following (possibly) invalid URLs: https://doi.org/10.1093/biostatistics/kxm049"
+- URL has been checked and is valid
+
+There were no ERRORs or WARNINGs
 
 First submission of the package
 

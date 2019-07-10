@@ -161,6 +161,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -255,6 +256,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' # Plot forest plot of results
 #' plot(result)
+#' }
 #'
 #' @export
 mbnma.run <- function(network,
@@ -858,6 +860,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -916,7 +919,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #' # Plot forest plot of results
 #' plot(linear)
-#'
+#' }
 #'
 #' @export
 mbnma.linear <- function(network,
@@ -974,6 +977,7 @@ mbnma.linear <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1032,7 +1036,7 @@ mbnma.linear <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(exponential)
-#'
+#' }
 #'
 #' @export
 mbnma.exponential <- function(network,
@@ -1102,6 +1106,7 @@ mbnma.exponential <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1178,6 +1183,7 @@ mbnma.exponential <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(emax)
+#' }
 #'
 #' @export
 mbnma.emax <- function(network,
@@ -1242,6 +1248,7 @@ mbnma.emax <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1325,6 +1332,7 @@ mbnma.emax <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(emax.hill)
+#' }
 #'
 #' @export
 mbnma.emax.hill <- function(network,
@@ -1551,6 +1559,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' arm of the study
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1563,6 +1572,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' mbnma.update(result, param="rhat") # monitor rhat
 #'
 #' mbnma.update(result, param="delta") # monitor delta
+#' }
 #'
 #' @export
 mbnma.update <- function(mbnma, param="theta") {

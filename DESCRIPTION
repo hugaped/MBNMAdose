@@ -3,7 +3,7 @@ Type: Package
 Title: Run dose-response MBNMA models
 Version: 0.2.1
 Language: en-GB
-Date: 2019-04-07
+Date: 2019-07-10
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
   person("David", "Mawdsley", role = c("ctb")),
   person("Nicky", "Welton", role = c("ctb", "rev")),

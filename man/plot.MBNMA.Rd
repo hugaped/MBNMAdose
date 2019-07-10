@@ -35,6 +35,7 @@ different dose-response parameters. Results are plotted on the link scale.
 Generates a forest plot for dose-response parameters.
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -62,5 +63,6 @@ plot(emax, class.labs=c("Placebo", "Other Active", "Eletriptan"))
 # Since "Placebo" is included in the network, it must be included in labels
 # Failure to do so will cause an error
 ## ERROR ## plot(emax, class.labs=c("Other Active", "Eletriptan"))
+}
 
 }

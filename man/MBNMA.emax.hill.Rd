@@ -139,6 +139,7 @@ specific dose-response parameters (e.g. Hill parameters in Emax functions) to a 
 }
 
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -222,6 +223,7 @@ summary(emax.hill)
 
 # Plot forest plot of results
 plot(emax.hill)
+}
 
 }
 \references{

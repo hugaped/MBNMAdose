@@ -356,6 +356,7 @@ genmaxcols <- function() {
 #' different dose-response parameters. Results are plotted on the link scale.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -383,6 +384,7 @@ genmaxcols <- function() {
 #' # Since "Placebo" is included in the network, it must be included in labels
 #' # Failure to do so will cause an error
 #' ## ERROR ## plot(emax, class.labs=c("Other Active", "Eletriptan"))
+#' }
 #'
 #' @export
 plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
@@ -540,6 +542,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #'   argument.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -572,7 +575,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' # then the plotted responses are less smooth and can be misleading
 #' pred <- predict(emax, E0 = 0.5, n.doses=3)
 #' plot(pred)
-#'
+#' }
 #'
 #' @export
 plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
@@ -935,6 +938,7 @@ overlay.split <- function(g, network, method="common",
 #' ###### For MBNMAdose ######
 #' ###########################
 #'
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -963,6 +967,7 @@ overlay.split <- function(g, network, method="common",
 #' ###########################
 #' ###### For MBNMAtime ######
 #' ###########################
+#' }
 #'
 #' @export
 devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
@@ -1128,6 +1133,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' then additional iterations will have to be run to get results for these.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1144,6 +1150,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' #returned by `fitplot`
 #' fits <- fitplot(emax)
 #' head(fits$fv)
+#' }
 #'
 #' @export
 fitplot <- function(mbnma, disp.obs=TRUE, ...) {

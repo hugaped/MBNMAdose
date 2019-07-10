@@ -191,6 +191,7 @@ the method of \insertCite{owen2015;textual}{MBNMAdose})
 }
 
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -285,6 +286,7 @@ summary(result)
 
 # Plot forest plot of results
 plot(result)
+}
 
 }
 \references{
