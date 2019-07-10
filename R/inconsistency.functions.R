@@ -295,7 +295,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'   further computational iterations to confirm. If set to `FALSE`, additional comparisons may be identified, though computation will be much more
 #'   rapid.
 #'
-#' @details Similar to [gemtc::mtc.nodesplit.comparisons()] but uses a fixed
+#' @details Similar to `gemtc::mtc.nodesplit.comparisons()` but uses a fixed
 #'   reference treatment and therefore identifies fewer loops in which to test for
 #'   inconsistency. Heterogeneity can also be parameterised as inconsistency and
 #'   so testing for inconsistency in additional loops whilst changing the

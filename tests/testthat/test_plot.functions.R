@@ -15,22 +15,22 @@ netlist <- list(network, net.noplac)
 
 
 # Models
-linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear")
+linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear", n.iter=1000)
 
-emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random")
-emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
+emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 
 emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                        class.effect=list(emax="random"))
+                        class.effect=list(emax="random"), n.iter=1000)
 
 emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-                        class.effect=list(emax="random"))
+                        class.effect=list(emax="random"), n.iter=1000)
 
-nonparam <- mbnma.run(network, fun="nonparam.up")
+nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 
-emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random")
+emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
 
-resdev <- mbnma.linear(network, parameters.to.save = "resdev")
+resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
 
 modellist <- list(linear, emax, emax.class, emax.noplac)
 
@@ -217,7 +217,7 @@ testthat::test_that("fitplot functions correctly", {
 
   expect_message(fitplot(emax.class, disp.obs=FALSE))
 
-  theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta")
+  theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta", n.iter=1000)
   expect_silent(fitplot(theta.run))
 
 })

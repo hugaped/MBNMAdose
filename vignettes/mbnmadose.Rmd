@@ -648,7 +648,10 @@ This can be used to identify any extrapolation/interpretation of the dose-respon
 We can also plot the results of a "split" Network Meta-Analysis (NMA) in which all doses of an agent are assumed to be independent. As with `disp.obs` we also need to provide the original `mbnma.network` object to be able to estimate this, and we can also specify if we want to perform a common or random effects NMA using `method`. Treatments that are only connected to the network via the dose-response relationship (rather than by a direct head-to-head comparison) will not be included.
 
 ```{r, results="hide", warning=FALSE, message=FALSE}
-plot(pred, overlay.split = TRUE, network=tripnet, method="common")
+alognet <- mbnma.network(alog_pcfb)
+alog.emax <- mbnma.emax(alognet, method="random")
+pred <- predict(alog.emax, E0=0, n.dose=20)
+plot(pred, overlay.split = TRUE, network=alognet, method="random")
 ```
 
 By plotting these, as well as observing how responses can be extrapolated/interpolated, we can also see which doses are likely to be providing most information to the dose-response relationship. The tighter 95% CrI on the predicted responses from the MBNMA also show that modelling the dose-response function also gives some additional precision even at doses for which there is information available.

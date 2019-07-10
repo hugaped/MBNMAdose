@@ -32,7 +32,6 @@ Imports:
   rjags (>= 4-8),
   magrittr (>= 1.5),
   checkmate (>= 1.8.5),
-  testthat (>= 1.0.2),
   Rdpack (>= 0.11-0),
   reshape2 (>= 1.4.3)
 Suggests:
@@ -41,6 +40,7 @@ Suggests:
     igraph (>= 1.1.2),
     RColorBrewer (>= 1.1-2),
     mcmcplots (>= 0.4.3),
+    testthat (>= 1.0.2),
     knitr,
     rmarkdown
 Encoding: UTF-8

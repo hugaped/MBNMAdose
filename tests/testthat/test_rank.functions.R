@@ -13,18 +13,18 @@ noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
 net.noplac <- mbnma.network(noplac.df)
 
 # Models
-linear.run <- mbnma.run(mbnma.network(GoutSUA_2wkCFB), fun="linear")
+linear.run <- mbnma.run(mbnma.network(GoutSUA_2wkCFB), fun="linear", n.iter=1000)
 
-exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", method="common")
+exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", method="common", n.iter=1000)
 
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 
 emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                         class.effect=list(emax="random"))
+                         class.effect=list(emax="random"), n.iter=1000)
 
-nonparam <- mbnma.run(network, fun="nonparam.up")
+nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 
-emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random")
+emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
 
 testthat::test_that("rank.mbnma functions correctly", {
 
