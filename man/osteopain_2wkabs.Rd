@@ -21,7 +21,7 @@ osteopain_2wkabs
 }
 \description{
 A dataset from a systematic review of interventions for pain relief in osteoarthritis, used previously
-in \insertCite{pedder2019, textual}{MBNMAdose}. The outcome is continuous, and aggregate data responses correspond to
+in \insertCite{pedder2019;textual}{MBNMAdose}. The outcome is continuous, and aggregate data responses correspond to
 the mean WOMAC pain score at 2 weeks follow-up. The dataset includes 18 Randomised-Controlled Trials (RCTs),
 comparing 8 different agents with placebo. In total there were 26 different treatments (combination of dose and
 agent). The active treatments can also be grouped into 3 different classes, within which they have similar

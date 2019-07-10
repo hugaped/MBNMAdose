@@ -9,7 +9,7 @@ mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = NULL,
   cor = TRUE, var.scale = NULL, user.fun = NULL,
   parameters.to.save = NULL, pd = "pv", parallel = TRUE,
   likelihood = NULL, link = NULL, priors = NULL, model.file = NULL,
-  n.iter = 10000, n.chains = 3, n.burnin = floor(n.iter/2),
+  n.iter = 2000, n.chains = 3, n.burnin = floor(n.iter/2),
   n.thin = max(1, floor((n.iter - n.burnin)/1000)), arg.params = NULL,
   ...)
 }

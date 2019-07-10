@@ -13,7 +13,7 @@
 #' level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard
 #' Network Meta-Analysis (NMA). All models and analyses are implemented
 #' in a Baysian framework, following an extension of the standrd NMA methodology presented by
-#' \insertCite{lu2004}{MBNMAdose} and are run in \insertCite{jags, textual}{MBNMAdose}. For full details of
+#' \insertCite{lu2004}{MBNMAdose} and are run in \insertCite{jags;textual}{MBNMAdose}. For full details of
 #' dose-response MBNMA methodology see \insertCite{mawdsley2016;textual}{MBNMAdose}. Within this package we
 #' refer to a **treatment** as a specific **dose** or a specific **agent**.
 #'
