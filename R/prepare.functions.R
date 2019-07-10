@@ -76,7 +76,7 @@ mbnma.network <- function(data.ab, description="Network") {
 
 
 
-#' Validates that a dataset fulfills requirements for MBNMA
+#' Validates that a dataset fulfils requirements for MBNMA
 #'
 #' @inheritParams mbnma.network
 #' @param single.arm A boolean object to indicate whether to allow single arm studies in the dataset (`TRUE`)
@@ -474,7 +474,7 @@ recode.agent <- function(data.ab, level="agent") {
 #' @param class A boolean object indicating whether or not `data.ab` contains
 #'   information on different classes of treatments
 #' @param level Can take either `"agent"` to indicate that data should be at the agent-
-#'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatent-
+#'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatemnt-
 #'   level (for NMA)
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to

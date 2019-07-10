@@ -13,7 +13,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' @param drop.discon A boolean object that indicates whether to drop treatments
 #' that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
-#' this could lead to indentification of nodesplit comparisons that are not connected
+#' this could lead to identification of nodesplit comparisons that are not connected
 #' to the network reference treatment.
 #' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
 #' The matrix must have two columns indicating each treatment for each comparison. Values can
@@ -280,10 +280,10 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 
 
 
-#' Identify comparisons in loops that fulfill criteria for node-splitting
+#' Identify comparisons in loops that fulfil criteria for node-splitting
 #'
 #' Identify comparisons informed by both direct and indirect evidence from
-#' independent sources, which therefore fulfill the criteria for testing for
+#' independent sources, which therefore fulfil the criteria for testing for
 #' inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 #'
 #' @param data A data frame containing variables `studyID` and `treatment` (as

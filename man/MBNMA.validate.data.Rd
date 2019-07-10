@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare.functions.R
 \name{mbnma.validate.data}
 \alias{mbnma.validate.data}
-\title{Validates that a dataset fulfills requirements for MBNMA}
+\title{Validates that a dataset fulfils requirements for MBNMA}
 \usage{
 mbnma.validate.data(data.ab, single.arm = FALSE)
 }
@@ -33,7 +33,7 @@ or not (\code{FALSE})}
 An error if checks are not passed. Runs silently if checks are passed
 }
 \description{
-Validates that a dataset fulfills requirements for MBNMA
+Validates that a dataset fulfils requirements for MBNMA
 }
 \details{
 Checks done within the validation:

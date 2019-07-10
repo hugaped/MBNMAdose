@@ -1,7 +1,7 @@
 ## Test environments
 
 * ubuntu 16.04 (on travis-ci), R 3.2.4
-* local Windows, R 3.5.1 (devel and release)
+* local Windows, R 3.6.1 (devel and release)
 
 
 

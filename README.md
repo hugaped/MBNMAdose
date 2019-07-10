@@ -14,8 +14,8 @@ robust and biologically plausible framework, this also can help connect
 networks at the agent level that may otherwise be disconnected at the
 dose/treatment level, and help improve precision of estimates. It avoids
 “lumping” of doses that is often done in standard Network Meta-Analysis
-(NMA). All models and analyses are implemented in a Baysian framework,
-following an extension of the standrd NMA methodology presented by (Lu
+(NMA). All models and analyses are implemented in a Bayesian framework,
+following an extension of the standard NMA methodology presented by (Lu
 and Ades 2004) and are run in JAGS (JAGS Computer Program 2017). For
 full details of dose-response MBNMA methodology see Mawdsley et
 al. (2016). Throughout this package we refer to a **treatment** as a
@@ -55,7 +55,7 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 5.  Use your model to predict responses using `predict()`
 
 At each of these stages there are a number of informative plots that can
-be generated to help understand the data and to make decisions regaring
+be generated to help understand the data and to make decisions regarding
 model fitting.
 
 ![](man/figures/functionstructure.png

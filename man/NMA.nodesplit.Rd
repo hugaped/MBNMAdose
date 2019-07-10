@@ -26,7 +26,7 @@ should be modelled with between-study heterogeneity or not (see details).}
 
 \item{drop.discon}{A boolean object that indicates whether to drop treatments
 that are disconnected at the treatment level. Default is \code{TRUE}. If set to \code{FALSE} then
-this could lead to indentification of nodesplit comparisons that are not connected
+this could lead to identification of nodesplit comparisons that are not connected
 to the network reference treatment.}
 
 \item{comparisons}{A matrix specifying the comparisons to be split (one row per comparison).

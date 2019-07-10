@@ -98,7 +98,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   to the name/number of the dose-response parameter to which they correspond
 #'   (e.g. `d.ed50` or `d.1`):
 #'   * `d` The pooled effect for each agent for a given dose-response
-#'   parameter. Will be estimated by the model if dose-respones parameters (`beta.1`,
+#'   parameter. Will be estimated by the model if dose-response parameters (`beta.1`,
 #'   `beta.2`, `beta.3`) are set to `"rel"`.
 #'   * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 #'   `method="random"`.
@@ -124,7 +124,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   users identify the source of the error.
 #'
 #' @section Dose-response parameters:
-#' * `"rel"` implies that relative effects should be pooled for this dose-resonse
+#' * `"rel"` implies that relative effects should be pooled for this dose-response
 #' parameter, that vary by agent.
 #' * `"common"` implies that all studies estimate the same true absolute effect
 #' (akin to a "fixed effects" meta-analysis) across the whole network

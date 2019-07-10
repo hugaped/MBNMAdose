@@ -90,7 +90,7 @@ to the name/number of the dose-response parameter to which they correspond
 (e.g. \code{d.ed50} or \code{d.1}):
 \itemize{
 \item \code{d} The pooled effect for each agent for a given dose-response
-parameter. Will be estimated by the model if dose-respones parameters (\code{beta.1},
+parameter. Will be estimated by the model if dose-response parameters (\code{beta.1},
 \code{beta.2}, \code{beta.3}) are set to \code{"rel"}.
 \item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 \code{method="random"}.
@@ -124,7 +124,7 @@ uses more clearly defined parameter names.
 \section{Dose-response parameters}{
 
 \itemize{
-\item \code{"rel"} implies that relative effects should be pooled for this dose-resonse
+\item \code{"rel"} implies that relative effects should be pooled for this dose-response
 parameter, that vary by agent.
 \item \code{"common"} implies that all studies estimate the same true absolute effect
 (akin to a "fixed effects" meta-analysis) across the whole network

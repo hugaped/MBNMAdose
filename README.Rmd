@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 The goal of `MBNMAdose` is to provide a collection of useful commands that allow users to run dose-response Model-Based Network Meta-Analyses (MBNMA). This allows evidence synthesis of studies that compare multiple doses
 of different agents in a way that can account for the dose-response relationship.
 
-Whilst making use of all the available evidence in a statistically robust and biologically plausible framework, this also can help connect networks at the agent level that may otherwise be disconnected at the dose/treatment level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Baysian framework, following an extension of the standrd NMA methodology presented by [@lu2004] and are run in JAGS [-@jags]. For full details of dose-response MBNMA methodology see Mawdsley et al. [-@mawdsley2016]. Throughout this package we refer to a **treatment** as a specific **dose** or a specific **agent**.
+Whilst making use of all the available evidence in a statistically robust and biologically plausible framework, this also can help connect networks at the agent level that may otherwise be disconnected at the dose/treatment level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS [-@jags]. For full details of dose-response MBNMA methodology see Mawdsley et al. [-@mawdsley2016]. Throughout this package we refer to a **treatment** as a specific **dose** or a specific **agent**.
 
 
 ## Installation
@@ -49,7 +49,7 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`
 
-At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regaring model fitting.
+At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting.
 
 ![](man/figures/functionstructure.png "Graphic showing how different exported functions within MBNMAdose are connected")
 

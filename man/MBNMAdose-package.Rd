@@ -6,7 +6,7 @@
 \alias{MBNMAdose-package}
 \title{MBNMAdose for dose-response Model-Based Network Meta-Analysis}
 \description{
-\code{MBNMAdose} provides a collection of useful commands that allow users to run dose-repsonse
+\code{MBNMAdose} provides a collection of useful commands that allow users to run dose-response
 Model-Based Network Meta-Analyses (MBNMA).
 }
 \section{Introduction}{
@@ -18,7 +18,7 @@ Whilst making use of all the available evidence in a statistically robust and bi
 this also can help connect networks at the agent level that may otherwise be disconnected at the dose/treatment
 level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard
 Network Meta-Analysis (NMA). All models and analyses are implemented
-in a Baysian framework, following an extension of the standrd NMA methodology presented by
+in a Bayesian framework, following an extension of the standard NMA methodology presented by
 \insertCite{lu2004}{MBNMAdose} and are run in \insertCite{jags;textual}{MBNMAdose}. For full details of
 dose-response MBNMA methodology see \insertCite{mawdsley2016;textual}{MBNMAdose}. Within this package we
 refer to a \strong{treatment} as a specific \strong{dose} or a specific \strong{agent}.
@@ -36,7 +36,7 @@ Functions within \code{MBNMAdose} follow a clear pattern of use:
 }
 
 At each of these stages there are a number of informative plots that can be generated to help understand
-the data and to make decisions regaring model fitting.
+the data and to make decisions regarding model fitting.
 }
 
 \examples{

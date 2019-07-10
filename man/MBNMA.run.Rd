@@ -9,7 +9,7 @@ mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = NULL,
   cor = TRUE, var.scale = NULL, user.fun = NULL,
   parameters.to.save = NULL, pd = "pv", parallel = TRUE,
   likelihood = NULL, link = NULL, priors = NULL, model.file = NULL,
-  n.iter = 2000, n.chains = 3, n.burnin = floor(n.iter/2),
+  n.iter = 10000, n.chains = 3, n.burnin = floor(n.iter/2),
   n.thin = max(1, floor((n.iter - n.burnin)/1000)), arg.params = NULL,
   ...)
 }
@@ -114,7 +114,7 @@ to the name/number of the dose-response parameter to which they correspond
 (e.g. \code{d.ed50} or \code{d.1}):
 \itemize{
 \item \code{d} The pooled effect for each agent for a given dose-response
-parameter. Will be estimated by the model if dose-respones parameters (\code{beta.1},
+parameter. Will be estimated by the model if dose-response parameters (\code{beta.1},
 \code{beta.2}, \code{beta.3}) are set to \code{"rel"}.
 \item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 \code{method="random"}.
@@ -155,7 +155,7 @@ by specifying the relative scale of variances between the dose-response paramete
 \section{Dose-response parameters}{
 
 \itemize{
-\item \code{"rel"} implies that relative effects should be pooled for this dose-resonse
+\item \code{"rel"} implies that relative effects should be pooled for this dose-response
 parameter, that vary by agent.
 \item \code{"common"} implies that all studies estimate the same true absolute effect
 (akin to a "fixed effects" meta-analysis) across the whole network

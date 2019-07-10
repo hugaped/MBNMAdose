@@ -24,7 +24,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #'   within a treatment/agent in the network.
 #' @param label.distance A number scaling the distance of labels from the nodes
 #'   to improve readability. The labels will be directly on top of the nodes if
-#'   the defauls of 0 is used. Option only applicable if `layout_in_circle` is
+#'   the default of 0 is used. Option only applicable if `layout_in_circle` is
 #'   set to `TRUE`.
 #' @param level A string indicating whether nodes/facets should represent `"treatment"`
 #'   or `"agent"` in the plot. Can be used to examine the expected impact of modelling
