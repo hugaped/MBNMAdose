@@ -9,7 +9,8 @@ Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("
   person("Nicky", "Welton", role = c("ctb", "rev")),
   person("Sofia", "Dias", role = c("ctb", "rev")),
   person("Meg", "Bennetts", role = c("ctb", "rev")),
-  person("Martin", "Boucher", role = c("ctb", "rev")))
+  person("Martin", "Boucher", role = c("ctb", "rev"))),
+  person("Adil", "Karim", role = c("ctb"))
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
 Description: This package fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
   that incorporate multiple doses within an agent by modelling different dose-response functions. 
