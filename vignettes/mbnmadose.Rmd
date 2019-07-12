@@ -305,17 +305,17 @@ Class effects can only be applied to dose-response parameters which are modelled
 
 When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`.
 
-```{r, results="hide", message=FALSE, warning=FALSE}
+```{r, results="hide", message=FALSE, warning=FALSE, eval=FALSE}
 # Using the osteoarthritis dataset (contains info on classes)
 painnet <- mbnma.network(osteopain_2wkabs)
 ```
-```{r, results="hide"}
+```{r, results="hide", eval=FALSE}
 # Emax MBNMA with a single absolute parameter for Emax and random relative effects on ED50
 # Common class effects on ED50
 emax <- mbnma.emax(painnet, emax="common", ed50="rel", method="random",
                    class.effect=list(ed50="common"))
 ```
-```{r}
+```{r, eval=FALSE}
 summary(emax)
 ```
 
@@ -406,7 +406,7 @@ emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
 
 Mathematical errors can be more likely for certain types of models. For dose-response relationships which include a dose-response parameter as an exponent (e.g. an exponential dose-response function), default prior distributions may result in numerical values that are too extreme for computation. One way to fix this problem is to use tighter priors for `d`'s. However, a contributing factor to this issue is that doses within a dataset can be very variable in magnitude, thus leading to excessively high/low exponents. A solution for this is is to standardise doses within an agent by some common value (i.e. the most commonly prescribed dose or the maximum dose investigated). This leads to all doses being relative to the standard dose, but can improve computation.
 
-```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE}
+```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE, eval=FALSE}
 # Exponential model currently returns an error on gout dataset
 exponetial <- mbnma.exponential(goutnet, lambda="rel")
 ```
@@ -496,10 +496,10 @@ In the case of MBNMA, it may be useful to compare the fit of a non-parametric mo
 
 When fitting a non-parametric dose-response model, there is no need to specify arguments for dose-response parameters (`beta.1`, `beta.2`, `beta.3`), as these are ignored in this modelling approach. `method` can still be used to specify either `"common"` or `"random"` effects. It is important to correctly choose either `"nonparam.up"` or `"nonparam.down"` depending on the expected direction of effect, or this can lead to computation errors.
 
-```{r, results="hide"}
+```{r, results="hide", eval=FALSE}
 nonparam <- mbnma.run(tripnet, fun="nonparam.up", method="random")
 ```
-```{r}
+```{r, eval=FALSE}
 print(nonparam)
 ```
 
@@ -537,7 +537,7 @@ If saved to an object, the output of `devplot()` contains the results for indivi
 
 Another approach for assessing model fit can be to plot the fitted values, using `fitplot()`. As with `devplot()`, this may require running additional model iterations to monitor `theta`.
 
-```{r, results="hide", warning=FALSE}
+```{r, results="hide", warning=FALSE, eval=FALSE}
 # Plot fitted and observed values with treatment labels
 fitplot(trip.emax)
 ```
@@ -549,7 +549,7 @@ Fitted values are plotted as connecting lines and observed values in the origina
 
 Forest plots can be easily generated from MBNMA models using the `plot()` method on an `"mbnma"` object. By default this will plot a separate panel for each dose-response parameter in the model. Forest plots can only be generated for parameters which are modelled using relative effects and that vary by agent/class.
 
-```{r, results="hide"}
+```{r, results="hide", eval=FALSE}
 plot(trip.emax)
 ```
 
@@ -647,7 +647,7 @@ This can be used to identify any extrapolation/interpretation of the dose-respon
 
 We can also plot the results of a "split" Network Meta-Analysis (NMA) in which all doses of an agent are assumed to be independent. As with `disp.obs` we also need to provide the original `mbnma.network` object to be able to estimate this, and we can also specify if we want to perform a common or random effects NMA using `method`. Treatments that are only connected to the network via the dose-response relationship (rather than by a direct head-to-head comparison) will not be included.
 
-```{r, results="hide", warning=FALSE, message=FALSE}
+```{r, results="hide", warning=FALSE, message=FALSE, eval=FALSE}
 alognet <- mbnma.network(alog_pcfb)
 alog.emax <- mbnma.emax(alognet, method="random")
 pred <- predict(alog.emax, E0=0, n.dose=20)
@@ -695,7 +695,7 @@ To check for consistency at the treatment level using UME we fit an NMA that doe
 * The between-study SD for different parameters may be lower in the UME model
 * Individual relative effects may differ in magnitude or (more severely) in direction for different treatment comparisons between UME and NMA models.
 
-```{r, results="hide", warning=FALSE, message=FALSE}
+```{r, results="hide", warning=FALSE, message=FALSE, eval=FALSE}
 # Using the alogliptin dataset
 alognet <- mbnma.network(alog_pcfb)
 nma <- nma.run(alognet, method="random")
@@ -723,7 +723,7 @@ In addition to these, the argument `comparisons` can be used to indicate which t
 
 As several NMA models will need to be run for each treatment comparison to split, this function can take some time to run.
 
-```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide"}
+```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide", eval=FALSE}
 # Using the triptans dataset
 tripnet <- mbnma.network(HF2PPITT)
 
@@ -745,7 +745,7 @@ The nodesplit object itself is a list with results for each treatment comparison
 
 It is possible to generate different plots of each nodesplit comparison using `plot()`:
 
-```{r}
+```{r, eval=FALSE}
 # Plot forest plots of direct, indirect and pooled (NMA) results for each comparison
 plot(nodesplit, plot.type="forest")
 
