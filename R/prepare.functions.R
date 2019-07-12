@@ -779,10 +779,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   } else {doselink <- 1}
 
   trt.labs <- network$treatments
-  #discon <- suppressWarnings(check.network(plot(network, level="treatment", v.color = "connect")))
-  grDevices::png("NUL")
-  discon <- suppressMessages(suppressWarnings(check.network(graphics::plot(network, level="treatment", v.color = "connect", doselink=doselink))))
-  grDevices::dev.off()
+  discon <- suppressMessages(suppressWarnings(check.network(plot.invisible(network, level="treatment", v.color = "connect", doselink=doselink))))
 
   data.ab <- network$data.ab
 
