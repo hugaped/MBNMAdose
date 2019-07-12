@@ -730,7 +730,7 @@ tripnet <- mbnma.network(HF2PPITT)
 # Nodesplit using a random effects model
 nodesplit <- nma.nodesplit(tripnet, method="random")
 ```
-```{r}
+```{r, eval=FALSE}
 print(nodesplit)
 ```
 
