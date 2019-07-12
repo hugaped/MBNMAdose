@@ -1532,9 +1532,9 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
 
 plot.invisible <- function(...){
   ff <- tempfile()
-  png(filename=ff)
+  grDevices::png(filename=ff)
   res <- graphics::plot(...)
-  dev.off()
+  grDevices::dev.off()
   unlink(ff)
   return(res)
 }
