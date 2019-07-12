@@ -9,3 +9,5 @@
 ^\.gitignore$
 ^CRAN-RELEASE$
 ^man/figures$
+^\.$
+^\..$

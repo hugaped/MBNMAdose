@@ -1,10 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Changed running of models in tests to ensure total build time is <10 min
-* Reduced the number of models evaluated in vignette for the purposes of CRAN checks
-* Added a URL to DESCRIPTION for the academic paper from which the methods have been developed
-* Added explanation of additional NOTE in R CMD check results (below)
+* Hopefully should have removed generation of `NUL` file/folder by submitting from Mac OSX
 
 
 ## Test environments
@@ -14,7 +11,7 @@ This is a resubmission. In this version I have:
 * Fedora Linux, R-devel, clang, gfortran (on rhub)
 * Ubuntu Linux 16.04 LTS, R-release, GCC (on rhub)
 * Windows Server 2008 R2 SP1, R-devel, 32/64 bit (on rhub)
-* Cannot test on macOS (on rhub or travis-ci) since requires system installation of JAGS (not available on CRAN)
+* Tested on local macOS 10.14.5
 
 
 ## R CMD check results
