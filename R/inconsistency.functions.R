@@ -29,7 +29,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' \donttest{
 #'   split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'              method="common")
-#' }
 #'
 #'
 #'
@@ -39,7 +38,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' loops <- inconsistency.loops(network$data.ab)
 #'
 #' # This...
-#' \donttest{
 #' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
 #'
@@ -53,7 +51,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
 #' net.noplac <- mbnma.network(noplac.df)
 #'
-#' \donttest{
 #' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
 #'              method="random", drop.discon=TRUE)
 #'
@@ -321,6 +318,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' # Identify comparisons informed by direct and indirect evidence
 #' #in triptans dataset
 #' network <- mbnma.network(HF2PPITT)
+#' \donttest{
 #' inconsistency.loops(network$data.ab)
 #'
 #'
@@ -329,6 +327,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
 #'             )
 #' inconsistency.loops(data, checkindirect=FALSE)
+#' }
 #' @export
 inconsistency.loops <- function(data, checkindirect=TRUE)
 {

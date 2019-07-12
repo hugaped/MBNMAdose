@@ -1265,6 +1265,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
+#' \donttest{
 #' # Estimate rankings  from an Emax dose-response MBNMA
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #' ranks <- rank(emax)
@@ -1281,6 +1282,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
 #'             exact.doses=doses)
 #' rank <- rank(pred)
 #' plot(rank)
+#' }
 #' @export
 plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
   # ... are commands to be sent to geom_histogram

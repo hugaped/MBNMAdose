@@ -5,36 +5,36 @@ Version: 0.2.1
 Language: en-GB
 Date: 2019-07-10
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
-  person("David", "Mawdsley", role = c("ctb")),
-  person("Nicky", "Welton", role = c("ctb", "rev")),
-  person("Sofia", "Dias", role = c("ctb", "rev")),
-  person("Meg", "Bennetts", role = c("ctb", "rev")),
-  person("Martin", "Boucher", role = c("ctb", "rev")),
-  person("Adil", "Karim", role = c("ctb")))
+    person("David", "Mawdsley", role = c("ctb")),
+    person("Nicky", "Welton", role = c("ctb", "rev")),
+    person("Sofia", "Dias", role = c("ctb", "rev")),
+    person("Meg", "Bennetts", role = c("ctb", "rev")),
+    person("Martin", "Boucher", role = c("ctb", "rev")),
+    person("Adil", "Karim", role = c("ctb")))
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
-Description: This package fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
-  that incorporate multiple doses within an agent by modelling different dose-response functions. 
-  By modelling dose-response relationships this can connect networks of evidence that might
-  otherwise be disconnected, and can improve precision on treatment estimates. Several common 
-  dose-response functions are provided; others may be added by the user. Various characteristics
-  and assumptions can be flexibly added to the models, such as shared class effects. The consistency 
-  of direct and indirect evidence in the network can be assessed using unrelated mean effects models 
-  and/or by node-splitting at the treatment level.
+Description: Fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
+    that incorporate multiple doses within an agent by modelling different dose-response functions. 
+    By modelling dose-response relationships this can connect networks of evidence that might
+    otherwise be disconnected, and can improve precision on treatment estimates. Several common 
+    dose-response functions are provided; others may be added by the user. Various characteristics
+    and assumptions can be flexibly added to the models, such as shared class effects. The consistency 
+    of direct and indirect evidence in the network can be assessed using unrelated mean effects models 
+    and/or by node-splitting at the treatment level.
 License: file LICENSE
 Depends: R (>= 3.0.2)
 Imports:
-  grDevices,
-  stats,
-  graphics,
-  utils,
-  scales,
-  dplyr (>= 0.7.4),
-  R2jags (>= 0.5-7), 
-  rjags (>= 4-8),
-  magrittr (>= 1.5),
-  checkmate (>= 1.8.5),
-  Rdpack (>= 0.11-0),
-  reshape2 (>= 1.4.3)
+    grDevices,
+    stats,
+    graphics,
+    utils,
+    scales,
+    dplyr (>= 0.7.4),
+    R2jags (>= 0.5-7), 
+    rjags (>= 4-8),
+    magrittr (>= 1.5),
+    checkmate (>= 1.8.5),
+    Rdpack (>= 0.11-0),
+    reshape2 (>= 1.4.3)
 Suggests:
     overlapping (>= 1.5.0),
     ggplot2 (>= 2.2.1),

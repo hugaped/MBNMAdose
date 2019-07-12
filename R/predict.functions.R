@@ -84,6 +84,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
+#' \donttest{
 #' # Run an Emax dose-response MBNMA
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #'
@@ -145,6 +146,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' # Plot `mbnma.predict` object
 #' plot(pred)
+#' }
 #'
 #' @export
 predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
@@ -458,6 +460,7 @@ get.model.vals <- function(mbnma) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
+#' \donttest{
 #' # Run an Emax dose-response MBNMA
 #' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 #'
@@ -471,6 +474,7 @@ get.model.vals <- function(mbnma) {
 #' # Meta-analyse placebo studies using random treatment effects
 #' E0 <- ref.synth(ref.df, emax, synth="random")
 #' names(E0)
+#' }
 #'
 #' @export
 ref.synth <- function(data.ab, mbnma, synth="fixed",

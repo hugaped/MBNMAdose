@@ -42,6 +42,7 @@
 #' # Generate a network plot at the agent level
 #' plot(network, level="agent", remove.loops=TRUE)
 #'
+#' \donttest{
 #' # Perform "split" NMA to examine dose-response relationship
 #' nma <- nma.run(network)
 #' plot(nma)
@@ -68,6 +69,7 @@
 #'
 #' # Plot predicted response with "split" NMA results displayed
 #' plot(pred, disp.obs=TRUE, network=network)
+#' }
 #'
 #' @keywords internal
 "_PACKAGE"
