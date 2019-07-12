@@ -4,4 +4,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^cran-comments\.md$
+^\.git$
+^\.gitattributes$
+^.\gitignore$
 ^CRAN-RELEASE$

@@ -20,7 +20,7 @@ Description: Fits Bayesian dose-response model-based network meta-analysis (MBNM
     and assumptions can be flexibly added to the models, such as shared class effects. The consistency 
     of direct and indirect evidence in the network can be assessed using unrelated mean effects models 
     and/or by node-splitting at the treatment level.
-License: file LICENSE
+License: GPL-3
 Depends: R (>= 3.0.2)
 Imports:
     grDevices,
