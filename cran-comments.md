@@ -1,9 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Removed the `This package` from the start of the DESCRIPTION
-* Removed a URL that was causing problems in .Rd files
-* Reduced time taken for examples to run
+* Changed the license to be standard GPL-3
+* Added files to .Rbuildignore so that only standard things are in the check directory
+* Added explanation of additional NOTE in R CMD check results (below)
 
 
 ## Test environments
@@ -18,8 +18,13 @@ This is a resubmission. In this version I have:
 
 ## R CMD check results
 
-There was 1 NOTE:
+There were 2 NOTEs:
+
 * New submission
+
+* Overall checktime 30 min > 10 min
+  - Many functions within the package use an MCMC sampler (JAGS) which is slow to compile and run. I have set examples not to run for the purposes of checking (though I have also tested that they do run successfully), but for the tests and the vignette building I cannot reduce the time taken for these models to run so the checktime will be slower than for many other packages.
+
 
 There were no ERRORs or WARNINGs
 
