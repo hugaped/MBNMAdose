@@ -6,5 +6,5 @@
 ^cran-comments\.md$
 ^\.git$
 ^\.gitattributes$
-^.\gitignore$
+^\.gitignore$
 ^CRAN-RELEASE$
