@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Hopefully should have removed generation of `NUL` file/folder by submitting from Mac OSX
+* Rewritten a function that was inadvertently generating a NUL.png file, to fix the NOTE: Non-standard `NUL` file in check directory
 
 
 ## Test environments
