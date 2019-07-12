@@ -31,6 +31,7 @@ Plot histograms of rankings from MBNMA models
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
+\donttest{
 # Estimate rankings  from an Emax dose-response MBNMA
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 ranks <- rank(emax)
@@ -47,4 +48,5 @@ pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
             exact.doses=doses)
 rank <- rank(pred)
 plot(rank)
+}
 }

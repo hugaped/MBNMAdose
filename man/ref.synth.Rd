@@ -77,6 +77,7 @@ Defaults for \code{n.iter}, \code{n.burnin}, \code{n.thin} and \code{n.chains} a
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
+\donttest{
 # Run an Emax dose-response MBNMA
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
@@ -90,5 +91,6 @@ names(E0)
 # Meta-analyse placebo studies using random treatment effects
 E0 <- ref.synth(ref.df, emax, synth="random")
 names(E0)
+}
 
 }

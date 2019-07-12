@@ -44,7 +44,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' #...is the same as...
 #' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c(2, 5)))
-#' }
+#'
 #'
 #' # Drop treatments that are disconnected from the network in the analysis
 #' # Generate data without placebo

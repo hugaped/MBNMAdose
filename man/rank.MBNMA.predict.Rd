@@ -36,6 +36,7 @@ will be included, to avoid duplicating rankings.
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
+\donttest{
 # Rank predictions from a linear dose-response MBNMA
 linear <- mbnma.run(network, fun="linear")
 pred <- predict(linear, E0 = 0.5)
@@ -56,5 +57,6 @@ print(rank)
 
 # Plot `mbnma.rank` object
 plot(rank)
+}
 
 }

@@ -49,6 +49,7 @@ plot(network, level="treatment")
 # Generate a network plot at the agent level
 plot(network, level="agent", remove.loops=TRUE)
 
+\donttest{
 # Perform "split" NMA to examine dose-response relationship
 nma <- nma.run(network)
 plot(nma)
@@ -75,6 +76,7 @@ pred <- predict(result, E0=0.2)
 
 # Plot predicted response with "split" NMA results displayed
 plot(pred, disp.obs=TRUE, network=network)
+}
 
 }
 \references{
@@ -90,6 +92,7 @@ Other contributors:
   \item Sofia Dias [contributor, reviewer]
   \item Meg Bennetts [contributor, reviewer]
   \item Martin Boucher [contributor, reviewer]
+  \item Adil Karim [contributor]
 }
 
 }

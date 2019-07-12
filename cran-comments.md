@@ -10,8 +10,7 @@
 ## R CMD check results
 
 There was 1 NOTE:
-"Found the following (possibly) invalid URLs: https://doi.org/10.1093/biostatistics/kxm049"
-- URL has been checked and is valid
+- New submission
 
 There were no ERRORs or WARNINGs
 

@@ -93,6 +93,7 @@ agent. This may be more useful when ranking different predicted responses using
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
+\donttest{
 # Run an Emax dose-response MBNMA
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
 
@@ -115,7 +116,7 @@ pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
 
 # Misspecifying the RNG string will return an error
 #pred <- predict(emax, E0 = "rbeta(shape1=1, shape2=5)")
-### ERROR ###
+#### ERROR ####
 
 
 #### Predict responses using meta-analysis of dose = 0 studies ####
@@ -154,5 +155,6 @@ summary(pred)
 
 # Plot `mbnma.predict` object
 plot(pred)
+}
 
 }
