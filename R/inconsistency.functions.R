@@ -518,7 +518,7 @@ drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
     temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
                           ind.df$treatment==comp[index+1]),]
 
-    temp.net <- suppressMessages(graphics::plot(mbnma.network(temp.df), doseparam = 1000))
+    temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
 
     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
                                                      to=comp[index+1])[
@@ -581,7 +581,7 @@ check.indirect.drops <- function(data=data, comp) {
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(data$treatment))) {
-      g <- graphics::plot(temp.net, doseparam=1000)
+      g <- plot.invisible(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])
@@ -603,3 +603,5 @@ check.indirect.drops <- function(data=data, comp) {
     return(NULL)
   }
 }
+
+

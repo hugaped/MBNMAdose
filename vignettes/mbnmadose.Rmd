@@ -189,16 +189,16 @@ Several further options exist to allow for inclusion of disconnected treatments,
 
 In order to consider which functional forms may be appropriate for modelling the dose-response relationship, it is useful to look at results from a "split" network meta-analysis (NMA), in which each dose of an agent is considered as separate and unrelated (i.e. we are not assuming any dose-response relationship). The `NMA.run()` function performs a simple NMA, and by default it drops studies that are disconnected at the treatment-level (since estimates for these will be very uncertain if included).
 
-```{r, results="hide", message=FALSE, warning=FALSE}
+```{r, results="hide", message=FALSE, warning=FALSE, eval=FALSE}
 # Run a random effect split NMA using the alogliptin dataset
 alognet <- mbnma.network(alog_pcfb)
 nma.alog <- nma.run(alognet, method="random")
 ```
-```{r}
+```{r, eval=FALSE}
 print(nma.alog)
 
 # Draw plot of NMA estimates plotted by dose
-#plot.nma(nma.alog)
+plot.nma(nma.alog)
 ```
 
 In the alogliptin dataset there appears to be a dose-response relationship, and it also appears to be non-linear.
@@ -265,7 +265,7 @@ Model fit statistics for `pD` (effective number of parameters) and `DIC` (Devian
 
 An example MBNMA of the triptans dataset using an Emax dose-response function and common treatment effects that pool relative effects on both Emax and ED50 parameters follows:
 
-```{r, results="hide"}
+```{r, results="hide", warning=FALSE}
 # Run an Emax dose-response MBNMA
 mbnma <- mbnma.run(tripnet, fun="emax", 
                    beta.1="rel", beta.2="rel", method="common")
@@ -523,7 +523,7 @@ To assess how well a model fits the data, it can be useful to look at a plot of 
 
 Results can be plotted either as a scatter plot (`plot.type="scatter"`) or a series of boxplots (`plot.type="box"`).
 
-```{r, results="hide"}
+```{r, results="hide", eval=FALSE}
 # Plot boxplots of residual deviance contributions (scatterplot is the default)
 devplot(trip.emax, plot.type = "box")
 ```
@@ -701,7 +701,7 @@ alognet <- mbnma.network(alog_pcfb)
 nma <- nma.run(alognet, method="random")
 ume <- nma.run(alognet, method="random", UME = TRUE)
 ```
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 kable(data.frame(
   "Model"=c("NMA", "UME"),
   "resdev"=c(nma$jagsresult$BUGSoutput$median$totresdev,

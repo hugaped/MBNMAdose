@@ -82,6 +82,13 @@ plot(pred, disp.obs=TRUE, network=network)
 \references{
 \insertAllCited{}
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/}
+}
+
+}
 \author{
 \strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com}
 

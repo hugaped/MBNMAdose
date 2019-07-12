@@ -1,8 +1,9 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Changed the license to be standard GPL-3
-* Added files to .Rbuildignore so that only standard things are in the check directory
+* Changed running of models in tests to ensure total build time is <10 min
+* Reduced the number of models evaluated in vignette for the purposes of CRAN checks
+* Added a URL to DESCRIPTION for the academic paper from which the methods have been developed
 * Added explanation of additional NOTE in R CMD check results (below)
 
 
@@ -18,12 +19,9 @@ This is a resubmission. In this version I have:
 
 ## R CMD check results
 
-There were 2 NOTEs:
+There was 1 NOTEs:
 
 * New submission
-
-* Overall checktime 30 min > 10 min
-  - Many functions within the package use an MCMC sampler (JAGS) which is slow to compile and run. I have set examples not to run for the purposes of checking (though I have also tested that they do run successfully), but for the tests and the vignette building I cannot reduce the time taken for these models to run so the checktime will be slower than for many other packages.
 
 
 There were no ERRORs or WARNINGs

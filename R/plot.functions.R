@@ -1525,3 +1525,16 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
   graphics::plot(g)
   return(invisible(g))
 }
+
+
+
+
+
+plot.invisible <- function(...){
+  ff <- tempfile()
+  png(filename=ff)
+  res <- graphics::plot(...)
+  dev.off()
+  unlink(ff)
+  return(res)
+}
