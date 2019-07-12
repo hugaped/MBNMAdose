@@ -106,7 +106,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' # Misspecifying the RNG string will return an error
 #' #pred <- predict(emax, E0 = "rbeta(shape1=1, shape2=5)")
-#' ### ERROR ###
+#' #### ERROR ####
 #'
 #'
 #' #### Predict responses using meta-analysis of dose = 0 studies ####
