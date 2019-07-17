@@ -6,10 +6,10 @@ Language: en-GB
 Date: 2019-07-10
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
     person("David", "Mawdsley", role = c("ctb")),
-    person("Nicky", "Welton", role = c("ctb", "rev")),
-    person("Sofia", "Dias", role = c("ctb", "rev")),
-    person("Meg", "Bennetts", role = c("ctb", "rev")),
-    person("Martin", "Boucher", role = c("ctb", "rev")),
+    person("Nicky", "Welton", role = c("rev")),
+    person("Sofia", "Dias", role = c("rev")),
+    person("Meg", "Bennetts", role = c("rev")),
+    person("Martin", "Boucher", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
 URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
