@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Rewritten a function that was inadvertently generating a NUL.png file, to fix the NOTE: Non-standard `NUL` file in check directory
+* Added a reference and DOI for the method to the description.
 
 
 ## Test environments
