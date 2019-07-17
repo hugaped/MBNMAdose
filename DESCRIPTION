@@ -14,7 +14,8 @@ Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("
 URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
 Description: Fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
-    that incorporate multiple doses within an agent by modelling different dose-response functions. 
+    that incorporate multiple doses within an agent by modelling different dose-response functions, as
+    described by Mawdsley et al. (2016) <doi:10.1002/psp4.12091>. 
     By modelling dose-response relationships this can connect networks of evidence that might
     otherwise be disconnected, and can improve precision on treatment estimates. Several common 
     dose-response functions are provided; others may be added by the user. Various characteristics
