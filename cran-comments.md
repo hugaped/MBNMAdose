@@ -11,12 +11,9 @@ This is a resubmission. In this version I have:
 * Fedora Linux, R-devel, clang, gfortran (on rhub)
 * Ubuntu Linux 16.04 LTS, R-release, GCC (on rhub)
 * Windows Server 2008 R2 SP1, R-devel, 32/64 bit (on rhub)
-<<<<<<< HEAD
 * Tested on local macOS 10.14.5
-
-=======
 * Local Mac OSX 10.14.5, R 3.6.1
->>>>>>> MBNMA-mbnma
+
 
 ## R CMD check results
 
