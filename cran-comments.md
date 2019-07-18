@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Added a reference and DOI for the method to the description.
+* Standard license used in description. LICENSE files removed from home directory.
 
 
 ## Test environments
