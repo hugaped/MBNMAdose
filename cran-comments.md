@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Standard license used in description. LICENSE files removed from home directory.
+* Changed title in DESCRIPTION to title-case
 
 
 ## Test environments
