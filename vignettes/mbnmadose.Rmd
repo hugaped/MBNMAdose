@@ -721,16 +721,14 @@ Another approach for consistency checking is node-splitting. This splits contrib
 
 In addition to these, the argument `comparisons` can be used to indicate which treatment comparisons to perform a nodesplit on. If left as `NULL` (the default) node-splits will automatically be performed in all closed loops of treatments in which comparisons are informed by independent sources of evidence. This is somewhat similar to the function `gemtc::mtc.nodesplit.comparisons()`, but uses a fixed network reference treatment and therefore identifies fewer loops in which to test for inconsistency.
 
-As several NMA models will need to be run for each treatment comparison to split, this function can take some time to run, and results for it are therefore not shown in this vignette.
-
-```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide", eval=FALSE}
+```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide"}
 # Using the triptans dataset
 tripnet <- mbnma.network(HF2PPITT)
 
 # Nodesplit using a random effects model
 nodesplit <- nma.nodesplit(tripnet, method="random")
 ```
-```{r, eval=FALSE}
+```{r}
 print(nodesplit)
 ```
 
@@ -745,7 +743,7 @@ The nodesplit object itself is a list with results for each treatment comparison
 
 It is possible to generate different plots of each nodesplit comparison using `plot()`:
 
-```{r, eval=FALSE}
+```{r}
 # Plot forest plots of direct, indirect and pooled (NMA) results for each comparison
 plot(nodesplit, plot.type="forest")
 
