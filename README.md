@@ -23,8 +23,15 @@ specific **dose** or a specific **agent**.
 
 ## Installation
 
-Currently the package can be installed directly from GitHub using the
-`devtools` R package:
+On CRAN you can easily install the current release version of
+`MBNMAdose` from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("MBNMAdose")
+```
+
+For the development version the package can be installed directly from
+GitHub using the `devtools` R package:
 
 ``` r
 # First install devtools
@@ -32,14 +39,6 @@ install.packages("devtools")
 
 # Then install MBNMAdose directly from GitHub
 devtools::install_github("hugopedder/MBNMAdose")
-```
-
-Once it is released on CRAN (i.e. **not yet\!**), you will (hopefully)
-be able to install the released version of `MBNMAdose` from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("MBNMAdose")
 ```
 
 ## Workflow
@@ -56,8 +55,7 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 
 At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regarding
-model fitting. Exported functions in the package are connected as
-follows:
+model fitting. Exported functions in the package are connected like so:
 
 ![Workflow](man/figures/functionstructure.png)
 

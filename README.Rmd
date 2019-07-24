@@ -23,7 +23,14 @@ Whilst making use of all the available evidence in a statistically robust and bi
 
 ## Installation
 
-Currently the package can be installed directly from GitHub using the `devtools` R package:
+On CRAN you can easily install the current release version of `MBNMAdose` from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+install.packages("MBNMAdose")
+```
+
+
+For the development version the package can be installed directly from GitHub using the `devtools` R package:
 
 ``` r
 # First install devtools
@@ -33,11 +40,6 @@ install.packages("devtools")
 devtools::install_github("hugopedder/MBNMAdose")
 ```
 
-Once it is released on CRAN (i.e. **not yet!**), you will (hopefully) be able to install the released version of `MBNMAdose` from [CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("MBNMAdose")
-```
 
 ## Workflow
 
@@ -49,7 +51,7 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`
 
-At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting. Exported functions in the package are connected as follows:
+At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting. Exported functions in the package are connected like so:
 
 ![Workflow](man/figures/functionstructure.png)
 
