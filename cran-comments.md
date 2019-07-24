@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Changed title in DESCRIPTION to title-case
+* Reduced the number of models run in the vignette to decrease build time
 
 
 ## Test environments
