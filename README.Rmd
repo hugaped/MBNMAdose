@@ -9,7 +9,7 @@ bibliography: inst/REFERENCES.bib
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "README-",
   out.width = "100%"
 )
 ```
@@ -49,8 +49,8 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 4. Examine model results using forest plots and treatment rankings
 5. Use your model to predict responses using `predict()`
 
-At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting.
+At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting. Exported functions in the package are connected as follows:
 
-![](man/figures/functionstructure.png "Graphic showing how different exported functions within MBNMAdose are connected")
+![Workflow](man/figures/functionstructure.png)
 
 ## References

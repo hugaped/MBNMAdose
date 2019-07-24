@@ -56,10 +56,10 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 
 At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regarding
-model fitting.
+model fitting. Exported functions in the package are connected as
+follows:
 
-![](man/figures/functionstructure.png
-"Graphic showing how different exported functions within MBNMAdose are connected")
+![Workflow](man/figures/functionstructure.png)
 
 ## References
 
