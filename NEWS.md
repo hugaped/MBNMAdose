@@ -2,6 +2,7 @@
 
 ## Bug fixes
 
+- Fixed incorrect vignette reference
 - Allowed more examples in the vignette to run so that plots can be created which better illustrates how MBNMA.run() functions are used.
 - Update to README to ensure package workflow image works correctly on CRAN.
 
