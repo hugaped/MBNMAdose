@@ -1,7 +1,7 @@
 ## Resubmission
 This is a resubmission. In this version I have:
 
-* Reduced the number of models run in the vignette to decrease build time
+* Checked for problems with `igraph` package that was causing errors on CRAN. No errors or notes found on local check, check_rhub() or check_win_devel()
 
 
 ## Test environments
