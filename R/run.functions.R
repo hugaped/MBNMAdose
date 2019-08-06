@@ -596,7 +596,7 @@ gen.parameters.to.save <- function(model.params, model) {
       parameters.to.save <- append(parameters.to.save, paste0("sd.", model.params[i]))
     }
     if (grepl(paste0("\\\nsd\\.beta.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd\\.beta\\.", model.params[i]))
+      parameters.to.save <- append(parameters.to.save, paste0("sd.beta.", model.params[i]))
     }
     if (grepl(paste0("\\\nD\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
@@ -1467,10 +1467,10 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertMatrix(obs1, add=argcheck)
-  checkmate::assertMatrix(obs2, add=argcheck)
-  checkmate::assertMatrix(theta.result, add=argcheck)
-  checkmate::assertMatrix(resdev.result, add=argcheck)
+  checkmate::assertArray(obs1, add=argcheck)
+  checkmate::assertArray(obs2, add=argcheck)
+  checkmate::assertArray(theta.result, add=argcheck)
+  checkmate::assertArray(resdev.result, add=argcheck)
   checkmate::assertNumeric(fups, null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(narm, add=argcheck)
   checkmate::assertNumeric(NS, add=argcheck)
