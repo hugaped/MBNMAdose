@@ -301,17 +301,17 @@ add_index <- function(data.ab) {
 
     # Generate treatment labels
     treatments.df <- recoded[["data.ab"]]
-    treatments.df$agent <- factor(treatments.df$agent, labels=agents)
-    treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent, treatments.df$dose)
-    treatments <- unique(paste(treatments.df$agent, treatments.df$dose, sep="_"))
+    treatments.df$agent.fac <- factor(treatments.df$agent, labels=agents)
+    treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent.fac, treatments.df$dose)
+    treatments <- unique(paste(treatments.df$agent.fac, treatments.df$dose, sep="_"))
 
     # Generate treatment variable
     data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
                                                  data.ab$dose,
                                                  sep="_"),
                                            labels=treatments,
-                                           levels=unique(paste(data.ab$agent,
-                                                               data.ab$dose,
+                                           levels=unique(paste(treatments.df$agent,
+                                                               treatments.df$dose,
                                                                sep="_"))
     ))
 
