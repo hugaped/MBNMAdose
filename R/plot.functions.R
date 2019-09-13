@@ -973,12 +973,15 @@ overlay.split <- function(g, network, method="common",
 #'
 #' @export
 devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
+                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin,
                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertChoice(dev.type, choices = c("dev", "resdev"), add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("scatter", "box"), add=argcheck)
+  checkmate::assertInt(n.iter, lower=1, null.ok = TRUE, add=argcheck)
+  checkmate::assertInt(n.thin, lower=n.iter, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (!is.null(mbnma$model.arg$rho)) {
@@ -991,7 +994,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
                   "additional iterations will be run in order to obtain results for `", dev.type, "`")
     message(msg)
 
-    dev.df <- mbnma.update(mbnma, param=dev.type)
+    dev.df <- mbnma.update(mbnma, param=dev.type, n.iter=n.iter, n.thin=n.thin)
 
   } else {
 
@@ -1155,11 +1158,14 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' }
 #'
 #' @export
-fitplot <- function(mbnma, disp.obs=TRUE, ...) {
+fitplot <- function(mbnma, disp.obs=TRUE,
+                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin, ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertLogical(disp.obs, add=argcheck)
+  checkmate::assertInt(n.iter, lower=1, null.ok = TRUE, add=argcheck)
+  checkmate::assertInt(n.thin, lower=n.iter, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (!("theta" %in% mbnma$parameters.to.save)) {
@@ -1167,7 +1173,7 @@ fitplot <- function(mbnma, disp.obs=TRUE, ...) {
                   "additional iterations will be run in order to obtain results")
     message(msg)
 
-    theta.df <- mbnma.update(mbnma, param="theta")
+    theta.df <- mbnma.update(mbnma, param="theta", n.iter=n.iter, n.thin=n.thin)
   } else {
     theta.df <- get.theta.dev(mbnma, param="theta")
   }

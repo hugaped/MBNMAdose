@@ -1579,15 +1579,13 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' }
 #'
 #' @export
-mbnma.update <- function(mbnma, param="theta") {
+mbnma.update <- function(mbnma, param="theta",
+                         n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertCharacter(param, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
-  n.iter <- mbnma$BUGSoutput$n.iter - mbnma$BUGSoutput$n.burnin
-  n.thin <- mbnma$BUGSoutput$n.thin
 
   modelcode <- mbnma$model.arg$jagscode
   # Ensure param is in model code
