@@ -981,7 +981,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   checkmate::assertChoice(dev.type, choices = c("dev", "resdev"), add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("scatter", "box"), add=argcheck)
   checkmate::assertInt(n.iter, lower=1, null.ok = TRUE, add=argcheck)
-  checkmate::assertInt(n.thin, lower=n.iter, null.ok = TRUE, add=argcheck)
+  checkmate::assertInt(n.thin, lower=1, upper=n.iter, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (!is.null(mbnma$model.arg$rho)) {
@@ -1165,7 +1165,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertLogical(disp.obs, add=argcheck)
   checkmate::assertInt(n.iter, lower=1, null.ok = TRUE, add=argcheck)
-  checkmate::assertInt(n.thin, lower=n.iter, null.ok = TRUE, add=argcheck)
+  checkmate::assertInt(n.thin, lower=1, upper=n.iter, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (!("theta" %in% mbnma$parameters.to.save)) {
