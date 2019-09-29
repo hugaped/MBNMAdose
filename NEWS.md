@@ -19,4 +19,4 @@
 
 ## First release of package
 
-Welcome to MBNMAdose. Ready for release into the world. I hope it can be of service to you!
+Welcome to MBNMAdose. Ready for release into the world. I hope it can be of service to you! For time-course MBNMA, also check out the sister package, MBNMAtime.
