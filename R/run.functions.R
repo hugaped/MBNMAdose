@@ -161,7 +161,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   \insertAllCited
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -256,7 +255,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' # Plot forest plot of results
 #' plot(result)
-#' }
 #'
 #' @export
 mbnma.run <- function(network,
@@ -657,7 +655,6 @@ gen.parameters.to.save <- function(model.params, model) {
 #' @param n.iter number of total iterations per chain (including burn in; default: 10000)
 #'
 #' @examples
-#' \donttest{
 #' # Run random effects NMA on the alogliptin dataset
 #' network <- mbnma.network(alog_pcfb)
 #' nma <- nma.run(network, method="random")
@@ -671,7 +668,6 @@ gen.parameters.to.save <- function(model.params, model) {
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
 #' network <- mbnma.network(HF2PPITT)
 #' ume <- nma.run(network, method="random", UME=TRUE)
-#' }
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
@@ -862,7 +858,6 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'   \insertAllCited
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -921,7 +916,6 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #'
 #' # Plot forest plot of results
 #' plot(linear)
-#' }
 #'
 #' @export
 mbnma.linear <- function(network,
@@ -979,7 +973,6 @@ mbnma.linear <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1038,7 +1031,6 @@ mbnma.linear <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(exponential)
-#' }
 #'
 #' @export
 mbnma.exponential <- function(network,
@@ -1108,7 +1100,6 @@ mbnma.exponential <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1185,7 +1176,6 @@ mbnma.exponential <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(emax)
-#' }
 #'
 #' @export
 mbnma.emax <- function(network,
@@ -1250,7 +1240,6 @@ mbnma.emax <- function(network,
 #'   \insertAllCited
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1334,7 +1323,6 @@ mbnma.emax <- function(network,
 #'
 #' # Plot forest plot of results
 #' plot(emax.hill)
-#' }
 #'
 #' @export
 mbnma.emax.hill <- function(network,
@@ -1433,7 +1421,6 @@ mbnma.emax.hill <- function(network,
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' \donttest{
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'               parameters.to.save=c("psi", "resdev"))
@@ -1454,7 +1441,6 @@ mbnma.emax.hill <- function(network,
 #' pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
 #'           theta.result=psi, resdev.result=resdevs,
 #'           likelihood="binomial", type="dose")
-#' }
 #'
 #' @export
 pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
@@ -1564,7 +1550,6 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' arm of the study
 #'
 #' @examples
-#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1577,7 +1562,6 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' mbnma.update(result, param="rhat") # monitor rhat
 #'
 #' mbnma.update(result, param="delta") # monitor delta
-#' }
 #'
 #' @export
 mbnma.update <- function(mbnma, param="theta",
