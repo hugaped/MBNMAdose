@@ -14,7 +14,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @param drop.discon A boolean object that indicates whether to drop treatments
 #' that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
 #' this could lead to identification of nodesplit comparisons that are not connected
-#' to the network reference treatment.
+#' to the network reference treatment, or lead to errors in running the nodesplit models, though it
+#' can be useful for error checking.
 #' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
 #' The matrix must have two columns indicating each treatment for each comparison. Values can
 #' either be character (corresponding to the treatment names given in `network`) or
@@ -62,7 +63,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' summary(split) # Generate a data frame of summary results
 #' @export
 nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
-                            drop.discon=FALSE, comparisons=NULL,
+                            comparisons=NULL, drop.discon=TRUE,
                             ...) {
 
   # Run checks
@@ -84,9 +85,13 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     connect <- drop.disconnected(network)
     data.ab <- connect[["data.ab"]]
     trt.labs <- connect[["trt.labs"]]
+
+    agents <- unique(sapply(trt.labs, function(x) strsplit(x, "_")[[1]][1]))
+    data.ab$agent <- factor(data.ab$agent, labels = agents)
   } else if (drop.discon==FALSE) {
     data.ab <- network$data.ab
     trt.labs <- network$treatments
+    data.ab$agent <- factor(data.ab$agent, labels = network$agents)
   }
 
   # Identify closed loops of treatments
@@ -126,7 +131,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       for (i in 1:nrow(out)) {
         printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
       }
-      stop(cat(paste0("The following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
+      stop(cat(paste0("\nThe following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
                       printout, "\n\n")))
     }
   }
@@ -172,7 +177,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
 
     # Drop comparisons from studies
-    ind.df <- drop.comp(ind.df, drops=dropcomp, comp=comp)
+    ind.df <- suppressWarnings(drop.comp(ind.df, drops=dropcomp, comp=comp))
     # stoploop <- FALSE
     # while(stoploop==FALSE) {
     #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
