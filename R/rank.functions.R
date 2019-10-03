@@ -38,6 +38,7 @@ rank <- function (x, ...) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
+#' \donttest{
 #' # Rank predictions from a linear dose-response MBNMA
 #' linear <- mbnma.run(network, fun="linear")
 #' pred <- predict(linear, E0 = 0.5)
@@ -58,6 +59,7 @@ rank <- function (x, ...) {
 #'
 #' # Plot `mbnma.rank` object
 #' plot(rank)
+#' }
 #'
 #' @export
 rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
@@ -185,6 +187,7 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 #' that each agent has a particular rank, for each parameter that has been ranked.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -218,6 +221,7 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 #'
 #' # Plot `mbnma.rank` object
 #' plot(ranks)
+#' }
 #'
 #' @export
 rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL, ...) {
