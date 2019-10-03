@@ -1549,6 +1549,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #'  * `"dev"` for deviance contributions
 #'  * `"resdev"` for residual deviance contributions
 #'  * `"delta"` for within-study relative effects versus the study reference treatment
+#' @inheritParams R2jags::jags
 #'
 #' @return A data frame containing the posterior mean of the updates by arm and study,
 #' with arm and study identifiers.

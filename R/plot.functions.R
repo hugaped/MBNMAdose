@@ -921,6 +921,7 @@ overlay.split <- function(g, network, method="common",
 #' and by treatment for `MBNMAtime`)
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_boxplot`
 #' @inheritParams predict.mbnma
+#' @inheritParams R2jags::jags
 #'
 #' @return Generates a plot of deviance contributions and returns a list containing the
 #' plot (as an object of `class(c("gg", "ggplot"))`), and a data.frame of posterior mean
@@ -1127,6 +1128,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' plotted as points on the graph
 #' @param ... Arguments to be sent to `ggplot2::geom_point()` or `ggplot2::geom_line()`
 #' @inheritParams predict.mbnma
+#' @inheritParams R2jags::jags
 #'
 #' @return Generates a plot of fitted values from the MBNMA model and returns a list containing
 #' the plot (as an object of `class(c("gg", "ggplot"))`), and a data.frame of posterior mean
