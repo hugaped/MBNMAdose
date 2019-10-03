@@ -26,7 +26,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' \donttest{
 #'   split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'              method="common")
 #'
@@ -61,7 +60,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Print and summarise results
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
-#' }
 #' @export
 nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
                             drop.discon=FALSE, comparisons=NULL,
@@ -318,7 +316,6 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' # Identify comparisons informed by direct and indirect evidence
 #' #in triptans dataset
 #' network <- mbnma.network(HF2PPITT)
-#' \donttest{
 #' inconsistency.loops(network$data.ab)
 #'
 #'
@@ -327,7 +324,6 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
 #'             )
 #' inconsistency.loops(data, checkindirect=FALSE)
-#' }
 #' @export
 inconsistency.loops <- function(data, checkindirect=TRUE)
 {

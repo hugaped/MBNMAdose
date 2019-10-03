@@ -273,7 +273,7 @@ mbnma <- mbnma.run(tripnet, fun="emax",
 ```{r, message=FALSE, warning=FALSE}
 summary(mbnma)
 ```
-```{r, eval=FALSE}
+```{r, results="hide"}
 # An alternative would be to use an Emax wrapper for mbnma.run() which would give the same result but with more easily interpretable parameter names
 mbnma.emax(tripnet, emax="rel", ed50="rel", method="common")
 ```
@@ -315,7 +315,7 @@ painnet <- mbnma.network(osteopain_2wkabs)
 emax <- mbnma.emax(painnet, emax="common", ed50="rel", method="random",
                    class.effect=list(ed50="common"))
 ```
-```{r, eval=FALSE}
+```{r}
 summary(emax)
 ```
 
@@ -332,7 +332,7 @@ If we had specified that the class effects were `"random"`, each treatment effec
 
 For example, with the triptans dataset we might expect that values for Emax might be 4 times larger for ED50 (on the log scale):
 
-```{r, eval=FALSE}
+```{r, results="hide"}
 # Define relative magnitudes of Emax and ED50
 rel.size <- c(4,1)
 
@@ -351,7 +351,7 @@ The string assigned to `user.fun` needs to fulfil a few criteria to be valid:
 * Indices used by JAGS should *not* be added to `user.fun` (e.g. use `dose` rather than `dose[i,k]`)
 * Any mathematical/logical operators that can be implemented in JAGS can be added to the function
 
-```{r, eval=FALSE}
+```{r, results="hide"}
 # An example specifying a quadratic dose-response function
 quad <- "(beta.1 * dose) + (beta.2 * (dose^2))"
 
@@ -392,7 +392,7 @@ To change priors within a model, a list of replacements can be provided to `prio
 
 For example, if we want to use tighter priors for the half-normal SD parameters we could increase the precision:
 
-```{r, eval=FALSE}
+```{r, results="hide"}
 # Define replacement prior
 new.priors <- list(
   sd = "dnorm(0, 1) T(0,)"
@@ -406,11 +406,11 @@ emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
 
 Mathematical errors can be more likely for certain types of models. For dose-response relationships which include a dose-response parameter as an exponent (e.g. an exponential dose-response function), default prior distributions may result in numerical values that are too extreme for computation. One way to fix this problem is to use tighter priors for `d`'s. However, a contributing factor to this issue is that doses within a dataset can be very variable in magnitude, thus leading to excessively high/low exponents. A solution for this is is to standardise doses within an agent by some common value (i.e. the most commonly prescribed dose or the maximum dose investigated). This leads to all doses being relative to the standard dose, but can improve computation.
 
-```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE, eval=FALSE}
+```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE}
 # Exponential model currently returns an error on gout dataset
 exponetial <- mbnma.exponential(goutnet, lambda="rel")
 ```
-```{r, eval=FALSE}
+```{r, results="hide"}
 # Standardise gout dataset doses relative to maximum investigated dose
 std.gout <- GoutSUA_2wkCFB
 std.gout <- std.gout %>% group_by(agent) %>% mutate(dose=dose/max(dose))
@@ -723,14 +723,14 @@ In addition to these, the argument `comparisons` can be used to indicate which t
 
 As several models have to be run for each closed loop of treatments, node-splitting can take some time to run, and it therefore is not shown for the purposes of this vignette.
 
-```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide", eval=FALSE}
+```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide"}
 # Using the triptans dataset
 tripnet <- mbnma.network(HF2PPITT)
 
 # Nodesplit using a random effects model
 nodesplit <- nma.nodesplit(tripnet, method="random")
 ```
-```{r, eval=FALSE}
+```{r}
 print(nodesplit)
 ```
 
@@ -745,7 +745,7 @@ The nodesplit object itself is a list with results for each treatment comparison
 
 It is possible to generate different plots of each nodesplit comparison using `plot()`:
 
-```{r, eval=FALSE}
+```{r}
 # Plot forest plots of direct, indirect and pooled (NMA) results for each comparison
 plot(nodesplit, plot.type="forest")
 
