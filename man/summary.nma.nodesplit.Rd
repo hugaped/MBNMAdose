@@ -2,7 +2,7 @@
 % Please edit documentation in R/print.functions.R
 \name{summary.nma.nodesplit}
 \alias{summary.nma.nodesplit}
-\title{Generates a summary data frame for mbnma.nodesplit objects}
+\title{Generates a summary data frame for nma.nodesplit objects}
 \usage{
 \method{summary}{nma.nodesplit}(object, ...)
 }
@@ -12,5 +12,5 @@
 \item{...}{further arguments passed to or from other methods}
 }
 \description{
-Generates a summary data frame for mbnma.nodesplit objects
+Generates a summary data frame for nma.nodesplit objects
 }
