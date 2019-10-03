@@ -245,12 +245,12 @@ test_that("mbnma.update function correctly", {
   result <- mbnma.run(network, fun="emax", beta.1="rel", beta.2="rel", method="common",
                       n.iter=500)
 
-  expect_error(mbnma.update(result, param="test"))
+  expect_error(mbnma.update(result, param="test", n.iter=100))
 
-  update <- mbnma.update(result, param="resdev")
+  update <- mbnma.update(result, param="resdev", n.iter=100)
   expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
 
-  update <- mbnma.update(result, param="theta")
+  update <- mbnma.update(result, param="theta", n.iter=100)
   expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
 
 })
