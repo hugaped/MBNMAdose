@@ -62,8 +62,8 @@ testthat::test_that("test.nma.nodesplit", {
   # Test comparisons
   split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = TRUE,
-                           comparisons = rbind(c(9,10), c(7,11)))
-  expect_equal(8, length(split))
+                           comparisons = rbind(c(17,20), c(6,2)))
+  expect_equal(2, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")
 

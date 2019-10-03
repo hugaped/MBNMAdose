@@ -54,7 +54,6 @@ models is treated as unknown (if \code{rho = "estimate"}) and deviance contribut
 ###### For MBNMAdose ######
 ###########################
 
-\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -78,11 +77,5 @@ head(devs$dev.data)
 # Other deviance contributions not currently implemented but in future
 #it will be possible to plot them like so
 #devplot(emax, dev.type="dev")
-
-
-###########################
-###### For MBNMAtime ######
-###########################
-}
 
 }

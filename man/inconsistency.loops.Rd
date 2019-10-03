@@ -40,7 +40,6 @@ reference treatment would also be identifying heterogeneity. Depends on
 # Identify comparisons informed by direct and indirect evidence
 #in triptans dataset
 network <- mbnma.network(HF2PPITT)
-\donttest{
 inconsistency.loops(network$data.ab)
 
 
@@ -49,7 +48,6 @@ data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
             treatment=c(1,2,1,3,2,3,3,4,1,2,4)
             )
 inconsistency.loops(data, checkindirect=FALSE)
-}
 }
 \references{
 \insertAllCited{}

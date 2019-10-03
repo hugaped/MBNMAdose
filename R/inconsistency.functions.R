@@ -98,6 +98,9 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab)
   } else {
+    if (!class(comparisons) %in% c("matrix", "data.frame")) {
+      stop("`comparisons` must be be either a matrix or a data frame of comparisons on which to nodesplit")
+    }
     if (class(comparisons)=="data.frame") {
       if (all(c("t1", "t2") %in% names(comparisons))) {
         comparisons <- data.frame(comparisons$t1, comparisons$t2)
@@ -107,9 +110,13 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     if (ncol(comparisons)!=2) {
       stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
     }
+    if (is.numeric(comparisons)) {
+      # To ensure numbers correspond to original treatment numbers even if treatments are dropped from the network
+      comparisons <- apply(comparisons, MARGIN=2, FUN=function(x) (network$treatments[x]))
+    }
     if (is.character(comparisons)) {
       if (!all(comparisons %in% trt.labs)) {
-        stop("Treatment names given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
+        stop("Treatment names given in `comparisons` do not match those within `network` or they match treatments that have been dropped from the network due to being disconnected")
       }
       comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
     }
@@ -507,7 +514,8 @@ ref.comparisons <- function(data)
 #' for node-splitting
 #' @param start Can take either `0` or `1` to indicate whether to drop the treatment
 #' in `comp[1]` (`0`) or `comp[2]` (`1`)
-#' @noRd
+#'
+#' @noMd
 drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
   index <- start
   #print(index)

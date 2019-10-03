@@ -26,7 +26,6 @@ This allows for priors to be changed even in failing models, which may help
 solve issues with compiling or updating.
 }
 \examples{
-\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -39,6 +38,5 @@ print(result$model.arg$priors)
 # Priors when using mbnma.run with an exponential function
 result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 print(result$model.arg$priors)
-}
 
 }
