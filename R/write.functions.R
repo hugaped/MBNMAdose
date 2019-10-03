@@ -1001,6 +1001,7 @@ write.remove.loops <- function(model) {
 #'   solve issues with compiling or updating.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -1013,6 +1014,7 @@ write.remove.loops <- function(model) {
 #' # Priors when using mbnma.run with an exponential function
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 #' print(result$model.arg$priors)
+#' }
 #'
 #' @export
 get.prior <- function(model) {
