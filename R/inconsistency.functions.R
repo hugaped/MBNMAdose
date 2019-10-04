@@ -27,8 +27,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#'   split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-#'              method="common")
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'   method="common")
 #'
 #'
 #'
@@ -38,21 +38,13 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' loops <- inconsistency.loops(network$data.ab)
 #'
 #' # This...
-#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-#'              method="random", comparisons=rbind(c("eletriptan_0.5", "sumatriptan_0.5")))
+#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
 #'
 #' #...is the same as...
-#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-#'              method="random", comparisons=rbind(c(2, 5)))
+#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c(6, 12)))
 #'
-#'
-#' # Drop treatments that are disconnected from the network in the analysis
-#' # Generate data without placebo
-#' noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-#' net.noplac <- mbnma.network(noplac.df)
-#'
-#' split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
-#'              method="random", drop.discon=TRUE)
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities

@@ -14,8 +14,8 @@ drop.comp(ind.df, drops, comp, start = stats::rbinom(1, 1, 0.5))
 \item{comp}{A numeric vector of length 2 that contains treatment codes corresponding to the comparison
 for node-splitting}
 
-\item{start}{Can take either \code{0} or \code{1} to indicate whether to drop the treatment
-in \code{comp[1]} (\code{0}) or \code{comp[2]} (\code{1})}
+\item{start}{Can take either `0` or `1` to indicate whether to drop the treatment
+in `comp[1]` (`0`) or `comp[2]` (`1`)}
 }
 \description{
 Drops arms in a way which preserves connectivity and equally removes

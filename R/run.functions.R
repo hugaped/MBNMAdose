@@ -243,7 +243,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Traceplots
 #' mcmcplots::traplot(result)
 #'
-#' # Autocorrelation plots
+#' # Caterpillar plots
 #' mcmcplots::caterplot(result, "d.1")
 #'
 #'
@@ -904,7 +904,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' # Traceplots
 #' mcmcplots::traplot(linear)
 #'
-#' # Autocorrelation plots
+#' # Caterpillar plots
 #' mcmcplots::caterplot(linear, "d.slope")
 #'
 #'
@@ -1019,7 +1019,7 @@ mbnma.linear <- function(network,
 #' # Traceplots
 #' mcmcplots::traplot(exponential)
 #'
-#' # Autocorrelation plots
+#' # Caterpillar plots
 #' mcmcplots::caterplot(exponential, "d.lambda")
 #'
 #'
@@ -1164,7 +1164,7 @@ mbnma.exponential <- function(network,
 #' # Traceplots
 #' mcmcplots::traplot(emax)
 #'
-#' # Autocorrelation plots
+#' # Caterpillar plots
 #' mcmcplots::caterplot(emax, "d.emax")
 #'
 #'
@@ -1311,7 +1311,7 @@ mbnma.emax <- function(network,
 #' # Traceplots
 #' mcmcplots::traplot(emax.hill)
 #'
-#' # Autocorrelation plots
+#' # Caterpillar plots
 #' mcmcplots::caterplot(emax.hill, "d.emax")
 #'
 #'
