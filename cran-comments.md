@@ -1,9 +1,3 @@
-## Resubmission
-This is a resubmission. In this version I have:
-
-* Checked for problems with `igraph` package that was causing errors on CRAN. No errors or notes found on local check, check_rhub() or check_win_devel()
-
-
 ## Test environments
 
 * Ubuntu 16.04 (on travis-ci), R 3.2.4
