@@ -11,7 +11,12 @@
 
 ## Bug fixes
 
-- Fixed incorrect ordering of treatment codes in mbnma.network
+### Major
+- Fixed incorrect ordering of treatment codes in mbnma.network, which also led to problems in subsequent commands/plots
+
+### Minor
+- Fixed minor with numeric vs character coding of treatments in arguments for ranking functions
+- Fixed issue with `nma.nodesplit()` that prevented the model running if disconnected treatments were included in the analysis (`drop.discon=FALSE`)
 
 
 
