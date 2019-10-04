@@ -1,13 +1,9 @@
-# MBNMAdose 0.2.3
+# MBNMAdose 0.2.4
 
 ## Documentation changes
 
-- Made corrections to some arguments specified in documentation
-- Fixed incorrect vignette reference
-- Allowed more examples in the vignette to run so that plots can be created which better illustrates how MBNMA.run() functions are used.
 - Update to README to ensure package workflow image works correctly on CRAN.
 - Added JAGS as a System Requirement (JAGS >= 4.3.0) to the DESCRIPTION
-
 
 ## Bug fixes
 
@@ -18,6 +14,14 @@
 - Fixed minor with numeric vs character coding of treatments in arguments for ranking functions
 - Fixed issue with `nma.nodesplit()` that prevented the model running if disconnected treatments were included in the analysis (`drop.discon=FALSE`)
 
+
+# MBNMAdose 0.2.3
+
+## Documentation changes
+
+- Made corrections to some arguments specified in documentation
+- Fixed incorrect vignette reference
+- Allowed more examples in the vignette to run so that plots can be created which better illustrates how MBNMA.run() functions are used.
 
 
 # MBNMAdose 0.2.2

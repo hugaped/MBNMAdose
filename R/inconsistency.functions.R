@@ -176,7 +176,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
 
     # Drop comparisons from studies
-    ind.df <- suppressWarnings(MBNMAdose:::drop.comp(ind.df, drops=dropcomp, comp=comp))
+    ind.df <- suppressWarnings(drop.comp(ind.df, drops=dropcomp, comp=comp))
     # stoploop <- FALSE
     # while(stoploop==FALSE) {
     #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
@@ -577,7 +577,7 @@ check.indirect.drops <- function(data=data, comp) {
   stoploop <- FALSE
   count <- 1
   while(stoploop==FALSE) {
-    temp <- MBNMAdose:::drop.comp(data, drops=dropcomp, comp=comp)
+    temp <- drop.comp(data, drops=dropcomp, comp=comp)
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(data$treatment))) {
