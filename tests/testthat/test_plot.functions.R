@@ -15,24 +15,24 @@ netlist <- list(network, net.noplac)
 
 
 # Models
-linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear", n.iter=1000)
-
-emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
-emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
-
-emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                        class.effect=list(emax="random"), n.iter=1000)
-
-emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-                        class.effect=list(emax="random"), n.iter=1000)
-
-nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
-
-emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
-
-resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
-
-modellist <- list(linear, emax, emax.class, emax.noplac)
+# linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear", n.iter=1000)
+#
+# emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
+# emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
+#
+# emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+#                         class.effect=list(emax="random"), n.iter=1000)
+#
+# emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
+#                         class.effect=list(emax="random"), n.iter=1000)
+#
+# nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
+#
+# emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
+#
+# resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
+#
+# modellist <- list(linear, emax, emax.class, emax.noplac)
 
 ###################################################
 ################## Run Tests ######################
@@ -89,157 +89,157 @@ test_that("plot.mbnma.network functions correctly", {
 
 
 
-testthat::test_that("plot.mbnma functions correctly", {
-  for (i in seq_along(modellist)) {
-    expect_silent(plot(modellist[[i]]))
-  }
-  expect_equal("ggplot" %in% class(plot(nonparam)), TRUE)
-
-  # Test number of panels is equal to number of rel effect parameters
-  g <- plot(emax)
-  expect_equal(length(unique(g$data$doseparam)), 2)
-
-  g <- plot(emax.class)
-  expect_equal(length(unique(g$data$doseparam)), 1)
-
-  # params argument
-  expect_error(plot(emax, params="rabbit"))
-  g <- plot(emax, params = "d.emax")
-  expect_equal(length(unique(g$data$doseparam)), 1)
-
-  # Agent labs
-  expect_silent(plot(emax, agent.labs = netgout$agents))
-  expect_error(plot(emax, agent.labs = netgout$agents[-3]))
-
-  # Class labs
-  expect_silent(
-    plot(emax.class2, agent.labs = netclass$agents, class.labs=netclass$classes))
-
-  # No relative effects saved
-  expect_error(plot(resdev))
-
-})
-
-
-
-
-testthat::test_that("plot.mbnma.predict functions correctly", {
-  pred <- predict(linear, E0 = 0.5)
-  expect_silent(plot(pred))
-
-  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
-  expect_silent(plot(pred))
-
-  # Test disp.obs
-  expect_error(plot(pred, disp.obs = TRUE))
-  expect_message(plot(pred, disp.obs = TRUE, network=netgout))
-  expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
-
-  pred <- predict(emax, E0 = 0.5)
-  expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
-
-  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-  expect_silent(plot(pred, disp.obs=TRUE, network=network))
-
-  pred <- predict(emax.noplac, E0 = 0.5)
-  expect_silent(plot(pred, disp.obs = TRUE, network=net.noplac))
-
-
-  # Test agent.labs
-  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-  g <- plot(pred, agent.labs = c("Badger", "Ferret"))
-  expect_identical(levels(g$data$agent), c("Badger", "Ferret"))
-
-  expect_error(plot(pred, agent.labs = c("Badger", "Ferret", "Whippet")))
-
-
-  # Test overlay.split
-  pred <- predict(linear, E0 = 0.5)
-  expect_error(plot(pred, overlay.split = TRUE))
-  expect_output(plot(pred, overlay.split = TRUE, network=netalog))
-
-  pred <- predict(emax, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=netgout))
-
-  doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-  expect_output(plot(pred, overlay.split = TRUE, network=network))
-
-  doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-  expect_error(plot(pred, overlay.split = TRUE, network=network))
-
-  pred <- predict(emax.noplac, E0 = 0.5)
-  expect_error(plot(pred, overlay.split = TRUE, network=net.noplac))
-
-
-  # Test method="common"
-  pred <- predict(linear, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=netalog, method="random"),
-                "SD")
-
-  pred <- predict(emax, E0 = 0.5)
-  expect_output(plot(pred, overlay.split = TRUE, network=netgout, method="random"),
-                "SD")
-
-
-  # Test scales
-  pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
-  expect_silent(plot(pred, scales="fixed"))
-  expect_error(plot(pred, scales="badger"))
-
-})
-
-
-
-testthat::test_that("devplot functions correctly", {
-  expect_message(devplot(emax, dev.type="resdev", plot.type = "scatter", n.iter=100))
-
-  expect_message(devplot(emax.class, dev.type="resdev", plot.type = "box", n.iter=100))
-
-  expect_message(devplot(emax.noplac, dev.type="resdev", plot.type = "box", n.iter=100))
-
-  expect_message(devplot(emax.noplac, dev.type="resdev", facet = FALSE, n.iter=100))
-
-  expect_silent(devplot(resdev, dev.type="resdev", n.iter=100))
-
-  expect_error(devplot(emax, dev.type="dev", n.iter=100))
-
-})
-
-
-
-testthat::test_that("fitplot functions correctly", {
-
-  expect_message(fitplot(emax, disp.obs = TRUE, n.iter=100))
-
-  expect_message(fitplot(emax.class, disp.obs=FALSE, n.iter=100))
-
-  theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta", n.iter=1000)
-  expect_silent(fitplot(theta.run, n.iter=100))
-
-})
-
-
-testthat::test_that("plot.mbnma.rank functions correctly", {
-  rank <- rank.mbnma(emax)
-  g <- plot(rank)
-  expect_equal(length(g), 2)
-
-  rank <- rank.mbnma(emax.class2)
-  expect_silent(plot(rank))
-
-  rank <- rank.mbnma(emax.noplac)
-  g <- plot(rank, params="d.emax")
-  expect_equal(length(g), 1)
-
-  expect_silent(plot(rank, treat.labs = net.noplac$agents))
-  expect_error(plot(rank, treat.labs = network$agents))
-
-  rank <- rank.mbnma(emax.noplac, to.rank=c(3,5,6))
-  expect_silent(plot(rank, treat.labs = network$agents[c(3,5,6)]))
-  expect_error(plot(rank, treat.labs = net.noplac$agents))
-
-})
+# testthat::test_that("plot.mbnma functions correctly", {
+#   for (i in seq_along(modellist)) {
+#     expect_silent(plot(modellist[[i]]))
+#   }
+#   expect_equal("ggplot" %in% class(plot(nonparam)), TRUE)
+#
+#   # Test number of panels is equal to number of rel effect parameters
+#   g <- plot(emax)
+#   expect_equal(length(unique(g$data$doseparam)), 2)
+#
+#   g <- plot(emax.class)
+#   expect_equal(length(unique(g$data$doseparam)), 1)
+#
+#   # params argument
+#   expect_error(plot(emax, params="rabbit"))
+#   g <- plot(emax, params = "d.emax")
+#   expect_equal(length(unique(g$data$doseparam)), 1)
+#
+#   # Agent labs
+#   expect_silent(plot(emax, agent.labs = netgout$agents))
+#   expect_error(plot(emax, agent.labs = netgout$agents[-3]))
+#
+#   # Class labs
+#   expect_silent(
+#     plot(emax.class2, agent.labs = netclass$agents, class.labs=netclass$classes))
+#
+#   # No relative effects saved
+#   expect_error(plot(resdev))
+#
+# })
+#
+#
+#
+#
+# testthat::test_that("plot.mbnma.predict functions correctly", {
+#   pred <- predict(linear, E0 = 0.5)
+#   expect_silent(plot(pred))
+#
+#   pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
+#   expect_silent(plot(pred))
+#
+#   # Test disp.obs
+#   expect_error(plot(pred, disp.obs = TRUE))
+#   expect_message(plot(pred, disp.obs = TRUE, network=netgout))
+#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#
+#   pred <- predict(emax, E0 = 0.5)
+#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#
+#   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+#   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+#   expect_silent(plot(pred, disp.obs=TRUE, network=network))
+#
+#   pred <- predict(emax.noplac, E0 = 0.5)
+#   expect_silent(plot(pred, disp.obs = TRUE, network=net.noplac))
+#
+#
+#   # Test agent.labs
+#   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
+#   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+#   g <- plot(pred, agent.labs = c("Badger", "Ferret"))
+#   expect_identical(levels(g$data$agent), c("Badger", "Ferret"))
+#
+#   expect_error(plot(pred, agent.labs = c("Badger", "Ferret", "Whippet")))
+#
+#
+#   # Test overlay.split
+#   pred <- predict(linear, E0 = 0.5)
+#   expect_error(plot(pred, overlay.split = TRUE))
+#   expect_output(plot(pred, overlay.split = TRUE, network=netalog))
+#
+#   pred <- predict(emax, E0 = 0.5)
+#   expect_output(plot(pred, overlay.split = TRUE, network=netgout))
+#
+#   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
+#   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+#   expect_output(plot(pred, overlay.split = TRUE, network=network))
+#
+#   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
+#   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+#   expect_error(plot(pred, overlay.split = TRUE, network=network))
+#
+#   pred <- predict(emax.noplac, E0 = 0.5)
+#   expect_error(plot(pred, overlay.split = TRUE, network=net.noplac))
+#
+#
+#   # Test method="common"
+#   pred <- predict(linear, E0 = 0.5)
+#   expect_output(plot(pred, overlay.split = TRUE, network=netalog, method="random"),
+#                 "SD")
+#
+#   pred <- predict(emax, E0 = 0.5)
+#   expect_output(plot(pred, overlay.split = TRUE, network=netgout, method="random"),
+#                 "SD")
+#
+#
+#   # Test scales
+#   pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)")
+#   expect_silent(plot(pred, scales="fixed"))
+#   expect_error(plot(pred, scales="badger"))
+#
+# })
+#
+#
+#
+# testthat::test_that("devplot functions correctly", {
+#   expect_message(devplot(emax, dev.type="resdev", plot.type = "scatter", n.iter=100))
+#
+#   expect_message(devplot(emax.class, dev.type="resdev", plot.type = "box", n.iter=100))
+#
+#   expect_message(devplot(emax.noplac, dev.type="resdev", plot.type = "box", n.iter=100))
+#
+#   expect_message(devplot(emax.noplac, dev.type="resdev", facet = FALSE, n.iter=100))
+#
+#   expect_silent(devplot(resdev, dev.type="resdev", n.iter=100))
+#
+#   expect_error(devplot(emax, dev.type="dev", n.iter=100))
+#
+# })
+#
+#
+#
+# testthat::test_that("fitplot functions correctly", {
+#
+#   expect_message(fitplot(emax, disp.obs = TRUE, n.iter=100))
+#
+#   expect_message(fitplot(emax.class, disp.obs=FALSE, n.iter=100))
+#
+#   theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta", n.iter=1000)
+#   expect_silent(fitplot(theta.run, n.iter=100))
+#
+# })
+#
+#
+# testthat::test_that("plot.mbnma.rank functions correctly", {
+#   rank <- rank.mbnma(emax)
+#   g <- plot(rank)
+#   expect_equal(length(g), 2)
+#
+#   rank <- rank.mbnma(emax.class2)
+#   expect_silent(plot(rank))
+#
+#   rank <- rank.mbnma(emax.noplac)
+#   g <- plot(rank, params="d.emax")
+#   expect_equal(length(g), 1)
+#
+#   expect_silent(plot(rank, treat.labs = net.noplac$agents))
+#   expect_error(plot(rank, treat.labs = network$agents))
+#
+#   rank <- rank.mbnma(emax.noplac, to.rank=c(3,5,6))
+#   expect_silent(plot(rank, treat.labs = network$agents[c(3,5,6)]))
+#   expect_error(plot(rank, treat.labs = net.noplac$agents))
+#
+# })

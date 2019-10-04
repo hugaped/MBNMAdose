@@ -24,6 +24,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @inheritParams mbnma.run
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -53,6 +54,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' # Print and summarise results
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
+#' }
 #' @export
 nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
                             comparisons=NULL, drop.discon=TRUE,
@@ -317,10 +319,12 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' \insertAllCited{}
 #'
 #' @examples
+#' \donttest{
 #' # Identify comparisons informed by direct and indirect evidence
 #' #in triptans dataset
 #' network <- mbnma.network(HF2PPITT)
 #' inconsistency.loops(network$data.ab)
+#' }
 #'
 #'
 #' # Do not perform additional connectivity check on data
