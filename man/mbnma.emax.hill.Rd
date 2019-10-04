@@ -210,7 +210,7 @@ mcmcplots::denplot(emax.hill)
 # Traceplots
 mcmcplots::traplot(emax.hill)
 
-# Autocorrelation plots
+# Caterpillar plots
 mcmcplots::caterplot(emax.hill, "d.emax")
 
 

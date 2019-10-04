@@ -273,7 +273,7 @@ mcmcplots::denplot(result)
 # Traceplots
 mcmcplots::traplot(result)
 
-# Autocorrelation plots
+# Caterpillar plots
 mcmcplots::caterplot(result, "d.1")
 
 

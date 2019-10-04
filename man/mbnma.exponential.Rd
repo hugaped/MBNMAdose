@@ -179,7 +179,7 @@ mcmcplots::denplot(exponential)
 # Traceplots
 mcmcplots::traplot(exponential)
 
-# Autocorrelation plots
+# Caterpillar plots
 mcmcplots::caterplot(exponential, "d.lambda")
 
 

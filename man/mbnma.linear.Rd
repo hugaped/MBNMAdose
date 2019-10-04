@@ -179,7 +179,7 @@ mcmcplots::denplot(linear)
 # Traceplots
 mcmcplots::traplot(linear)
 
-# Autocorrelation plots
+# Caterpillar plots
 mcmcplots::caterplot(linear, "d.slope")
 
 
