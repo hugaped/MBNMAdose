@@ -33,6 +33,7 @@ If \code{predict} contains multiple predictions at dose=0, then only the first o
 will be included, to avoid duplicating rankings.
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -56,5 +57,6 @@ print(rank)
 
 # Plot `mbnma.rank` object
 plot(rank)
+}
 
 }

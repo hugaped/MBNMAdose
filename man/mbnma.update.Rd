@@ -53,6 +53,7 @@ arm of the study
 Useful for obtaining deviance contributions or fitted values
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -65,5 +66,6 @@ mbnma.update(result, param="theta") # monitor theta
 mbnma.update(result, param="rhat") # monitor rhat
 
 mbnma.update(result, param="delta") # monitor delta
+}
 
 }

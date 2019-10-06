@@ -65,6 +65,7 @@ relationships.
 }}
 
 \examples{
+\donttest{
 # Run random effects NMA on the alogliptin dataset
 network <- mbnma.network(alog_pcfb)
 nma <- nma.run(network, method="random")
@@ -78,5 +79,6 @@ nma <- nma.run(network, method="common", drop.discon=FALSE)
 # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
 network <- mbnma.network(HF2PPITT)
 ume <- nma.run(network, method="random", UME=TRUE)
+}
 
 }

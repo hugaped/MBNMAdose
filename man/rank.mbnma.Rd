@@ -39,6 +39,7 @@ Only parameters that vary by agent/class can be ranked.
 Ranking cannot currently be performed on non-parametric dose-response MBNMA
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -72,5 +73,6 @@ print(ranks)
 
 # Plot `mbnma.rank` object
 plot(ranks)
+}
 
 }

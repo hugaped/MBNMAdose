@@ -37,10 +37,12 @@ reference treatment would also be identifying heterogeneity. Depends on
 \code{\link[igraph]{igraph}}.
 }
 \examples{
+\donttest{
 # Identify comparisons informed by direct and indirect evidence
 #in triptans dataset
 network <- mbnma.network(HF2PPITT)
 inconsistency.loops(network$data.ab)
+}
 
 
 # Do not perform additional connectivity check on data

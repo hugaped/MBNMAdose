@@ -39,6 +39,7 @@ If fitted values (\code{theta}) have not been monitored in \code{mbnma$parameter
 then additional iterations will have to be run to get results for these.
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -55,5 +56,6 @@ fitplot(emax, disp.obs=FALSE)
 #returned by `fitplot`
 fits <- fitplot(emax)
 head(fits$fv)
+}
 
 }

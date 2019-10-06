@@ -65,6 +65,7 @@ Alternative approaches are to use pV as an approximation or
 pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}.
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -88,6 +89,7 @@ resdevs <- result$BUGSoutput$median$resdev
 pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
           theta.result=psi, resdev.result=resdevs,
           likelihood="binomial", type="dose")
+}
 
 }
 \references{

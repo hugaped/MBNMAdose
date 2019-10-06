@@ -64,6 +64,7 @@ of posterior densities for direct and indirect evidence.
 }}
 
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -93,4 +94,5 @@ plot(split, plot.type="forest") # Plot forest plots of direct and indirect evide
 # Print and summarise results
 print(split)
 summary(split) # Generate a data frame of summary results
+}
 }

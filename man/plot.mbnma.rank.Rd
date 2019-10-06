@@ -28,6 +28,7 @@ which is an object of \code{class(c("gg", "ggplot"))}.
 Plot histograms of rankings from MBNMA models
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -47,4 +48,5 @@ pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
             exact.doses=doses)
 rank <- rank(pred)
 plot(rank)
+}
 }
