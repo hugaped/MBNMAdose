@@ -81,6 +81,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' `[rank-mbnma.predict]`
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -145,6 +146,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' # Plot `mbnma.predict` object
 #' plot(pred)
+#' }
 #'
 #' @export
 predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
@@ -455,6 +457,7 @@ get.model.vals <- function(mbnma) {
 #'   E0 if `synth="random"`. Each element contains the full MCMC results from the synthesis.
 #'
 #' @examples
+#' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
@@ -471,6 +474,7 @@ get.model.vals <- function(mbnma) {
 #' # Meta-analyse placebo studies using random treatment effects
 #' E0 <- ref.synth(ref.df, emax, synth="random")
 #' names(E0)
+#' }
 #'
 #' @export
 ref.synth <- function(data.ab, mbnma, synth="fixed",

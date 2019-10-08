@@ -90,6 +90,7 @@ agent. This may be more useful when ranking different predicted responses using
 }
 }
 \examples{
+\donttest{
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
@@ -154,5 +155,6 @@ summary(pred)
 
 # Plot `mbnma.predict` object
 plot(pred)
+}
 
 }
