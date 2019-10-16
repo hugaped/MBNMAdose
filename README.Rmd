@@ -37,7 +37,7 @@ For the development version the package can be installed directly from GitHub us
 install.packages("devtools")
 
 # Then install MBNMAdose directly from GitHub
-devtools::install_github("hugopedder/MBNMAdose")
+devtools::install_github("hugaped/MBNMAdose")
 ```
 
 

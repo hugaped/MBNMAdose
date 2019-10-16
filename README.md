@@ -38,7 +38,7 @@ GitHub using the `devtools` R package:
 install.packages("devtools")
 
 # Then install MBNMAdose directly from GitHub
-devtools::install_github("hugopedder/MBNMAdose")
+devtools::install_github("hugaped/MBNMAdose")
 ```
 
 ## Workflow
