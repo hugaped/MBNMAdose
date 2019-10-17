@@ -1,3 +1,10 @@
+# MBNMAdose 0.2.5
+
+## Documentation changes
+
+- Added Lujin Li to list of authors as a reviewer thanks to his considerable help in identifying issues in the previous version.
+
+
 # MBNMAdose 0.2.4
 
 ## Documentation changes

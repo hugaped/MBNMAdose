@@ -1,7 +1,7 @@
 Package: MBNMAdose
 Type: Package
 Title: Run Dose-Response MBNMA Models
-Version: 0.2.4
+Version: 0.2.5.9000
 Language: en-GB
 Date: 2019-10-04
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
@@ -10,6 +10,7 @@ Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("
     person("Sofia", "Dias", role = c("rev")),
     person("Meg", "Bennetts", role = c("rev")),
     person("Martin", "Boucher", role = c("rev")),
+    person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
 URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
