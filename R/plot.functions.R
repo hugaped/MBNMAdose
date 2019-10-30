@@ -224,20 +224,21 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
     }
   }
 
+  # Add attributes
+  igraph::V(g)$label.dist <- label.distance
+  if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
+  igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
+
   # Plot netgraph
   if (layout_in_circle==TRUE) {
     lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+    igraph::V(g)$label.degree <- lab.locs
     igraph::plot.igraph(g,
-                        edge.width = edge.scale * comparisons[["nr"]],
                         layout = igraph::layout_in_circle(g),
-                        vertex.label.dist=label.distance,
-                        vertex.label.degree=lab.locs,
-                        vertex.size = node.size,
                         ...
     )
   } else {
-    igraph::plot.igraph(g, edge.width = edge.scale * comparisons[["nr"]], vertex.size = node.size,
-                        ...)
+    igraph::plot.igraph(g, ...)
   }
 
   if (!is.null(doselink)) {

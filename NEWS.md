@@ -4,6 +4,10 @@
 
 - Added Lujin Li to list of authors as a reviewer thanks to his considerable help in identifying issues in the previous version.
 
+## Additions
+
+- `mbnma.network` objects returned from `plot.mbnma.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
+
 
 # MBNMAdose 0.2.4
 
