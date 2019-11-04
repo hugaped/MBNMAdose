@@ -261,7 +261,8 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
     DR.1 <- "(beta.1[agent[i,k]] * dose[i,k])"
   } else if (fun=="exponential") {
     #DR <- "DR[i,k] <- exp(beta.1[agent[i,k]] * dose[i,k]) - exp(beta.1[agent[i,1]] * dose[i,1])"
-    DR.1 <- "exp(beta.1[agent[i,k]] * dose[i,k])"
+    #DR.1 <- "1 - exp(beta.1[agent[i,k]] * dose[i,k])"
+    DR.1 <- "beta.1[agent[i,k]] * (1 - exp(-abs(dose[i,k])))"
     message("Results for the rate of increase/decrease (`beta.1`) modelled on the exponential scale")
   } else if (fun=="emax") {
     #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"

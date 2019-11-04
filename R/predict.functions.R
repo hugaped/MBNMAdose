@@ -326,6 +326,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
     for (k in seq_along(doses[[i]])) {
       if (names(doses)[i] %in% c("1", "Placebo") | doses[[i]][k]==0) {
         # Ensures reference agent (placebo) takes E0
+        # THIS NEEDS TO BE CHANGED IF INTERCEPT IS RELAXED! sHOULD ONLY BE USED IF INTERCEPT=FALSE
         pred <- E0
 
       } else {
