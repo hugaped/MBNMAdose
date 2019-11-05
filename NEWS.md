@@ -8,7 +8,7 @@
 
 - `mbnma.network` objects returned from `plot.mbnma.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
 
-## Bug fixed
+## Bug fixes
 
 ### Major
 - Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
