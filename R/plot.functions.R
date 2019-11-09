@@ -495,7 +495,8 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 
   # Axis labels
   g <- g + ggplot2::xlab("Agent / Class") +
-    ggplot2::ylab("Effect size")
+    ggplot2::ylab("Effect size") +
+    ggplot2::theme_bw()
 
   return(g)
 }
@@ -661,7 +662,8 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=c("Posterior Median"="solid",
-                                                   "95% CrI"="dashed"))
+                                                   "95% CrI"="dashed")) +
+    ggplot2::theme_bw()
 
   return(g)
 }
@@ -1027,7 +1029,8 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab("Posterior mean")
+    ggplot2::ylab("Posterior mean") +
+    ggplot2::theme_bw()
 
   if (facet==TRUE) {
     g <- g + ggplot2::facet_wrap(~facet, scales = facetscale) +
@@ -1238,7 +1241,8 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab(ylab)
+    ggplot2::ylab(ylab) +
+    ggplot2::theme_bw()
 
   suppressWarnings(graphics::plot(g))
 
@@ -1330,7 +1334,8 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param])
+      ggplot2::ggtitle(params[param]) +
+      ggplot2::theme_bw()
 
     graphics::plot(g)
 
@@ -1402,7 +1407,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
                      axis.title = ggplot2::element_text(size=12),
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::facet_wrap(~factor(forestdata$comp))
+      ggplot2::facet_wrap(~factor(forestdata$comp)) +
+      ggplot2::theme_bw()
   }
   if ("density" %in% plot.type) {
 
@@ -1414,7 +1420,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(densitydata$comp))
+      ggplot2::facet_wrap(~factor(densitydata$comp)) +
+      ggplot2::theme_bw()
   }
 
   if (identical(sort(plot.type), c("density", "forest"))) {
@@ -1510,7 +1517,8 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
-      ggplot2::ylab("Effect size on link scale")
+      ggplot2::ylab("Effect size on link scale") +
+      ggplot2::theme_bw()
 
   } else if (bydose==FALSE) {
     # Plot conventional forest plot
@@ -1521,7 +1529,8 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
-      ggplot2::xlab("Treatment")
+      ggplot2::xlab("Treatment") +
+      ggplot2::theme_bw()
   }
 
   graphics::plot(g)

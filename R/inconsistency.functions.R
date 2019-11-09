@@ -249,7 +249,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       ggplot2::theme(axis.text = ggplot2::element_text(size=15),
                      axis.title = ggplot2::element_text(size=18),
                      title=ggplot2::element_text(size=18)) +
-      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm"))
+      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+      ggplot2::theme_bw()
 
     # Density plots (with shaded area of overlap)
     molten <- data.frame(ind.res, dir.res)
@@ -264,7 +265,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       ggplot2::ylab("Posterior density") +
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                     axis.title = ggplot2::element_text(size=14))
+                     axis.title = ggplot2::element_text(size=14)) +
+      ggplot2::theme_bw()
 
     nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
                       "direct"=dir.res, "indirect"=ind.res, "nma"=nma.res,
