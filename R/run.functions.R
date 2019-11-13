@@ -448,7 +448,7 @@ mbnma.run <- function(network,
   }
 
   # Recalculate DIC so it is adjusted for choice of pD
-  result$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
+  result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,

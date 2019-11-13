@@ -12,6 +12,7 @@
 
 ### Major
 - Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
+- DIC reported correctly in output when using plugin (`pd="plugin"`), or Kullback-Leibler divergence (`pd="pd.kl"`) 
 
 
 # MBNMAdose 0.2.4
