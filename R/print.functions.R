@@ -545,26 +545,26 @@ print.modfit.str <- function(mbnma) {
   } else if (mbnma$model.arg$pd=="popt") {
     pd <- "pD calculated using an optimism adjustment ="
   }
-  pd.str <- paste(pd.str, paste(pd, round(mbnma$BUGSoutput$pD,0), sep=" "), sep="\n")
+  pd.str <- paste(pd.str, paste(pd, round(mbnma$BUGSoutput$pD,1), sep=" "), sep="\n")
 
   # Deviance
   dev <- mbnma$BUGSoutput$summary[
     rownames(mbnma$BUGSoutput$summary)=="deviance", 5]
-  dev.str <- paste("Deviance =", round(dev, 0), sep=" ")
+  dev.str <- paste("Deviance =", round(dev, 1), sep=" ")
 
   # Totresdev
   if ("totresdev" %in% mbnma$parameters.to.save) {
     totresdev <- round(
       mbnma$BUGSoutput$summary[
         rownames(mbnma$BUGSoutput$summary)=="totresdev", 5],
-      0)
+      1)
   } else {
     totresdev <- "NOT MONITORED IN MODEL"
   }
   totresdev.str <- paste("Residual deviance =", totresdev, sep=" ")
 
   dic <- mbnma$BUGSoutput$DIC
-  dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 0), "\n", sep=" ")
+  dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 1), "\n", sep=" ")
 
   modfit.sect <- paste(head, pd.str, dev.str, totresdev.str, dic.str, sep="\n")
   return(modfit.sect)
