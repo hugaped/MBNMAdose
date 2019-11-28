@@ -200,6 +200,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
 
   if (remove.loops==TRUE) {
     g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
+    comparisons <- comparisons[comparisons$t1!=comparisons$t2,]
   }
 
   # Check network is connected and produce warning message if not
