@@ -269,7 +269,7 @@ mbnma.run <- function(network,
                       var.scale=NULL,
                       user.fun=NULL,
                       parameters.to.save=NULL,
-                      pd="pv", parallel=TRUE,
+                      pd="pv", parallel=FALSE,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
                       model.file=NULL,
@@ -418,6 +418,7 @@ mbnma.run <- function(network,
                             n.thin=n.thin,
                             n.chains=n.chains,
                             n.burnin=n.burnin,
+                            parallel=parallel,
                             ...)
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
@@ -487,12 +488,13 @@ mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL,
-                       warn.rhat=FALSE, ...) {
+                       warn.rhat=FALSE, parallel=FALSE, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
+  checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
                              null.ok=TRUE, add=argcheck)
@@ -539,10 +541,17 @@ mbnma.jags <- function(data.ab, model,
   close(tmps)
 
   out <- tryCatch({
-    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
-                           parameters.to.save=parameters.to.save,
-                           ...
-    )
+    if (parallel==FALSE) {
+      result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+                             parameters.to.save=parameters.to.save,
+                             ...
+      )
+    } else if (parallel==TRUE) {
+      result <- R2jags::jags.parallel(data=jagsvars, model.file=tmpf,
+                             parameters.to.save=parameters.to.save,
+                             ...
+      )
+    }
   },
   error=function(cond) {
     message(cond)
@@ -931,7 +940,7 @@ mbnma.linear <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=TRUE,
+                         pd="pv", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1048,7 +1057,7 @@ mbnma.exponential <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=TRUE,
+                         pd="pv", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1196,7 +1205,7 @@ mbnma.emax <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=TRUE,
+                         pd="pv", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1346,7 +1355,7 @@ mbnma.emax.hill <- function(network,
                        cor=TRUE,
                        var.scale=NULL,
                        parameters.to.save=NULL,
-                       pd="pv", parallel=TRUE,
+                       pd="pv", parallel=FALSE,
                        likelihood=NULL, link=NULL,
                        priors=NULL,
                        arg.params=NULL, ...)
