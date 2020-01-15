@@ -6,7 +6,7 @@
 \usage{
 mbnma.emax(network, emax = "rel", ed50 = "rel", method = "common",
   class.effect = list(), cor = TRUE, var.scale = NULL,
-  parameters.to.save = NULL, pd = "pv", parallel = TRUE,
+  parameters.to.save = NULL, pd = "pv", parallel = FALSE,
   likelihood = NULL, link = NULL, priors = NULL, arg.params = NULL,
   ...)
 }

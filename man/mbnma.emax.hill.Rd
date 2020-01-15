@@ -7,7 +7,7 @@
 mbnma.emax.hill(network, emax = "rel", ed50 = "rel", hill = "common",
   method = "common", class.effect = list(), cor = TRUE,
   var.scale = NULL, parameters.to.save = NULL, pd = "pv",
-  parallel = TRUE, likelihood = NULL, link = NULL, priors = NULL,
+  parallel = FALSE, likelihood = NULL, link = NULL, priors = NULL,
   arg.params = NULL, ...)
 }
 \arguments{
