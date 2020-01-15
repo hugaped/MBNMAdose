@@ -314,7 +314,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #'   function will return informative errors if arguments are misspecified.
 #'
 write.check <- function(fun="linear",
-                        beta.1=list(pool="rel", method="common"),
+                        beta.1="rel",
                         beta.2=NULL,
                         beta.3=NULL,
                         method="common",
@@ -335,10 +335,14 @@ write.check <- function(fun="linear",
     stop(paste0("`fun` must be selected from the following dose-response function(s):\n",
                 paste(dosefuns, collapse=", ")))
   }
+  if (length(fun)>1) {
+    multifun <- TRUE
+  } else {multifun <- FALSE}
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(fun, null.ok=FALSE, add=argcheck)
+  #checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
@@ -354,40 +358,18 @@ write.check <- function(fun="linear",
       if (!(betaparam %in% c("rel", "common", "random") | is.numeric(betaparam))) {
         paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value")
       }
-      # if (!identical(sort(names(betaparam)), sort(c("pool", "method")))) {
-      #   stop("`pool` and `method` must both be specified for each dose-response parameter")
-      # }
-      #
-      # if (!(betaparam$pool %in% c("rel", "const"))) {
-      #   stop(paste0("beta.", i, ": `pool` can take either `rel` or `const`"))
-      # }
-      # if (!(betaparam$method %in% c("common", "random") | is.numeric(betaparam$method))) {
-      #   stop(paste0("beta.", i, ": `method` can take either `common`, `random` or a numeric value if `pool`=`const`"))
-      # }
-      # if (is.numeric(betaparam$method) & betaparam$pool!="const") {
-      #   stop(paste0("beta.", i, ": `method` can only take a numeric value if `pool`=`const`"))
-      # }
     }
   }
 
 
-  # Checks for parameter classifications
-  if (fun=="emax.hill" & is.null(beta.3)) {
-    stop("Hill parameter (beta.3) for emax.hill function has not been specified.")
-  }
-  if (fun=="emax" & is.null(beta.2)) {
-    stop("ET50 parameter (beta.2) for emax function has not been specified.")
-  }
-
-
   #### Check user.fun ####
-  if (fun!="user" & !is.null(user.fun)) {
+  if (!is.null(user.fun) & !("user" %in% fun)) {
     warning(paste0("user.fun is only applied if fun=`user`. Dose-response function used for this model will be ", fun))
   }
 
-  if (fun=="user") {
+  if ("user" %in% fun) {
     if (is.null(user.fun)) {
-      stop("user.fun must contain a string that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
+      stop("`user` specified as a dose-response function  and so `user.fun`` must contain a string that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
     }
 
     if (grepl("beta.2", user.fun)==TRUE & grepl("beta.1", user.fun==FALSE)) {
@@ -405,6 +387,54 @@ write.check <- function(fun="linear",
       }
     }
   }
+
+
+  if (multifun==FALSE) {
+    # Checks for parameter classifications (no longer necessary due to multiple dose-respones bit...but error messages are clearer)
+    if (fun=="emax.hill" & is.null(beta.3)) {
+      stop("Hill parameter (beta.3) for emax.hill function has not been specified.")
+    }
+    if (fun=="emax" & is.null(beta.2)) {
+      stop("ET50 parameter (beta.2) for emax function has not been specified.")
+    }
+
+  } else if (multifun==TRUE) {
+    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+      stop("Nonparametric dose-response relationships cannot be specified with other dose-response functions")
+    }
+
+    paramcount <- 0
+    if ("linear" %in% fun) {
+      paramcount <- paramcount + 1
+    }
+    if ("exponential" %in% fun) {
+      paramcount <- paramcount + 1
+    }
+    if ("emax" %in% fun) {
+      paramcount <- paramcount + 2
+    }
+    if ("emax.hill" %in% fun) {
+      paramcount <- paramcount + 3
+    }
+    if ("user" %in% fun) {
+      for (i in 1:4) {
+        if (grepl(paste0("beta.",i), user.fun)) {
+          paramcount <- paramcount + 1
+        }
+      }
+    }
+
+    for (i in 1:paramcount) {
+      if (is.null(get(paste0("beta.", i)))) {
+        stop(paste("Dose-response functions with", paramcount, "parameters have been specified and so", paste0("beta.",i), "\ncannot be NULL"))
+      }
+    }
+
+  }
+
+
+
+
 
   # Checks for class effects
   if (length(class.effect)>0) {
