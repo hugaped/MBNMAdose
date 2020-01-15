@@ -69,7 +69,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @export
 mbnma.write <- function(fun="linear",
                         beta.1="rel",
-                        beta.2=NULL, beta.3=NULL,
+                        beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         method="common",
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
@@ -92,10 +92,10 @@ mbnma.write <- function(fun="linear",
 
   ####### VECTORS #######
 
-  parameters <- c("beta.1", "beta.2", "beta.3")
+  parameters <- c("beta.1", "beta.2", "beta.3", "beta.4")
 
   write.check(fun=fun, user.fun=user.fun,
-              beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+              beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
               method=method, cor.prior=cor.prior,
               var.scale=var.scale,
               class.effect=class.effect)
@@ -111,20 +111,20 @@ mbnma.write <- function(fun="linear",
   model <- write.likelihood(model, likelihood=likelihood, link=link)
 
   # Add treatment delta effects
-  model <- write.delta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+  model <- write.delta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                       method=method)
 
   # Add treatment beta effects
   if (fun %in% c("nonparam.up", "nonparam.down")) {
     model <- write.beta.nonparam(model, method=method, fun=fun)
   } else {
-    model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+    model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                         method=method, class.effect=class.effect)
   }
 
 
   # Add correlation between dose-response parameters
-  model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+  model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                      method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale,
                      class.effect=class.effect)
 
@@ -317,13 +317,14 @@ write.check <- function(fun="linear",
                         beta.1="rel",
                         beta.2=NULL,
                         beta.3=NULL,
+                        beta.4=NULL,
                         method="common",
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
                         user.fun=NULL,
                         class.effect=list()) {
-  parameters <- c("beta.1", "beta.2", "beta.3")
+  parameters <- c("beta.1", "beta.2", "beta.3", "beta.4")
 
   # Check fun
   dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill",
@@ -352,7 +353,7 @@ write.check <- function(fun="linear",
 
   # Check betas
   # Checks that beta parameters have correct format
-  for (i in 1:3) {
+  for (i in 1:4) {
     betaparam <- get(paste0("beta.", i))
     if (!is.null(betaparam)) {
       if (!(betaparam %in% c("rel", "common", "random") | is.numeric(betaparam))) {
@@ -378,7 +379,7 @@ write.check <- function(fun="linear",
       stop("user.fun cannot contain beta.3 if beta.2 and beta.1 are not present")
     }
 
-    for (i in 1:3) {
+    for (i in 1:4) {
       if (grepl(paste0("beta.",i), user.fun)==TRUE) {
         if(is.null(get(paste0("beta.",i)))) {
           msg <- paste0("beta.",i, " has been specified in `user.fun` dose-response function yet no arguments have been given for it")
@@ -444,7 +445,7 @@ write.check <- function(fun="linear",
     }
 
     inclparams <- vector()
-    for (i in 1:3) {
+    for (i in 1:4) {
       if (!is.null(get(paste0("beta.",i)))) {
         inclparams <- append(inclparams, paste0("beta.", i))
       }
@@ -560,7 +561,7 @@ write.beta.vars <- function() {
                 )
 
 
-  for (i in 1:3) {
+  for (i in 1:4) {
 
     # s.beta for reference agent
     assign(paste("s.beta", i, "ref", sep="."),
@@ -681,7 +682,7 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 #'   parameter components of the model
 #'
 write.delta <- function(model,
-                       beta.1, beta.2=NULL, beta.3=NULL,
+                       beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common"
 ) {
 
@@ -723,7 +724,7 @@ write.delta <- function(model,
 #'   parameter components of the model
 #'
 write.beta <- function(model,
-                       beta.1, beta.2=NULL, beta.3=NULL,
+                       beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common",
                        class.effect=list()
 ) {
@@ -734,7 +735,7 @@ write.beta <- function(model,
   vars <- write.beta.vars()
 
 
-  for (i in 1:3) {
+  for (i in 1:4) {
     # If a beta parameter has relative effects for indirect evidence calculation
     if (!is.null(get(paste0("beta.", i)))) {
 
@@ -826,7 +827,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #' @inheritParams mbnma.write
 #' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
-                      beta.1="rel", beta.2=NULL, beta.3=NULL,
+                      beta.1="rel", beta.2=NULL, beta.3=NULL, beta.4=NULL,
                       method="random", class.effect=list()) {
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
@@ -846,7 +847,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
     #if (method=="random") {
     if (cor==TRUE) {
       corparams <- vector()
-      for (i in 1:3) {
+      for (i in 1:4) {
         if (!is.null(get(paste0("beta.", i)))) {
           if (get(paste0("beta.", i))=="rel") {
             corparams <- append(corparams, paste0("beta.",i))

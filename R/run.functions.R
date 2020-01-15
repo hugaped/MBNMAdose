@@ -18,16 +18,18 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @param fun A string specifying a functional form to be assigned to the
 #'   dose-response. Options are given in `details`.
 #' @param user.fun A string specifying any relationship including `dose` and
-#'   one/several of: `beta.1`, `beta.2`, `beta.3`.
+#'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
 #'   specified options.
 #'
-#' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
-#' @param beta.2 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.2 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
-#' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function(s).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param beta.4 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
@@ -99,7 +101,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   (e.g. `d.ed50` or `d.1`):
 #'   * `d` The pooled effect for each agent for a given dose-response
 #'   parameter. Will be estimated by the model if dose-response parameters (`beta.1`,
-#'   `beta.2`, `beta.3`) are set to `"rel"`.
+#'   `beta.2`, `beta.3`, `beta.4`) are set to `"rel"`.
 #'   * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 #'   `method="random"`.
 #'   * `D` The class effect for each class for a given dose-response
@@ -109,10 +111,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   set to `"random"`.
 #'   * `beta` The absolute value of a given dose-response parameter across the whole
 #'   network (does not vary by agent/class). Will be estimated by the model if
-#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"`
+#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) are set to `"common"`
 #'   or `"random"`.
 #'   * `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-#'   parameters, reported if `beta.1`, `beta.2` or `beta.3` are set to `"random"`
+#'   parameters, reported if `beta.1`, `beta.2`, `beta.3` or `beta.4` are set to `"random"`
 #'   * `totresdev` The residual deviance of the model
 #'   * `deviance` The deviance of the model
 #'
@@ -262,7 +264,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 mbnma.run <- function(network,
                       fun="linear",
                       beta.1="rel",
-                      beta.2=NULL, beta.3=NULL,
+                      beta.2=NULL, beta.3=NULL, beta.4=NULL,
                       method="common",
                       class.effect=list(),
                       cor=TRUE,
@@ -324,14 +326,14 @@ mbnma.run <- function(network,
     names(class.effect) <- fun.params
 
   } else if (is.null(arg.params)) {
-    wrap.params <- list(beta.1, beta.2, beta.3)
+    wrap.params <- list(beta.1, beta.2, beta.3, beta.4)
     wrap.params <- which(sapply(wrap.params,
                                 is.character))
   }
 
   if (is.null(model.file)) {
     model <- mbnma.write(fun=fun, user.fun=user.fun,
-                         beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                         beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                          method=method,
                          class.effect=class.effect,
                          cor=cor, var.scale=var.scale,
@@ -361,11 +363,11 @@ mbnma.run <- function(network,
         }
       }
 
-      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3),
+      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3, beta.4),
                                               is.character))]
 
     } else {
-      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3),
+      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3, beta.4),
                                   is.character))
     }
 
@@ -457,6 +459,7 @@ mbnma.run <- function(network,
                     "jagscode"=model,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
+                    "beta.4"=beta.4,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
                     "class.effect"=class.effect,
@@ -1364,7 +1367,7 @@ mbnma.emax.hill <- function(network,
 
   arg.params <- list(
     wrap.params=c("emax", "ed50", "hill"),
-    run.params=c("beta.1", "beta.2", "beta.3")
+    run.params=c("beta.1", "beta.2", "beta.3", "beta.4")
   )
 
   result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
