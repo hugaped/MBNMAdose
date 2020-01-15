@@ -551,6 +551,7 @@ mbnma.jags <- function(data.ab, model,
                              parameters.to.save=parameters.to.save,
                              ...
       )
+      class(result) <- class(result)[c(2,1)]
     }
   },
   error=function(cond) {
