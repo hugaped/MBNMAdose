@@ -642,6 +642,10 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   # Add design matrix for multiple functions
   if (!is.null(fun)) {
     if (length(fun)>1) {
+      if (length(fun)!=datalist[["Nagent"]]) {
+        stop("`fun` must take the same length as the total number of agents in the dataset")
+      }
+
       funlist <- c("user", "linear", "exponential", "emax", "emax.hill")
       funvec <- sapply(fun, function(x) which(funlist==x))
       funvec <- funvec - (min(funvec)-1)
