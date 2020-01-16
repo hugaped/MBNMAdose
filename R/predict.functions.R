@@ -248,6 +248,9 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$class.effect)>0) {
     stop("`predict() currently does not work with models that use class effects")
   }
+  if (length(object$model.arg$fun)>0) {
+    stop("`predict() currently does not work with models that use multiple dose-response functions")
+  }
 
   link <- object$model.arg$link
 
@@ -256,7 +259,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   DR <- suppressMessages(
     write.dose.fun(fun=object$model.arg$fun, user.fun=object$model.arg$user.fun,
                    effect="abs"
-                   ))
+                   )[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
 
   betaparams <- get.model.vals(object)

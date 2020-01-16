@@ -522,13 +522,15 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
-                        level="agent") {
+                        level="agent", fun=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE,
+                             null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
@@ -635,6 +637,17 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     }
 
     datalist[["narm"]] <- append(datalist[["narm"]], max(df$arm[as.numeric(df$studyID)==i]))
+  }
+
+  # Add design matrix for multiple functions
+  if (!is.null(fun)) {
+    if (length(fun)>1) {
+      funlist <- c("user", "linear", "exponential", "emax", "emax.hill")
+      funvec <- sapply(fun, function(x) which(funlist==x))
+      funvec <- funvec - (min(funvec)-1)
+      datalist[["X"]] <- datalist[["agent"]]
+      datalist[["X"]][] <- funvec[datalist[["agent"]]]
+    }
   }
 
   return(datalist)
