@@ -941,3 +941,105 @@ change.netref <- function(network, ref=1) {
 
   return(network)
 }
+
+
+
+
+
+
+
+cutjags <- function(jagsresult) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(jagsresult, "rjags", add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  fun <- jagsresult$model.arg$fun
+
+  if (length(fun)>1) {
+
+    funs <- c(NA, 1,1,2,3)
+    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
+    funs <- funs[names(funs) %in% fun]
+
+    if ("user" %in% names(funs)) {
+      count <- 0
+      for (i in 1:4) {
+        if (grepl(paste0("beta.", i)) %in% jagsresult$model.arg$user.fun) {
+          count <- count+1
+        }
+      }
+      funs[names(funs)=="user"] <- count
+    }
+
+    # Identify indices of parameters to drop
+    dropindex <- vector()
+    droplist <- list()
+    count <- 1
+    for (i in seq_along(funs)) { # i is the function index
+
+      for (k in count:cumsum(funs)[i]) { # k is beta parameter index
+        #print(k)
+        dropagent <- which(!fun %in% names(funs)[i])
+        droplist[[length(droplist)+1]] <- dropagent
+
+        for (m in seq_along(dropagent)) { # m is agent index to drop
+          temp <- which(grepl(paste0("d\\.",k, "\\[", dropagent[m], "\\]"),
+                              rownames(jagsresult$BUGSoutput$summary)))
+
+          dropindex <- append(dropindex, temp)
+
+          temp <- which(grepl(paste0("beta\\.",k, "\\[", dropagent[m], "\\]"),
+                              rownames(jagsresult$BUGSoutput$summary)))
+
+          dropindex <- append(dropindex, temp)
+
+          print(m)
+          print(dropindex)
+        }
+      }
+      count <- count + funs[i]
+      #print(count)
+
+    }
+    dropindex <- dropindex[dropindex!=0]
+
+    # Remove from all BUGSoutputs
+    jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropindex]
+    jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropindex]
+    jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropindex,]
+
+    trtef <- c("d.", "beta.")
+    for (param in seq_along(droplist)) {
+      for (p in seq_along(trtef) ) {
+        if (paste0(trtef[p], param) %in% names(jagsresult$BUGSoutput$sims.list)) {
+
+          jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]][,-droplist[[param]]]
+
+          jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          for (i in 1:length(jagsresult$BUGSoutput$last.values)) {
+            jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]] <-
+              jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]][-droplist[[param]]]
+          }
+        }
+      }
+    }
+
+    # Yet to be changed
+    #jagsresult$BUGSoutput$long.short
+    #jagsresult$BUGSoutput$indexes.short
+
+  }
+
+  return(jagsresult)
+}

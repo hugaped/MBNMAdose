@@ -327,11 +327,20 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   if (length(DR.1)>1) {
     drmult <- paste0("ifelse(X[i,k]==1, ", DR.1[1], ", insert)")
     for (i in 2:(length(DR.1)-1)) {
+      #print(i)
+      #print(length(DR.1))
       drtemp <- paste0("ifelse(X[i,k]==", i, ", ", DR.1[i], ", insert)")
-      if (i==(length(DR.1)-1)) {
-        drmult <- gsub("insert", DR.1[i+1], drmult)
-      } else {
+      if (i<=(length(DR.1)-1)) {
+        #drmult <- gsub("insert", DR.1[i+1], drmult)
         drmult <- gsub("insert", drtemp, drmult)
+        #print("drtemp")
+        #print(drtemp)
+      }
+      if ((i+1)==length(DR.1)) {
+        #print("DR.1[i+1]")
+        #print(DR.1[i+1])
+        #drmult <- gsub("insert", drtemp, drmult)
+        drmult <- gsub("insert", DR.1[i+1], drmult)
       }
     }
     DR.1 <- drmult
@@ -505,6 +514,11 @@ write.check <- function(fun="linear",
     # Cannot model class effects with nonparam functions
     if (any(c("nonparam.up, nonparam.down") %in% fun)) {
       stop("Class effects cannot be used with non-parametric dose-response functions")
+    }
+
+    # Cannot model class effects with multiple dose-response functions
+    if (length(fun)>1) {
+      stop("Class effects can only be modelled when using a single dose-reseponse function")
     }
 
     inclparams <- vector()
