@@ -449,7 +449,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
       a.labs <- agent.labs[sort(unique(agentcodes))]
     }
   } else if ("agents" %in% names(x)) {
-    if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+    if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
       a.labs <- x[["treatments"]]
     } else {
       a.labs <- x[["agents"]][x[["agents"]]!="Placebo"]
