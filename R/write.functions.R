@@ -326,21 +326,12 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   # Add ifelse statement for multiple DR functions
   if (length(DR.1)>1) {
     drmult <- paste0("ifelse(X[i,k]==1, ", DR.1[1], ", insert)")
-    for (i in 2:(length(DR.1)-1)) {
-      #print(i)
-      #print(length(DR.1))
+    for (i in 2:length(DR.1)) {
       drtemp <- paste0("ifelse(X[i,k]==", i, ", ", DR.1[i], ", insert)")
-      if (i<=(length(DR.1)-1)) {
-        #drmult <- gsub("insert", DR.1[i+1], drmult)
+      if (i==length(DR.1)) {
+        drmult <- gsub("insert", DR.1[i], drmult)
+      } else if (i<length(DR.1)) {
         drmult <- gsub("insert", drtemp, drmult)
-        #print("drtemp")
-        #print(drtemp)
-      }
-      if ((i+1)==length(DR.1)) {
-        #print("DR.1[i+1]")
-        #print(DR.1[i+1])
-        #drmult <- gsub("insert", drtemp, drmult)
-        drmult <- gsub("insert", DR.1[i+1], drmult)
       }
     }
     DR.1 <- drmult
