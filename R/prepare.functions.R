@@ -995,8 +995,8 @@ cutjags <- function(jagsresult) {
 
           dropindex <- append(dropindex, temp)
 
-          print(m)
-          print(dropindex)
+          #print(m)
+          #print(dropindex)
         }
       }
       count <- count + funs[i]
@@ -1042,4 +1042,67 @@ cutjags <- function(jagsresult) {
   }
 
   return(jagsresult)
+}
+
+
+
+
+# I want something that for a given function (or set of functions), it tells me which parameter corresponds
+#to which function (including a parameter name) and which agents are modelled by that parameter (and therefore function)
+assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertCharacter(fun, add=argcheck)
+  checkmate::assertCharacter(agents, add=argcheck)
+  checkmate::assertCharacter(user.fun, null.ok = TRUE, len = 1, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Ensure placebo isn't contained within the function
+  if ("Placebo" %in% agents) {
+    agents <- agents[agents!="Placebo"]
+    if (length(fun)>1) {
+      fun <- fun[-1]
+    }
+  }
+
+
+  if (length(fun)==1) {
+    fun <- rep(fun, length(agents))
+  }
+
+  funlist <- list("linear"="slope", "exponential"="lambda",
+                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"))
+
+  betas <- list()
+  count <- 0
+  if ("user" %in% fun) {
+    for (i in 1:4) {
+      if (grepl(paste0("beta.", i)) %in% user.fun) {
+        betas[[paste0("beta.", i)]]$agents <- "user"
+        betas[[paste0("beta.", i)]]$betaname <- paste0("beta.", i)
+        betas[[paste0("beta.", i)]]$param <- paste0("beta.", i)
+        betas[[paste0("beta.", i)]]$agents <- agents[fun %in% "user"]
+        count <- i
+      }
+    }
+  }
+  for (i in seq_along(funlist)) {
+    if (names(funlist)[i] %in% fun) {
+      for (k in seq_along(funlist[[i]])) {
+        count <- count+1
+        betas[[paste0("beta.", count)]]$fun <- names(funlist)[i]
+        betas[[paste0("beta.", count)]]$param <- funlist[[i]][k]
+        betas[[paste0("beta.", count)]]$agents <- which(fun %in% names(funlist)[i])
+
+        if (wrapper==FALSE) {
+          betas[[paste0("beta.", count)]]$betaname <- paste0("beta.", count)
+        } else if (wrapper==TRUE) {
+          betas[[paste0("beta.", count)]]$betaname <- funlist[[i]][k]
+        }
+      }
+    }
+  }
+
+  return(betas)
 }
