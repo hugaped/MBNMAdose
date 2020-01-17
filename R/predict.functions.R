@@ -248,8 +248,15 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$class.effect)>0) {
     stop("`predict() currently does not work with models that use class effects")
   }
-  if (length(object$model.arg$fun)>0) {
-    stop("`predict() currently does not work with models that use multiple dose-response functions")
+  if (length(object$model.arg$fun)>1) {
+    #stop("`predict() currently does not work with models that use multiple dose-response functions")
+
+    funs <- c(NA, 1,1,2,3)
+    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
+    funs <- funs[names(funs) %in% object$model.arg$fun]
+
+    funi <- which(names(doses) %in% object$network$agents)
+    X <- sapply(fun[funi], function(x) which(x==names(funs)))
   }
 
   link <- object$model.arg$link
@@ -336,6 +343,10 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
         tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", DR)
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
 
+        # For multiple DR functions
+        tempDR <- gsub("X==", "X[i]==", tempDR)
+        #tempDR <- gsub("s\\.beta\\.", "beta\\.", tempDR)
+
         dose <- doses[[i]][k]
         for (param in seq_along(betaparams)) {
           if (is.vector(betaparams[[param]]$result)) {
@@ -384,7 +395,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 get.model.vals <- function(mbnma) {
 
   betaparams <- list()
-  for (i in 1:3) {
+  for (i in 1:4) {
     beta <- paste0("beta.",i)
     if (!is.null(mbnma$model.arg[[beta]])) {
       temp <- list()
