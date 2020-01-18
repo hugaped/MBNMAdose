@@ -235,8 +235,11 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+  if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
     stop("Ranking cannot currently be performed for non-parametric models")
+  }
+  if (length(x$model.arg$fun)>1) {
+    stop("Ranking cannot currently be performed for models with multiple dose-response functions")
   }
 
   # Change agent/class to agents/classes
