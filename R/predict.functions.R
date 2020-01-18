@@ -404,7 +404,8 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   }
 
   output <- list("predicts"=predict.result,
-                 "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link)
+                 "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link,
+                 "network"=object$network)
 
   class(output) <- "mbnma.predict"
 
