@@ -542,10 +542,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #'   advisable to ensure predictions in `predict` are estimated using an even
 #'   sequence of time points to avoid misrepresentation of shaded densities.
 #'
-#'   If `overlay.split = TRUE`, or `disp.obs = TRUE` then the original dataset must be specified
-#'   by including the original `mbnma.network` object used to estimate the model as the `network`
-#'   argument.
-#'
 #' @examples
 #' \donttest{
 #' # Using the triptans data
@@ -556,14 +552,14 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
-#' # Display observed doses on the plot (must include `network`)
-#' plot(pred, disp.obs=TRUE, network=network)
+#' # Display observed doses on the plot
+#' plot(pred, disp.obs=TRUE)
 #'
-#' # Display split NMA results on the plot (must include `network`)
-#' plot(pred, overlay.split=TRUE, network=network)
+#' # Display split NMA results on the plot
+#' plot(pred, overlay.split=TRUE)
 #'
 #' # Split NMA results estimated using random treatment effects model
-#' plot(pred, overlay.split=TRUE, network=network, method="random")
+#' plot(pred, overlay.split=TRUE, method="random")
 #'
 #' # Add agent labels
 #' plot(pred, agent.labs=c("Elet", "Suma", "Frov", "Almo", "Zolmi",
@@ -583,7 +579,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' }
 #'
 #' @export
-plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
+plot.mbnma.predict <- function(x, disp.obs=FALSE,
                                overlay.split=FALSE, method="common",
                                agent.labs=NULL, scales="free_x", ...) {
 
@@ -621,6 +617,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   # Plot observed data as shaded regions
   if (disp.obs==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
@@ -633,6 +630,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   }
   if (overlay.split==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that placebo is included (or dose=0 in networks without placebo)
