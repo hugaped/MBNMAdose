@@ -256,7 +256,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
     funs <- funs[names(funs) %in% object$model.arg$fun]
 
     funi <- which(names(doses) %in% object$network$agents)
-    X <- sapply(fun[funi], function(x) which(x==names(funs)))
+    X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
   }
 
   link <- object$model.arg$link
@@ -270,6 +270,8 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
 
   betaparams <- get.model.vals(object)
+  betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
+                      ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
 
 
   # Identify E0
@@ -347,24 +349,50 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
         tempDR <- gsub("X==", "X[i]==", tempDR)
         #tempDR <- gsub("s\\.beta\\.", "beta\\.", tempDR)
 
+        # Need to enclose ifelse() matrices in list() to allow ifelse to return something in matrix form
+        if (length(object$model.arg$fun)>1) {
+          tempDR <- gsub("(ifelse)(.*?,)(.*?,)", "\\1\\2list(\\3!!!),", tempDR)
+          tempDR <- gsub(",\\!\\!\\!", "", tempDR)
+          tempDR <- gsub("(.+,)(.*?)$", "\\1list(\\2)", tempDR)
+        }
+
+
+
         dose <- doses[[i]][k]
         for (param in seq_along(betaparams)) {
+          #print(param)
           if (is.vector(betaparams[[param]]$result)) {
             assign(paste0("s.", names(betaparams)[param]),
                    betaparams[[param]]$result)
           } else if (is.matrix(betaparams[[param]]$result)) {
+
+            # Look for correct column index for each beta param
+            colnum <- which(grepl(paste0("\\[", agent.num[i], "\\]"),
+              colnames(betaparams[[param]]$result)
+            ))
+
             assign(paste0("s.", names(betaparams)[param]),
-                   betaparams[[param]]$result[,
-                                              grepl(
-                                                paste0("\\[", agent.num[i], "\\]"),
-                                                colnames(betaparams[[param]]$result)
-                                              )
-                                              ]
+                   betaparams[[param]]$result[,colnum]
             )
+            #print(betaparams[[param]]$result[,colnum])
+
+            # assign(paste0("s.", names(betaparams)[param]),
+            #        betaparams[[param]]$result[,
+            #                                   grepl(
+            #                                     paste0("\\[", agent.num[i], "\\]"),
+            #                                     colnames(betaparams[[param]]$result)
+            #                                   )
+            #                                   ]
+            # )
           }
         }
 
-        pred <- E0 + eval(parse(text=tempDR))
+        chunk <- eval(parse(text=tempDR))
+        if (is.list(chunk)) {
+          chunk <- chunk[[1]]
+        }
+        pred <- E0 + chunk
+        if (length(pred)<=1) {stop()}
       }
 
       # Convert to natural scale using link function

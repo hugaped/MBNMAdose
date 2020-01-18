@@ -350,7 +350,11 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   #   return(paste0("DR[i,k] <- ", DR.1))
   # }
   if (length(fun)==1) {
-    return(list(paste0("DR[i,k] <- ", DR)))
+    if (effect=="rel") {
+      return(list(paste0("DR[i,k] <- ", DR)))
+    } else if (effect=="abs") {
+      return(list(paste0("DR[i,k] <- ", DR.1)))
+    }
   } else if (length(fun)>1) {
     drmult <- list(paste0("DR[i,k] <- DR1[i,k] - DR2[i]\nDR1[i,k] <- ", DR.1))
 
