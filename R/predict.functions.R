@@ -165,7 +165,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   checkmate::reportAssertions(argcheck)
 
   agents <- object$model$data()$agent
-  mbnma.agents <- object[["agents"]]
+  mbnma.agents <- object$network[["agents"]]
 
   # Checks for doses
   doses <- NULL

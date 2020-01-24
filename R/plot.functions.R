@@ -448,11 +448,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     } else {
       a.labs <- agent.labs[sort(unique(agentcodes))]
     }
-  } else if ("agents" %in% names(x)) {
+  } else if ("agents" %in% names(x$network)) {
     if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
-      a.labs <- x[["treatments"]]
+      a.labs <- x$network[["treatments"]]
     } else {
-      a.labs <- x[["agents"]][x[["agents"]]!="Placebo"]
+      a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
     }
   } else {
     a.labs <- sort(unique(agentdat$param))
@@ -1000,10 +1000,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     xlab <- "Follow-up count"
     facetscale <- "fixed"
   } else if (mbnma$type=="dose") {
-    agents <- mbnma$agents
+    agents <- mbnma$network$agents
 
     # Remove placebo results if they are present
-    if (mbnma$agents[1]=="Placebo") {
+    if (mbnma$network$agents[1]=="Placebo") {
       dev.df <- dev.df[dev.df$facet!=1,]
       agents <- agents[-1]
     }
@@ -1012,9 +1012,9 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     facetscale <- "free_x"
   }
 
-  if ("agents" %in% names(mbnma)) {
+  if ("agents" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=agents)
-  } else if ("treatments" %in% names(mbnma)) {
+  } else if ("treatments" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=mbnma$treatments)
   }
 
@@ -1215,13 +1215,13 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   ylab <- "Response on link scale"
 
   # Add facet labels
-  if ("agents" %in% names(mbnma)) {
-    if (mbnma$agents[1]=="Placebo" & mbnma$treatments[1]=="Placebo_0") {
-      labs <- mbnma$agents[-1]
-    } else {labs <- mbnma$agents}
+  if ("agents" %in% names(mbnma$network)) {
+    if (mbnma$network$agents[1]=="Placebo" & mbnma$network$treatments[1]=="Placebo_0") {
+      labs <- mbnma$network$agents[-1]
+    } else {labs <- mbnma$network$agents}
     theta.df$facet <- factor(theta.df$facet, labels=labs)
-  } else if ("treatments" %in% names(mbnma)) {
-    labs <- mbnma$treatments[-1]
+  } else if ("treatments" %in% names(mbnma$network)) {
+    labs <- mbnma$network$treatments[-1]
     theta.df$facet <- factor(theta.df$facet, labels=labs)
   }
 

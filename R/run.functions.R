@@ -495,8 +495,8 @@ mbnma.run <- function(network,
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
-  result[["agents"]] <- network[["agents"]]
-  result[["treatments"]] <- network[["treatments"]]
+  #result[["agents"]] <- network[["agents"]]
+  #result[["treatments"]] <- network[["treatments"]]
   if (length(class.effect)>0) {
     result[["classes"]] <- network[["classes"]]
   }
