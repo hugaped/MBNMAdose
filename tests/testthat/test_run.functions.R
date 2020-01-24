@@ -102,6 +102,19 @@ net.noplac <- mbnma.network(noplac.df)
 #   expect_equal(runprior$model.arg$priors$inv.R, prior$inv.R)
 #   expect_equal(result$model.arg$priors$inv.R!=runprior$model.arg$priors$inv.R, TRUE)
 #
+#
+#   # Multiple dose-response functions
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 3), rep("linear",2), rep("emax",3)))
+#   expect_equal(length(multifun$model.arg$fun)>1, TRUE)
+#   expect_equal(all(c("d.1", "d.2", "d.3", "d.4") %in% multifun$parameters.to.save), TRUE)
+#
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 3), rep("linear",5)), method="random")
+#   expect_equal(all(c("d.1", "d.2") %in% multifun$parameters.to.save), TRUE)
+#   expect_equal(all(c("d.3", "d.4") %in% multifun$parameters.to.save), FALSE)
+#
+#   expect_error(mbnma.run(netclass, fun=c(rep("exponential", 3), rep("linear",5)),
+#                        class.effect = list(beta.2="common")), "single dose-response function")
+#
 # })
 #
 #

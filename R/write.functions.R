@@ -513,7 +513,7 @@ write.check <- function(fun="linear",
 
     # Cannot model class effects with multiple dose-response functions
     if (length(fun)>1) {
-      stop("Class effects can only be modelled when using a single dose-reseponse function")
+      stop("Class effects can only be modelled when using a single dose-response function")
     }
 
     inclparams <- vector()
