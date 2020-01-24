@@ -93,6 +93,10 @@ net.noplac <- mbnma.network(noplac.df)
 #   expect_error(print(rank), NA)
 #   expect_equal(class(summary(rank)[[1]]), "data.frame")
 #
+#   # With multiple-dose response functions
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 5), rep("emax",3)))
+#   expect_error(rank(multifun), "multiple dose-response")
+#
 # })
 #
 #
