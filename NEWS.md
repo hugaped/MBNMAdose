@@ -16,6 +16,9 @@
 - DIC reported correctly in output when using plugin (`pd="plugin"`), or Kullback-Leibler divergence (`pd="pd.kl"`)
 - Using the argument `parallel=TRUE` in `mbnma.run()` (or wrapper functions) now properly runs JAGS in parallel on multiple cores.
 
+### Minor
+- Downstream mbnma-related objects now store `mbnma.network` in their output rather than just treatment and agent names.
+
 
 # MBNMAdose 0.2.4
 
