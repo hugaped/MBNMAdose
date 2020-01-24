@@ -206,6 +206,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' result <- mbnma.run(network, fun="emax.hill",
 #'               beta.1="rel", beta.2="rel", beta.3=5, method="random")
 #'
+#' # Fit a model with different dose-response functions for each agent
+#' multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
+#'                  "emax", "emax", "exponential", "emax"))
+#'
 #'
 #' ########## Class effects ##########
 #'
