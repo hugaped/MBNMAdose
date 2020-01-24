@@ -178,6 +178,13 @@ testthat::test_that("rescale.link functions correctly", {
 #   expect_error(print(pred), NA)
 #   expect_equal(class(summary(pred)), "data.frame")
 #
+#
+#   # Multiple dose-response functions
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 3), rep("linear",2), rep("emax",3)))
+#   expect_silent(predict(multifun, E0=0.2))
+#   pred <- predict(multifun, E0=0.2, exact.doses = list("eletriptan"=seq(0,2,0.1), "rizatriptan"=seq(0,2,0.1)))
+#   expect_identical(names(pred$predicts), c("eletriptan", "rizatriptan"))
+#
 # })
 
 

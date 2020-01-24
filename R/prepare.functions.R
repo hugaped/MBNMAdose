@@ -522,13 +522,15 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
-                        level="agent") {
+                        level="agent", fun=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE,
+                             null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
@@ -635,6 +637,21 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     }
 
     datalist[["narm"]] <- append(datalist[["narm"]], max(df$arm[as.numeric(df$studyID)==i]))
+  }
+
+  # Add design matrix for multiple functions
+  if (!is.null(fun)) {
+    if (length(fun)>1) {
+      if (length(fun)!=datalist[["Nagent"]]) {
+        stop("`fun` must take the same length as the total number of agents in the dataset")
+      }
+
+      funlist <- c("user", "linear", "exponential", "emax", "emax.hill")
+      funvec <- sapply(fun, function(x) which(funlist==x))
+      funvec <- funvec - (min(funvec)-1)
+      datalist[["X"]] <- datalist[["agent"]]
+      datalist[["X"]][] <- funvec[datalist[["agent"]]]
+    }
   }
 
   return(datalist)
@@ -923,4 +940,169 @@ change.netref <- function(network, ref=1) {
   network$agents <- NULL
 
   return(network)
+}
+
+
+
+
+
+
+
+cutjags <- function(jagsresult) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(jagsresult, "rjags", add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  fun <- jagsresult$model.arg$fun
+
+  if (length(fun)>1) {
+
+    funs <- c(NA, 1,1,2,3)
+    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
+    funs <- funs[names(funs) %in% fun]
+
+    if ("user" %in% names(funs)) {
+      count <- 0
+      for (i in 1:4) {
+        if (grepl(paste0("beta.", i)) %in% jagsresult$model.arg$user.fun) {
+          count <- count+1
+        }
+      }
+      funs[names(funs)=="user"] <- count
+    }
+
+    # Identify indices of parameters to drop
+    dropindex <- vector()
+    droplist <- list()
+    count <- 1
+    for (i in seq_along(funs)) { # i is the function index
+
+      for (k in count:cumsum(funs)[i]) { # k is beta parameter index
+        #print(k)
+        dropagent <- which(!fun %in% names(funs)[i])
+        droplist[[length(droplist)+1]] <- dropagent
+
+        for (m in seq_along(dropagent)) { # m is agent index to drop
+          temp <- which(grepl(paste0("d\\.",k, "\\[", dropagent[m], "\\]"),
+                              rownames(jagsresult$BUGSoutput$summary)))
+
+          dropindex <- append(dropindex, temp)
+
+          temp <- which(grepl(paste0("beta\\.",k, "\\[", dropagent[m], "\\]"),
+                              rownames(jagsresult$BUGSoutput$summary)))
+
+          dropindex <- append(dropindex, temp)
+
+          #print(m)
+          #print(dropindex)
+        }
+      }
+      count <- count + funs[i]
+      #print(count)
+
+    }
+    dropindex <- dropindex[dropindex!=0]
+
+    # Remove from all BUGSoutputs
+    jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropindex]
+    jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropindex]
+    jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropindex,]
+
+    trtef <- c("d.", "beta.")
+    for (param in seq_along(droplist)) {
+      for (p in seq_along(trtef) ) {
+        if (paste0(trtef[p], param) %in% names(jagsresult$BUGSoutput$sims.list)) {
+
+          jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]][,-droplist[[param]]]
+
+          jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]] <-
+            jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]][-droplist[[param]]]
+
+          for (i in 1:length(jagsresult$BUGSoutput$last.values)) {
+            jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]] <-
+              jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]][-droplist[[param]]]
+          }
+        }
+      }
+    }
+
+    # Yet to be changed
+    #jagsresult$BUGSoutput$long.short
+    #jagsresult$BUGSoutput$indexes.short
+
+  }
+
+  return(jagsresult)
+}
+
+
+
+
+# I want something that for a given function (or set of functions), it tells me which parameter corresponds
+#to which function (including a parameter name) and which agents are modelled by that parameter (and therefore function)
+assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertCharacter(fun, add=argcheck)
+  checkmate::assertCharacter(agents, add=argcheck)
+  checkmate::assertCharacter(user.fun, null.ok = TRUE, len = 1, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Ensure placebo isn't contained within the function
+  if ("Placebo" %in% agents) {
+    agents <- agents[agents!="Placebo"]
+    if (length(fun)>1) {
+      fun <- fun[-1]
+    }
+  }
+
+
+  if (length(fun)==1) {
+    fun <- rep(fun, length(agents))
+  }
+
+  funlist <- list("linear"="slope", "exponential"="lambda",
+                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"))
+
+  betas <- list()
+  count <- 0
+  if ("user" %in% fun) {
+    for (i in 1:4) {
+      if (grepl(paste0("beta.", i)) %in% user.fun) {
+        betas[[paste0("beta.", i)]]$agents <- "user"
+        betas[[paste0("beta.", i)]]$betaname <- paste0("beta.", i)
+        betas[[paste0("beta.", i)]]$param <- paste0("beta.", i)
+        betas[[paste0("beta.", i)]]$agents <- agents[fun %in% "user"]
+        count <- i
+      }
+    }
+  }
+  for (i in seq_along(funlist)) {
+    if (names(funlist)[i] %in% fun) {
+      for (k in seq_along(funlist[[i]])) {
+        count <- count+1
+        betas[[paste0("beta.", count)]]$fun <- names(funlist)[i]
+        betas[[paste0("beta.", count)]]$param <- funlist[[i]][k]
+        betas[[paste0("beta.", count)]]$agents <- which(fun %in% names(funlist)[i])
+
+        if (wrapper==FALSE) {
+          betas[[paste0("beta.", count)]]$betaname <- paste0("beta.", count)
+        } else if (wrapper==TRUE) {
+          betas[[paste0("beta.", count)]]$betaname <- funlist[[i]][k]
+        }
+      }
+    }
+  }
+
+  return(betas)
 }

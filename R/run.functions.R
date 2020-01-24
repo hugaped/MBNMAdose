@@ -15,19 +15,21 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @param network An object of class `mbnma.network`.
 #' @param parameters.to.save A character vector containing names of parameters
 #'   to monitor in JAGS
-#' @param fun A string specifying a functional form to be assigned to the
+#' @param fun A character vector specifying a functional form to be assigned to the
 #'   dose-response. Options are given in `details`.
 #' @param user.fun A string specifying any relationship including `dose` and
-#'   one/several of: `beta.1`, `beta.2`, `beta.3`.
+#'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
 #'   specified options.
 #'
-#' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.1 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
-#' @param beta.2 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.2 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
-#' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function.
+#' @param beta.3 Refers to dose-parameter(s) specified within the dose-response function(s).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param beta.4 Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
@@ -99,7 +101,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   (e.g. `d.ed50` or `d.1`):
 #'   * `d` The pooled effect for each agent for a given dose-response
 #'   parameter. Will be estimated by the model if dose-response parameters (`beta.1`,
-#'   `beta.2`, `beta.3`) are set to `"rel"`.
+#'   `beta.2`, `beta.3`, `beta.4`) are set to `"rel"`.
 #'   * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 #'   `method="random"`.
 #'   * `D` The class effect for each class for a given dose-response
@@ -109,10 +111,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   set to `"random"`.
 #'   * `beta` The absolute value of a given dose-response parameter across the whole
 #'   network (does not vary by agent/class). Will be estimated by the model if
-#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"`
+#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) are set to `"common"`
 #'   or `"random"`.
 #'   * `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-#'   parameters, reported if `beta.1`, `beta.2` or `beta.3` are set to `"random"`
+#'   parameters, reported if `beta.1`, `beta.2`, `beta.3` or `beta.4` are set to `"random"`
 #'   * `totresdev` The residual deviance of the model
 #'   * `deviance` The deviance of the model
 #'
@@ -141,7 +143,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   Several general dose-response functions are provided, but a
 #'   user-defined dose-response relationship can instead be used.
 #'
-#'   Built-in time-course functions are:
+#'   Built-in dose-response functions are:
 #'   * `"linear"`: `beta.1` refers to the gradient
 #'   * `"exponential"`: `beta.1` refers to the rate of gain/decay
 #'   * `"emax"` (emax without a Hill parameter): `beta.1` refers to
@@ -153,6 +155,20 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
 #'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"user"` (user-defined function: `user.fun` must be specified in arguments)
+#'
+#'
+#'   As of version 0.2.5, separate dose-response functions can be specified for
+#'   different agents in the network by passing a character vector with multiple elements to `fun`.
+#'   Each agent in `network` is assigned the dose-response function in the corresponding element in `fun`.
+#'   `fun` must therefore be the same length as the number of agents in `network`. Dose-response parameters
+#'   `beta.1`, `beta.2`, `beta.3` and `beta.4` refer to the corresponding dose-response parameters across
+#'   the multiple functions in the following order: `user`, `linear`, `exponential`, `emax`, `emax.hill`.
+#'
+#'   This would mean that if `fun` included `linear`, `exponential` and `emax` within it then for the
+#'   corresponding agents `beta.1`
+#'   would refer to linear slope parameters, `beta.2` to exponential rate of growth/decay parameters,
+#'   `beta.3` to Emax parameters, and `beta.4` to ED50 parameters.
+#'
 #'
 #' @importFrom Rdpack reprompt
 #' @importFrom magrittr "%>%"
@@ -189,6 +205,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' #therefore be modelled with a correlation between them).
 #' result <- mbnma.run(network, fun="emax.hill",
 #'               beta.1="rel", beta.2="rel", beta.3=5, method="random")
+#'
+#' # Fit a model with different dose-response functions for each agent
+#' multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
+#'                  "emax", "emax", "exponential", "emax"))
 #'
 #'
 #' ########## Class effects ##########
@@ -262,7 +282,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 mbnma.run <- function(network,
                       fun="linear",
                       beta.1="rel",
-                      beta.2=NULL, beta.3=NULL,
+                      beta.2="rel", beta.3="rel", beta.4="rel",
                       method="common",
                       class.effect=list(),
                       cor=TRUE,
@@ -304,7 +324,7 @@ mbnma.run <- function(network,
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
-    if (fun %in% c("nonparam.up", "nonparam.down")) {
+    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
       stop("Placebo (or an agent with dose=0) must be included in the network to model a nonparametric dose-response relationship")
     }
   }
@@ -324,19 +344,26 @@ mbnma.run <- function(network,
     names(class.effect) <- fun.params
 
   } else if (is.null(arg.params)) {
-    wrap.params <- list(beta.1, beta.2, beta.3)
+    wrap.params <- list(beta.1, beta.2, beta.3, beta.4)
     wrap.params <- which(sapply(wrap.params,
                                 is.character))
   }
 
   if (is.null(model.file)) {
     model <- mbnma.write(fun=fun, user.fun=user.fun,
-                         beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+                         beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                          method=method,
                          class.effect=class.effect,
                          cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
+
+    # Edit beta parameters if they aren't in dose-response function
+    for (i in 1:4) {
+      if (!grepl(paste0("beta\\.", i), model)) {
+        assign(paste0("beta.", i), NULL)
+      }
+    }
 
     # Change code for if plac not included in network
     if (plac.incl==FALSE) {
@@ -347,7 +374,7 @@ mbnma.run <- function(network,
                     "for (k in 1:Nclass){ # Priors on relative class effects\n",
                     model)
 
-      model <- gsub("s\\.beta\\.[1-3]\\[1\\] <- 0", "", model)
+      model <- gsub("s\\.beta\\.[1-4]\\[1\\] <- 0", "", model)
     }
 
     # Change beta.1 and beta.2 to emax and et50, etc. if necessary
@@ -361,11 +388,11 @@ mbnma.run <- function(network,
         }
       }
 
-      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3),
+      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3, beta.4),
                                               is.character))]
 
     } else {
-      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3),
+      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3, beta.4),
                                   is.character))
     }
 
@@ -403,7 +430,7 @@ mbnma.run <- function(network,
 
   #### Run jags model ####
 
-  if (fun %in% c("nonparam.up", "nonparam.down")) {
+  if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
     # Change doses to dose indices
     data.ab <- index.dose(network[["data.ab"]])[["data.ab"]]
   } else {
@@ -413,7 +440,7 @@ mbnma.run <- function(network,
   result.jags <- mbnma.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
-                            likelihood=likelihood, link=link,
+                            likelihood=likelihood, link=link, fun=fun,
                             n.iter=n.iter,
                             n.thin=n.thin,
                             n.chains=n.chains,
@@ -457,6 +484,7 @@ mbnma.run <- function(network,
                     "jagscode"=model,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
+                    "beta.4"=beta.4,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
                     "class.effect"=class.effect,
@@ -466,11 +494,15 @@ mbnma.run <- function(network,
                     "priors"=get.prior(model), "arg.params"=arg.params)
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
-  result[["agents"]] <- network[["agents"]]
-  result[["treatments"]] <- network[["treatments"]]
+  result[["network"]] <- network
+  #result[["agents"]] <- network[["agents"]]
+  #result[["treatments"]] <- network[["treatments"]]
   if (length(class.effect)>0) {
     result[["classes"]] <- network[["classes"]]
   }
+
+  # Remove dose-response parameters for agents if multi dr functions are used
+  result <- cutjags(result)
 
   if (!("error" %in% names(result))) {
     class(result) <- c("mbnma", class(result))
@@ -487,7 +519,7 @@ mbnma.run <- function(network,
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        parameters.to.save=parameters.to.save,
-                       likelihood=NULL, link=NULL,
+                       likelihood=NULL, link=NULL, fun=NULL,
                        warn.rhat=FALSE, parallel=FALSE, ...) {
 
   # Run checks
@@ -497,6 +529,8 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
+                             null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -508,7 +542,7 @@ mbnma.jags <- function(data.ab, model,
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link) # get data into jags correct format
+                            likelihood=likelihood, link=link, fun=fun) # get data into jags correct format
   }
 
 
@@ -1364,7 +1398,7 @@ mbnma.emax.hill <- function(network,
 
   arg.params <- list(
     wrap.params=c("emax", "ed50", "hill"),
-    run.params=c("beta.1", "beta.2", "beta.3")
+    run.params=c("beta.1", "beta.2", "beta.3", "beta.4")
   )
 
   result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,

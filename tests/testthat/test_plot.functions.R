@@ -132,18 +132,18 @@ test_that("plot.mbnma.network functions correctly", {
 #
 #   # Test disp.obs
 #   expect_error(plot(pred, disp.obs = TRUE))
-#   expect_message(plot(pred, disp.obs = TRUE, network=netgout))
-#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   expect_message(plot(pred, disp.obs = TRUE))
+#   expect_error(plot(pred, disp.obs = TRUE))
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   expect_error(plot(pred, disp.obs = TRUE))
 #
 #   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_silent(plot(pred, disp.obs=TRUE, network=network))
+#   expect_silent(plot(pred, disp.obs=TRUE))
 #
 #   pred <- predict(emax.noplac, E0 = 0.5)
-#   expect_silent(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   expect_silent(plot(pred, disp.obs = TRUE))
 #
 #
 #   # Test agent.labs
@@ -158,30 +158,30 @@ test_that("plot.mbnma.network functions correctly", {
 #   # Test overlay.split
 #   pred <- predict(linear, E0 = 0.5)
 #   expect_error(plot(pred, overlay.split = TRUE))
-#   expect_output(plot(pred, overlay.split = TRUE, network=netalog))
+#   expect_output(plot(pred, overlay.split = TRUE))
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netgout))
+#   expect_output(plot(pred, overlay.split = TRUE))
 #
 #   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_output(plot(pred, overlay.split = TRUE, network=network))
+#   expect_output(plot(pred, overlay.split = TRUE))
 #
 #   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_error(plot(pred, overlay.split = TRUE, network=network))
+#   expect_error(plot(pred, overlay.split = TRUE))
 #
 #   pred <- predict(emax.noplac, E0 = 0.5)
-#   expect_error(plot(pred, overlay.split = TRUE, network=net.noplac))
+#   expect_error(plot(pred, overlay.split = TRUE))
 #
 #
 #   # Test method="common"
 #   pred <- predict(linear, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netalog, method="random"),
+#   expect_output(plot(pred, overlay.split = TRUE, method="random"),
 #                 "SD")
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netgout, method="random"),
+#   expect_output(plot(pred, overlay.split = TRUE, method="random"),
 #                 "SD")
 #
 #

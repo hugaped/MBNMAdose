@@ -448,11 +448,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     } else {
       a.labs <- agent.labs[sort(unique(agentcodes))]
     }
-  } else if ("agents" %in% names(x)) {
-    if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
-      a.labs <- x[["treatments"]]
+  } else if ("agents" %in% names(x$network)) {
+    if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
+      a.labs <- x$network[["treatments"]]
     } else {
-      a.labs <- x[["agents"]][x[["agents"]]!="Placebo"]
+      a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
     }
   } else {
     a.labs <- sort(unique(agentdat$param))
@@ -542,10 +542,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #'   advisable to ensure predictions in `predict` are estimated using an even
 #'   sequence of time points to avoid misrepresentation of shaded densities.
 #'
-#'   If `overlay.split = TRUE`, or `disp.obs = TRUE` then the original dataset must be specified
-#'   by including the original `mbnma.network` object used to estimate the model as the `network`
-#'   argument.
-#'
 #' @examples
 #' \donttest{
 #' # Using the triptans data
@@ -556,14 +552,14 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
-#' # Display observed doses on the plot (must include `network`)
-#' plot(pred, disp.obs=TRUE, network=network)
+#' # Display observed doses on the plot
+#' plot(pred, disp.obs=TRUE)
 #'
-#' # Display split NMA results on the plot (must include `network`)
-#' plot(pred, overlay.split=TRUE, network=network)
+#' # Display split NMA results on the plot
+#' plot(pred, overlay.split=TRUE)
 #'
 #' # Split NMA results estimated using random treatment effects model
-#' plot(pred, overlay.split=TRUE, network=network, method="random")
+#' plot(pred, overlay.split=TRUE, method="random")
 #'
 #' # Add agent labels
 #' plot(pred, agent.labs=c("Elet", "Suma", "Frov", "Almo", "Zolmi",
@@ -583,7 +579,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' }
 #'
 #' @export
-plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
+plot.mbnma.predict <- function(x, disp.obs=FALSE,
                                overlay.split=FALSE, method="common",
                                agent.labs=NULL, scales="free_x", ...) {
 
@@ -621,6 +617,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   # Plot observed data as shaded regions
   if (disp.obs==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
@@ -633,6 +630,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   }
   if (overlay.split==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that placebo is included (or dose=0 in networks without placebo)
@@ -1002,10 +1000,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     xlab <- "Follow-up count"
     facetscale <- "fixed"
   } else if (mbnma$type=="dose") {
-    agents <- mbnma$agents
+    agents <- mbnma$network$agents
 
     # Remove placebo results if they are present
-    if (mbnma$agents[1]=="Placebo") {
+    if (mbnma$network$agents[1]=="Placebo") {
       dev.df <- dev.df[dev.df$facet!=1,]
       agents <- agents[-1]
     }
@@ -1014,9 +1012,9 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     facetscale <- "free_x"
   }
 
-  if ("agents" %in% names(mbnma)) {
+  if ("agents" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=agents)
-  } else if ("treatments" %in% names(mbnma)) {
+  } else if ("treatments" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=mbnma$treatments)
   }
 
@@ -1217,13 +1215,13 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   ylab <- "Response on link scale"
 
   # Add facet labels
-  if ("agents" %in% names(mbnma)) {
-    if (mbnma$agents[1]=="Placebo" & mbnma$treatments[1]=="Placebo_0") {
-      labs <- mbnma$agents[-1]
-    } else {labs <- mbnma$agents}
+  if ("agents" %in% names(mbnma$network)) {
+    if (mbnma$network$agents[1]=="Placebo" & mbnma$network$treatments[1]=="Placebo_0") {
+      labs <- mbnma$network$agents[-1]
+    } else {labs <- mbnma$network$agents}
     theta.df$facet <- factor(theta.df$facet, labels=labs)
-  } else if ("treatments" %in% names(mbnma)) {
-    labs <- mbnma$treatments[-1]
+  } else if ("treatments" %in% names(mbnma$network)) {
+    labs <- mbnma$network$treatments[-1]
     theta.df$facet <- factor(theta.df$facet, labels=labs)
   }
 

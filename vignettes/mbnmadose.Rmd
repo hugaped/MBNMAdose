@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
   comment = "#>",
   fig.width = 7,
   fig.height = 5,
-  include=TRUE
+  include=TRUE,
+  tidy.opts=list(width.cutoff=80),
+  tidy=TRUE
 )
 
 library(MBNMAdose)
@@ -359,6 +361,22 @@ mbnma.run(tripnet, fun="user", user.fun=quad,
           beta.1 = "rel", beta.2 = "rel")
 
 ```
+
+
+### Agent-specific dose-response functions
+
+Different dose-response functions can be used for different agents within the network. This allows for the modelling of more complex dose-response functions in agents for which there are many doses available, and less complex functions in agents for which there are fewer doses available. Note that these models are typically less computationally stable than single dose-response function models, and they are likely to benefit less from modelling correlation between multiple dose-response parameters (since there are fewer agents informing correlations between each dose-response parameter).
+
+This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
+
+```{r, eval=FALSE}
+# Frovatriptan and rizatriptan modelled using an exponential function as only two active doses are available for these agents
+# All other agents are modelled using an Emax function
+multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"))
+summary(multifun)
+```
+
+In the output, the different dose-response parameters (`d`s or `beta`s) are numbered according to the dose-response function for which they are modelled, with typically more complex dose-response functions being given higher numbers. The ordering of parameter numbering follows `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`. For the above example, as the model uses exponential and Emax functions, parameters `d.1` correspond to the rate parameter of the exponential function, `d.2` to the Emax parameter of the Emax function, and `d.3` to the ED50 parameter of the Emax function.
 
 
 #### Priors

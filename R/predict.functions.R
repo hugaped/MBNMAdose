@@ -165,7 +165,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   checkmate::reportAssertions(argcheck)
 
   agents <- object$model$data()$agent
-  mbnma.agents <- object[["agents"]]
+  mbnma.agents <- object$network[["agents"]]
 
   # Checks for doses
   doses <- NULL
@@ -248,6 +248,18 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$class.effect)>0) {
     stop("`predict() currently does not work with models that use class effects")
   }
+  if (length(object$model.arg$fun)>1) {
+    #stop("`predict() currently does not work with models that use multiple dose-response functions")
+
+    funs <- c(NA, 1,1,2,3)
+    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
+    funs <- funs[names(funs) %in% object$model.arg$fun]
+
+    # Want to find the location of the agents within the vector of agent names in network
+    #funi <- which(names(doses) %in% object$network$agents)
+    funi <- which(object$network$agents %in% names(doses))
+    X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
+  }
 
   link <- object$model.arg$link
 
@@ -256,10 +268,12 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   DR <- suppressMessages(
     write.dose.fun(fun=object$model.arg$fun, user.fun=object$model.arg$user.fun,
                    effect="abs"
-                   ))
+                   )[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
 
   betaparams <- get.model.vals(object)
+  betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
+                      ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
 
 
   # Identify E0
@@ -333,24 +347,54 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
         tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", DR)
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
 
+        # For multiple DR functions
+        tempDR <- gsub("X==", "X[i]==", tempDR)
+        #tempDR <- gsub("s\\.beta\\.", "beta\\.", tempDR)
+
+        # Need to enclose ifelse() matrices in list() to allow ifelse to return something in matrix form
+        if (length(object$model.arg$fun)>1) {
+          tempDR <- gsub("(ifelse)(.*?,)(.*?,)", "\\1\\2list(\\3!!!),", tempDR)
+          tempDR <- gsub(",\\!\\!\\!", "", tempDR)
+          tempDR <- gsub("(.+,)(.*?)$", "\\1list(\\2)", tempDR)
+        }
+
+
+
         dose <- doses[[i]][k]
         for (param in seq_along(betaparams)) {
+          #print(param)
           if (is.vector(betaparams[[param]]$result)) {
             assign(paste0("s.", names(betaparams)[param]),
                    betaparams[[param]]$result)
           } else if (is.matrix(betaparams[[param]]$result)) {
+
+            # Look for correct column index for each beta param
+            colnum <- which(grepl(paste0("\\[", agent.num[i], "\\]"),
+              colnames(betaparams[[param]]$result)
+            ))
+
             assign(paste0("s.", names(betaparams)[param]),
-                   betaparams[[param]]$result[,
-                                              grepl(
-                                                paste0("\\[", agent.num[i], "\\]"),
-                                                colnames(betaparams[[param]]$result)
-                                              )
-                                              ]
+                   betaparams[[param]]$result[,colnum]
             )
+            #print(betaparams[[param]]$result[,colnum])
+
+            # assign(paste0("s.", names(betaparams)[param]),
+            #        betaparams[[param]]$result[,
+            #                                   grepl(
+            #                                     paste0("\\[", agent.num[i], "\\]"),
+            #                                     colnames(betaparams[[param]]$result)
+            #                                   )
+            #                                   ]
+            # )
           }
         }
 
-        pred <- E0 + eval(parse(text=tempDR))
+        chunk <- eval(parse(text=tempDR))
+        if (is.list(chunk)) {
+          chunk <- chunk[[1]]
+        }
+        pred <- E0 + chunk
+        if (length(pred)<=1) {stop()}
       }
 
       # Convert to natural scale using link function
@@ -362,7 +406,8 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   }
 
   output <- list("predicts"=predict.result,
-                 "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link)
+                 "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link,
+                 "network"=object$network)
 
   class(output) <- "mbnma.predict"
 
@@ -381,7 +426,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 get.model.vals <- function(mbnma) {
 
   betaparams <- list()
-  for (i in 1:3) {
+  for (i in 1:4) {
     beta <- paste0("beta.",i)
     if (!is.null(mbnma$model.arg[[beta]])) {
       temp <- list()
