@@ -255,7 +255,9 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
     names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
     funs <- funs[names(funs) %in% object$model.arg$fun]
 
-    funi <- which(names(doses) %in% object$network$agents)
+    # Want to find the location of the agents within the vector of agent names in network
+    #funi <- which(names(doses) %in% object$network$agents)
+    funi <- which(object$network$agents %in% names(doses))
     X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
   }
 
