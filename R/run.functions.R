@@ -17,7 +17,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   to monitor in JAGS
 #' @param fun A character vector specifying a functional form to be assigned to the
 #'   dose-response. Options are given in `details`.
-#' @param user.fun A string specifying any relationship including `dose` and
+#' @param user.fun A formula specifying any relationship including `dose` and
 #'   one/several of: `beta.1`, `beta.2`, `beta.3`, `beta.4`.
 #' @param model.file A JAGS model written as a character object that can be used
 #'   to overwrite the JAGS model that is automatically written based on the
@@ -191,7 +191,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 #'
 #' # Fit a user-defined function (quadratic)
-#' fun.def <- "(beta.1 * dose) + (beta.2 * (dose^2))"
+#' fun.def <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 #' result <- mbnma.run(network, fun="user", user.fun=fun.def,
 #'               beta.1="rel", beta.2="rel", method="common")
 #'

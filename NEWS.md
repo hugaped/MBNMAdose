@@ -4,10 +4,11 @@
 
 - Added Lujin Li to list of authors as a reviewer thanks to his considerable help in identifying issues in the previous version.
 
-## Additions
+## Additions/Changes
 
 - Each agent can be assigned a different dose-response function (by assigning a vector of functions to `fun` in `mbnma.run()`) so that multiple functions can be modelled simultaneously. Some downstream package functions still may not yet work with these models though.
 - `mbnma.network` objects returned from `plot.mbnma.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
+- `user.fun` now takes a formula as an argument (for example `~ (beta.1 * dose) + (beta.2 * dose^2)`) rather than a string.
 
 ## Bug fixes
 

@@ -81,7 +81,7 @@ mbnma.write <- function(fun="linear",
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(user.fun, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -264,20 +264,21 @@ write.inserts <- function() {
 #' write.dose.fun(fun="emax.hill")
 #'
 #' # Write a user-defined dose-response function
-#' doseresp <- "beta.1 + (dose ^ beta.2)"
+#' doseresp <- ~ beta.1 + (dose ^ beta.2)
 #' write.dose.fun(fun="user", user.fun=doseresp)
 write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
   DR.1 <- character()
   paramcount <- 0
   if ("user" %in% fun) {
-    drtemp <- user.fun
+    user.str <- as.character(user.fun[2])
+    drtemp <- user.str
     drtemp <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", drtemp)
     drtemp <- gsub("(dose)", "\\1[i,k]", drtemp)
     DR.1 <- append(DR.1, drtemp)
 
     for (i in 1:4) {
-      if (grepl(paste0("beta.",i), user.fun)) {
+      if (grepl(paste0("beta.",i), user.str)) {
         paramcount <- paramcount + 1
       }
     }
@@ -437,17 +438,19 @@ write.check <- function(fun="linear",
 
   if ("user" %in% fun) {
     if (is.null(user.fun)) {
-      stop("`user` specified as a dose-response function  and so `user.fun`` must contain a string that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
+      stop("`user` specified as a dose-response function  and so `user.fun`` must contain a formula that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
     }
 
-    if (grepl("beta.2", user.fun)==TRUE & grepl("beta.1", user.fun==FALSE)) {
+    user.str <- as.character(user.fun[2])
+
+    if (grepl("beta.2", user.str)==TRUE & grepl("beta.1", user.str==FALSE)) {
       stop("user.fun cannot contain beta.2 if beta.1 is not present")
-    } else if (grepl("beta.3", user.fun)==TRUE & (grepl("beta.2", user.fun==FALSE) | grepl("beta.1", user.fun==FALSE))) {
+    } else if (grepl("beta.3", user.str)==TRUE & (grepl("beta.2", user.str==FALSE) | grepl("beta.1", user.str==FALSE))) {
       stop("user.fun cannot contain beta.3 if beta.2 and beta.1 are not present")
     }
 
     for (i in 1:4) {
-      if (grepl(paste0("beta.",i), user.fun)==TRUE) {
+      if (grepl(paste0("beta.",i), user.str)==TRUE) {
         if(is.null(get(paste0("beta.",i)))) {
           msg <- paste0("beta.",i, " has been specified in `user.fun` dose-response function yet no arguments have been given for it")
           stop(msg)
@@ -486,7 +489,7 @@ write.check <- function(fun="linear",
     }
     if ("user" %in% fun) {
       for (i in 1:4) {
-        if (grepl(paste0("beta.",i), user.fun)) {
+        if (grepl(paste0("beta.",i), as.character(user.fun[2]))) {
           paramcount <- paramcount + 1
         }
       }

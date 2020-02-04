@@ -966,7 +966,7 @@ cutjags <- function(jagsresult) {
     if ("user" %in% names(funs)) {
       count <- 0
       for (i in 1:4) {
-        if (grepl(paste0("beta.", i)) %in% jagsresult$model.arg$user.fun) {
+        if (grepl(paste0("beta.", i)) %in% as.character(jagsresult$model.arg$user.fun[2])) {
           count <- count+1
         }
       }
@@ -1055,8 +1055,11 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(fun, add=argcheck)
   checkmate::assertCharacter(agents, add=argcheck)
-  checkmate::assertCharacter(user.fun, null.ok = TRUE, len = 1, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Convert user.fun to string
+  user.str <- as.character(user.fun[2])
 
   # Ensure placebo isn't contained within the function
   if ("Placebo" %in% agents) {
@@ -1078,7 +1081,7 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
   count <- 0
   if ("user" %in% fun) {
     for (i in 1:4) {
-      if (grepl(paste0("beta.", i)) %in% user.fun) {
+      if (grepl(paste0("beta.", i)) %in% user.str) {
         betas[[paste0("beta.", i)]]$agents <- "user"
         betas[[paste0("beta.", i)]]$betaname <- paste0("beta.", i)
         betas[[paste0("beta.", i)]]$param <- paste0("beta.", i)

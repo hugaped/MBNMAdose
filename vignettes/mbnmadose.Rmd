@@ -248,16 +248,16 @@ If relative effects (`"rel"`) are modelled on more than one dose-response parame
 
 ### Output
 
-`mbnma.run()` returns an object of class `c("mbnma", "rjags")`. `summary()` provides posterior medians and 95% credible intervals for different parameters in the model, with some explanation of the way in which the model has been defined. `print()` can also be used to give summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
+`mbnma.run()` returns an object of class `c("rjags", "mbnma")`. `summary()` provides posterior medians and 95% credible intervals (95%CrI) for different parameters in the model, naming them by agent and giving some explanation of the way they have been specified in the model. `print()` can also be used to give full summary statistics of the posterior distributions for monitored nodes in the JAGS model. Estimates are automatically reported for parameters of interest depending on the model specification (unless otherwise specified in `parameters.to.save`)
 
-Nodes that are automatically monitored (if present in the model) have the following interpretation. They will have an additional suffix that relates to the name/number of the time-course parameter to which they correspond (e.g. `d.et50` or `beta.1`):
+Nodes that are automatically monitored (if present in the model) have the following interpretation. They will have an additional suffix that relates to the name/number of the dose-response parameter to which they correspond (e.g. `d.et50` or `beta.1`):
 
-* `d` The pooled effect for each agent for a given dose-response parameter. Will be estimated by the model if dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"rel"`.
+* `d` The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters specified as `"rel"` (e.g. `mbnma.run(beta.1="rel")`).
 * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if `method="random"`.
-* `D` The class effect for each class for a given dose-response parameter. Will be estimated by the model if specified in `class.effect` for a dose-response parameter set to `"rel"`.
-* `sd.D` The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in `class.effect` is set to `"random"`.
-* `beta` The absolute value of a given dose-response parameter across the whole network (does not vary by agent/class). Will be estimated by the model if dose-response parameters (`beta.1`, `beta.2`, `beta.3`) are set to `"common"` or `"random"`.
-* `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response parameters, reported if `beta.1`, `beta.2` or `beta.3` are set to `"random"`
+* `D` The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effect` (see Class Effects (REF)) for a given dose-response parameter.
+* `sd.D` The within-class SD for different agents within the same class. This will be estimated by the model if any dose-response parameter specified in `class.effect` (see Class Effects (REF)) is set to `"random"`.
+* `beta` The common or mean value of a given dose-response parameter across the whole network (does not vary by agent/class). This will be estimated by the model for dose-response parameters specified as `"common"` or `"random"` (e.g. `mbnma.run(beta.1="common"`)).
+* `sd` (with a suffix) - the between-study SD (heterogeneity) for dose-response parameters modelled as exchangeable around a single mean value. This will be estimated by the model for dose-response parameters specified as `"random"`.
 * `totresdev` The residual deviance of the model
 * `deviance` The deviance of the model
 
@@ -282,7 +282,7 @@ summary(mbnma)
 mbnma.emax(tripnet, emax="rel", ed50="rel", method="common")
 ```
 
-In this case the `d.1`/`d.emax` parameters correspond to the effects of each agent for the dose-response parameter `beta.1`/`emax`, which corresponds (for this dose-reponse function) to the maximum response that can be achieved for a particular agent. The `d.2`/`d.ed50` parameters correspond to the effects for `beta.2`/`ed50`, which (in this case) corresponds to the dose at which 50% of the maximum response is achieved (results are given on the log scale for this parameter as it is constrained to be >0).
+In this example the `d.1`/`d.emax` parameters are the effects of each agent for the dose-response parameter `beta.1`/`emax`. For an Emax model this corresponds to the maximum response that can be achieved for a particular agent. The `d.2`/`d.ed50` parameters are the effects for each agent for `beta.2`/`ed50`, which (for an Emax function) corresponds to the dose at which 50% of the maximum response is achieved. Results for ED50 are given on the log scale as it is constrained to be greater than zero.
 
 Instead of pooling relative effects and estimating a separate relative effect for each agent, a simpler dose-response model (that makes more assumptions) could be to estimate a single parameter across the whole network for ED50, but that still estimates relative effects for Emax. In this case we can run with random effects on Emax:
 
@@ -294,9 +294,9 @@ emax <- mbnma.emax(tripnet, emax="rel", ed50="common", method="random")
 summary(emax)
 ```
 
-In this case the `d.1`/`d.emax` parameters correspond to the effect of each agent for the dose-response parameter `beta.1`/`emax`, as previously. But now we have a `beta.ed50` parameter in the output (instead of `d.ed50`), which corresponds to the absolute value of ED50 (on the log scale) across the whole network. As we have modelled random relative effects, we also have estimated a parameter for `sd`, the between-study standard deviation.
+In this example the `d.1`/`d.emax` parameters are the effects of each agent for the dose-response parameter `beta.1`/`emax`, as previously. But now there is a `beta.ed50` parameter in the output (instead of `d.ed50`), which is the absolute value of ED50 (on the log scale) across all agents in the network. As we have modelled random relative effects, we also have estimated a parameter for `sd`, the standard deviation for relative effects between studies.
 
-However, although the total residual deviance (`totresdev`) is lower in this model, indicating a better fit, the effective number of parameters (pD) is much greater, and overall the DIC is higher, suggesting that the first model is a better compromise of fit and complexity.
+The total residual deviance (`totresdev`) is lower in the second model, indicating a better fit, but the effective number of parameters (pD) is much greater due to the modelling of random effects, and overall the DIC is higher, suggesting that the first model is a better compromise of fit and complexity.
 
 
 ### Additional arguments for `mbnma.run()`
@@ -347,7 +347,7 @@ mbnma.emax(tripnet, emax="rel", ed50="rel", method="random",
 ```
 
 
-#### User-specified time-course function
+#### User-defined dose-response function
 
 If users want to write their own dose-response function rather than using one of the ones specified in `mbnma.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `beta` parameters and `dose`. This allows a huge amount of additional flexibility when defining the dose-response function.
 
@@ -367,21 +367,22 @@ mbnma.run(tripnet, fun="user", user.fun=quad,
 ```
 
 
-### Agent-specific dose-response functions
+#### Agent-specific dose-response functions
 
-Different dose-response functions can be used for different agents within the network. This allows for the modelling of more complex dose-response functions in agents for which there are many doses available, and less complex functions in agents for which there are fewer doses available. Note that these models are typically less computationally stable than single dose-response function models, and they are likely to benefit less from modelling correlation between multiple dose-response parameters (since there are fewer agents informing correlations between each dose-response parameter).
+Different dose-response functions can be used for different agents within the network. This allows for the modelling of more complex dose-response functions in agents for which there are many doses available, and less complex functions in agents for which there are fewer doses available. Note that these models are typically less computationally stable than single dose-response function models, and they are likely to benefit less from modelling correlation between multiple dose-response parameters since there are fewer agents informing correlations between each dose-response parameter.
 
 This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
 
+Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
+
 ```{r, eval=FALSE}
-# Frovatriptan and rizatriptan modelled using an exponential function as only two active 
+# Frovatriptan and rizatriptan modelled using an exponential function as only two active
 #doses are available for these agents
 # All other agents are modelled using an Emax function
-multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"))
+multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"),
+            beta.1="rel", beta.2="rel", beta.3="random")
 summary(multifun)
 ```
-
-In the output, the different dose-response parameters (`d`s or `beta`s) are numbered according to the dose-response function for which they are modelled, with typically more complex dose-response functions being given higher numbers. The ordering of parameter numbering follows `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`. For the above example, as the model uses exponential and Emax functions, parameters `d.1` correspond to the rate parameter of the exponential function, `d.2` to the Emax parameter of the Emax function, and `d.3` to the ED50 parameter of the Emax function.
 
 
 #### Priors
