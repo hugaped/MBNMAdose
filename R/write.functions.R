@@ -320,7 +320,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
   if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
     DR.1 <- "d.1[dose[i,k], agent[i,k]]"
-    message("Modelling non-parametric dose-response - arguments for dose-response parameters `beta.1`, `beta.2`, `beta.3` will be ignored")
+    message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3` will be ignored")
   }
 
   # Add ifelse statement for multiple DR functions

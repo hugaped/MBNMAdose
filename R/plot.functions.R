@@ -278,7 +278,7 @@ check.network <- function(g, reference=1) {
   treats <- rownames(connects)[connects==FALSE]
 
   if (length(treats>0)) {
-    warning(paste0("The following treatments/agents are not connected to the network reference:\n",
+    warning(paste0("The following treatments/agents are not connected\nto the network reference:\n",
                    paste(treats, collapse = "\n")))
   }
   return(treats)

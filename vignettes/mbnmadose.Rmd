@@ -277,7 +277,8 @@ mbnma <- mbnma.run(tripnet, fun="emax",
 summary(mbnma)
 ```
 ```{r, eval=FALSE}
-# An alternative would be to use an Emax wrapper for mbnma.run() which would give the same result but with more easily interpretable parameter names
+# An alternative would be to use an Emax wrapper for mbnma.run() which would give the 
+#same result but with more easily interpretable parameter names
 mbnma.emax(tripnet, emax="rel", ed50="rel", method="common")
 ```
 
@@ -373,7 +374,8 @@ Different dose-response functions can be used for different agents within the ne
 This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
 
 ```{r, eval=FALSE}
-# Frovatriptan and rizatriptan modelled using an exponential function as only two active doses are available for these agents
+# Frovatriptan and rizatriptan modelled using an exponential function as only two active 
+#doses are available for these agents
 # All other agents are modelled using an Emax function
 multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"))
 summary(multifun)
@@ -470,8 +472,10 @@ One of the strengths of dose-response MBNMA is that it allows treatments to be c
 
 ```{r, message=FALSE, warning=FALSE}
 # Generate dataset without placebo
-noplac.gout <- GoutSUA_2wkCFB[!GoutSUA_2wkCFB$studyID %in% c(2001, 3102),] # Drop two-arm placebo studies
-noplac.gout <- noplac.gout[noplac.gout$agent!="Plac",] # Drop placebo arm from multi-arm studies
+noplac.gout <- 
+  GoutSUA_2wkCFB[!GoutSUA_2wkCFB$studyID %in% c(2001, 3102),] # Drop two-arm placebo studies
+noplac.gout <- 
+  noplac.gout[noplac.gout$agent!="Plac",] # Drop placebo arm from multi-arm studies
 
 # Create mbnma.network object
 noplac.net <- mbnma.network(noplac.gout)

@@ -417,7 +417,7 @@ print.treat.str <- function(mbnma) {
       cat(sect.head)
 
       if (betas[[i]]$param %in% c("lambda", "ed50")) {
-        cat("Parameter modelled on exponential scale to ensure it takes positive values on the natural scale\n")
+        cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
       }
 
       datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
@@ -748,7 +748,7 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
   if (length(rhats)>0) {
     msg <- paste0("The following parameters have Rhat values > ",
                   cutoff,
-                  " which could be due to convergence issues:\n")
+                  "\nwhich could be due to convergence issues:\n")
     warning(paste0(msg, paste(rhats, collapse="\n")))
   }
 }
