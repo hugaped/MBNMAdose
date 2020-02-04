@@ -1,0 +1,2325 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={MBNMAdose for dose-response Model-Based (Network) Meta-Analysis},
+            pdfauthor={Hugo Pedder},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{MBNMAdose for dose-response Model-Based (Network) Meta-Analysis}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Hugo Pedder}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2020-02-04}
+
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\hypertarget{introduction}{%
+\subsection{Introduction}\label{introduction}}
+
+This vignette demonstrates how to use \texttt{MBNMAdose} to perform
+Model-Based Network Meta-Analysis (MBNMA) of studies with multiple doses
+of different agents by accounting for the dose-response relationship.
+This can connect disconnected networks via the dose-response
+relationship and the placebo response, improve precision of estimated
+effects and allow interpolation/extrapolation of predicted response
+based on the dose-response relationship.
+
+Modelling the dose-response relationship also avoids the ``lumping'' of
+different doses of an agent which is often done in Network Meta-Analysis
+(NMA) and can introduce additional heterogeneity or inconsistency. All
+models and analyses are implemented in a Bayesian framework, following
+an extension of the standard NMA methodology presented by (Lu and Ades
+2004) and are run in JAGS \emph{(version 4.3.0 or later is requried)}
+(JAGS Computer Program 2017). For full details of dose-response MBNMA
+methodology see Mawdsley et al.~(2016). Throughout this vignette we
+refer to a \textbf{treatment} as a specific \textbf{dose} or a specific
+\textbf{agent}
+
+This package has been developed alongside \texttt{MBNMAtime}, a package
+that allows users to perform time-course MBNMA to incorporate multiple
+time points within different studies. However, \emph{they should not be
+loaded into R at the same time} as there are a number of functions with
+shared names that perform similar tasks yet are specific to dealing with
+either time-course \emph{or} dose-response data.
+
+\hypertarget{workflow-within-the-package}{%
+\subsubsection{Workflow within the
+package}\label{workflow-within-the-package}}
+
+Functions within \texttt{MBNMAdose} follow a clear pattern of use:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Load your data into the correct format using \texttt{mbnma.network()}
+\item
+  Analyse your data using \texttt{mbnma.run()}, or any of the available
+  wrapper dose-response functions
+\item
+  Test for consistency at the treatment-level using functions like
+  \texttt{nma.nodesplit()} and \texttt{nma.run()}
+\item
+  Examine model results using forest plots and treatment rankings
+\item
+  Use your model to predict responses using \texttt{predict()}
+\end{enumerate}
+
+At each of these stages there are a number of informative plots that can
+be generated to help understand the data and to make decisions regarding
+model fitting.
+
+\hypertarget{datasets-included-in-the-package}{%
+\subsection{Datasets Included in the
+Package}\label{datasets-included-in-the-package}}
+
+\hypertarget{triptans-for-migraine-pain-relief}{%
+\subsubsection{Triptans for migraine pain
+relief}\label{triptans-for-migraine-pain-relief}}
+
+\texttt{HF2PPITT} is from a systematic review of interventions for pain
+relief in migraine (Thorlund et al. 2014). The outcome is binary, and
+represents (as aggregate data) the number of participants who were
+headache-free at 2 hours. Data are from patients who had had at least
+one migraine attack, who were not lost to follow-up, and who did not
+violate the trial protocol. The dataset includes 70
+Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo.
+Doses are standardised as relative to a ``common'' dose, and in total
+there are 23 different treatments (combination of dose and agent).
+\texttt{HF2PPITT} is a data frame in long format (one row per arm and
+study), with the variables \texttt{studyID}, \texttt{AuthorYear},
+\texttt{N}, \texttt{r}, \texttt{dose} and \texttt{agent}.
+
+\begin{longtable}[]{@{}rlrrrl@{}}
+\toprule
+studyID & AuthorYear & N & r & dose & agent\tabularnewline
+\midrule
+\endhead
+1 & Tfelt-Hansen P 2006 & 22 & 6 & 0 & placebo\tabularnewline
+1 & Tfelt-Hansen P 2006 & 30 & 14 & 1 & sumatriptan\tabularnewline
+2 & Goadsby PJ 2007 & 467 & 213 & 1 & almotriptan\tabularnewline
+2 & Goadsby PJ 2007 & 472 & 229 & 1 & zolmitriptan\tabularnewline
+3 & Tuchman M2006 & 160 & 15 & 0 & placebo\tabularnewline
+3 & Tuchman M2006 & 174 & 48 & 1 & zolmitriptan\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{interventions-for-serum-uric-acid-sua-reduction-in-gout}{%
+\subsubsection{Interventions for Serum Uric Acid (SUA) reduction in
+gout}\label{interventions-for-serum-uric-acid-sua-reduction-in-gout}}
+
+\texttt{GoutSUA\_2wkCFB} is from a systematic review of interventions
+for lowering Serum Uric Acid (SUA) concentration in patients with gout
+\emph{{[}not published previously{]}}. The outcome is continuous, and
+aggregate data responses correspond to the mean change from baseline in
+SUA in mg/dL at 2 weeks follow-up. The dataset includes 10
+Randomised-Controlled Trials (RCTs), comparing 5 different agents, and
+placebo. Data for one agent (RDEA) arises from an RCT that is not
+placebo-controlled, and so is not connected to the network directly. In
+total there were 19 different treatments (combination of dose and
+agent). \texttt{GoutSUA\_2wkCFB} is a data frame in long format (one row
+per arm and study), with the variables \texttt{studyID}, \texttt{y},
+\texttt{se}, \texttt{agent} and \texttt{dose}.
+
+\begin{longtable}[]{@{}lrrrlr@{}}
+\toprule
+& studyID & y & se & agent & dose\tabularnewline
+\midrule
+\endhead
+4 & 1102 & -0.53 & 0.25 & RDEA & 100\tabularnewline
+5 & 1102 & -1.37 & 0.18 & RDEA & 200\tabularnewline
+6 & 1102 & -1.73 & 0.25 & RDEA & 400\tabularnewline
+53 & 2001 & -6.82 & 0.06 & Febu & 240\tabularnewline
+54 & 2001 & 0.15 & 0.04 & Plac & 0\tabularnewline
+92 & 2003 & -3.43 & 0.03 & Allo & 300\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{interventions-for-pain-relief-in-osteoarthritis}{%
+\subsubsection{Interventions for pain relief in
+osteoarthritis}\label{interventions-for-pain-relief-in-osteoarthritis}}
+
+\texttt{osteopain\_2wkabs} is from a systematic review of interventions
+for pain relief in osteoarthritis, used previously in Pedder et
+al.~(2019). The outcome is continuous, and aggregate data responses
+correspond to the mean WOMAC pain score at 2 weeks follow-up. The
+dataset includes 18 Randomised-Controlled Trials (RCTs), comparing 8
+different agents with placebo. In total there were 26 different
+treatments (combination of dose and agent). The active treatments can
+also be grouped into 3 different classes, within which they have similar
+mechanisms of action. \texttt{osteopain\_2wkabs} is a data frame in long
+format (one row per arm and study), with the variables \texttt{studyID},
+\texttt{agent}, \texttt{dose}, \texttt{class}, \texttt{y}, \texttt{se},
+and \texttt{N}.
+
+\begin{longtable}[]{@{}lrlrlrrr@{}}
+\toprule
+& studyID & agent & dose & class & y & se & N\tabularnewline
+\midrule
+\endhead
+13 & 1 & Placebo & 0 & Placebo & 6.26 & 0.23 & 60\tabularnewline
+14 & 1 & Etoricoxib & 10 & Cox2Inhib & 5.08 & 0.16 & 114\tabularnewline
+15 & 1 & Etoricoxib & 30 & Cox2Inhib & 4.42 & 0.17 & 102\tabularnewline
+16 & 1 & Etoricoxib & 5 & Cox2Inhib & 5.34 & 0.16 & 117\tabularnewline
+17 & 1 & Etoricoxib & 60 & Cox2Inhib & 3.62 & 0.17 & 112\tabularnewline
+18 & 1 & Etoricoxib & 90 & Cox2Inhib & 4.08 & 0.17 & 112\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{alogliptin-for-lowering-blood-glucose-concentration-in-type-ii-diabetes}{%
+\subsubsection{Alogliptin for lowering blood glucose concentration in
+type II
+diabetes}\label{alogliptin-for-lowering-blood-glucose-concentration-in-type-ii-diabetes}}
+
+\texttt{alog\_pcfb} is from a systematic review of Randomised-Controlled
+Trials (RCTs) comparing different doses of alogliptin with placebo
+(Langford et al. 2016). The systematic review was simply performed and
+was intended to provide data to illustrate a statistical methodology
+rather than for clinical inference. Alogliptin is a treatment aimed at
+reducing blood glucose concentration in type II diabetes. The outcome is
+continuous, and aggregate data responses correspond to the mean change
+in HbA1c from baseline to follow-up in studies of at least 12 weeks
+follow-up. The dataset includes 14 RCTs, comparing 5 different doses of
+alogliptin with placebo, leading to 6 different treatments (combination
+of dose and agent) within the network. \texttt{alog\_pcfb} is a data
+frame in long format (one row per arm and study), with the variables
+\texttt{studyID}, \texttt{agent}, \texttt{dose}, \texttt{y},
+\texttt{se}, and \texttt{N}.
+
+\begin{longtable}[]{@{}llrrrr@{}}
+\toprule
+studyID & agent & dose & y & se & N\tabularnewline
+\midrule
+\endhead
+NCT01263470 & alogliptin & 0.00 & 0.06 & 0.05 & 75\tabularnewline
+NCT01263470 & alogliptin & 6.25 & -0.51 & 0.08 & 79\tabularnewline
+NCT01263470 & alogliptin & 12.50 & -0.70 & 0.06 & 84\tabularnewline
+NCT01263470 & alogliptin & 25.00 & -0.76 & 0.06 & 79\tabularnewline
+NCT01263470 & alogliptin & 50.00 & -0.82 & 0.05 & 79\tabularnewline
+NCT00286455 & alogliptin & 0.00 & -0.13 & 0.08 & 63\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hypertarget{inspecting-the-data}{%
+\subsection{Inspecting the data}\label{inspecting-the-data}}
+
+Before embarking on an analysis, the first step is to have a look at the
+raw data. Two features (network connectivity and dose-response
+relationship) are particularly important for MBNMA. For this we want to
+get our dataset into the right format for the package. We can do this
+using \texttt{mbnma.network()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Using the triptans dataset}
+\NormalTok{network <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(HF2PPITT)}
+\CommentTok{#> Values for `agent` with dose = 0 have been recoded to `Placebo`}
+\CommentTok{#> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`}
+\KeywordTok{print}\NormalTok{(network)}
+\CommentTok{#> description :}
+\CommentTok{#> [1] "Network"}
+\CommentTok{#> }
+\CommentTok{#> data.ab :}
+\CommentTok{#>   studyID agent dose treatment narm arm   r   N          AuthorYear}
+\CommentTok{#> 1       1     1    0         1    2   1   6  22 Tfelt-Hansen P 2006}
+\CommentTok{#> 2       1     3    1         6    2   2  14  30 Tfelt-Hansen P 2006}
+\CommentTok{#> 3       2     5    1        12    2   1 213 467     Goadsby PJ 2007}
+\CommentTok{#> 4       2     6    1        15    2   2 229 472     Goadsby PJ 2007}
+\CommentTok{#> 5       3     1    0         1    2   1  15 160       Tuchman M2006}
+\CommentTok{#> 6       3     6    1        15    2   2  48 174       Tuchman M2006}
+\CommentTok{#>  [ reached 'max' / getOption("max.print") -- omitted 176 rows ]}
+\CommentTok{#> }
+\CommentTok{#> agents :}
+\CommentTok{#> [1] "Placebo"      "eletriptan"   "sumatriptan"  "frovatriptan"}
+\CommentTok{#> [5] "almotriptan"  "zolmitriptan" "naratriptan"  "rizatriptan" }
+\CommentTok{#> }
+\CommentTok{#> treatments :}
+\CommentTok{#>  [1] "Placebo_0"        "eletriptan_0.5"   "eletriptan_1"    }
+\CommentTok{#>  [4] "eletriptan_2"     "sumatriptan_0.5"  "sumatriptan_1"   }
+\CommentTok{#>  [7] "sumatriptan_1.7"  "sumatriptan_2"    "frovatriptan_1"  }
+\CommentTok{#> [10] "frovatriptan_2"   "almotriptan_0.5"  "almotriptan_1"   }
+\CommentTok{#> [13] "almotriptan_2"    "zolmitriptan_0.4" "zolmitriptan_1"  }
+\CommentTok{#> [16] "zolmitriptan_2"   "zolmitriptan_4"   "zolmitriptan_10" }
+\CommentTok{#> [19] "naratriptan_1"    "naratriptan_2"    "rizatriptan_0.25"}
+\CommentTok{#> [22] "rizatriptan_0.5"  "rizatriptan_1"}
+\end{Highlighting}
+\end{Shaded}
+
+This takes a dataset with the columns:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{studyID} Study identifiers
+\item
+  \texttt{agent} Agent identifiers (can be character, factor or numeric)
+\item
+  \texttt{dose} Numeric data indicating the dose of the given agent
+  within the study arm
+\item
+  \texttt{class} An optional column indicating a particular class code.
+  Agents with the same name/identifier must also have the same class
+  code.
+\end{itemize}
+
+Depending on the type of data (and the likelihood) the following columns
+are required:
+
+\begin{itemize}
+\tightlist
+\item
+  Normal likelihood
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{y} Numeric data indicating the mean response for a given
+    study arm
+  \item
+    \texttt{se} Numeric data indicating the standard error for a given
+    study arm
+  \end{itemize}
+\item
+  Binomial likelihood
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{r} Numeric data indicating the number of responders in a
+    given study arm
+  \item
+    \texttt{N} Numeric data indicating the total number of participants
+    in a given study arm
+  \end{itemize}
+\item
+  Poisson likelihood
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \texttt{r} Numeric data indicating the number of events in a given
+    study arm
+  \item
+    \texttt{E} Numeric data indicating the total exposure time in a
+    given study arm
+  \end{itemize}
+\end{itemize}
+
+Additional columns can be included in the dataset. These will simply be
+added to the \texttt{mbnma.network} object, though will not affect the
+classification of the data.
+
+It then performs the following checks on the data:
+
+\begin{itemize}
+\tightlist
+\item
+  The dataset has the required column names
+\item
+  There are no missing values
+\item
+  All doses are positive
+\item
+  All SE, r, N and E are positive
+\item
+  Class labels are consistent within each agent
+\item
+  Studies have at least two arms
+\item
+  Studies do not only compare the same agent at the same dose
+\end{itemize}
+
+Finally it converts the data frame into an object of
+\texttt{class("mbnma.network")}, which contains indices for study arms,
+numeric variables for treatments, agents and classes, and stores a
+vector of treatment, agent and class names as an element within the
+object. By convention, agents are numbered alphabetically, though if the
+original data for agents is provided as a factor then the factor codes
+will be used. This then contains all the necessary information for
+subsequent \texttt{MBNMAdose} functions.
+
+\hypertarget{network-connectivity}{%
+\subsubsection{Network connectivity}\label{network-connectivity}}
+
+Looking at how the evidence in the network is connected and identifying
+which studies compare which treatments/agents helps to understand which
+effects can be estimated and what information will be helping to inform
+those estimates. In particular, the complexity of dose-response
+relationships that can be estimated is dependent on the number of doses
+of each agent available in the dataset.
+
+Network plots can be plotted which shows which treatments/agents have
+been compared in head-to-head trials. Typically the thickness of
+connecting lines (``edges'') is proportional to the number of studies
+that make a particular comparison and the size of treatment nodes
+(``vertices'') is proportional to the total number of patients in the
+network who were randomised to a given treatment/agent (provided
+\texttt{N} is included as a variable in the original dataset for
+\texttt{mbnma.network()}).
+
+In \texttt{MBNMAdose} these plots are generated using \texttt{igraph},
+and can be plotted by calling \texttt{plot()}. The generated plots are
+objects of \texttt{class("igraph")} meaning that, in addition to the
+options specified in \texttt{plot()}, various \texttt{igraph} functions
+can subsequently be used to make more detailed edits to them.
+
+Within these network plots, vertices are automatically aligned in a
+circle (as the default) and can be tidied by shifting the label distance
+away from the nodes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Prepare data using the triptans dataset}
+\NormalTok{tripnet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(HF2PPITT)}
+\CommentTok{#> Values for `agent` with dose = 0 have been recoded to `Placebo`}
+\CommentTok{#> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`}
+
+\CommentTok{# Draw network plot}
+\KeywordTok{plot}\NormalTok{(tripnet)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+If some vertices are not connected to the network reference treatment
+through any pathway of head-to-head evidence, a warning will be given.
+The nodes that are coloured white represent these disconnected vertices.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Prepare data using the gout dataset}
+\NormalTok{goutnet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(GoutSUA_2wkCFB)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{label.distance =} \DecValTok{5}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Allo_245}
+\CommentTok{#> Allo_256}
+\CommentTok{#> Allo_300}
+\CommentTok{#> Allo_400}
+\CommentTok{#> Benz_50}
+\CommentTok{#> Benz_139}
+\CommentTok{#> Benz_143}
+\CommentTok{#> Benz_200}
+\CommentTok{#> Febu_40}
+\CommentTok{#> Febu_80}
+\CommentTok{#> Febu_120}
+\CommentTok{#> RDEA_100}
+\CommentTok{#> RDEA_200}
+\CommentTok{#> RDEA_400}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-8-1.pdf}
+
+However, whilst at the treatment-level (specific dose of a specific
+agent), many of these vertices are disconnected, at the agent level they
+are connected (via different doses of the same agent), meaning that
+\emph{via the dose-response relationship} it is possible to estimate
+results.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot at the agent-level}
+\KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{6}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> RDEA}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-9-1.pdf}
+
+One agent (RDEA) is still not connected to the network, but
+\texttt{MBNMAdose} allows agents to connect via a placebo response
+\emph{even if they do not include placebo in a head-to-head trial}. The
+connectivity of this will depend on the number of doses compared within
+an agent, and on the complexity of the dose-response relationship
+(Mawdsley et al. 2016).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)}
+\KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{doselink =} \DecValTok{2}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{6}\NormalTok{)}
+\CommentTok{#> Dose-response connections to placebo plotted based on a dose-response}
+\CommentTok{#>                    function with 1 degrees of freedom}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-10-1.pdf}
+
+It is also possible to plot a network at the treatment level but to
+colour the doses by the agent that they belong to.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Colour vertices by agent}
+\KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{v.color =} \StringTok{"agent"}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{5}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Allo_245}
+\CommentTok{#> Allo_256}
+\CommentTok{#> Allo_300}
+\CommentTok{#> Allo_400}
+\CommentTok{#> Benz_50}
+\CommentTok{#> Benz_139}
+\CommentTok{#> Benz_143}
+\CommentTok{#> Benz_200}
+\CommentTok{#> Febu_40}
+\CommentTok{#> Febu_80}
+\CommentTok{#> Febu_120}
+\CommentTok{#> RDEA_100}
+\CommentTok{#> RDEA_200}
+\CommentTok{#> RDEA_400}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-11-1.pdf}
+
+Several further options exist to allow for inclusion of disconnected
+treatments, such as assuming some sort of common effect among agents
+within the same class. This is discussed in more detail later in the
+vignette.
+
+\hypertarget{examining-the-dose-response-relationship}{%
+\subsubsection{Examining the dose-response
+relationship}\label{examining-the-dose-response-relationship}}
+
+In order to consider which functional forms may be appropriate for
+modelling the dose-response relationship, it is useful to look at
+results from a ``split'' network meta-analysis (NMA), in which each dose
+of an agent is considered as separate and unrelated (i.e.~we are not
+assuming any dose-response relationship). The \texttt{nma.run()}
+function performs a simple NMA, and by default it drops studies that are
+disconnected at the treatment-level (since estimates for these will be
+very uncertain if included).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run a random effect split NMA using the alogliptin dataset}
+\NormalTok{alognet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(alog_pcfb)}
+\NormalTok{nma.alog <-}\StringTok{ }\KeywordTok{nma.run}\NormalTok{(alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(nma.alog)}
+\CommentTok{#> $jagsresult}
+\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpIjUMU1\textbackslash{}file3e9854927dff", fit using jags,}
+\CommentTok{#>  3 chains, each with 10000 iterations (first 5000 discarded), n.thin = 5}
+\CommentTok{#>  n.sims = 3000 iterations saved}
+\CommentTok{#>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%}
+\CommentTok{#> d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000}
+\CommentTok{#> d[2]        -0.455   0.090   -0.627   -0.516   -0.454   -0.395   -0.279}
+\CommentTok{#> d[3]        -0.655   0.046   -0.747   -0.685   -0.655   -0.624   -0.563}
+\CommentTok{#> d[4]        -0.711   0.046   -0.797   -0.740   -0.713   -0.680   -0.620}
+\CommentTok{#> d[5]        -0.761   0.086   -0.925   -0.819   -0.762   -0.706   -0.590}
+\CommentTok{#> d[6]        -0.684   0.174   -1.017   -0.800   -0.687   -0.572   -0.340}
+\CommentTok{#> sd           0.123   0.028    0.074    0.104    0.121    0.140    0.184}
+\CommentTok{#> totresdev   47.132   9.844   30.375   40.255   46.309   53.479   68.137}
+\CommentTok{#> deviance  -124.182   9.844 -140.939 -131.059 -125.005 -117.835 -103.177}
+\CommentTok{#>            Rhat n.eff}
+\CommentTok{#> d[1]      1.000     1}
+\CommentTok{#> d[2]      1.005   550}
+\CommentTok{#> d[3]      1.002  2000}
+\CommentTok{#> d[4]      1.001  3000}
+\CommentTok{#> d[5]      1.002  1400}
+\CommentTok{#> d[6]      1.001  2600}
+\CommentTok{#> sd        1.001  3000}
+\CommentTok{#> totresdev 1.001  3000}
+\CommentTok{#> deviance  1.001  3000}
+\CommentTok{#> }
+\CommentTok{#> For each parameter, n.eff is a crude measure of effective sample size,}
+\CommentTok{#> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).}
+\CommentTok{#> }
+\CommentTok{#> DIC info (using the rule, pD = var(deviance)/2)}
+\CommentTok{#> pD = 48.5 and DIC = -75.7}
+\CommentTok{#> DIC is an estimate of expected predictive error (lower deviance is better).}
+\CommentTok{#> }
+\CommentTok{#> $trt.labs}
+\CommentTok{#> [1] "Placebo_0"       "alogliptin_6.25" "alogliptin_12.5" "alogliptin_25"  }
+\CommentTok{#> [5] "alogliptin_50"   "alogliptin_100" }
+\CommentTok{#> }
+\CommentTok{#> attr(,"class")}
+\CommentTok{#> [1] "nma"}
+
+\CommentTok{# Draw plot of NMA estimates plotted by dose}
+\KeywordTok{plot}\NormalTok{(nma.alog)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+In the alogliptin dataset there appears to be a dose-response
+relationship, and it also appears to be non-linear.
+
+One additional use of \texttt{nma.run()} is that is can be used after
+fitting an MBNMA to ensure that fitting a dose-response function is not
+leading to poorer model fit than when conducting a conventional NMA.
+Comparing the total residual deviance between NMA and MBNMA models is
+useful to identify if introducing a dose-response relationship is
+leading to poorer model fit. However, it is important to note that if
+treatments are disconnected in the NMA and have been dropped
+(\texttt{drop.discon=TRUE}), there will be fewer observations present in
+the dataset, which will subsequently lead to lower pD and lower residual
+deviance, meaning that model fit statistics from NMA and MBNMA may not
+be directly comparable.
+
+\hypertarget{analysis-using-mbnma.run}{%
+\subsection{\texorpdfstring{Analysis using
+\texttt{mbnma.run()}}{Analysis using mbnma.run()}}\label{analysis-using-mbnma.run}}
+
+MBNMA is performed in \texttt{MBNMAdose} by applying
+\texttt{mbnma.run()}. A \texttt{"mbnma.network"} object must be provided
+as the data for \texttt{mbnma.run()}. The key arguments within
+\texttt{mbnma.run()} involve specifying the functional form used to
+model the dose-response, and the dose-response parameters that comprise
+that functional form.
+
+\hypertarget{dose-response-functions}{%
+\paragraph{Dose-response functions}\label{dose-response-functions}}
+
+Several different functional forms are implemented within
+\texttt{MBNMAdose}, that allow a variety of parameterizations and
+dose-response shapes. These are provided to the \texttt{fun} argument in
+\texttt{mbnma.run()}:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{"linear"}
+\item
+  \texttt{"exponential"}
+\item
+  \texttt{"emax"} - Emax without a Hill parameter
+\item
+  \texttt{"emax.hill"} - Emax with a Hill parameter
+\item
+  \texttt{"nonparam.up"} - Non-parametric monotonically increasing
+  dose-response
+\item
+  \texttt{"nonparam.down"} - Non-parametric monotonically decreasing
+  dose-response
+\item
+  \texttt{"user"} - A function that can be explicitly specified by the
+  user within \texttt{user.fun} (see \texttt{?mbnma.run()})
+\end{itemize}
+
+\hypertarget{dose-response-parameters}{%
+\paragraph{Dose-response parameters}\label{dose-response-parameters}}
+
+In \texttt{mbnma.run()} it is possible to specify up to four different
+dose-response parameters, depending on the dose-response function used.
+These are named \texttt{beta.1}, \texttt{beta.2}, \texttt{beta.3} and
+\texttt{beta.4}, and their interpretation varies depending on the
+dose-response function used (see \texttt{?mbnma.run()}).
+
+For simplification and interpretability, both in the way in which
+dose-response parameters are defined in the model and in how they are
+reported in the output, wrapper functions are provided for each of the
+commonly used dose-response functions in \texttt{mbnma.run()}. For
+example, \texttt{mbnma.emax()} is equivalent to
+\texttt{mbnma.run(fun="emax")}, but with a different naming of
+dose-response parameters (\texttt{emax} instead of \texttt{beta.1} and
+\texttt{ed50} instead of \texttt{beta.2}). Several of these wrapper
+functions will be shown in other examples in this vignette.
+
+Dose-response parameters can be specified in different ways which
+affects the key parameters estimated by the model and implies different
+modelling assumptions. Three different specifications are available for
+each parameter:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{"rel"} indicates that relative effects should be pooled for
+  this dose-response parameter. This preserves randomisation within
+  included studies and is likely to vary less between studies (only due
+  to effect modification).
+\item
+  \texttt{"common"} indicates that a single absolute value for this
+  dose-response parameter should be estimated across the whole network
+  \emph{that does not vary by agent}. This is particularly useful for
+  parameters expected to be constant (e.g.~Hill parameters in
+  \texttt{mbnma.emax.hill()}).
+\item
+  \texttt{"random"} indicates that a single absolute value should be
+  estimated separately for each agent, but that all the agent values
+  vary randomly around a single mean absolute network effect. It is
+  similar to \texttt{"common"} but makes slightly less strong
+  assumptions.
+\item
+  \texttt{numeric()} Assigned a numeric value - this is similar to
+  assigning \texttt{"common"}, but the single absolute value is assigned
+  as a numeric value by the user, rather than estimated from the data.
+\end{itemize}
+
+In \texttt{mbnma.run()}, an additional argument, \texttt{method},
+indicates what method to use for pooling relative effects and can take
+either the values \texttt{"common"}, implying that all studies estimate
+the same true effect (akin to a ``fixed effects'' meta-analysis), or
+\texttt{"random"}, implying that all studies estimate a separate true
+effect, but that each of these true effects vary randomly around a true
+mean effect. This approach allows for modelling of between-study
+heterogeneity.
+
+If relative effects (\texttt{"rel"}) are modelled on more than one
+dose-response parameter then by default, a correlation will be assumed
+between the dose-response parameters, which will typically improve
+estimation (provided the parameters are correlated\ldots they usually
+are). This can be prevented by setting \texttt{cor=FALSE}.
+
+\hypertarget{output}{%
+\subsubsection{Output}\label{output}}
+
+\texttt{mbnma.run()} returns an object of class
+\texttt{c("mbnma",\ "rjags")}. \texttt{summary()} provides posterior
+medians and 95\% credible intervals for different parameters in the
+model, with some explanation of the way in which the model has been
+defined. \texttt{print()} can also be used to give summary statistics of
+the posterior distributions for monitored nodes in the JAGS model.
+Estimates are automatically reported for parameters of interest
+depending on the model specification (unless otherwise specified in
+\texttt{parameters.to.save})
+
+Nodes that are automatically monitored (if present in the model) have
+the following interpretation. They will have an additional suffix that
+relates to the name/number of the time-course parameter to which they
+correspond (e.g.~\texttt{d.et50} or \texttt{beta.1}):
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{d} The pooled effect for each agent for a given dose-response
+  parameter. Will be estimated by the model if dose-response parameters
+  (\texttt{beta.1}, \texttt{beta.2}, \texttt{beta.3}) are set to
+  \texttt{"rel"}.
+\item
+  \texttt{sd} (without a suffix) - the between-study SD (heterogeneity)
+  for relative effects, reported if \texttt{method="random"}.
+\item
+  \texttt{D} The class effect for each class for a given dose-response
+  parameter. Will be estimated by the model if specified in
+  \texttt{class.effect} for a dose-response parameter set to
+  \texttt{"rel"}.
+\item
+  \texttt{sd.D} The within-class SD for different agents within the same
+  class. Will be estimated by the model if any dose-response parameter
+  in \texttt{class.effect} is set to \texttt{"random"}.
+\item
+  \texttt{beta} The absolute value of a given dose-response parameter
+  across the whole network (does not vary by agent/class). Will be
+  estimated by the model if dose-response parameters (\texttt{beta.1},
+  \texttt{beta.2}, \texttt{beta.3}) are set to \texttt{"common"} or
+  \texttt{"random"}.
+\item
+  \texttt{sd} (with a suffix) - the between-study SD (heterogeneity) for
+  absolute dose-response parameters, reported if \texttt{beta.1},
+  \texttt{beta.2} or \texttt{beta.3} are set to \texttt{"random"}
+\item
+  \texttt{totresdev} The residual deviance of the model
+\item
+  \texttt{deviance} The deviance of the model
+\end{itemize}
+
+Model fit statistics for \texttt{pD} (effective number of parameters)
+and \texttt{DIC} (Deviance Information Criterion) are also reported,
+with an explanation as to how they have been calculated.
+
+\hypertarget{examples}{%
+\paragraph{Examples}\label{examples}}
+
+An example MBNMA of the triptans dataset using an Emax dose-response
+function and common treatment effects that pool relative effects on both
+Emax and ED50 parameters follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run an Emax dose-response MBNMA}
+\NormalTok{mbnma <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(tripnet, }\DataTypeTok{fun=}\StringTok{"emax"}\NormalTok{, }
+                   \DataTypeTok{beta.1=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{beta.2=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"common"}\NormalTok{)}
+\CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
+\CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(mbnma)}
+\CommentTok{#> ========================================}
+\CommentTok{#> Dose-response MBNMA}
+\CommentTok{#> ========================================}
+\CommentTok{#> }
+\CommentTok{#> Dose-response function: emax}
+\CommentTok{#> }
+\CommentTok{#> #### Pooling method ####}
+\CommentTok{#> }
+\CommentTok{#> Method: Common (fixed) effects estimated for relative effects}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### beta.1 (emax, emax) dose-response parameter results ####}
+\CommentTok{#> }
+\CommentTok{#> Pooling: relative effects}
+\CommentTok{#> }
+\CommentTok{#>              Parameter   Median      2.5%    97.5%}
+\CommentTok{#> eletriptan      d.1[2] 2.547712 2.2398436 2.897524}
+\CommentTok{#> sumatriptan     d.1[3] 1.757867 1.5363337 2.072036}
+\CommentTok{#> frovatriptan    d.1[4] 1.911597 1.2691830 3.018892}
+\CommentTok{#> almotriptan     d.1[5] 1.837157 1.3768209 2.723648}
+\CommentTok{#> zolmitriptan    d.1[6] 2.004399 1.5759870 2.654923}
+\CommentTok{#> naratriptan     d.1[7] 1.064370 0.5963054 1.988305}
+\CommentTok{#> rizatriptan     d.1[8] 2.400064 1.9010330 3.359387}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### beta.2 (emax, ed50) dose-response parameter results ####}
+\CommentTok{#> }
+\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values on the natural scale}
+\CommentTok{#> Pooling: relative effects}
+\CommentTok{#> }
+\CommentTok{#>              Parameter     Median      2.5%      97.5%}
+\CommentTok{#> eletriptan      d.2[2] -0.7156171 -1.144733 -0.3073377}
+\CommentTok{#> sumatriptan     d.2[3] -0.6485503 -1.195204 -0.1254315}
+\CommentTok{#> frovatriptan    d.2[4] -0.4978926 -1.647096  0.5205319}
+\CommentTok{#> almotriptan     d.2[5] -0.2231828 -1.000235  0.5595401}
+\CommentTok{#> zolmitriptan    d.2[6] -0.4405460 -1.379673  0.2251863}
+\CommentTok{#> naratriptan     d.2[7] -0.1757111 -1.249177  0.9093106}
+\CommentTok{#> rizatriptan     d.2[8] -0.5873059 -1.321969  0.1390686}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### Model Fit Statistics ####}
+\CommentTok{#> }
+\CommentTok{#> Effective number of parameters:}
+\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 78.7}
+\CommentTok{#> Deviance = 1170.2}
+\CommentTok{#> Residual deviance = 267.1}
+\CommentTok{#> Deviance Information Criterion (DIC) = 1248.9}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# An alternative would be to use an Emax wrapper for mbnma.run() which would give the same result but with more easily interpretable parameter names}
+\KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"common"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+In this case the \texttt{d.1}/\texttt{d.emax} parameters correspond to
+the effects of each agent for the dose-response parameter
+\texttt{beta.1}/\texttt{emax}, which corresponds (for this dose-reponse
+function) to the maximum response that can be achieved for a particular
+agent. The \texttt{d.2}/\texttt{d.ed50} parameters correspond to the
+effects for \texttt{beta.2}/\texttt{ed50}, which (in this case)
+corresponds to the dose at which 50\% of the maximum response is
+achieved (results are given on the log scale for this parameter as it is
+constrained to be \textgreater0).
+
+Instead of pooling relative effects and estimating a separate relative
+effect for each agent, a simpler dose-response model (that makes more
+assumptions) could be to estimate a single parameter across the whole
+network for ED50, but that still estimates relative effects for Emax. In
+this case we can run with random effects on Emax:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Emax model with single parameter estimated for Emax}
+\NormalTok{emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"common"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
+\CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
+\CommentTok{#> Compiling model graph}
+\CommentTok{#>    Resolving undeclared variables}
+\CommentTok{#>    Allocating nodes}
+\CommentTok{#> Graph information:}
+\CommentTok{#>    Observed stochastic nodes: 182}
+\CommentTok{#>    Unobserved stochastic nodes: 191}
+\CommentTok{#>    Total graph size: 4091}
+\CommentTok{#> }
+\CommentTok{#> Initializing model}
+\CommentTok{#> }
+\CommentTok{#> }
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\StringTok{                                                  }\ErrorTok{|}\StringTok{   }\DecValTok{0}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++}\StringTok{                                                }\ErrorTok{|}\StringTok{   }\DecValTok{4}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++}\StringTok{                                              }\ErrorTok{|}\StringTok{   }\DecValTok{8}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++}\StringTok{                                            }\ErrorTok{|}\StringTok{  }\DecValTok{12}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++}\StringTok{                                          }\ErrorTok{|}\StringTok{  }\DecValTok{16}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++}\StringTok{                                        }\ErrorTok{|}\StringTok{  }\DecValTok{20}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++}\StringTok{                                      }\ErrorTok{|}\StringTok{  }\DecValTok{24}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++}\StringTok{                                    }\ErrorTok{|}\StringTok{  }\DecValTok{28}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++}\StringTok{                                  }\ErrorTok{|}\StringTok{  }\DecValTok{32}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++}\StringTok{                                }\ErrorTok{|}\StringTok{  }\DecValTok{36}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++}\StringTok{                              }\ErrorTok{|}\StringTok{  }\DecValTok{40}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++}\StringTok{                            }\ErrorTok{|}\StringTok{  }\DecValTok{44}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++}\StringTok{                          }\ErrorTok{|}\StringTok{  }\DecValTok{48}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++}\StringTok{                        }\ErrorTok{|}\StringTok{  }\DecValTok{52}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++}\StringTok{                      }\ErrorTok{|}\StringTok{  }\DecValTok{56}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++}\StringTok{                    }\ErrorTok{|}\StringTok{  }\DecValTok{60}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++}\StringTok{                  }\ErrorTok{|}\StringTok{  }\DecValTok{64}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++}\StringTok{                }\ErrorTok{|}\StringTok{  }\DecValTok{68}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++}\StringTok{              }\ErrorTok{|}\StringTok{  }\DecValTok{72}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++}\StringTok{            }\ErrorTok{|}\StringTok{  }\DecValTok{76}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++}\StringTok{          }\ErrorTok{|}\StringTok{  }\DecValTok{80}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++}\StringTok{        }\ErrorTok{|}\StringTok{  }\DecValTok{84}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++}\StringTok{      }\ErrorTok{|}\StringTok{  }\DecValTok{88}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++}\StringTok{    }\ErrorTok{|}\StringTok{  }\DecValTok{92}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++++}\StringTok{  }\ErrorTok{|}\StringTok{  }\DecValTok{96}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++++++}\ErrorTok{|}\StringTok{ }\DecValTok{100}\NormalTok{%}
+\CommentTok{#> }
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|}\StringTok{                                                  }\ErrorTok{|}\StringTok{   }\DecValTok{0}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**}\StringTok{                                                }\ErrorTok{|}\StringTok{   }\DecValTok{4}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|****}\StringTok{                                              }\ErrorTok{|}\StringTok{   }\DecValTok{8}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|******}\StringTok{                                            }\ErrorTok{|}\StringTok{  }\DecValTok{12}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|********}\StringTok{                                          }\ErrorTok{|}\StringTok{  }\DecValTok{16}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**********}\StringTok{                                        }\ErrorTok{|}\StringTok{  }\DecValTok{20}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|************}\StringTok{                                      }\ErrorTok{|}\StringTok{  }\DecValTok{24}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**************}\StringTok{                                    }\ErrorTok{|}\StringTok{  }\DecValTok{28}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|****************}\StringTok{                                  }\ErrorTok{|}\StringTok{  }\DecValTok{32}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|******************}\StringTok{                                }\ErrorTok{|}\StringTok{  }\DecValTok{36}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|********************}\StringTok{                              }\ErrorTok{|}\StringTok{  }\DecValTok{40}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**********************}\StringTok{                            }\ErrorTok{|}\StringTok{  }\DecValTok{44}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|************************}\StringTok{                          }\ErrorTok{|}\StringTok{  }\DecValTok{48}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**************************}\StringTok{                        }\ErrorTok{|}\StringTok{  }\DecValTok{52}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|****************************}\StringTok{                      }\ErrorTok{|}\StringTok{  }\DecValTok{56}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|******************************}\StringTok{                    }\ErrorTok{|}\StringTok{  }\DecValTok{60}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|********************************}\StringTok{                  }\ErrorTok{|}\StringTok{  }\DecValTok{64}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**********************************}\StringTok{                }\ErrorTok{|}\StringTok{  }\DecValTok{68}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|************************************}\StringTok{              }\ErrorTok{|}\StringTok{  }\DecValTok{72}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**************************************}\StringTok{            }\ErrorTok{|}\StringTok{  }\DecValTok{76}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|****************************************}\StringTok{          }\ErrorTok{|}\StringTok{  }\DecValTok{80}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|******************************************}\StringTok{        }\ErrorTok{|}\StringTok{  }\DecValTok{84}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|********************************************}\StringTok{      }\ErrorTok{|}\StringTok{  }\DecValTok{88}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**********************************************}\StringTok{    }\ErrorTok{|}\StringTok{  }\DecValTok{92}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|************************************************}\StringTok{  }\ErrorTok{|}\StringTok{  }\DecValTok{96}\NormalTok{%}
+  \OperatorTok{|}\StringTok{                                                        }
+\StringTok{  }\ErrorTok{|**************************************************|}\StringTok{ }\DecValTok{100}\NormalTok{%}
+\KeywordTok{summary}\NormalTok{(emax)}
+\CommentTok{#> Warning in rhat.warning(object): The following parameters have Rhat values > 1.02 which could be due to convergence issues:}
+\CommentTok{#> beta.ed50}
+\CommentTok{#> d.emax[2]}
+\CommentTok{#> d.emax[3]}
+\CommentTok{#> d.emax[6]}
+\CommentTok{#> d.emax[8]}
+\CommentTok{#> ========================================}
+\CommentTok{#> Dose-response MBNMA}
+\CommentTok{#> ========================================}
+\CommentTok{#> }
+\CommentTok{#> Dose-response function: emax}
+\CommentTok{#> }
+\CommentTok{#> #### Pooling method ####}
+\CommentTok{#> }
+\CommentTok{#> Method: Random effects estimated for relative effects}
+\CommentTok{#> }
+\CommentTok{#> Parameter                    Median (95%CrI)}
+\CommentTok{#> -----------------------------------------------------------------------}
+\CommentTok{#> Between-study SD for relative effects        0.247 (0.168, 0.335)}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### emax dose-response parameter results ####}
+\CommentTok{#> }
+\CommentTok{#> Pooling: relative effects}
+\CommentTok{#> }
+\CommentTok{#>              Parameter   Median      2.5%    97.5%}
+\CommentTok{#> eletriptan   d.emax[2] 2.825731 2.3618862 3.528749}
+\CommentTok{#> sumatriptan  d.emax[3] 1.903450 1.6209879 2.330119}
+\CommentTok{#> frovatriptan d.emax[4] 2.066563 1.3660150 2.983334}
+\CommentTok{#> almotriptan  d.emax[5] 1.777406 1.3392828 2.396986}
+\CommentTok{#> zolmitriptan d.emax[6] 2.115456 1.7050850 2.725031}
+\CommentTok{#> naratriptan  d.emax[7] 1.031992 0.4369363 1.723539}
+\CommentTok{#> rizatriptan  d.emax[8] 2.717514 2.2083453 3.524312}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### ed50 dose-response parameter results ####}
+\CommentTok{#> }
+\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values on the natural scale}
+\CommentTok{#> Pooling: single parameter shared across the network}
+\CommentTok{#> }
+\CommentTok{#>           Parameter     Median       2.5%     97.5%}
+\CommentTok{#> beta.ed50 beta.ed50 -0.3655485 -0.8555353 0.1432838}
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> }
+\CommentTok{#> #### Model Fit Statistics ####}
+\CommentTok{#> }
+\CommentTok{#> Effective number of parameters:}
+\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 167.6}
+\CommentTok{#> Deviance = 1092.8}
+\CommentTok{#> Residual deviance = 189.7}
+\CommentTok{#> Deviance Information Criterion (DIC) = 1260.4}
+\end{Highlighting}
+\end{Shaded}
+
+In this case the \texttt{d.1}/\texttt{d.emax} parameters correspond to
+the effect of each agent for the dose-response parameter
+\texttt{beta.1}/\texttt{emax}, as previously. But now we have a
+\texttt{beta.ed50} parameter in the output (instead of \texttt{d.ed50}),
+which corresponds to the absolute value of ED50 (on the log scale)
+across the whole network. As we have modelled random relative effects,
+we also have estimated a parameter for \texttt{sd}, the between-study
+standard deviation.
+
+However, although the total residual deviance (\texttt{totresdev}) is
+lower in this model, indicating a better fit, the effective number of
+parameters (pD) is much greater, and overall the DIC is higher,
+suggesting that the first model is a better compromise of fit and
+complexity.
+
+\hypertarget{additional-arguments-for-mbnma.run}{%
+\subsubsection{\texorpdfstring{Additional arguments for
+\texttt{mbnma.run()}}{Additional arguments for mbnma.run()}}\label{additional-arguments-for-mbnma.run}}
+
+Several additional arguments can be given to \texttt{mbnma.run()} that
+require further explanation.
+
+\hypertarget{class-effects}{%
+\paragraph{Class effects}\label{class-effects}}
+
+Shared effects between agents within the network can be modelled using
+class effects. This requires assuming that different agents have some
+sort of common class effect, perhaps due to similar mechanisms of
+action. Advantages of this is that class effects can be used to connect
+agents that might otherwise be disconnected from the network, and they
+can also provide additional information on agents that might otherwise
+have insufficient data available to estimate a desired dose-response.
+The drawback is that this requires making additional assumptions
+regarding similarity of efficacy.
+
+Class effects can only be applied to dose-response parameters which are
+modelled using relative effects (\texttt{"rel"}). In
+\texttt{mbnma.run()} they are supplied as a list, in which each element
+is named following the name of the corresponding dose-response parameter
+as defined in the function. The names will therefore differ when using
+wrapper functions for \texttt{mbnma.run()}. The class effect for each
+dose-response parameter can be either \texttt{"common"}, in which the
+effects for each agent within the same class are constrained to a common
+class effect, or \texttt{"random"}, in which the effects for each agent
+within the same class are assumed to be randomly distributed around a
+shared class mean.
+
+When working with class effects in \texttt{MBNMAdose} a variable named
+\texttt{class} must be included in the original data frame provided to
+\texttt{mbnma.network()}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Using the osteoarthritis dataset (contains info on classes)}
+\NormalTok{painnet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(osteopain_2wkabs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Emax MBNMA with a single absolute parameter for Emax and random relative effects on ED50}
+\CommentTok{# Common class effects on ED50}
+\NormalTok{emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(painnet, }\DataTypeTok{emax=}\StringTok{"common"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{,}
+                   \DataTypeTok{class.effect=}\KeywordTok{list}\NormalTok{(}\DataTypeTok{ed50=}\StringTok{"common"}\NormalTok{))}
+\CommentTok{#> `likelihood` not given by user - set to `normal` based on data provided}
+\CommentTok{#> `link` not given by user - set to `identity` based on assigned value for `likelihood`}
+\CommentTok{#> Warning in write.cor(model, beta.1 = beta.1, beta.2 = beta.2, beta.3 =}
+\CommentTok{#> beta.3, : Class effects cannot be modelled with correlation between time-}
+\CommentTok{#> course relative effects - correlation will be ignored}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(emax)}
+\end{Highlighting}
+\end{Shaded}
+
+Mean class effects are given in the output as
+\texttt{D.ed50}/\texttt{D.1} parameters. These can be interpreted as the
+effect of each class for Emax parameters (\texttt{beta.1}). Note the
+number of \texttt{D.ed50} parameters is therefore equal to the number of
+classes defined in the dataset.
+
+If we had specified that the class effects were \texttt{"random"}, each
+treatment effect for Emax (\texttt{beta.1}) would be assumed to be
+randomly distributed around its class mean with SD given in the output
+as \texttt{sd.D.ed50}/\texttt{sd.D.1}.
+
+\hypertarget{correlation-between-dose-response-parameters}{%
+\paragraph{Correlation between dose-response
+parameters}\label{correlation-between-dose-response-parameters}}
+
+\texttt{mbnma.run()} automatically models correlation between relative
+effects dose-response parameters (unless \texttt{cor=FALSE}). The
+correlation is modelled using a vague Wishart prior, but this can be
+made more informative by indicating the relative magnitude of scales of
+the parameters that are modelled using relative effects.
+
+\texttt{var.scale} can be used for this - it takes a numeric vector the
+same length as the number of relative effect dose-response parameters,
+and the relative magnitude of the numbers indicates the relative
+magnitude of the scales. Each element of \texttt{var.scale} corresponds
+to the relevant dose-response parameter (i.e.~\texttt{var.scale{[}1{]}}
+will correspond to \texttt{beta.1})
+
+For example, with the triptans dataset we might expect that values for
+Emax might be 4 times larger for ED50 (on the log scale):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Define relative magnitudes of Emax and ED50}
+\NormalTok{rel.size <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{,}\DecValTok{1}\NormalTok{)}
+
+\KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{, }
+           \DataTypeTok{var.scale=}\NormalTok{rel.size)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{user-specified-time-course-function}{%
+\paragraph{User-specified time-course
+function}\label{user-specified-time-course-function}}
+
+If users want to write their own dose-response function rather than
+using one of the ones specified in \texttt{mbnma.run()} they can do this
+by specifying \texttt{fun\ =\ "user"} in the arguments. A string can
+then be provided to \texttt{user.fun}, which specifies a new time course
+in terms of \texttt{beta} parameters and \texttt{dose}. This allows a
+huge amount of additional flexibility when defining the dose-response
+function.
+
+The string assigned to \texttt{user.fun} needs to fulfil a few criteria
+to be valid: * \texttt{dose} must always be included in the function *
+At least one \texttt{beta} time-course parameter must be specified, up
+to a maximum of three. These are always named \texttt{beta.1},
+\texttt{beta.2} and \texttt{beta.3}, and must be included sequentially
+(i.e.~don't include \texttt{beta.3} if \texttt{beta.1} is not included)
+* Indices used by JAGS should \emph{not} be added to \texttt{user.fun}
+(e.g.~use \texttt{dose} rather than \texttt{dose{[}i,k{]}}) * Any
+mathematical/logical operators that can be implemented in JAGS can be
+added to the function
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# An example specifying a quadratic dose-response function}
+\NormalTok{quad <-}\StringTok{ "(beta.1 * dose) + (beta.2 * (dose^2))"}
+
+\KeywordTok{mbnma.run}\NormalTok{(tripnet, }\DataTypeTok{fun=}\StringTok{"user"}\NormalTok{, }\DataTypeTok{user.fun=}\NormalTok{quad, }
+          \DataTypeTok{beta.1 =} \StringTok{"rel"}\NormalTok{, }\DataTypeTok{beta.2 =} \StringTok{"rel"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{agent-specific-dose-response-functions}{%
+\subsubsection{Agent-specific dose-response
+functions}\label{agent-specific-dose-response-functions}}
+
+Different dose-response functions can be used for different agents
+within the network. This allows for the modelling of more complex
+dose-response functions in agents for which there are many doses
+available, and less complex functions in agents for which there are
+fewer doses available. Note that these models are typically less
+computationally stable than single dose-response function models, and
+they are likely to benefit less from modelling correlation between
+multiple dose-response parameters (since there are fewer agents
+informing correlations between each dose-response parameter).
+
+This can be modelled in \texttt{mbnma.run()} by assigning a character
+vector of dose-response functions to the \texttt{fun} argument, with
+each element in the vector corresponding to an agent in the network.
+When using multiple dose-response functions, the length of \texttt{fun}
+must therefore be equal to the number of agents in the network. The
+choice of dose-response function used for Placebo is irrelevant, since
+evaluating the function at dose=0 will always equal 0.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Frovatriptan and rizatriptan modelled using an exponential function as only two active doses are available for these agents}
+\CommentTok{# All other agents are modelled using an Emax function}
+\NormalTok{multifun <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(painnet, }\DataTypeTok{fun=}\KeywordTok{c}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{3}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{2}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\StringTok{"emax"}\NormalTok{))}
+\KeywordTok{summary}\NormalTok{(multifun)}
+\end{Highlighting}
+\end{Shaded}
+
+In the output, the different dose-response parameters (\texttt{d}s or
+\texttt{beta}s) are numbered according to the dose-response function for
+which they are modelled, with typically more complex dose-response
+functions being given higher numbers. The ordering of parameter
+numbering follows \texttt{"user"}, \texttt{"linear"},
+\texttt{"exponential"}, \texttt{"emax"}, \texttt{"emax.hill"}. For the
+above example, as the model uses exponential and Emax functions,
+parameters \texttt{d.1} correspond to the rate parameter of the
+exponential function, \texttt{d.2} to the Emax parameter of the Emax
+function, and \texttt{d.3} to the ED50 parameter of the Emax function.
+
+\hypertarget{priors}{%
+\paragraph{Priors}\label{priors}}
+
+Default vague priors for the model are as follows:
+
+\[
+\begin{aligned}
+  &d_{p,a} \sim N(0,10000)\\
+  &beta_{p} \sim N(0,10000)\\
+  &\sigma \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &\sigma_{p} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
+  &D_{p,c} \sim N(0,1000)\\
+  &\sigma_{p} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+\end{aligned}
+\]
+
+\ldots where \(p\) is an identifier for the dose-response parameter
+(e.g.~1 for Emax and 2 for ED50), \(a\) is an agent identifier and \(c\)
+is a class identifier
+
+Users may wish to change these, perhaps in order to use more/less
+informative priors, but also because the default prior distributions in
+some models may lead to errors when compiling/updating models.
+
+If the model fails during compilation/updating (i.e.~due to a problem in
+JAGS), \texttt{mbnma.run()} will generate an error and return a list of
+arguments that \texttt{mbnma.run()} used to generate the model. Within
+this (as within a model that has run successfully), the priors used by
+the model (in JAGS syntax) are stored within \texttt{"model.arg"}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(mbnma}\OperatorTok{$}\NormalTok{model.arg}\OperatorTok{$}\NormalTok{priors)}
+\CommentTok{#> $mu}
+\CommentTok{#> [1] "dnorm(0,0.001)"}
+\CommentTok{#> }
+\CommentTok{#> $inv.R}
+\CommentTok{#> [1] "dwish(Omega[,], 2)"}
+\end{Highlighting}
+\end{Shaded}
+
+In this way a model can first be run with vague priors and then rerun
+with different priors, perhaps to allow successful computation, perhaps
+to provide more informative priors, or perhaps to run a sensitivity
+analysis with different priors. Increasing the precision of prior
+distributions only a little can also often improve convergence
+considerably.
+
+To change priors within a model, a list of replacements can be provided
+to \texttt{priors} in \texttt{mbnma.run()}. The name of each element is
+the name of the parameter to change (without indices) and the value of
+the element is the JAGS distribution to use for the prior. This can
+include censoring or truncation if desired. Only the priors to be
+changed need to be specified - priors for parameters that aren't
+specified will take default values.
+
+For example, if we want to use tighter priors for the half-normal SD
+parameters we could increase the precision:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Define replacement prior}
+\NormalTok{new.priors <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}
+  \DataTypeTok{sd =} \StringTok{"dnorm(0, 1) T(0,)"}
+\NormalTok{  )}
+
+\CommentTok{# Run an MBNMA model with new priors}
+\NormalTok{emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(alognet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{,}
+                   \DataTypeTok{priors=}\NormalTok{new.priors)}
+\end{Highlighting}
+\end{Shaded}
+
+Mathematical errors can be more likely for certain types of models. For
+dose-response relationships which include a dose-response parameter as
+an exponent (e.g.~an exponential dose-response function), default prior
+distributions may result in numerical values that are too extreme for
+computation. One way to fix this problem is to use tighter priors for
+\texttt{d}'s. However, a contributing factor to this issue is that doses
+within a dataset can be very variable in magnitude, thus leading to
+excessively high/low exponents. A solution for this is is to standardise
+doses within an agent by some common value (i.e.~the most commonly
+prescribed dose or the maximum dose investigated). This leads to all
+doses being relative to the standard dose, but can improve computation.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Exponential model currently returns an error on gout dataset}
+\NormalTok{exponetial <-}\StringTok{ }\KeywordTok{mbnma.exponential}\NormalTok{(goutnet, }\DataTypeTok{lambda=}\StringTok{"rel"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Standardise gout dataset doses relative to maximum investigated dose}
+\NormalTok{std.gout <-}\StringTok{ }\NormalTok{GoutSUA_2wkCFB}
+\NormalTok{std.gout <-}\StringTok{ }\NormalTok{std.gout }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(agent) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{dose=}\NormalTok{dose}\OperatorTok{/}\KeywordTok{max}\NormalTok{(dose))}
+\NormalTok{std.gout}\OperatorTok{$}\NormalTok{dose[std.gout}\OperatorTok{$}\NormalTok{agent}\OperatorTok{==}\StringTok{"Plac"}\NormalTok{] <-}\StringTok{ }\DecValTok{0}
+\NormalTok{std.gout <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(std.gout)}
+
+\NormalTok{exponential <-}\StringTok{ }\KeywordTok{mbnma.exponential}\NormalTok{(std.gout, }\DataTypeTok{lambda=}\StringTok{"rel"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pd-effective-number-of-parameters}{%
+\paragraph{pD (effective number of
+parameters)}\label{pd-effective-number-of-parameters}}
+
+The default value in for \texttt{pd} in \texttt{mbnma.run()} is
+\texttt{"pv"}, which uses the value automatically calculated in the
+\texttt{R2jags} package as \texttt{pv\ =\ var(deviance)/2}. Whilst this
+is easy to calculate, it is numerically less stable than \texttt{pD} and
+may perform more poorly in certain conditions (Gelman, Hwang, and
+Vehtari 2014).
+
+A commonly-used approach for calculating pD is the plug-in method
+(\texttt{pd="plugin"}) (Spiegelhalter et al. 2002). However, this can
+sometimes result in negative non-sensical values due to skewed posterior
+distributions for deviance contributions that can arise when fitting
+non-linear models.
+
+Another approach that is more reliable than the plug-in method when
+modelling non-linear effects is using the Kullback-Leibler divergence
+(\texttt{pd="pd.kl"}) (Plummer 2008). The disadvantage of this approach
+is that it requires running additional MCMC iterations, so can be
+slightly slower to calculate.
+
+Finally, pD can also be calculated using an optimism adjustment
+(\texttt{pd="popt"}) which allows for calculation of the penalized
+expected deviance (Plummer 2008). This adjustment allows for the fact
+that data used to estimate the model is the same as that used to assess
+its parsimony. It also requires running additional MCMC iterations.
+
+\hypertarget{arguments-to-be-sent-to-jags}{%
+\paragraph{Arguments to be sent to
+JAGS}\label{arguments-to-be-sent-to-jags}}
+
+In addition to the arguments specific to \texttt{mbnma.run()} it is also
+possible to use any arguments to be sent to \texttt{R2jags::jags()}.
+Most of these are likely to relate to improving the performance of MCMC
+simulations in JAGS. Some of the key arguments that may be of interest
+are:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{n.chains} The number of Markov chains to run (default is 3)
+\item
+  \texttt{n.iter} The total number of iterations per MCMC chain
+\item
+  \texttt{n.burnin} The number of iterations that are discarded to
+  ensure iterations are only saved once chains have converged
+\item
+  \texttt{n.thin} The thinning rate which ensures that results are only
+  saved for 1 in every \texttt{n.thin} iterations per chain. This can be
+  increased to reduce autocorrelation
+\end{itemize}
+
+\hypertarget{connecting-networks-via-the-dose-response-relationship}{%
+\subsubsection{Connecting networks via the dose-response
+relationship}\label{connecting-networks-via-the-dose-response-relationship}}
+
+One of the strengths of dose-response MBNMA is that it allows treatments
+to be connected in a network that might otherwise be disconnected, by
+linking up different doses of the same agent via the dose-response
+relationship. To illustrate this we can generate a version of the gout
+dataset which excludes placebo (to artificially disconnect the network):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Generate dataset without placebo}
+\NormalTok{noplac.gout <-}\StringTok{ }\NormalTok{GoutSUA_2wkCFB[}\OperatorTok{!}\NormalTok{GoutSUA_2wkCFB}\OperatorTok{$}\NormalTok{studyID }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2001}\NormalTok{, }\DecValTok{3102}\NormalTok{),] }\CommentTok{# Drop two-arm placebo studies}
+\NormalTok{noplac.gout <-}\StringTok{ }\NormalTok{noplac.gout[noplac.gout}\OperatorTok{$}\NormalTok{agent}\OperatorTok{!=}\StringTok{"Plac"}\NormalTok{,] }\CommentTok{# Drop placebo arm from multi-arm studies}
+
+\CommentTok{# Create mbnma.network object}
+\NormalTok{noplac.net <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(noplac.gout)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot network}
+\KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{label.distance=}\DecValTok{5}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Allo_300}
+\CommentTok{#> Allo_400}
+\CommentTok{#> Arha_400}
+\CommentTok{#> Arha_600}
+\CommentTok{#> Benz_50}
+\CommentTok{#> Benz_200}
+\CommentTok{#> Febu_40}
+\CommentTok{#> Febu_80}
+\CommentTok{#> Febu_120}
+\CommentTok{#> RDEA_100}
+\CommentTok{#> RDEA_200}
+\CommentTok{#> RDEA_400}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-29-1.pdf}
+
+This results in a very disconnected network, and if we were to conduct a
+conventional ``split'' NMA (whereby different doses of an agent are
+considered to be independent), we would only be able to estimate
+relative effects for a very small number of treatments. However, if we
+assume a dose-response relationship then these different doses can be
+connected via this relationship, and we can connect up more treatments
+and agents in the network.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Network plot at the agent level illustrates how doses can connect using MBNMA}
+\KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{4}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Arha}
+\CommentTok{#> RDEA}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-30-1.pdf}
+
+There are still two agents that do not connect to the network because
+they involve comparisons of different doses of the same agent. However,
+multiple doses of an agent within a study allow us to estimate the
+dose-response relationship and tell us something about the placebo (dose
+= 0) response - the number of different doses of an agent within a study
+will determine the degrees of freedom with which we are able to estimate
+a given dose-response function. Although the placebo response is not
+estimated directly in the MBNMA framework (it is modelled as a nuisance
+parameter), it allows us to connect the dose-response function estimated
+for an agent in one study, with that in another.
+
+To visualise this, we can use the \texttt{doselink} argument in
+\texttt{plot(mbnma.network)}. The integer given to this argument
+indicates the minimum number of doses from which a dose-response
+function could be estimated, and is equivalent to the number of
+parameters in the desired dose-response function plus one. For example
+for an exponential function, we would require at least two doses on a
+dose-response curve (including placebo), since this would allow one
+degree of freedom with which to estimate the one-parameter dose-response
+function. By modifying the \texttt{doselink} argument we can determine
+the complexity of a dose-response function that we might expect to be
+able to estimate whilst still connecting all agents within the network.
+
+If placebo is not included in the original dataset then this argument
+will also add a node for placebo to illustrate the connection.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Network plot assuming connectivity via two doses}
+\CommentTok{# Allows estimation of a single-parameter dose-response function}
+\KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{4}\NormalTok{,}
+     \DataTypeTok{doselink=}\DecValTok{2}\NormalTok{)}
+\CommentTok{#> Dose-response connections to placebo plotted based on a dose-response}
+\CommentTok{#>                    function with 1 degrees of freedom}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-31-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\CommentTok{# Network plot assuming connectivity via three doses}
+\CommentTok{# Allows estimation of a two-parameter dose-response function}
+\KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{4}\NormalTok{,}
+     \DataTypeTok{doselink=}\DecValTok{3}\NormalTok{)}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Allo}
+\CommentTok{#> Arha}
+\CommentTok{#> Benz}
+\CommentTok{#> Febu}
+\CommentTok{#> Dose-response connections to placebo plotted based on a dose-response}
+\CommentTok{#>                    function with 2 degrees of freedom}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-31-2.pdf}
+
+In this way we can fully connect up treatments in an otherwise
+disconnected network, though unless informative prior information is
+used this will be limited by the number of doses of agents within
+included studies.
+
+\hypertarget{non-parametric-dose-response-functions}{%
+\subsubsection{Non-parametric dose-response
+functions}\label{non-parametric-dose-response-functions}}
+
+Two non-parametric monotonic dose-response functions,
+\texttt{"nonparam.up"} and \texttt{"nonparam.down"} can be specified in
+\texttt{mbnma.run()}. They impose restrictions on the prior
+distributions of treatment effects that ensure that each increasing dose
+of an agent has an effect that is either the same or greater (most
+positive for \texttt{"nonparam.up"} and more negative for
+\texttt{"nonparam.down"}) than the previous dose, following the method
+of Owen et al.~(2015). By making this assumption, this model is slightly
+more informative, and can lead to some slight gains in precision if
+relative effects are otherwise imprecisely estimated. However, because a
+functional form for the dose-response is not modelled, it cannot be used
+to connect networks that are disconnected at the treatment-level, but
+connected at the agent-level.
+
+In the case of MBNMA, it may be useful to compare the fit of a
+non-parametric model to that of a parametric dose-response function, to
+ensure that fitting a parametric dose-response function does not lead to
+significantly poorer model fit.
+
+When fitting a non-parametric dose-response model, there is no need to
+specify arguments for dose-response parameters (\texttt{beta.1},
+\texttt{beta.2}, \texttt{beta.3}), as these are ignored in this
+modelling approach. \texttt{method} can still be used to specify either
+\texttt{"common"} or \texttt{"random"} effects. It is important to
+correctly choose either \texttt{"nonparam.up"} or
+\texttt{"nonparam.down"} depending on the expected direction of effect,
+or this can lead to computation errors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nonparam <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(tripnet, }\DataTypeTok{fun=}\StringTok{"nonparam.up"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
+\CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
+\CommentTok{#> Modelling non-parametric dose-response - arguments for dose-response parameters `beta.1`, `beta.2`, `beta.3` will be ignored}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(nonparam)}
+\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpIjUMU1\textbackslash{}file3e985364bf0", fit using jags,}
+\CommentTok{#>  3 chains, each with 10000 iterations (first 5000 discarded), n.thin = 5}
+\CommentTok{#>  n.sims = 3000 iterations saved}
+\CommentTok{#>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%}
+\CommentTok{#> sd           0.273   0.046    0.184    0.241    0.272    0.303    0.367}
+\CommentTok{#> totresdev  188.782  19.076  153.735  175.165  187.968  201.830  227.025}
+\CommentTok{#> deviance  1091.888  19.076 1056.841 1078.271 1091.074 1104.936 1130.131}
+\CommentTok{#>            Rhat n.eff}
+\CommentTok{#> sd        1.005   560}
+\CommentTok{#> totresdev 1.003   840}
+\CommentTok{#> deviance  1.003   840}
+\CommentTok{#> }
+\CommentTok{#> For each parameter, n.eff is a crude measure of effective sample size,}
+\CommentTok{#> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).}
+\CommentTok{#> }
+\CommentTok{#> DIC info (using the rule, pD = var(deviance)/2)}
+\CommentTok{#> pD = 181.6 and DIC = 1272.7}
+\CommentTok{#> DIC is an estimate of expected predictive error (lower deviance is better).}
+\end{Highlighting}
+\end{Shaded}
+
+In the output from non-parametric models, \texttt{d} parameters
+represent the relative effect for each treatment (specific dose of a
+specific agent) versus the reference treatment, similar to in a standard
+Network Meta-Analysis. The first index of \texttt{d} represents the dose
+identifier, and the second index represents the agent identifier.
+Information on the specific values of the doses is not included in the
+model, as only the ordering of them (lowest to highest) is important.
+
+Note that post-estimation functions and plots (e.g.~ranking, prediction)
+cannot be performed on non-parametric models at the moment, as these
+models are more intended as a confirmation of MBNMA model fit rather
+than a tool for inference.
+
+\hypertarget{post-estimation}{%
+\subsection{Post-Estimation}\label{post-estimation}}
+
+For looking at post-estimation in MBNMA we will demonstrate using
+results from an Emax MBNMA on the triptans dataset unless specified
+otherwise:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tripnet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(HF2PPITT)}
+\CommentTok{#> Values for `agent` with dose = 0 have been recoded to `Placebo`}
+\CommentTok{#> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`}
+\NormalTok{trip.emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{) }
+\CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
+\CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{deviance-plots}{%
+\subsubsection{Deviance plots}\label{deviance-plots}}
+
+To assess how well a model fits the data, it can be useful to look at a
+plot of the contributions of each data point to the residual deviance.
+This can be done using \texttt{devplot()}. As individual deviance
+contributions are not automatically monitored in
+\texttt{parameters.to.save}, this might require the model to be
+automatically run for additional iterations.
+
+Results can be plotted either as a scatter plot
+(\texttt{plot.type="scatter"}) or a series of boxplots
+(\texttt{plot.type="box"}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot boxplots of residual deviance contributions (scatterplot is the default)}
+\KeywordTok{devplot}\NormalTok{(trip.emax, }\DataTypeTok{plot.type =} \StringTok{"box"}\NormalTok{)}
+\CommentTok{#> `resdev` not monitored in mbnma$parameters.to.save.}
+\CommentTok{#> additional iterations will be run in order to obtain results for `resdev`}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-35-1.pdf}
+
+From these plots we can see that whilst the model fit does not seem to
+be systematically non-linear (which would suggest an alternative
+dose-response function may be a better fit), residual deviance is high
+at a dose of 1 for eletriptan, and at 2 for sumatriptan. This may
+indicate that fitting random effects may allow for additional
+variability in response which may improve the model fit.
+
+If saved to an object, the output of \texttt{devplot()} contains the
+results for individual deviance contributions, and this can be used to
+identify any extreme outliers.
+
+\hypertarget{fitted-values}{%
+\subsubsection{Fitted values}\label{fitted-values}}
+
+Another approach for assessing model fit can be to plot the fitted
+values, using \texttt{fitplot()}. As with \texttt{devplot()}, this may
+require running additional model iterations to monitor \texttt{theta}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot fitted and observed values with treatment labels}
+\KeywordTok{fitplot}\NormalTok{(trip.emax)}
+\CommentTok{#> `theta` not monitored in mbnma$parameters.to.save.}
+\CommentTok{#> additional iterations will be run in order to obtain results}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-36-1.pdf}
+
+Fitted values are plotted as connecting lines and observed values in the
+original dataset are plotted as points. These plots can be used to
+identify if the model fits the data well for different agents and at
+different doses along the dose-response function.
+
+\hypertarget{forest-plots}{%
+\subsubsection{Forest plots}\label{forest-plots}}
+
+Forest plots can be easily generated from MBNMA models using the
+\texttt{plot()} method on an \texttt{"mbnma"} object. By default this
+will plot a separate panel for each dose-response parameter in the
+model. Forest plots can only be generated for parameters which are
+modelled using relative effects and that vary by agent/class.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(trip.emax)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-37-1.pdf}
+
+\hypertarget{ranking}{%
+\subsubsection{Ranking}\label{ranking}}
+
+Rankings can be calculated for different dose-response parameters from
+MBNMA models by using \texttt{rank()} on an \texttt{"mbnma"} object. Any
+parameter monitored in an MBNMA model that varies by agent/class can be
+ranked. A vector of these is assigned to \texttt{params}.
+\texttt{direction} indicates whether negative responses should be ranked
+as ``better'' (\texttt{-1}) or ``worse'' (\texttt{1}).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ranks <-}\StringTok{ }\KeywordTok{rank}\NormalTok{(trip.emax, }\DataTypeTok{direction =} \DecValTok{1}\NormalTok{)}
+\KeywordTok{summary}\NormalTok{(ranks)}
+\CommentTok{#> $d.ed50}
+\CommentTok{#>     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%}
+\CommentTok{#> 1   eletriptan 5.485667 1.355387    2   5   6   7     7}
+\CommentTok{#> 2  sumatriptan 4.899667 1.560901    2   4   5   6     7}
+\CommentTok{#> 3 frovatriptan 4.178000 1.995907    1   2   4   6     7}
+\CommentTok{#> 4  almotriptan 2.501667 1.599849    1   1   2   3     7}
+\CommentTok{#> 5 zolmitriptan 3.595000 1.751380    1   2   3   5     7}
+\CommentTok{#> 6  naratriptan 2.708667 1.918250    1   1   2   4     7}
+\CommentTok{#> 7  rizatriptan 4.631333 1.708720    1   3   5   6     7}
+\CommentTok{#> }
+\CommentTok{#> $d.emax}
+\CommentTok{#>     rank.param     mean        sd 2.5%  25% 50% 75% 97.5%}
+\CommentTok{#> 1   eletriptan 1.552000 0.7533161    1 1.00   1   2     3}
+\CommentTok{#> 2  sumatriptan 5.113333 0.9438145    3 4.75   5   6     7}
+\CommentTok{#> 3 frovatriptan 4.284333 1.5241158    1 3.00   4   6     7}
+\CommentTok{#> 4  almotriptan 4.473000 1.4408202    1 4.00   5   6     6}
+\CommentTok{#> 5 zolmitriptan 3.669000 1.2102041    1 3.00   4   4     6}
+\CommentTok{#> 6  naratriptan 6.793667 0.8402352    4 7.00   7   7     7}
+\CommentTok{#> 7  rizatriptan 2.114667 0.9848053    1 1.00   2   3     4}
+\end{Highlighting}
+\end{Shaded}
+
+The output is an object of \texttt{class("mbnma.rank")}, containing a
+list for each ranked parameter in \texttt{params}, which consists of a
+summary table of rankings and raw information on agent/class (depending
+on argument given to \texttt{level}) ranking and probabilities. The
+summary median ranks with 95\% credible intervals can be simply
+displayed using \texttt{summary()}.
+
+Histograms for ranking results can also be plotted using the
+\texttt{plot()} method, which takes the raw MCMC ranking results stored
+in \texttt{mbnma.rank} and plots the number of MCMC iterations the
+parameter value for each treatment was ranked a particular position.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Ranking histograms for Emax}
+\KeywordTok{plot}\NormalTok{(ranks, }\DataTypeTok{params =} \StringTok{"d.emax"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-39-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\CommentTok{# Ranking histograms for ED50}
+\KeywordTok{plot}\NormalTok{(ranks, }\DataTypeTok{params =} \StringTok{"d.ed50"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-39-2.pdf}
+
+\hypertarget{prediction}{%
+\subsubsection{Prediction}\label{prediction}}
+
+After performing an MBNMA, responses can be predicted from the model
+parameter estimates using \texttt{predict()} on an \texttt{"mbnma"}
+object. A number of important arguments should be specified for
+prediction.
+
+\texttt{E0} This is the response at dose = 0 (equivalent to the placebo
+response). Since relative effects are the parameters estimated in MBNMA,
+the placebo response is not explicitly modelled and therefore must be
+provided by the user in some way. The simplest approach is to provide
+either a single numeric value for \texttt{E0} (deterministic approach),
+or a string representing a distribution for \texttt{E0} that can take
+any Random Number Generator (RNG) distribution for which a function
+exists in R (stochastic approach). Values should be given on the natural
+scale. For example for a binomial outcome:
+
+\begin{itemize}
+\tightlist
+\item
+  Deterministic: \texttt{E0\ \textless{}-\ 0.2}
+\item
+  Stochastic:
+  \texttt{E0\ \textless{}-\ "rbeta(n,\ shape1=2,\ shape2=10)"}
+\end{itemize}
+
+Another approach is to estimate \texttt{E0} from a set of studies. These
+would ideally be studies of untreated/placebo-treated patients that
+closely resemble the population for which predictions are desired, and
+the studies may be observational. However, synthesising results from the
+placebo arms of trials in the original network is also possible. For
+this, \texttt{E0} is assigned a data frame of studies in the long format
+(one row per study arm) with the variables \texttt{studyID}, and a
+selection of \texttt{y}, \texttt{se}, \texttt{r}, \texttt{N} and
+\texttt{E} (depending on the likelihood used in the MBNMA model).
+\texttt{synth} can be set to \texttt{"fixed"} or \texttt{"random"} to
+indicate whether this synthesis should be fixed or random effects.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{E0 <-}\StringTok{ }\NormalTok{HF2PPITT[HF2PPITT}\OperatorTok{$}\NormalTok{dose}\OperatorTok{==}\DecValTok{0}\NormalTok{,]}
+\end{Highlighting}
+\end{Shaded}
+
+Additionally, it's also necessary to specify the doses at which to
+predict responses. By default, \texttt{predict()} uses the maximum dose
+within the dataset for each agent, and predicts doses at a series of cut
+points. The number of cut points can be specified using
+\texttt{n.doses}, and the maximum dose to use for prediction for each
+agent can also be specified using \texttt{max.doses} (a named list of
+numeric values where element names correspond to agent names).
+
+An alternative approach is to predict responses at specific doses for
+specific agents using the argument \texttt{exact.doses}. As with
+\texttt{max.doses}, this is a named list in which element names
+correspond to agent names, but each element is a numeric vector in which
+each value within the vector is a dose at which to predict a response
+for the given agent.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Predict 20 doses for each agent, with a stochastic distribution for E0}
+\NormalTok{doses <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\StringTok{"Placebo"}\NormalTok{=}\DecValTok{0}\NormalTok{, }
+                  \StringTok{"eletriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{,}
+                  \StringTok{"sumatriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{,}
+                  \StringTok{"almotriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{,}
+                  \StringTok{"zolmitriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{,}
+                  \StringTok{"naratriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{,}
+                  \StringTok{"rizatriptan"}\NormalTok{=}\DecValTok{3}\NormalTok{)}
+
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(trip.emax, }\DataTypeTok{E0=}\StringTok{"rbeta(n, shape1=2, shape2=10)"}\NormalTok{,}
+                      \DataTypeTok{max.doses=}\NormalTok{doses, }\DataTypeTok{n.dose=}\DecValTok{20}\NormalTok{)}
+
+
+\CommentTok{# Predict exact doses for two agents, and estimate E0 from the data}
+\NormalTok{E0.data <-}\StringTok{ }\NormalTok{HF2PPITT[HF2PPITT}\OperatorTok{$}\NormalTok{dose}\OperatorTok{==}\DecValTok{0}\NormalTok{,]}
+\NormalTok{doses <-}\StringTok{ }\KeywordTok{list}\NormalTok{(}\StringTok{"eletriptan"}\NormalTok{=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{3}\NormalTok{),}
+                  \StringTok{"sumatriptan"}\NormalTok{=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(trip.emax, }\DataTypeTok{E0=}\NormalTok{E0.data,}
+                      \DataTypeTok{exact.doses=}\NormalTok{doses)}
+\CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
+\CommentTok{#> Values for `agent` with dose = 0 have been recoded to `Placebo`}
+\CommentTok{#> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`}
+\end{Highlighting}
+\end{Shaded}
+
+An object of class \texttt{"mbnma.predict"} is returned, which is a list
+of summary tables and MCMC prediction matrices for each treatment
+(combination of dose and agent). The \texttt{summary()} method can be
+used to print mean posterior predictions at each time point for each
+treatment.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(pred)}
+\CommentTok{#>         agent dose      mean          sd      2.5%       25%       50%}
+\CommentTok{#> 1  eletriptan    0 0.1238302 0.003264606 0.1176781 0.1216340 0.1238172}
+\CommentTok{#> 2  eletriptan    1 0.4373277 0.018055740 0.4030575 0.4251392 0.4370299}
+\CommentTok{#> 3  eletriptan    3 0.5553789 0.025257737 0.5056157 0.5382937 0.5555409}
+\CommentTok{#> 4 sumatriptan    0 0.1238302 0.003264606 0.1176781 0.1216340 0.1238172}
+\CommentTok{#> 5 sumatriptan    3 0.3884708 0.017381361 0.3544850 0.3768802 0.3885129}
+\CommentTok{#>         75%     97.5%}
+\CommentTok{#> 1 0.1259486 0.1304909}
+\CommentTok{#> 2 0.4493870 0.4723940}
+\CommentTok{#> 3 0.5717275 0.6042052}
+\CommentTok{#> 4 0.1259486 0.1304909}
+\CommentTok{#> 5 0.3996970 0.4225652}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{plotting-predicted-responses}{%
+\subsubsection{Plotting predicted
+responses}\label{plotting-predicted-responses}}
+
+Predicted responses can also be plotted using the \texttt{plot()} method
+on an object of \texttt{class("mbnma.predict")}. The predicted responses
+are joined by a line to form the dose-response curve for each agent
+predicted, with 95\% credible intervals (CrI). Therefore, when plotting
+the response it is important to predict a sufficient number of doses
+(using \texttt{n.doses}) to get a smooth curve.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Predict responses using default doses up to the maximum of each agent in the dataset}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(trip.emax, }\DataTypeTok{E0=}\FloatTok{0.2}\NormalTok{, }\DataTypeTok{n.dose=}\DecValTok{20}\NormalTok{)}
+
+\KeywordTok{plot}\NormalTok{(pred)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-44-1.pdf}
+
+Shaded counts of the number of studies in the original dataset that
+investigate each dose of an agent can be plotted over the 95\% CrI for
+each treatment by setting \texttt{disp.obs\ =\ TRUE}, though this
+requires that the original \texttt{"mbnma.network"} object used to
+estimate the MBNMA be provided via \texttt{network}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{plot}\NormalTok{(pred, }\DataTypeTok{disp.obs =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{network=}\NormalTok{tripnet)}
+\CommentTok{#> 66 placebo arms in the dataset are not shown within the plots}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-45-1.pdf}
+
+This can be used to identify any extrapolation/interpretation of the
+dose-response that might be occurring for a particular agent. As you can
+see, more observations typically leads to tighter 95\% CrI for the
+predicted response at a particular point along the dose-response curve.
+
+We can also plot the results of a ``split'' Network Meta-Analysis (NMA)
+in which all doses of an agent are assumed to be independent. As with
+\texttt{disp.obs} we also need to provide the original
+\texttt{mbnma.network} object to be able to estimate this, and we can
+also specify if we want to perform a common or random effects NMA using
+\texttt{method}. Treatments that are only connected to the network via
+the dose-response relationship (rather than by a direct head-to-head
+comparison) will not be included.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alognet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(alog_pcfb)}
+\NormalTok{alog.emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(alog.emax, }\DataTypeTok{E0=}\DecValTok{0}\NormalTok{, }\DataTypeTok{n.dose=}\DecValTok{20}\NormalTok{)}
+\KeywordTok{plot}\NormalTok{(pred, }\DataTypeTok{overlay.split =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{network=}\NormalTok{alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-46-1.pdf}
+
+By plotting these, as well as observing how responses can be
+extrapolated/interpolated, we can also see which doses are likely to be
+providing most information to the dose-response relationship. The
+tighter 95\% CrI on the predicted responses from the MBNMA also show
+that modelling the dose-response function also gives some additional
+precision even at doses for which there is information available.
+
+\hypertarget{ranking-predicted-responses}{%
+\subsubsection{Ranking predicted
+responses}\label{ranking-predicted-responses}}
+
+Predicted responses from an object of \texttt{class("mbnma.predict")}
+can also be ranked using the \texttt{rank()} method. As when applied to
+an object of \texttt{class("mbnma")}, this method will rank parameters
+(in this case predictions) in order from either highest to lowest
+(\texttt{direction=1}) or lowest to highest (\texttt{direction=-1}), and
+return an object of \texttt{class("mbnma.rank")}.
+
+If there have been predictions at dose = 0 for several agents only one
+of these will be included in the rankings, in order to avoid duplication
+(since the predicted response at dose = 0 is the same for all agents).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pred <-}\StringTok{ }\KeywordTok{predict}\NormalTok{(trip.emax, }\DataTypeTok{E0=}\FloatTok{0.2}\NormalTok{, }\DataTypeTok{n.doses=}\DecValTok{4}\NormalTok{,}
+                \DataTypeTok{max.doses =} \KeywordTok{list}\NormalTok{(}\StringTok{"eletriptan"}\NormalTok{=}\DecValTok{5}\NormalTok{, }\StringTok{"sumatriptan"}\NormalTok{=}\DecValTok{5}\NormalTok{, }
+                              \StringTok{"frovatriptan"}\NormalTok{=}\DecValTok{5}\NormalTok{, }\StringTok{"zolmitriptan"}\NormalTok{=}\DecValTok{5}\NormalTok{))}
+
+\NormalTok{ranks <-}\StringTok{ }\KeywordTok{rank}\NormalTok{(pred)}
+\KeywordTok{plot}\NormalTok{(ranks)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-47-1.pdf}
+
+\hypertarget{consistency-testing}{%
+\subsection{Consistency Testing}\label{consistency-testing}}
+
+When performing a MBNMA by pooling relative treatment effects, the
+modelling approach assumes consistency between direct and indirect
+evidence within a network. This is an incredibly useful assumption as it
+allows us to improve precision on existing direct estimates, or to
+estimate relative effects between treatments that have not been compared
+in head-to-head trials, by making use of indirect evidence.
+
+However, if this assumption does not hold, this is extremely problematic
+for inference, so it is important to be able to test it. A number of
+different approaches exist to allow for this in standard Network
+Meta-Analysis (NMA) (Dias et al. 2013), but within dose-response MBNMA
+there is added complexity because the consistency assumption can be
+conceptualised either for each treatment comparison (combination of dose
+and agent), or for each agent, where consistency is required for the
+agent-level parameters governing the dose-response relationship.
+
+Testing for consistency at the agent-level is challenging as there is
+unlikely to be the required data available to be able to do this -
+included studies in the dataset must have multiple doses of multiple
+agents, so that sufficient information is available to estimate
+dose-response parameters \emph{within that study}. However, testing for
+consistency at the treatment-level is possible, and this follows
+standard NMA methods which will be described below. In practice, testing
+for consistency at the treatment-level should suffice, as any
+inconsistency identified at the treatment level will also translate to
+inconsistency at the agent level and vice versa \emph{{[}manuscript in
+progress{]}}.
+
+Consistency also depends on the functional form assumed for the
+dose-response relationship, and so is inextricably linked to model fit
+of the dose-response relationship. A thorough assessment of the validity
+of the fitted model is therefore important to be confident that the
+resulting treatment effect estimates provide a firm basis for decision
+making.
+
+When meta-analysing dose-response studies, the potential for
+inconsistency testing may actually be reasonably rare, as most (if not
+all) trials will be multi-arm placebo-controlled. Since each study is
+internally consistent (the relative effects within the trial will always
+adhere to consistency relationships), there will be no closed loops of
+treatments that are informed by independent sources of evidence.
+
+\hypertarget{unrelated-mean-effects-ume-model-at-the-treatment-level}{%
+\subsubsection{Unrelated Mean Effects (UME) model at the treatment
+level}\label{unrelated-mean-effects-ume-model-at-the-treatment-level}}
+
+To check for consistency at the treatment level using UME we fit an NMA
+that does not assume consistency relationships, and that only models the
+direct relative effects between each arm in a study and the study
+reference treatment. If the consistency assumption holds true then the
+results from the UME model and the NMA will be very similar. However, if
+there is a discrepancy between direct and indirect evidence in the
+network, then the consistency assumption may not be valid, and the UME
+results are likely differ in several ways:
+
+\begin{itemize}
+\tightlist
+\item
+  The UME model may provide a better fit to the data, as measured by
+  residual deviance
+\item
+  The between-study SD for different parameters may be lower in the UME
+  model
+\item
+  Individual relative effects may differ in magnitude or (more severely)
+  in direction for different treatment comparisons between UME and NMA
+  models.
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Using the alogliptin dataset}
+\NormalTok{alognet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(alog_pcfb)}
+\NormalTok{nma <-}\StringTok{ }\KeywordTok{nma.run}\NormalTok{(alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\NormalTok{ume <-}\StringTok{ }\KeywordTok{nma.run}\NormalTok{(alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{, }\DataTypeTok{UME =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lrl@{}}
+\toprule
+Model & Residual Deviance & Betwen-study SD\tabularnewline
+\midrule
+\endhead
+NMA & 46.40 & 0.12 (0.074, 0.19)\tabularnewline
+UME & 46.15 & 0.14 (0.086, 0.21)\tabularnewline
+\bottomrule
+\end{longtable}
+
+As both the residual deviances and between-study SDs are similar, this
+would suggest that there is no evidence of inconsistency in this
+network, though comparing results for individual comparisons from the
+models can also be useful.
+
+\hypertarget{node-splitting-at-the-treatment-level}{%
+\subsubsection{Node-splitting at the treatment
+level}\label{node-splitting-at-the-treatment-level}}
+
+Another approach for consistency checking is node-splitting. This splits
+contributions for a particular treatment comparison into direct and
+indirect evidence, and the two can then be compared to test their
+similarity (Valkenhoef et al. 2016). \texttt{NMA.nodesplit()} takes
+similar arguments to \texttt{NMA.run()}, and returns an object of
+\texttt{class("NMA.nodesplit")}.
+
+In addition to these, the argument \texttt{comparisons} can be used to
+indicate which treatment comparisons to perform a nodesplit on. If left
+as \texttt{NULL} (the default) node-splits will automatically be
+performed in all closed loops of treatments in which comparisons are
+informed by independent sources of evidence. This is somewhat similar to
+the function \texttt{gemtc::mtc.nodesplit.comparisons()}, but uses a
+fixed network reference treatment and therefore identifies fewer loops
+in which to test for inconsistency.
+
+As several models have to be run for each closed loop of treatments,
+node-splitting can take some time to run, and it therefore is not shown
+for the purposes of this vignette.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Using the triptans dataset}
+\NormalTok{tripnet <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(HF2PPITT)}
+
+\CommentTok{# Nodesplit using a random effects model}
+\NormalTok{nodesplit <-}\StringTok{ }\KeywordTok{nma.nodesplit}\NormalTok{(tripnet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(nodesplit)}
+\end{Highlighting}
+\end{Shaded}
+
+Performing the \texttt{print()} method on an object of
+\texttt{class("NMA.nodesplit")} prints a summary of the node-split
+results to the console, whilst the \texttt{summary()} method will return
+a data frame of posterior summaries for direct and indirect estimates
+for each split treatment comparison.
+
+The nodesplit object itself is a list with results for each treatment
+comparison that has been split. There is a lot of information within the
+results, but the most useful (and easily interpretable) elements are:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{p.values} the Bayesian p-value for the posterior overlap
+  between direct and indirect estimates
+\item
+  \texttt{quantiles} the median and 95\%CrI of the posterior
+  distributions for direct and indirect evidence, and for the difference
+  between them.
+\item
+  \texttt{forest.plot} a forest plot that shows the median and 95\% CrI
+  for direct and indirect estimates
+\item
+  \texttt{density.plot} a plot that shows the posterior distributions
+  for direct and indirect estimates
+\end{itemize}
+
+It is possible to generate different plots of each nodesplit comparison
+using \texttt{plot()}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Plot forest plots of direct, indirect and pooled (NMA) results for each comparison}
+\KeywordTok{plot}\NormalTok{(nodesplit, }\DataTypeTok{plot.type=}\StringTok{"forest"}\NormalTok{)}
+
+\CommentTok{# Plot posterior densities of direct and indirect results for each nodesplit comparisons}
+\KeywordTok{plot}\NormalTok{(nodesplit, }\DataTypeTok{plot.type=}\StringTok{"density"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{summary}{%
+\subsection{Summary}\label{summary}}
+
+\texttt{MBNMAdose} provides a complete set of functions that allow for
+performing dose-response MBNMA, model checking, prediction, and plotting
+of a number of informative graphics. By modelling a dose-response
+relationship within the network meta-analysis framework, this method can
+help connect networks of evidence that might otherwise be disconnected,
+allow extrapolation and interpolation of dose-response, and improve
+precision on predictions and relative effects between agents.
+
+The package allows a range of dose-response functions (as well as the
+possibility to incorporate user-defined functions) and facilitates model
+specification in a way which allows users to make additional modelling
+assumptions to help identify parameters.
+
+\hypertarget{references}{%
+\subsection*{References}\label{references}}
+\addcontentsline{toc}{subsection}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-dias2013}{}%
+Dias, S., N. J. Welton, A. J. Sutton, D. M. Caldwell, G. Lu, and A. E.
+Ades. 2013. ``Evidence Synthesis for Decision Making 4: Inconsistency in
+Networks of Evidence Based on Randomized Controlled Trials.'' Journal
+Article. \emph{Med Decis Making} 33 (5): 641--56.
+\url{https://doi.org/10.1177/0272989X12455847}.
+
+\leavevmode\hypertarget{ref-gelman2014}{}%
+Gelman, Andrew, Jessica Hwang, and Aki Vehtari. 2014. ``Understanding
+Predictive Information Criteria for Bayesian Models.'' Journal Article.
+\emph{Statistics and Computing} 24 (6): 997--1016.
+\url{https://doi.org/10.1007/s11222-013-9416-2}.
+
+\leavevmode\hypertarget{ref-jags}{}%
+JAGS Computer Program. 2017. \url{http://mcmc-jags.sourceforge.net}.
+
+\leavevmode\hypertarget{ref-langford2016}{}%
+Langford, O., J. K. Aronson, G. van Valkenhoef, and R. J. Stevens. 2016.
+``Methods for Meta-Analysis of Pharmacodynamic Dose-Response Data with
+Application to Multi-Arm Studies of Alogliptin.'' Journal Article.
+\emph{Stat Methods Med Res}.
+\url{https://doi.org/10.1177/0962280216637093}.
+
+\leavevmode\hypertarget{ref-lu2004}{}%
+Lu, G., and A. E. Ades. 2004. ``Combination of Direct and Indirect
+Evidence in Mixed Treatment Comparisons.'' Journal Article. \emph{Stat
+Med} 23 (20): 3105--24. \url{https://doi.org/10.1002/sim.1875}.
+
+\leavevmode\hypertarget{ref-mawdsley2016}{}%
+Mawdsley, D., M. Bennetts, S. Dias, M. Boucher, and N. J. Welton. 2016.
+``Model-Based Network Meta-Analysis: A Framework for Evidence Synthesis
+of Clinical Trial Data.'' Journal Article. \emph{CPT Pharmacometrics
+Syst Pharmacol} 5 (8): 393--401.
+\url{https://doi.org/10.1002/psp4.12091}.
+
+\leavevmode\hypertarget{ref-owen2015}{}%
+Owen, R. K., D. G. Tincello, and R. A. Keith. 2015. ``Network
+Meta-Analysis: Development of a Three-Level Hierarchical Modeling
+Approach Incorporating Dose-Related Constraints.'' Journal Article.
+\emph{Value Health} 18 (1): 116--26.
+\url{https://doi.org/10.1016/j.jval.2014.10.006}.
+
+\leavevmode\hypertarget{ref-pedder2019}{}%
+Pedder, H., S. Dias, M. Bennetts, M. Boucher, and N. J. Welton. 2019.
+``Modelling Time-Course Relationships with Multiple Treatments:
+Model-Based Network Meta-Analysis for Continuous Summary Outcomes.''
+Journal Article. \emph{Res Synth Methods} 10 (2): 267--86.
+
+\leavevmode\hypertarget{ref-plummer2008}{}%
+Plummer, M. 2008. ``Penalized Loss Functions for Bayesian Model
+Comparison.'' Journal Article. \emph{Biostatistics} 9 (3): 523--39.
+\url{https://www.ncbi.nlm.nih.gov/pubmed/18209015}.
+
+\leavevmode\hypertarget{ref-spiegelhalter2002}{}%
+Spiegelhalter, D. J., N. G. Best, B. P. Carlin, and A. van der Linde.
+2002. ``Bayesian Measures of Model Complexity and Fit.'' Journal
+Article. \emph{J R Statistic Soc B} 64 (4): 583--639.
+
+\leavevmode\hypertarget{ref-thorlund2014}{}%
+Thorlund, K., E. J. Mills, P. Wu, E. P. Ramos, A. Chatterjee, E. Druyts,
+and P. J. Godsby. 2014. ``Comparative Efficacy of Triptans for the
+Abortive Treatment of Migraine: A Multiple Treatment Comparison
+Meta-Analysis.'' Journal Article. \emph{Cephalagia}.
+\url{https://doi.org/10.1177/0333102413508661}.
+
+\leavevmode\hypertarget{ref-vanvalkenhoef2016}{}%
+Valkenhoef, G. van, S. Dias, A. E. Ades, and N. J. Welton. 2016.
+``Automated Generation of Node-Splitting Models for Assessment of
+Inconsistency in Network Meta-Analysis.'' Journal Article. \emph{Res
+Synth Methods} 7 (1): 80--93. \url{https://doi.org/10.1002/jrsm.1167}.
+
+
+\end{document}
