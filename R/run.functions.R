@@ -127,7 +127,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'
 #' @section Dose-response parameters:
 #' * `"rel"` implies that relative effects should be pooled for this dose-response
-#' parameter, that vary by agent.
+#' parameter separately for each agent in the network.
 #' * `"common"` implies that all studies estimate the same true absolute effect
 #' (akin to a "fixed effects" meta-analysis) across the whole network
 #' * `"random"` implies that all studies estimate a separate true absolute effect, but

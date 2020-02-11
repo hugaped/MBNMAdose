@@ -235,7 +235,7 @@ For simplification and interpretability, both in the way in which dose-response 
 
 Dose-response parameters can be specified in different ways which affects the key parameters estimated by the model and implies different modelling assumptions. Three different specifications are available for each parameter:
 
-* `"rel"` indicates that relative effects should be pooled for this dose-response parameter. This preserves randomisation within included studies and is likely to vary less between studies (only due to effect modification).
+* `"rel"` indicates that relative effects should be pooled for this dose-response parameter separately for each agent in the network. This preserves randomisation within included studies and is likely to vary less between studies (only due to effect modification).
 * `"common"` indicates that a single absolute value for this dose-response parameter should be estimated across the whole network *that does not vary by agent*. This is particularly useful for parameters expected to be constant (e.g. Hill parameters in `mbnma.emax.hill()`).
 * `"random"` indicates that a single absolute value should be estimated separately for each agent, but that all the agent values vary randomly around a single mean absolute network effect. It is similar to `"common"` but makes slightly less strong assumptions.
 * `numeric()` Assigned a numeric value - this is similar to assigning `"common"`, but the single absolute value is assigned as a numeric value by the user, rather than estimated from the data.
@@ -284,7 +284,7 @@ mbnma.emax(tripnet, emax="rel", ed50="rel", method="common")
 
 In this example the `d.1`/`d.emax` parameters are the effects of each agent for the dose-response parameter `beta.1`/`emax`. For an Emax model this corresponds to the maximum response that can be achieved for a particular agent. The `d.2`/`d.ed50` parameters are the effects for each agent for `beta.2`/`ed50`, which (for an Emax function) corresponds to the dose at which 50% of the maximum response is achieved. Results for ED50 are given on the log scale as it is constrained to be greater than zero.
 
-Instead of pooling relative effects and estimating a separate relative effect for each agent, a simpler dose-response model (that makes more assumptions) could be to estimate a single parameter across the whole network for ED50, but that still estimates relative effects for Emax. In this case we can run with random effects on Emax:
+Instead of estimating a separate relative effect for each agent, a simpler dose-response model that makes stronger assumptions could estimate a single parameter across the whole network for ED50, but still estimates a separate effect for each agent for Emax. In this case we can model random relative effects:
 
 ```{r, results="hide}
 # Emax model with single parameter estimated for Emax
@@ -296,7 +296,7 @@ summary(emax)
 
 In this example the `d.1`/`d.emax` parameters are the effects of each agent for the dose-response parameter `beta.1`/`emax`, as previously. But now there is a `beta.ed50` parameter in the output (instead of `d.ed50`), which is the absolute value of ED50 (on the log scale) across all agents in the network. As we have modelled random relative effects, we also have estimated a parameter for `sd`, the standard deviation for relative effects between studies.
 
-The total residual deviance (`totresdev`) is lower in the second model, indicating a better fit, but the effective number of parameters (pD) is much greater due to the modelling of random effects, and overall the DIC is higher, suggesting that the first model is a better compromise of fit and complexity.
+The total residual deviance (`totresdev`) is lower in the second model, indicating a better fit, but the effective number of parameters (pD) is much greater due to the modelling of random effects, and overall the DIC is higher, suggesting that the first model is a better compromise of fit and complexity. Furthermore it makes less strong assumptions regarding the exchangeability of effects on ED50 between agents.
 
 
 ### Additional arguments for `mbnma.run()`
@@ -305,9 +305,9 @@ Several additional arguments can be given to `mbnma.run()` that require further 
 
 #### Class effects
 
-Shared effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
+Similar effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
 
-Class effects can only be applied to dose-response parameters which are modelled using relative effects (`"rel"`). In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
+Class effects can only be applied to dose-response parameters which vary by agent. In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
 When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`.
 
@@ -349,21 +349,20 @@ mbnma.emax(tripnet, emax="rel", ed50="rel", method="random",
 
 #### User-defined dose-response function
 
-If users want to write their own dose-response function rather than using one of the ones specified in `mbnma.run()` they can do this by specifying `fun = "user"` in the arguments. A string can then be provided to `user.fun`, which specifies a new time course in terms of `beta` parameters and `dose`. This allows a huge amount of additional flexibility when defining the dose-response function.
+Users can define their own dose-response function rather than using one of the functions provided in `mbnma.run()`. By specifying `fun = "user"` in the arguments, a function can then be provided to `user.fun`, which specifies a new dose-response in terms of `beta` parameters and `dose`. This allows a huge degree of flexibility when defining the dose-response relationship.
 
-The string assigned to `user.fun` needs to fulfil a few criteria to be valid:
+The function assigned to `user.fun` needs to fulfil a few criteria to be valid:
 * `dose` must always be included in the function
-* At least one `beta` time-course parameter must be specified, up to a maximum of three. These are always named `beta.1`, `beta.2` and `beta.3`, and must be included sequentially (i.e. don't include `beta.3` if `beta.1` is not included)
+* At least one `beta` time-course parameter must be specified, up to a maximum of four. These must always be named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and must be included sequentially (i.e. don't include `beta.3` if `beta.2` is not included)
 * Indices used by JAGS should *not* be added to `user.fun` (e.g. use `dose` rather than `dose[i,k]`)
-* Any mathematical/logical operators that can be implemented in JAGS can be added to the function
+* Any mathematical/logical operators that can be implemented in JAGS can be added to the function (e.g. `exp()`, `ifelse()`)
 
 ```{r, eval=FALSE}
 # An example specifying a quadratic dose-response function
-quad <- "(beta.1 * dose) + (beta.2 * (dose^2))"
+quad <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-mbnma.run(tripnet, fun="user", user.fun=quad, 
+mbnma.run(alognet, fun="user", user.fun=quad,
           beta.1 = "rel", beta.2 = "rel")
-
 ```
 
 

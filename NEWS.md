@@ -11,6 +11,7 @@
 - `user.fun` now takes a formula as an argument (for example `~ (beta.1 * dose) + (beta.2 * dose^2)`) rather than a string.
 
 ## Bug fixes
+ - Changed `if {class(x)=="matrix"}` statements to `if {is.matrix(x)}` to address R development changes
 
 ### Major
 - Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
