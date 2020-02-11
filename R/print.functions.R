@@ -568,6 +568,7 @@ print.method.sect <- function(mbnma) {
 
 
 print.class.str <- function(mbnma) {
+
   if (length(mbnma$model.arg$class.effect)>0) {
     if (!is.null(mbnma$model.arg$arg.params)) {
       wrapper <- TRUE
@@ -577,7 +578,9 @@ print.class.str <- function(mbnma) {
     betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
                         wrapper=wrapper)
 
-
+    datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
+                                   mbnma$BUGSoutput$summary[,3],
+                                   mbnma$BUGSoutput$summary[,7]))
 
     head <- "\n#### Class effects ####\n"
 
