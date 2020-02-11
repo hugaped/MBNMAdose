@@ -92,8 +92,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab)
   } else {
-    if (is.data.frame(comparisons) | is.matrix(comparisons)) {
-      stop("`comparisons` must be be either a matrix or a data frame of comparisons on which to nodesplit")
+    if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
+      stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
     }
     if (is.data.frame(comparisons)) {
       if (all(c("t1", "t2") %in% names(comparisons))) {

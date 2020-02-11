@@ -416,6 +416,10 @@ print.treat.str <- function(mbnma) {
   betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
                       wrapper=wrapper)
 
+  datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
+                                 mbnma$BUGSoutput$summary[,3],
+                                 mbnma$BUGSoutput$summary[,7]))
+
   treat.sect <- c()
   # DR parameters for each agent (generate treat.str)
   for (i in seq_along(betas)) {
@@ -433,10 +437,6 @@ print.treat.str <- function(mbnma) {
       if (betas[[i]]$param %in% c("lambda", "ed50")) {
         cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
       }
-
-      datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
-                                     mbnma$BUGSoutput$summary[,3],
-                                     mbnma$BUGSoutput$summary[,7]))
 
       agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
 
