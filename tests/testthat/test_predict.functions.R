@@ -19,8 +19,8 @@ linear <- mbnma.run(netpain, fun="linear", n.iter=1000)
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 emax.gout <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
 
-emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                         class.effect=list(emax="random"), n.iter=1000)
+emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+                         class.effect=list(emax="random"), n.iter=1000))
 
 nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 
@@ -80,10 +80,10 @@ testthat::test_that("predict.mbnma functions correctly", {
   # Estimating E0
   ref.df <- netalog$data.ab[netalog$data.ab$agent==1,]
   pred <- predict(linear, E0 = ref.df)
-  expect_identical(names(pred), c("predicts", "likelihood", "link"))
+  expect_identical(names(pred), c("predicts", "likelihood", "link", "network"))
   expect_equal(linear$model.arg$likelihood, pred$likelihood)
   expect_equal(linear$model.arg$link, pred$link)
-  expect_identical(names(pred$predicts), linear$agents)
+  expect_identical(names(pred$predicts), linear$network$agents)
   expect_silent(as.numeric(names(pred$predicts[[4]])))
   expect_equal(class(pred$predicts[[4]][[4]]), "matrix")
   expect_equal(nrow(pred$predicts[[4]][[4]]), linear$BUGSoutput$n.sims)
@@ -114,7 +114,7 @@ testthat::test_that("predict.mbnma functions correctly", {
     max.doses[[length(max.doses)+1]] <- 1
   }
   pred <- predict(emax, E0=0.1, max.doses = max.doses)
-  expect_identical(names(pred$predicts), emax$agents)
+  expect_identical(names(pred$predicts), emax$network$agents)
   expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")
@@ -123,7 +123,7 @@ testthat::test_that("predict.mbnma functions correctly", {
   expect_silent(predict(emax, E0=0.1, max.doses = max.doses))
 
   max.doses[[9]] <- 1
-  expect_error(predict(linear, E0=0.1, max.doses = max.doses))
+  expect_error(predict(emax, E0=0.1, max.doses = max.doses))
 
   max.doses <- list("eletriptan"=3, "rizatriptan"=2)
   pred <- predict(emax, E0=0.1, max.doses = max.doses, n.doses = 10)
@@ -174,7 +174,7 @@ testthat::test_that("predict.mbnma functions correctly", {
     max.doses[[length(max.doses)+1]] <- 1
   }
   pred <- predict(emax.noplac, E0=0.1, max.doses = max.doses)
-  expect_identical(names(pred$predicts), emax.noplac$agents)
+  expect_identical(names(pred$predicts), emax.noplac$network$agents)
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")
 

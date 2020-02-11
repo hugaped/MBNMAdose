@@ -248,6 +248,9 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$class.effect)>0) {
     stop("`predict() currently does not work with models that use class effects")
   }
+  if (object$model.arg$fun[1] %in% c("nonparam.up", "nonparam.down")) {
+    stop("`predict() does not work with non-parametric dose-response functions")
+  }
   if (length(object$model.arg$fun)>1) {
     #stop("`predict() currently does not work with models that use multiple dose-response functions")
 

@@ -131,12 +131,12 @@ testthat::test_that("plot.mbnma.predict functions correctly", {
   expect_silent(plot(pred))
 
   # Test disp.obs
-  expect_error(plot(pred, disp.obs = TRUE))
+  # expect_error(plot(pred, disp.obs = TRUE))
   expect_message(plot(pred, disp.obs = TRUE))
-  expect_error(plot(pred, disp.obs = TRUE))
+  # expect_error(plot(pred, disp.obs = TRUE))
 
   pred <- predict(emax, E0 = 0.5)
-  expect_error(plot(pred, disp.obs = TRUE))
+  #expect_error(plot(pred, disp.obs = TRUE))
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
@@ -157,7 +157,7 @@ testthat::test_that("plot.mbnma.predict functions correctly", {
 
   # Test overlay.split
   pred <- predict(linear, E0 = 0.5)
-  expect_error(plot(pred, overlay.split = TRUE))
+  #expect_error(plot(pred, overlay.split = TRUE))
   expect_output(plot(pred, overlay.split = TRUE))
 
   pred <- predict(emax, E0 = 0.5)
@@ -165,7 +165,7 @@ testthat::test_that("plot.mbnma.predict functions correctly", {
 
   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-  expect_output(plot(pred, overlay.split = TRUE))
+  expect_output(suppressWarnings(plot(pred, overlay.split = TRUE)))
 
   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
