@@ -434,10 +434,17 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     paramdata[["doseparam"]] <- rep(params[i], nrow(paramdata))
     plotdata <- rbind(plotdata, paramdata)
   }
-  plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-  if (any(is.na(plotdata[["param"]]))) {
+
+  if (all(grepl("^d\\.1\\[[0-9]+,[0-9]+\\]", rownames(plotdata)))) { # if nonparam function used
     plotdata[["param"]] <- c(1:nrow(plotdata))
+  } else {
+    plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
   }
+
+  # plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
+  # if (any(is.na(plotdata[["param"]]))) {
+  #   plotdata[["param"]] <- c(1:nrow(plotdata))
+  # }
 
   # Change param labels for agents
   agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
@@ -487,6 +494,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
+temp <<- plotdata
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +

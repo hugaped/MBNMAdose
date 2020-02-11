@@ -324,9 +324,9 @@ mbnma.run <- function(network,
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
-    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
-      stop("Placebo (or an agent with dose=0) must be included in the network to model a nonparametric dose-response relationship")
-    }
+    # if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+    #   stop("Placebo (or an agent with dose=0) must be included in the network to model a nonparametric dose-response relationship")
+    # }
   }
 
 
@@ -360,7 +360,7 @@ mbnma.run <- function(network,
 
     # Edit beta parameters if they aren't in dose-response function
     for (i in 1:4) {
-      if (!grepl(paste0("beta\\.", i), model)) {
+      if (!(grepl(paste0("beta\\.", i), model) | grepl(paste0("d\\.", i), model))) {
         assign(paste0("beta.", i), NULL)
       }
     }
@@ -426,7 +426,6 @@ mbnma.run <- function(network,
   if (length(class.effect)>0) {
     class <- TRUE
   } else {class <- FALSE}
-
 
   #### Run jags model ####
 
