@@ -5,8 +5,6 @@ date: "`r Sys.Date()`"
 output:
   knitr:::html_vignette:
     toc: TRUE
-  pdf_document:
-    toc: TRUE
 bibliography: REFERENCES.bib
 vignette: >
   %\VignetteIndexEntry{MBNMAdose}
@@ -15,6 +13,12 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
+library(MBNMAdose)
+#devtools::load_all()
+library(rmarkdown)
+library(knitr)
+library(dplyr)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -24,12 +28,6 @@ knitr::opts_chunk$set(
   tidy.opts=list(width.cutoff=80),
   tidy=TRUE
 )
-
-library(MBNMAdose)
-#devtools::load_all()
-library(rmarkdown)
-library(knitr)
-library(dplyr)
 ```
 
 

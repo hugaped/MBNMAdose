@@ -321,69 +321,83 @@ summary.nma.nodesplit <- function(object, ...) {
 
 
 
-get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
-  betanames <- get.beta.names(mbnma)
-
-  if (grepl("beta", betanames[[beta]])) {
-    temp <- strsplit(betanames[[beta]], split="\\.")[[1]][2]
-  } else {
-    temp <- betanames[[beta]]
-  }
-
-  match <- paste0("^", param, "\\.", temp, "(\\[[0-9]+\\])?")
-
-  sum.mat <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
-                                      c(3,5,7)]
-
-  # Check for UME
-  if (any(grepl("\\[[0-9]+,[0-9]+\\]", rownames(sum.mat)))) {
-    sum.mat <- NULL
-  }
-
-  if (length(sum.mat)>0) {
-    tab.str <- c()
-
-    if (is.matrix(sum.mat)) {
-      if (any(grepl("^d\\..+\\[1\\]", rownames(sum.mat)[1]) |
-              grepl("^D\\..+\\[1\\]", rownames(sum.mat)[1]))) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[1], "Network reference",
-                               sep="\t"),
-                         sep="\n"
-        )
-        count <- 2
-      } else if (any(grepl("^beta\\..+", rownames(sum.mat)[1]) |
-                     grepl("^BETA\\..+", rownames(sum.mat)[1]))) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[1],
-                               neatCrI(sum.mat),
-                               sep="\t"),
-                         sep="\n"
-        )
-        count <- 1
-      } else {count <-1}
-
-      for (i in count:nrow(sum.mat)) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[i], neatCrI(sum.mat[i,]),
-                               sep="\t"),
-                         sep="\n"
-        )
-      }
-    } else if (is.vector(sum.mat)) {
-      tab.str <- paste(tab.str,
-                       paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
-                             neatCrI(sum.mat),
-                             sep="\t\t"),
-                       sep="\n"
-      )
-    }
-
-    return(tab.str)
-  } else {
-    return(NULL)
-  }
-}
+# get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
+#   # betanames <- get.beta.names(mbnma)
+#   #
+#   # if (grepl("beta", betanames[[beta]])) {
+#   #   temp <- strsplit(betanames[[beta]], split="\\.")[[1]][2]
+#   # } else {
+#   #   temp <- betanames[[beta]]
+#   # }
+#
+#   if (!is.null(mbnma$model.arg$arg.params)) {
+#     wrapper <- TRUE
+#   } else {wrapper <- FALSE}
+#
+#   betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
+#                       wrapper=wrapper)
+#
+#   if (grepl("beta", betas[[beta]]$betaname)) {
+#     temp <- strsplit(betas[[beta]]$betaname, split="\\.")[[1]][2]
+#   } else {
+#     temp <- betas[[beta]]$betaname
+#   }
+#
+#
+#   match <- paste0("^", param, "\\.", temp, "(\\[[0-9]+\\])?")
+#
+#   sum.mat <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
+#                                       c(3,5,7)]
+#
+#   # Check for UME
+#   if (any(grepl("\\[[0-9]+,[0-9]+\\]", rownames(sum.mat)))) {
+#     sum.mat <- NULL
+#   }
+#
+#   if (length(sum.mat)>0) {
+#     tab.str <- c()
+#
+#     if (is.matrix(sum.mat)) {
+#       if (any(grepl("^d\\..+\\[1\\]", rownames(sum.mat)[1]) |
+#               grepl("^D\\..+\\[1\\]", rownames(sum.mat)[1]))) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[1], "Network reference",
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#         count <- 2
+#       } else if (any(grepl("^beta\\..+", rownames(sum.mat)[1]) |
+#                      grepl("^BETA\\..+", rownames(sum.mat)[1]))) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[1],
+#                                neatCrI(sum.mat),
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#         count <- 1
+#       } else {count <-1}
+#
+#       for (i in count:nrow(sum.mat)) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[i], neatCrI(sum.mat[i,]),
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#       }
+#     } else if (is.vector(sum.mat)) {
+#       tab.str <- paste(tab.str,
+#                        paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
+#                              neatCrI(sum.mat),
+#                              sep="\t\t"),
+#                        sep="\n"
+#       )
+#     }
+#
+#     return(tab.str)
+#   } else {
+#     return(NULL)
+#   }
+# }
 
 
 
@@ -500,7 +514,7 @@ print.treat.str <- function(mbnma) {
 
       } else if (is.numeric(mbnma$model.arg[[names(betas)[i]]])) {
         data.str <- paste("Assigned a numeric value:",
-                          mbnma$model.arg[[names(betanames)[i]]],
+                          mbnma$model.arg[[names(betas)[i]]],
                           sep=" ")
         cat(data.str)
         cat("\n\n")
