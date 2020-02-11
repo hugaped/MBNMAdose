@@ -123,7 +123,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2020-02-04}
+    \date{2020-02-11}
 
 
 \begin{document}
@@ -515,7 +515,8 @@ The nodes that are coloured white represent these disconnected vertices.
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{label.distance =} \DecValTok{5}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> Allo_245}
 \CommentTok{#> Allo_256}
 \CommentTok{#> Allo_300}
@@ -545,7 +546,8 @@ results.
 \begin{Highlighting}[]
 \CommentTok{# Plot at the agent-level}
 \KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{6}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> RDEA}
 \end{Highlighting}
 \end{Shaded}
@@ -577,7 +579,8 @@ colour the doses by the agent that they belong to.
 \begin{Highlighting}[]
 \CommentTok{# Colour vertices by agent}
 \KeywordTok{plot}\NormalTok{(goutnet, }\DataTypeTok{v.color =} \StringTok{"agent"}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{5}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> Allo_245}
 \CommentTok{#> Allo_256}
 \CommentTok{#> Allo_300}
@@ -627,35 +630,35 @@ very uncertain if included).
 \begin{Highlighting}[]
 \KeywordTok{print}\NormalTok{(nma.alog)}
 \CommentTok{#> $jagsresult}
-\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpIjUMU1\textbackslash{}file3e9854927dff", fit using jags,}
+\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpmeY2V3\textbackslash{}file5fac5a7f2e27", fit using jags,}
 \CommentTok{#>  3 chains, each with 10000 iterations (first 5000 discarded), n.thin = 5}
 \CommentTok{#>  n.sims = 3000 iterations saved}
 \CommentTok{#>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%}
 \CommentTok{#> d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000}
-\CommentTok{#> d[2]        -0.455   0.090   -0.627   -0.516   -0.454   -0.395   -0.279}
-\CommentTok{#> d[3]        -0.655   0.046   -0.747   -0.685   -0.655   -0.624   -0.563}
-\CommentTok{#> d[4]        -0.711   0.046   -0.797   -0.740   -0.713   -0.680   -0.620}
-\CommentTok{#> d[5]        -0.761   0.086   -0.925   -0.819   -0.762   -0.706   -0.590}
-\CommentTok{#> d[6]        -0.684   0.174   -1.017   -0.800   -0.687   -0.572   -0.340}
-\CommentTok{#> sd           0.123   0.028    0.074    0.104    0.121    0.140    0.184}
-\CommentTok{#> totresdev   47.132   9.844   30.375   40.255   46.309   53.479   68.137}
-\CommentTok{#> deviance  -124.182   9.844 -140.939 -131.059 -125.005 -117.835 -103.177}
+\CommentTok{#> d[2]        -0.456   0.091   -0.636   -0.516   -0.459   -0.393   -0.278}
+\CommentTok{#> d[3]        -0.654   0.045   -0.741   -0.683   -0.655   -0.624   -0.564}
+\CommentTok{#> d[4]        -0.710   0.046   -0.796   -0.740   -0.710   -0.681   -0.618}
+\CommentTok{#> d[5]        -0.761   0.085   -0.921   -0.820   -0.764   -0.706   -0.587}
+\CommentTok{#> d[6]        -0.683   0.168   -1.010   -0.796   -0.685   -0.570   -0.342}
+\CommentTok{#> sd           0.124   0.028    0.076    0.105    0.122    0.140    0.186}
+\CommentTok{#> totresdev   47.058   9.926   29.304   40.090   46.339   53.643   67.739}
+\CommentTok{#> deviance  -124.256   9.926 -142.010 -131.224 -124.975 -117.671 -103.575}
 \CommentTok{#>            Rhat n.eff}
 \CommentTok{#> d[1]      1.000     1}
-\CommentTok{#> d[2]      1.005   550}
-\CommentTok{#> d[3]      1.002  2000}
-\CommentTok{#> d[4]      1.001  3000}
-\CommentTok{#> d[5]      1.002  1400}
-\CommentTok{#> d[6]      1.001  2600}
-\CommentTok{#> sd        1.001  3000}
-\CommentTok{#> totresdev 1.001  3000}
+\CommentTok{#> d[2]      1.001  3000}
+\CommentTok{#> d[3]      1.003   860}
+\CommentTok{#> d[4]      1.002  1400}
+\CommentTok{#> d[5]      1.001  3000}
+\CommentTok{#> d[6]      1.002  1600}
+\CommentTok{#> sd        1.003   810}
+\CommentTok{#> totresdev 1.001  2600}
 \CommentTok{#> deviance  1.001  3000}
 \CommentTok{#> }
 \CommentTok{#> For each parameter, n.eff is a crude measure of effective sample size,}
 \CommentTok{#> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).}
 \CommentTok{#> }
 \CommentTok{#> DIC info (using the rule, pD = var(deviance)/2)}
-\CommentTok{#> pD = 48.5 and DIC = -75.7}
+\CommentTok{#> pD = 49.3 and DIC = -75.0}
 \CommentTok{#> DIC is an estimate of expected predictive error (lower deviance is better).}
 \CommentTok{#> }
 \CommentTok{#> $trt.labs}
@@ -755,9 +758,9 @@ each parameter:
 \tightlist
 \item
   \texttt{"rel"} indicates that relative effects should be pooled for
-  this dose-response parameter. This preserves randomisation within
-  included studies and is likely to vary less between studies (only due
-  to effect modification).
+  this dose-response parameter separately for each agent in the network.
+  This preserves randomisation within included studies and is likely to
+  vary less between studies (only due to effect modification).
 \item
   \texttt{"common"} indicates that a single absolute value for this
   dose-response parameter should be estimated across the whole network
@@ -779,7 +782,7 @@ each parameter:
 In \texttt{mbnma.run()}, an additional argument, \texttt{method},
 indicates what method to use for pooling relative effects and can take
 either the values \texttt{"common"}, implying that all studies estimate
-the same true effect (akin to a ``fixed effects'' meta-analysis), or
+the same true effect (akin to a ``fixed effect'' meta-analysis), or
 \texttt{"random"}, implying that all studies estimate a separate true
 effect, but that each of these true effects vary randomly around a true
 mean effect. This approach allows for modelling of between-study
@@ -795,49 +798,51 @@ are). This can be prevented by setting \texttt{cor=FALSE}.
 \subsubsection{Output}\label{output}}
 
 \texttt{mbnma.run()} returns an object of class
-\texttt{c("mbnma",\ "rjags")}. \texttt{summary()} provides posterior
-medians and 95\% credible intervals for different parameters in the
-model, with some explanation of the way in which the model has been
-defined. \texttt{print()} can also be used to give summary statistics of
-the posterior distributions for monitored nodes in the JAGS model.
-Estimates are automatically reported for parameters of interest
-depending on the model specification (unless otherwise specified in
-\texttt{parameters.to.save})
+\texttt{c("rjags",\ "mbnma")}. \texttt{summary()} provides posterior
+medians and 95\% credible intervals (95\%CrI) for different parameters
+in the model, naming them by agent and giving some explanation of the
+way they have been specified in the model. \texttt{print()} can also be
+used to give full summary statistics of the posterior distributions for
+monitored nodes in the JAGS model. Estimates are automatically reported
+for parameters of interest depending on the model specification (unless
+otherwise specified in \texttt{parameters.to.save})
 
 Nodes that are automatically monitored (if present in the model) have
 the following interpretation. They will have an additional suffix that
-relates to the name/number of the time-course parameter to which they
+relates to the name/number of the dose-response parameter to which they
 correspond (e.g.~\texttt{d.et50} or \texttt{beta.1}):
 
 \begin{itemize}
 \tightlist
 \item
   \texttt{d} The pooled effect for each agent for a given dose-response
-  parameter. Will be estimated by the model if dose-response parameters
-  (\texttt{beta.1}, \texttt{beta.2}, \texttt{beta.3}) are set to
-  \texttt{"rel"}.
+  parameter. These will be estimated by the model for dose-response
+  parameters specified as \texttt{"rel"}
+  (e.g.~\texttt{mbnma.run(beta.1="rel")}).
 \item
   \texttt{sd} (without a suffix) - the between-study SD (heterogeneity)
   for relative effects, reported if \texttt{method="random"}.
 \item
   \texttt{D} The class effect for each class for a given dose-response
-  parameter. Will be estimated by the model if specified in
-  \texttt{class.effect} for a dose-response parameter set to
-  \texttt{"rel"}.
+  parameter. These will be estimated by the model if specified in
+  \texttt{class.effect} (see Class Effects (REF)) for a given
+  dose-response parameter.
 \item
   \texttt{sd.D} The within-class SD for different agents within the same
-  class. Will be estimated by the model if any dose-response parameter
-  in \texttt{class.effect} is set to \texttt{"random"}.
+  class. This will be estimated by the model if any dose-response
+  parameter specified in \texttt{class.effect} (see Class Effects (REF))
+  is set to \texttt{"random"}.
 \item
-  \texttt{beta} The absolute value of a given dose-response parameter
-  across the whole network (does not vary by agent/class). Will be
-  estimated by the model if dose-response parameters (\texttt{beta.1},
-  \texttt{beta.2}, \texttt{beta.3}) are set to \texttt{"common"} or
-  \texttt{"random"}.
+  \texttt{beta} The common or mean value of a given dose-response
+  parameter across the whole network (does not vary by agent/class).
+  This will be estimated by the model for dose-response parameters
+  specified as \texttt{"common"} or \texttt{"random"}
+  (e.g.~\texttt{mbnma.run(beta.1="common"})).
 \item
   \texttt{sd} (with a suffix) - the between-study SD (heterogeneity) for
-  absolute dose-response parameters, reported if \texttt{beta.1},
-  \texttt{beta.2} or \texttt{beta.3} are set to \texttt{"random"}
+  dose-response parameters modelled as exchangeable around a single mean
+  value. This will be estimated by the model for dose-response
+  parameters specified as \texttt{"random"}.
 \item
   \texttt{totresdev} The residual deviance of the model
 \item
@@ -885,29 +890,30 @@ Emax and ED50 parameters follows:
 \CommentTok{#> }
 \CommentTok{#> Pooling: relative effects}
 \CommentTok{#> }
-\CommentTok{#>              Parameter   Median      2.5%    97.5%}
-\CommentTok{#> eletriptan      d.1[2] 2.547712 2.2398436 2.897524}
-\CommentTok{#> sumatriptan     d.1[3] 1.757867 1.5363337 2.072036}
-\CommentTok{#> frovatriptan    d.1[4] 1.911597 1.2691830 3.018892}
-\CommentTok{#> almotriptan     d.1[5] 1.837157 1.3768209 2.723648}
-\CommentTok{#> zolmitriptan    d.1[6] 2.004399 1.5759870 2.654923}
-\CommentTok{#> naratriptan     d.1[7] 1.064370 0.5963054 1.988305}
-\CommentTok{#> rizatriptan     d.1[8] 2.400064 1.9010330 3.359387}
+\CommentTok{#>              Parameter   Median     2.5%    97.5%}
+\CommentTok{#> eletriptan      d.1[2] 2.528909 2.210673 2.913152}
+\CommentTok{#> sumatriptan     d.1[3] 1.760485 1.535247 2.045847}
+\CommentTok{#> frovatriptan    d.1[4] 1.908290 1.315477 3.315225}
+\CommentTok{#> almotriptan     d.1[5] 1.860720 1.396351 3.020261}
+\CommentTok{#> zolmitriptan    d.1[6] 2.016668 1.564241 2.644248}
+\CommentTok{#> naratriptan     d.1[7] 1.066673 0.583384 2.120677}
+\CommentTok{#> rizatriptan     d.1[8] 2.358074 1.884939 3.273184}
 \CommentTok{#> }
 \CommentTok{#> }
 \CommentTok{#> #### beta.2 (emax, ed50) dose-response parameter results ####}
 \CommentTok{#> }
-\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values on the natural scale}
+\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values}
+\CommentTok{#> on the natural scale}
 \CommentTok{#> Pooling: relative effects}
 \CommentTok{#> }
 \CommentTok{#>              Parameter     Median      2.5%      97.5%}
-\CommentTok{#> eletriptan      d.2[2] -0.7156171 -1.144733 -0.3073377}
-\CommentTok{#> sumatriptan     d.2[3] -0.6485503 -1.195204 -0.1254315}
-\CommentTok{#> frovatriptan    d.2[4] -0.4978926 -1.647096  0.5205319}
-\CommentTok{#> almotriptan     d.2[5] -0.2231828 -1.000235  0.5595401}
-\CommentTok{#> zolmitriptan    d.2[6] -0.4405460 -1.379673  0.2251863}
-\CommentTok{#> naratriptan     d.2[7] -0.1757111 -1.249177  0.9093106}
-\CommentTok{#> rizatriptan     d.2[8] -0.5873059 -1.321969  0.1390686}
+\CommentTok{#> eletriptan      d.2[2] -0.7186570 -1.171510 -0.3051783}
+\CommentTok{#> sumatriptan     d.2[3] -0.6493340 -1.202323 -0.1477799}
+\CommentTok{#> frovatriptan    d.2[4] -0.5087995 -1.562793  0.5722465}
+\CommentTok{#> almotriptan     d.2[5] -0.1934241 -0.970873  0.6874867}
+\CommentTok{#> zolmitriptan    d.2[6] -0.4100398 -1.211810  0.1861653}
+\CommentTok{#> naratriptan     d.2[7] -0.1665845 -1.208943  1.0159760}
+\CommentTok{#> rizatriptan     d.2[8] -0.6278616 -1.363805  0.1182828}
 \CommentTok{#> }
 \CommentTok{#> }
 \CommentTok{#> }
@@ -915,35 +921,36 @@ Emax and ED50 parameters follows:
 \CommentTok{#> #### Model Fit Statistics ####}
 \CommentTok{#> }
 \CommentTok{#> Effective number of parameters:}
-\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 78.7}
-\CommentTok{#> Deviance = 1170.2}
-\CommentTok{#> Residual deviance = 267.1}
-\CommentTok{#> Deviance Information Criterion (DIC) = 1248.9}
+\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 85.6}
+\CommentTok{#> Deviance = 1169.9}
+\CommentTok{#> Residual deviance = 266.8}
+\CommentTok{#> Deviance Information Criterion (DIC) = 1255.5}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# An alternative would be to use an Emax wrapper for mbnma.run() which would give the same result but with more easily interpretable parameter names}
+\CommentTok{# An alternative would be to use an Emax wrapper for mbnma.run() which would give the }
+\CommentTok{#same result but with more easily interpretable parameter names}
 \KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"common"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-In this case the \texttt{d.1}/\texttt{d.emax} parameters correspond to
-the effects of each agent for the dose-response parameter
-\texttt{beta.1}/\texttt{emax}, which corresponds (for this dose-reponse
-function) to the maximum response that can be achieved for a particular
-agent. The \texttt{d.2}/\texttt{d.ed50} parameters correspond to the
-effects for \texttt{beta.2}/\texttt{ed50}, which (in this case)
+In this example the \texttt{d.1}/\texttt{d.emax} parameters are the
+effects of each agent for the dose-response parameter
+\texttt{beta.1}/\texttt{emax}. For an Emax model this corresponds to the
+maximum response that can be achieved for a particular agent. The
+\texttt{d.2}/\texttt{d.ed50} parameters are the effects for each agent
+for \texttt{beta.2}/\texttt{ed50}, which (for an Emax function)
 corresponds to the dose at which 50\% of the maximum response is
-achieved (results are given on the log scale for this parameter as it is
-constrained to be \textgreater0).
+achieved. Results for ED50 are given on the log scale as it is
+constrained to be greater than zero.
 
-Instead of pooling relative effects and estimating a separate relative
-effect for each agent, a simpler dose-response model (that makes more
-assumptions) could be to estimate a single parameter across the whole
-network for ED50, but that still estimates relative effects for Emax. In
-this case we can run with random effects on Emax:
+Instead of estimating a separate relative effect for each agent, a
+simpler dose-response model that makes stronger assumptions could
+estimate a single parameter across the whole network for ED50, but still
+estimates a separate effect for each agent for Emax. In this case we can
+model random relative effects:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -951,129 +958,17 @@ this case we can run with random effects on Emax:
 \NormalTok{emax <-}\StringTok{ }\KeywordTok{mbnma.emax}\NormalTok{(tripnet, }\DataTypeTok{emax=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{ed50=}\StringTok{"common"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
 \CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
 \CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
-\CommentTok{#> Compiling model graph}
-\CommentTok{#>    Resolving undeclared variables}
-\CommentTok{#>    Allocating nodes}
-\CommentTok{#> Graph information:}
-\CommentTok{#>    Observed stochastic nodes: 182}
-\CommentTok{#>    Unobserved stochastic nodes: 191}
-\CommentTok{#>    Total graph size: 4091}
-\CommentTok{#> }
-\CommentTok{#> Initializing model}
-\CommentTok{#> }
-\CommentTok{#> }
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\StringTok{                                                  }\ErrorTok{|}\StringTok{   }\DecValTok{0}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++}\StringTok{                                                }\ErrorTok{|}\StringTok{   }\DecValTok{4}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++}\StringTok{                                              }\ErrorTok{|}\StringTok{   }\DecValTok{8}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++}\StringTok{                                            }\ErrorTok{|}\StringTok{  }\DecValTok{12}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++}\StringTok{                                          }\ErrorTok{|}\StringTok{  }\DecValTok{16}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++}\StringTok{                                        }\ErrorTok{|}\StringTok{  }\DecValTok{20}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++}\StringTok{                                      }\ErrorTok{|}\StringTok{  }\DecValTok{24}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++}\StringTok{                                    }\ErrorTok{|}\StringTok{  }\DecValTok{28}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++}\StringTok{                                  }\ErrorTok{|}\StringTok{  }\DecValTok{32}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++}\StringTok{                                }\ErrorTok{|}\StringTok{  }\DecValTok{36}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++}\StringTok{                              }\ErrorTok{|}\StringTok{  }\DecValTok{40}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++}\StringTok{                            }\ErrorTok{|}\StringTok{  }\DecValTok{44}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++}\StringTok{                          }\ErrorTok{|}\StringTok{  }\DecValTok{48}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++}\StringTok{                        }\ErrorTok{|}\StringTok{  }\DecValTok{52}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++}\StringTok{                      }\ErrorTok{|}\StringTok{  }\DecValTok{56}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++}\StringTok{                    }\ErrorTok{|}\StringTok{  }\DecValTok{60}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++}\StringTok{                  }\ErrorTok{|}\StringTok{  }\DecValTok{64}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++}\StringTok{                }\ErrorTok{|}\StringTok{  }\DecValTok{68}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++}\StringTok{              }\ErrorTok{|}\StringTok{  }\DecValTok{72}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++}\StringTok{            }\ErrorTok{|}\StringTok{  }\DecValTok{76}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++}\StringTok{          }\ErrorTok{|}\StringTok{  }\DecValTok{80}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++}\StringTok{        }\ErrorTok{|}\StringTok{  }\DecValTok{84}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++}\StringTok{      }\ErrorTok{|}\StringTok{  }\DecValTok{88}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++}\StringTok{    }\ErrorTok{|}\StringTok{  }\DecValTok{92}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++++}\StringTok{  }\ErrorTok{|}\StringTok{  }\DecValTok{96}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\OperatorTok{++++++++++++++++++++++++++++++++++++++++++++++++++}\ErrorTok{|}\StringTok{ }\DecValTok{100}\NormalTok{%}
-\CommentTok{#> }
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|}\StringTok{                                                  }\ErrorTok{|}\StringTok{   }\DecValTok{0}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**}\StringTok{                                                }\ErrorTok{|}\StringTok{   }\DecValTok{4}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|****}\StringTok{                                              }\ErrorTok{|}\StringTok{   }\DecValTok{8}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|******}\StringTok{                                            }\ErrorTok{|}\StringTok{  }\DecValTok{12}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|********}\StringTok{                                          }\ErrorTok{|}\StringTok{  }\DecValTok{16}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**********}\StringTok{                                        }\ErrorTok{|}\StringTok{  }\DecValTok{20}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|************}\StringTok{                                      }\ErrorTok{|}\StringTok{  }\DecValTok{24}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**************}\StringTok{                                    }\ErrorTok{|}\StringTok{  }\DecValTok{28}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|****************}\StringTok{                                  }\ErrorTok{|}\StringTok{  }\DecValTok{32}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|******************}\StringTok{                                }\ErrorTok{|}\StringTok{  }\DecValTok{36}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|********************}\StringTok{                              }\ErrorTok{|}\StringTok{  }\DecValTok{40}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**********************}\StringTok{                            }\ErrorTok{|}\StringTok{  }\DecValTok{44}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|************************}\StringTok{                          }\ErrorTok{|}\StringTok{  }\DecValTok{48}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**************************}\StringTok{                        }\ErrorTok{|}\StringTok{  }\DecValTok{52}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|****************************}\StringTok{                      }\ErrorTok{|}\StringTok{  }\DecValTok{56}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|******************************}\StringTok{                    }\ErrorTok{|}\StringTok{  }\DecValTok{60}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|********************************}\StringTok{                  }\ErrorTok{|}\StringTok{  }\DecValTok{64}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**********************************}\StringTok{                }\ErrorTok{|}\StringTok{  }\DecValTok{68}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|************************************}\StringTok{              }\ErrorTok{|}\StringTok{  }\DecValTok{72}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**************************************}\StringTok{            }\ErrorTok{|}\StringTok{  }\DecValTok{76}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|****************************************}\StringTok{          }\ErrorTok{|}\StringTok{  }\DecValTok{80}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|******************************************}\StringTok{        }\ErrorTok{|}\StringTok{  }\DecValTok{84}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|********************************************}\StringTok{      }\ErrorTok{|}\StringTok{  }\DecValTok{88}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**********************************************}\StringTok{    }\ErrorTok{|}\StringTok{  }\DecValTok{92}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|************************************************}\StringTok{  }\ErrorTok{|}\StringTok{  }\DecValTok{96}\NormalTok{%}
-  \OperatorTok{|}\StringTok{                                                        }
-\StringTok{  }\ErrorTok{|**************************************************|}\StringTok{ }\DecValTok{100}\NormalTok{%}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
 \KeywordTok{summary}\NormalTok{(emax)}
-\CommentTok{#> Warning in rhat.warning(object): The following parameters have Rhat values > 1.02 which could be due to convergence issues:}
-\CommentTok{#> beta.ed50}
-\CommentTok{#> d.emax[2]}
-\CommentTok{#> d.emax[3]}
-\CommentTok{#> d.emax[6]}
-\CommentTok{#> d.emax[8]}
+\CommentTok{#> Warning in rhat.warning(object): The following parameters have Rhat values > 1.02}
+\CommentTok{#> which could be due to convergence issues:}
+\CommentTok{#> deviance}
+\CommentTok{#> sd}
+\CommentTok{#> totresdev}
 \CommentTok{#> ========================================}
 \CommentTok{#> Dose-response MBNMA}
 \CommentTok{#> ========================================}
@@ -1086,30 +981,31 @@ this case we can run with random effects on Emax:
 \CommentTok{#> }
 \CommentTok{#> Parameter                    Median (95%CrI)}
 \CommentTok{#> -----------------------------------------------------------------------}
-\CommentTok{#> Between-study SD for relative effects        0.247 (0.168, 0.335)}
+\CommentTok{#> Between-study SD for relative effects        0.238 (0.152, 0.333)}
 \CommentTok{#> }
 \CommentTok{#> }
 \CommentTok{#> #### emax dose-response parameter results ####}
 \CommentTok{#> }
 \CommentTok{#> Pooling: relative effects}
 \CommentTok{#> }
-\CommentTok{#>              Parameter   Median      2.5%    97.5%}
-\CommentTok{#> eletriptan   d.emax[2] 2.825731 2.3618862 3.528749}
-\CommentTok{#> sumatriptan  d.emax[3] 1.903450 1.6209879 2.330119}
-\CommentTok{#> frovatriptan d.emax[4] 2.066563 1.3660150 2.983334}
-\CommentTok{#> almotriptan  d.emax[5] 1.777406 1.3392828 2.396986}
-\CommentTok{#> zolmitriptan d.emax[6] 2.115456 1.7050850 2.725031}
-\CommentTok{#> naratriptan  d.emax[7] 1.031992 0.4369363 1.723539}
-\CommentTok{#> rizatriptan  d.emax[8] 2.717514 2.2083453 3.524312}
+\CommentTok{#>              Parameter   Median     2.5%    97.5%}
+\CommentTok{#> eletriptan   d.emax[2] 2.812885 2.317632 3.510931}
+\CommentTok{#> sumatriptan  d.emax[3] 1.874531 1.604606 2.254731}
+\CommentTok{#> frovatriptan d.emax[4] 2.055843 1.396687 2.870282}
+\CommentTok{#> almotriptan  d.emax[5] 1.762156 1.352367 2.319707}
+\CommentTok{#> zolmitriptan d.emax[6] 2.069016 1.649685 2.625423}
+\CommentTok{#> naratriptan  d.emax[7] 1.001239 0.431036 1.664194}
+\CommentTok{#> rizatriptan  d.emax[8] 2.668115 2.165375 3.420826}
 \CommentTok{#> }
 \CommentTok{#> }
 \CommentTok{#> #### ed50 dose-response parameter results ####}
 \CommentTok{#> }
-\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values on the natural scale}
+\CommentTok{#> Parameter modelled on exponential scale to ensure it takes positive values}
+\CommentTok{#> on the natural scale}
 \CommentTok{#> Pooling: single parameter shared across the network}
 \CommentTok{#> }
 \CommentTok{#>           Parameter     Median       2.5%     97.5%}
-\CommentTok{#> beta.ed50 beta.ed50 -0.3655485 -0.8555353 0.1432838}
+\CommentTok{#> beta.ed50 beta.ed50 -0.4081825 -0.9170875 0.1008717}
 \CommentTok{#> }
 \CommentTok{#> }
 \CommentTok{#> }
@@ -1117,27 +1013,29 @@ this case we can run with random effects on Emax:
 \CommentTok{#> #### Model Fit Statistics ####}
 \CommentTok{#> }
 \CommentTok{#> Effective number of parameters:}
-\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 167.6}
-\CommentTok{#> Deviance = 1092.8}
-\CommentTok{#> Residual deviance = 189.7}
-\CommentTok{#> Deviance Information Criterion (DIC) = 1260.4}
+\CommentTok{#> pD (pV) calculated using the rule, pD = var(deviance)/2 = 195}
+\CommentTok{#> Deviance = 1095.7}
+\CommentTok{#> Residual deviance = 192.6}
+\CommentTok{#> Deviance Information Criterion (DIC) = 1290.7}
 \end{Highlighting}
 \end{Shaded}
 
-In this case the \texttt{d.1}/\texttt{d.emax} parameters correspond to
-the effect of each agent for the dose-response parameter
-\texttt{beta.1}/\texttt{emax}, as previously. But now we have a
+In this example the \texttt{d.1}/\texttt{d.emax} parameters are the
+effects of each agent for the dose-response parameter
+\texttt{beta.1}/\texttt{emax}, as previously. But now there is a
 \texttt{beta.ed50} parameter in the output (instead of \texttt{d.ed50}),
-which corresponds to the absolute value of ED50 (on the log scale)
-across the whole network. As we have modelled random relative effects,
-we also have estimated a parameter for \texttt{sd}, the between-study
-standard deviation.
+which is the absolute value of ED50 (on the log scale) across all agents
+in the network. As we have modelled random relative effects, we also
+have estimated a parameter for \texttt{sd}, the standard deviation for
+relative effects between studies.
 
-However, although the total residual deviance (\texttt{totresdev}) is
-lower in this model, indicating a better fit, the effective number of
-parameters (pD) is much greater, and overall the DIC is higher,
-suggesting that the first model is a better compromise of fit and
-complexity.
+The total residual deviance (\texttt{totresdev}) is lower in the second
+model, indicating a better fit, but the effective number of parameters
+(pD) is much greater due to the modelling of random effects, and overall
+the DIC is higher, suggesting that the first model is a better
+compromise of fit and complexity. Furthermore it makes less strong
+assumptions regarding the exchangeability of effects on ED50 between
+agents.
 
 \hypertarget{additional-arguments-for-mbnma.run}{%
 \subsubsection{\texorpdfstring{Additional arguments for
@@ -1149,7 +1047,7 @@ require further explanation.
 \hypertarget{class-effects}{%
 \paragraph{Class effects}\label{class-effects}}
 
-Shared effects between agents within the network can be modelled using
+Similar effects between agents within the network can be modelled using
 class effects. This requires assuming that different agents have some
 sort of common class effect, perhaps due to similar mechanisms of
 action. Advantages of this is that class effects can be used to connect
@@ -1159,17 +1057,16 @@ have insufficient data available to estimate a desired dose-response.
 The drawback is that this requires making additional assumptions
 regarding similarity of efficacy.
 
-Class effects can only be applied to dose-response parameters which are
-modelled using relative effects (\texttt{"rel"}). In
-\texttt{mbnma.run()} they are supplied as a list, in which each element
-is named following the name of the corresponding dose-response parameter
-as defined in the function. The names will therefore differ when using
-wrapper functions for \texttt{mbnma.run()}. The class effect for each
-dose-response parameter can be either \texttt{"common"}, in which the
-effects for each agent within the same class are constrained to a common
-class effect, or \texttt{"random"}, in which the effects for each agent
-within the same class are assumed to be randomly distributed around a
-shared class mean.
+Class effects can only be applied to dose-response parameters which vary
+by agent. In \texttt{mbnma.run()} they are supplied as a list, in which
+each element is named following the name of the corresponding
+dose-response parameter as defined in the dose-response function. The
+names will therefore differ when using wrapper functions for
+\texttt{mbnma.run()}. The class effect for each dose-response parameter
+can be either \texttt{"common"}, in which the effects for each agent
+within the same class are constrained to a common class effect, or
+\texttt{"random"}, in which the effects for each agent within the same
+class are assumed to be randomly distributed around a shared class mean.
 
 When working with class effects in \texttt{MBNMAdose} a variable named
 \texttt{class} must be included in the original data frame provided to
@@ -1243,41 +1140,41 @@ Emax might be 4 times larger for ED50 (on the log scale):
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{user-specified-time-course-function}{%
-\paragraph{User-specified time-course
-function}\label{user-specified-time-course-function}}
+\hypertarget{user-defined-dose-response-function}{%
+\paragraph{User-defined dose-response
+function}\label{user-defined-dose-response-function}}
 
-If users want to write their own dose-response function rather than
-using one of the ones specified in \texttt{mbnma.run()} they can do this
-by specifying \texttt{fun\ =\ "user"} in the arguments. A string can
-then be provided to \texttt{user.fun}, which specifies a new time course
-in terms of \texttt{beta} parameters and \texttt{dose}. This allows a
-huge amount of additional flexibility when defining the dose-response
-function.
+Users can define their own dose-response function rather than using one
+of the functions provided in \texttt{mbnma.run()}. By specifying
+\texttt{fun\ =\ "user"} in the arguments, a function can then be
+provided to \texttt{user.fun}, which specifies a new dose-response in
+terms of \texttt{beta} parameters and \texttt{dose}. This allows a huge
+degree of flexibility when defining the dose-response relationship.
 
-The string assigned to \texttt{user.fun} needs to fulfil a few criteria
-to be valid: * \texttt{dose} must always be included in the function *
-At least one \texttt{beta} time-course parameter must be specified, up
-to a maximum of three. These are always named \texttt{beta.1},
-\texttt{beta.2} and \texttt{beta.3}, and must be included sequentially
-(i.e.~don't include \texttt{beta.3} if \texttt{beta.1} is not included)
-* Indices used by JAGS should \emph{not} be added to \texttt{user.fun}
-(e.g.~use \texttt{dose} rather than \texttt{dose{[}i,k{]}}) * Any
-mathematical/logical operators that can be implemented in JAGS can be
-added to the function
+The function assigned to \texttt{user.fun} needs to fulfil a few
+criteria to be valid: * \texttt{dose} must always be included in the
+function * At least one \texttt{beta} time-course parameter must be
+specified, up to a maximum of four. These must always be named
+\texttt{beta.1}, \texttt{beta.2}, \texttt{beta.3} and \texttt{beta.4},
+and must be included sequentially (i.e.~don't include \texttt{beta.3} if
+\texttt{beta.2} is not included) * Indices used by JAGS should
+\emph{not} be added to \texttt{user.fun} (e.g.~use \texttt{dose} rather
+than \texttt{dose{[}i,k{]}}) * Any mathematical/logical operators that
+can be implemented in JAGS can be added to the function
+(e.g.~\texttt{exp()}, \texttt{ifelse()})
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# An example specifying a quadratic dose-response function}
-\NormalTok{quad <-}\StringTok{ "(beta.1 * dose) + (beta.2 * (dose^2))"}
+\NormalTok{quad <-}\StringTok{ }\ErrorTok{~}\StringTok{ }\NormalTok{(beta}\FloatTok{.1} \OperatorTok{*}\StringTok{ }\NormalTok{dose) }\OperatorTok{+}\StringTok{ }\NormalTok{(beta}\FloatTok{.2} \OperatorTok{*}\StringTok{ }\NormalTok{(dose}\OperatorTok{^}\DecValTok{2}\NormalTok{))}
 
-\KeywordTok{mbnma.run}\NormalTok{(tripnet, }\DataTypeTok{fun=}\StringTok{"user"}\NormalTok{, }\DataTypeTok{user.fun=}\NormalTok{quad, }
+\KeywordTok{mbnma.run}\NormalTok{(alognet, }\DataTypeTok{fun=}\StringTok{"user"}\NormalTok{, }\DataTypeTok{user.fun=}\NormalTok{quad,}
           \DataTypeTok{beta.1 =} \StringTok{"rel"}\NormalTok{, }\DataTypeTok{beta.2 =} \StringTok{"rel"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \hypertarget{agent-specific-dose-response-functions}{%
-\subsubsection{Agent-specific dose-response
+\paragraph{Agent-specific dose-response
 functions}\label{agent-specific-dose-response-functions}}
 
 Different dose-response functions can be used for different agents
@@ -1287,8 +1184,8 @@ available, and less complex functions in agents for which there are
 fewer doses available. Note that these models are typically less
 computationally stable than single dose-response function models, and
 they are likely to benefit less from modelling correlation between
-multiple dose-response parameters (since there are fewer agents
-informing correlations between each dose-response parameter).
+multiple dose-response parameters since there are fewer agents informing
+correlations between each dose-response parameter.
 
 This can be modelled in \texttt{mbnma.run()} by assigning a character
 vector of dose-response functions to the \texttt{fun} argument, with
@@ -1298,25 +1195,25 @@ must therefore be equal to the number of agents in the network. The
 choice of dose-response function used for Placebo is irrelevant, since
 evaluating the function at dose=0 will always equal 0.
 
+Different dose-response parameters across the different functions are
+numbered in increasing order following the functions \texttt{"user"},
+\texttt{"linear"}, \texttt{"exponential"}, \texttt{"emax"},
+\texttt{"emax.hill"}. For example, as the following model uses
+exponential and Emax functions, \texttt{beta.1} corresponds to the rate
+parameter of the exponential function, \texttt{beta.2} to the Emax
+parameter of the Emax function, and \texttt{beta.3} to the ED50
+parameter of the Emax function.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Frovatriptan and rizatriptan modelled using an exponential function as only two active doses are available for these agents}
+\CommentTok{# Frovatriptan and rizatriptan modelled using an exponential function as only two active}
+\CommentTok{#doses are available for these agents}
 \CommentTok{# All other agents are modelled using an Emax function}
-\NormalTok{multifun <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(painnet, }\DataTypeTok{fun=}\KeywordTok{c}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{3}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{2}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\StringTok{"emax"}\NormalTok{))}
+\NormalTok{multifun <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(painnet, }\DataTypeTok{fun=}\KeywordTok{c}\NormalTok{(}\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{3}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\KeywordTok{rep}\NormalTok{(}\StringTok{"emax"}\NormalTok{, }\DecValTok{2}\NormalTok{), }\StringTok{"exponential"}\NormalTok{, }\StringTok{"emax"}\NormalTok{),}
+            \DataTypeTok{beta.1=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{beta.2=}\StringTok{"rel"}\NormalTok{, }\DataTypeTok{beta.3=}\StringTok{"random"}\NormalTok{)}
 \KeywordTok{summary}\NormalTok{(multifun)}
 \end{Highlighting}
 \end{Shaded}
-
-In the output, the different dose-response parameters (\texttt{d}s or
-\texttt{beta}s) are numbered according to the dose-response function for
-which they are modelled, with typically more complex dose-response
-functions being given higher numbers. The ordering of parameter
-numbering follows \texttt{"user"}, \texttt{"linear"},
-\texttt{"exponential"}, \texttt{"emax"}, \texttt{"emax.hill"}. For the
-above example, as the model uses exponential and Emax functions,
-parameters \texttt{d.1} correspond to the rate parameter of the
-exponential function, \texttt{d.2} to the Emax parameter of the Emax
-function, and \texttt{d.3} to the ED50 parameter of the Emax function.
 
 \hypertarget{priors}{%
 \paragraph{Priors}\label{priors}}
@@ -1488,8 +1385,10 @@ dataset which excludes placebo (to artificially disconnect the network):
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Generate dataset without placebo}
-\NormalTok{noplac.gout <-}\StringTok{ }\NormalTok{GoutSUA_2wkCFB[}\OperatorTok{!}\NormalTok{GoutSUA_2wkCFB}\OperatorTok{$}\NormalTok{studyID }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2001}\NormalTok{, }\DecValTok{3102}\NormalTok{),] }\CommentTok{# Drop two-arm placebo studies}
-\NormalTok{noplac.gout <-}\StringTok{ }\NormalTok{noplac.gout[noplac.gout}\OperatorTok{$}\NormalTok{agent}\OperatorTok{!=}\StringTok{"Plac"}\NormalTok{,] }\CommentTok{# Drop placebo arm from multi-arm studies}
+\NormalTok{noplac.gout <-}\StringTok{ }
+\StringTok{  }\NormalTok{GoutSUA_2wkCFB[}\OperatorTok{!}\NormalTok{GoutSUA_2wkCFB}\OperatorTok{$}\NormalTok{studyID }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2001}\NormalTok{, }\DecValTok{3102}\NormalTok{),] }\CommentTok{# Drop two-arm placebo studies}
+\NormalTok{noplac.gout <-}\StringTok{ }
+\StringTok{  }\NormalTok{noplac.gout[noplac.gout}\OperatorTok{$}\NormalTok{agent}\OperatorTok{!=}\StringTok{"Plac"}\NormalTok{,] }\CommentTok{# Drop placebo arm from multi-arm studies}
 
 \CommentTok{# Create mbnma.network object}
 \NormalTok{noplac.net <-}\StringTok{ }\KeywordTok{mbnma.network}\NormalTok{(noplac.gout)}
@@ -1500,7 +1399,8 @@ dataset which excludes placebo (to artificially disconnect the network):
 \begin{Highlighting}[]
 \CommentTok{# Plot network}
 \KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{label.distance=}\DecValTok{5}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> Allo_300}
 \CommentTok{#> Allo_400}
 \CommentTok{#> Arha_400}
@@ -1516,7 +1416,7 @@ dataset which excludes placebo (to artificially disconnect the network):
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-29-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-30-1.pdf}
 
 This results in a very disconnected network, and if we were to conduct a
 conventional ``split'' NMA (whereby different doses of an agent are
@@ -1530,13 +1430,14 @@ and agents in the network.
 \begin{Highlighting}[]
 \CommentTok{# Network plot at the agent level illustrates how doses can connect using MBNMA}
 \KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{4}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> Arha}
 \CommentTok{#> RDEA}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-30-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 There are still two agents that do not connect to the network because
 they involve comparisons of different doses of the same agent. However,
@@ -1575,7 +1476,7 @@ will also add a node for placebo to illustrate the connection.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-31-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-32-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1584,7 +1485,8 @@ will also add a node for placebo to illustrate the connection.
 \CommentTok{# Allows estimation of a two-parameter dose-response function}
 \KeywordTok{plot}\NormalTok{(noplac.net, }\DataTypeTok{level=}\StringTok{"agent"}\NormalTok{, }\DataTypeTok{remove.loops =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{label.distance =} \DecValTok{4}\NormalTok{,}
      \DataTypeTok{doselink=}\DecValTok{3}\NormalTok{)}
-\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected to the network reference:}
+\CommentTok{#> Warning in check.network(g): The following treatments/agents are not connected}
+\CommentTok{#> to the network reference:}
 \CommentTok{#> Allo}
 \CommentTok{#> Arha}
 \CommentTok{#> Benz}
@@ -1594,7 +1496,7 @@ will also add a node for placebo to illustrate the connection.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-31-2.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-32-2.pdf}
 
 In this way we can fully connect up treatments in an otherwise
 disconnected network, though unless informative prior information is
@@ -1638,30 +1540,31 @@ or this can lead to computation errors.
 \NormalTok{nonparam <-}\StringTok{ }\KeywordTok{mbnma.run}\NormalTok{(tripnet, }\DataTypeTok{fun=}\StringTok{"nonparam.up"}\NormalTok{, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
 \CommentTok{#> `likelihood` not given by user - set to `binomial` based on data provided}
 \CommentTok{#> `link` not given by user - set to `logit` based on assigned value for `likelihood`}
-\CommentTok{#> Modelling non-parametric dose-response - arguments for dose-response parameters `beta.1`, `beta.2`, `beta.3` will be ignored}
+\CommentTok{#> Modelling non-parametric dose-response - arguments for dose-response parameters:}
+\CommentTok{#> `beta.1`, `beta.2`, `beta.3` will be ignored}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{print}\NormalTok{(nonparam)}
-\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpIjUMU1\textbackslash{}file3e985364bf0", fit using jags,}
+\CommentTok{#> Inference for Bugs model at "C:\textbackslash{}Users\textbackslash{}hp17602\textbackslash{}AppData\textbackslash{}Local\textbackslash{}Temp\textbackslash{}RtmpmeY2V3\textbackslash{}file5fac6eec386d", fit using jags,}
 \CommentTok{#>  3 chains, each with 10000 iterations (first 5000 discarded), n.thin = 5}
 \CommentTok{#>  n.sims = 3000 iterations saved}
 \CommentTok{#>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%}
-\CommentTok{#> sd           0.273   0.046    0.184    0.241    0.272    0.303    0.367}
-\CommentTok{#> totresdev  188.782  19.076  153.735  175.165  187.968  201.830  227.025}
-\CommentTok{#> deviance  1091.888  19.076 1056.841 1078.271 1091.074 1104.936 1130.131}
+\CommentTok{#> sd           0.268   0.046    0.181    0.237    0.266    0.300    0.361}
+\CommentTok{#> totresdev  189.873  19.143  153.762  176.779  189.445  202.516  228.147}
+\CommentTok{#> deviance  1092.979  19.143 1056.868 1079.885 1092.551 1105.622 1131.253}
 \CommentTok{#>            Rhat n.eff}
-\CommentTok{#> sd        1.005   560}
-\CommentTok{#> totresdev 1.003   840}
-\CommentTok{#> deviance  1.003   840}
+\CommentTok{#> sd        1.001  3000}
+\CommentTok{#> totresdev 1.001  3000}
+\CommentTok{#> deviance  1.001  3000}
 \CommentTok{#> }
 \CommentTok{#> For each parameter, n.eff is a crude measure of effective sample size,}
 \CommentTok{#> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).}
 \CommentTok{#> }
 \CommentTok{#> DIC info (using the rule, pD = var(deviance)/2)}
-\CommentTok{#> pD = 181.6 and DIC = 1272.7}
+\CommentTok{#> pD = 183.3 and DIC = 1275.8}
 \CommentTok{#> DIC is an estimate of expected predictive error (lower deviance is better).}
 \end{Highlighting}
 \end{Shaded}
@@ -1720,7 +1623,7 @@ Results can be plotted either as a scatter plot
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-35-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-36-1.pdf}
 
 From these plots we can see that whilst the model fit does not seem to
 be systematically non-linear (which would suggest an alternative
@@ -1749,7 +1652,7 @@ require running additional model iterations to monitor \texttt{theta}.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-36-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-37-1.pdf}
 
 Fitted values are plotted as connecting lines and observed values in the
 original dataset are plotted as points. These plots can be used to
@@ -1771,7 +1674,7 @@ modelled using relative effects and that vary by agent/class.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-37-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-38-1.pdf}
 
 \hypertarget{ranking}{%
 \subsubsection{Ranking}\label{ranking}}
@@ -1789,23 +1692,23 @@ as ``better'' (\texttt{-1}) or ``worse'' (\texttt{1}).
 \KeywordTok{summary}\NormalTok{(ranks)}
 \CommentTok{#> $d.ed50}
 \CommentTok{#>     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%}
-\CommentTok{#> 1   eletriptan 5.485667 1.355387    2   5   6   7     7}
-\CommentTok{#> 2  sumatriptan 4.899667 1.560901    2   4   5   6     7}
-\CommentTok{#> 3 frovatriptan 4.178000 1.995907    1   2   4   6     7}
-\CommentTok{#> 4  almotriptan 2.501667 1.599849    1   1   2   3     7}
-\CommentTok{#> 5 zolmitriptan 3.595000 1.751380    1   2   3   5     7}
-\CommentTok{#> 6  naratriptan 2.708667 1.918250    1   1   2   4     7}
-\CommentTok{#> 7  rizatriptan 4.631333 1.708720    1   3   5   6     7}
+\CommentTok{#> 1   eletriptan 5.396333 1.410408    2   4   6   7     7}
+\CommentTok{#> 2  sumatriptan 4.928333 1.530134    2   4   5   6     7}
+\CommentTok{#> 3 frovatriptan 4.184333 1.999088    1   3   4   6     7}
+\CommentTok{#> 4  almotriptan 2.613000 1.666980    1   1   2   4     7}
+\CommentTok{#> 5 zolmitriptan 3.655333 1.795071    1   2   3   5     7}
+\CommentTok{#> 6  naratriptan 2.612000 1.883960    1   1   2   4     7}
+\CommentTok{#> 7  rizatriptan 4.610667 1.715245    1   3   5   6     7}
 \CommentTok{#> }
 \CommentTok{#> $d.emax}
-\CommentTok{#>     rank.param     mean        sd 2.5%  25% 50% 75% 97.5%}
-\CommentTok{#> 1   eletriptan 1.552000 0.7533161    1 1.00   1   2     3}
-\CommentTok{#> 2  sumatriptan 5.113333 0.9438145    3 4.75   5   6     7}
-\CommentTok{#> 3 frovatriptan 4.284333 1.5241158    1 3.00   4   6     7}
-\CommentTok{#> 4  almotriptan 4.473000 1.4408202    1 4.00   5   6     6}
-\CommentTok{#> 5 zolmitriptan 3.669000 1.2102041    1 3.00   4   4     6}
-\CommentTok{#> 6  naratriptan 6.793667 0.8402352    4 7.00   7   7     7}
-\CommentTok{#> 7  rizatriptan 2.114667 0.9848053    1 1.00   2   3     4}
+\CommentTok{#>     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%}
+\CommentTok{#> 1   eletriptan 1.522667 0.7035514    1   1   1   2     3}
+\CommentTok{#> 2  sumatriptan 5.096667 0.9217404    3   5   5   6     7}
+\CommentTok{#> 3 frovatriptan 4.299333 1.5001610    1   3   4   6     7}
+\CommentTok{#> 4  almotriptan 4.518000 1.4265416    1   4   5   6     6}
+\CommentTok{#> 5 zolmitriptan 3.674000 1.2034146    1   3   4   4     6}
+\CommentTok{#> 6  naratriptan 6.825667 0.6986443    4   7   7   7     7}
+\CommentTok{#> 7  rizatriptan 2.063667 0.9479343    1   1   2   3     4}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1828,7 +1731,7 @@ parameter value for each treatment was ranked a particular position.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-39-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-40-1.pdf}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1838,7 +1741,7 @@ parameter value for each treatment was ranked a particular position.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-39-2.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-40-2.pdf}
 
 \hypertarget{prediction}{%
 \subsubsection{Prediction}\label{prediction}}
@@ -1942,17 +1845,17 @@ treatment.
 \begin{Highlighting}[]
 \KeywordTok{summary}\NormalTok{(pred)}
 \CommentTok{#>         agent dose      mean          sd      2.5%       25%       50%}
-\CommentTok{#> 1  eletriptan    0 0.1238302 0.003264606 0.1176781 0.1216340 0.1238172}
-\CommentTok{#> 2  eletriptan    1 0.4373277 0.018055740 0.4030575 0.4251392 0.4370299}
-\CommentTok{#> 3  eletriptan    3 0.5553789 0.025257737 0.5056157 0.5382937 0.5555409}
-\CommentTok{#> 4 sumatriptan    0 0.1238302 0.003264606 0.1176781 0.1216340 0.1238172}
-\CommentTok{#> 5 sumatriptan    3 0.3884708 0.017381361 0.3544850 0.3768802 0.3885129}
+\CommentTok{#> 1  eletriptan    0 0.1237922 0.003389439 0.1172246 0.1215082 0.1237486}
+\CommentTok{#> 2  eletriptan    1 0.4371452 0.018806833 0.3995530 0.4244740 0.4369976}
+\CommentTok{#> 3  eletriptan    3 0.5533367 0.026153785 0.5058438 0.5350005 0.5524185}
+\CommentTok{#> 4 sumatriptan    0 0.1237922 0.003389439 0.1172246 0.1215082 0.1237486}
+\CommentTok{#> 5 sumatriptan    3 0.3866011 0.016821588 0.3550886 0.3749769 0.3864892}
 \CommentTok{#>         75%     97.5%}
-\CommentTok{#> 1 0.1259486 0.1304909}
-\CommentTok{#> 2 0.4493870 0.4723940}
-\CommentTok{#> 3 0.5717275 0.6042052}
-\CommentTok{#> 4 0.1259486 0.1304909}
-\CommentTok{#> 5 0.3996970 0.4225652}
+\CommentTok{#> 1 0.1261082 0.1304652}
+\CommentTok{#> 2 0.4502448 0.4735464}
+\CommentTok{#> 3 0.5710880 0.6050590}
+\CommentTok{#> 4 0.1261082 0.1304652}
+\CommentTok{#> 5 0.3977794 0.4194978}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1976,7 +1879,7 @@ the response it is important to predict a sufficient number of doses
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-44-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-45-1.pdf}
 
 Shaded counts of the number of studies in the original dataset that
 investigate each dose of an agent can be plotted over the 95\% CrI for
@@ -1991,7 +1894,7 @@ estimate the MBNMA be provided via \texttt{network}.
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-45-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-46-1.pdf}
 
 This can be used to identify any extrapolation/interpretation of the
 dose-response that might be occurring for a particular agent. As you can
@@ -2015,8 +1918,6 @@ comparison) will not be included.
 \KeywordTok{plot}\NormalTok{(pred, }\DataTypeTok{overlay.split =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{network=}\NormalTok{alognet, }\DataTypeTok{method=}\StringTok{"random"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-46-1.pdf}
 
 By plotting these, as well as observing how responses can be
 extrapolated/interpolated, we can also see which doses are likely to be
@@ -2051,7 +1952,7 @@ of these will be included in the rankings, in order to avoid duplication
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-47-1.pdf}
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-48-1.pdf}
 
 \hypertarget{consistency-testing}{%
 \subsection{Consistency Testing}\label{consistency-testing}}
@@ -2134,13 +2035,15 @@ results are likely differ in several ways:
 \end{Highlighting}
 \end{Shaded}
 
+\includegraphics{mbnmadose_files/figure-latex/unnamed-chunk-49-1.pdf}
+
 \begin{longtable}[]{@{}lrl@{}}
 \toprule
 Model & Residual Deviance & Betwen-study SD\tabularnewline
 \midrule
 \endhead
-NMA & 46.40 & 0.12 (0.074, 0.19)\tabularnewline
-UME & 46.15 & 0.14 (0.086, 0.21)\tabularnewline
+NMA & 46.83 & 0.12 (0.075, 0.19)\tabularnewline
+UME & 46.04 & 0.14 (0.086, 0.21)\tabularnewline
 \bottomrule
 \end{longtable}
 

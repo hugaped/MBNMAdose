@@ -5,21 +5,24 @@
 \title{Write MBNMA dose-response model JAGS code}
 \usage{
 mbnma.write(fun = "linear", beta.1 = "rel", beta.2 = NULL,
-  beta.3 = NULL, method = "common", cor = TRUE,
+  beta.3 = NULL, beta.4 = NULL, method = "common", cor = TRUE,
   cor.prior = "wishart", var.scale = NULL, class.effect = list(),
   user.fun = NULL, likelihood = "binomial", link = NULL)
 }
 \arguments{
-\item{fun}{A string specifying a functional form to be assigned to the
+\item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
 
-\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.4}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
@@ -45,8 +48,8 @@ depend on whether or not a wrapper function has been used for \code{mbnma.run()}
 For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
 \code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
 
-\item{user.fun}{A string specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
+\item{user.fun}{A formula specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}

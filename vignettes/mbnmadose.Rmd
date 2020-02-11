@@ -286,7 +286,7 @@ In this example the `d.1`/`d.emax` parameters are the effects of each agent for 
 
 Instead of estimating a separate relative effect for each agent, a simpler dose-response model that makes stronger assumptions could estimate a single parameter across the whole network for ED50, but still estimates a separate effect for each agent for Emax. In this case we can model random relative effects:
 
-```{r, results="hide}
+```{r, results="hide"}
 # Emax model with single parameter estimated for Emax
 emax <- mbnma.emax(tripnet, emax="rel", ed50="common", method="random")
 ```

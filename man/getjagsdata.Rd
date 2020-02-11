@@ -5,7 +5,7 @@
 \title{Prepares data for JAGS}
 \usage{
 getjagsdata(data.ab, class = FALSE, likelihood = "binomial",
-  link = "logit", level = "agent")
+  link = "logit", level = "agent", fun = NULL)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -41,6 +41,9 @@ on the likelihood.}
 \item{level}{Can take either \code{"agent"} to indicate that data should be at the agent-
 level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatemnt-
 level (for NMA)}
+
+\item{fun}{A character vector specifying a functional form to be assigned to the
+dose-response. Options are given in \code{details}.}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to
