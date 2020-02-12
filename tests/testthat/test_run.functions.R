@@ -13,7 +13,8 @@ net.noplac <- mbnma.network(noplac.df)
 
 
 test_that("mbnma.run functions correctly", {
-  n.iter=500
+  #n.iter=500
+  n.iter=5000
 
   # Single parameter DR functions
   result <- mbnma.run(network, fun="linear", beta.1="rel", method="common",
@@ -78,7 +79,7 @@ test_that("mbnma.run functions correctly", {
   # Three parameter DR function
   result <- mbnma.run(network, fun="emax", beta.1="rel", beta.2="random", beta.3="common",
                       method="random", n.iter=n.iter)
-  expect_equal(all(c("d.1", "sd", "beta.2", "sd.2", "beta.3") %in% result$parameters.to.save), TRUE)
+  expect_equal(all(c("d.1", "sd", "beta.2", "sd.2") %in% result$parameters.to.save), TRUE)
   expect_error(summary(result), NA)
 
 
@@ -135,7 +136,7 @@ test_that("mbnma.run wrappers function correctly", {
 
   # Two parameter DR functions
   result <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-                       class.effect=list(emax="common"), n.iter=n.iter)
+                       class.effect=list(emax="common"), n.iter=n.iter, cor = FALSE)
   expect_equal(all(c("D.emax", "d.ed50") %in% result$parameters.to.save), TRUE)
   expect_equal(all(c("d.emax") %in% result$parameters.to.save), FALSE)
   expect_error(summary(result), NA)

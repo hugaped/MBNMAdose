@@ -330,6 +330,7 @@ mbnma.run <- function(network,
   }
 
 
+  assigned.class <- class.effect
   if (!is.null(arg.params)) {
     if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
       stop("arg.params has been incorrectly specified")
@@ -486,7 +487,8 @@ mbnma.run <- function(network,
                     "beta.4"=beta.4,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
-                    "class.effect"=class.effect,
+                    #"class.effect"=class.effect,
+                    "class.effect"=assigned.class,
                     "cor"=cor,
                     "var.scale"=var.scale,
                     "parallel"=parallel, "pd"=pd,

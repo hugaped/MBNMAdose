@@ -19,8 +19,8 @@ exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", 
 
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 
-emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-                         class.effect=list(emax="random"), n.iter=1000)
+emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+                         class.effect=list(emax="random"), n.iter=1000))
 
 nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 
