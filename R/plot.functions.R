@@ -10,8 +10,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' @inheritParams mbnma.run
 #'
 #' @param x An object of class `mbnma.network`.
-#' @param layout_in_circle A boolean value indicating whether the network plot
-#'   should be shown in a circle or left as the igraph default layout.
+#' @param layout An igraph layout specification. This is a function specifying an igraph
+#'   layout that determines the arrangement of the vertices (nodes). The default
+#'   `igraph::as_circle()` arranged vertices in a circle. Two other useful layouts for
+#'   network plots are: `igraph::as_star()`, `igraph::with_fr()`. Others can be found
+#'   in \code{\link[igraph]{layout_}}
 #' @param edge.scale A number to scale the thickness of connecting lines
 #'   (edges). Line thickness is proportional to the number of studies for a
 #'   given comparison. Set to 0 to make thickness equal for all comparisons.
@@ -68,6 +71,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' # For a two parameter dose-response function (e.g. Emax)
 #' plot(network, level="treatment", doselink=2, remove.loops=TRUE)
 #'
+#' # Arrange network plot in a star with the reference treatment in the centre
+#' plot(network, layout=igraph::as_star(), label.distance=3)
 #'
 #' #### Plot a network with no placebo data included ####
 #' # Make data with no placebo
@@ -78,7 +83,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' plot(net.noplac)
 #' @export
 plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink=NULL,
-                               layout_in_circle = TRUE, remove.loops=FALSE,
+                               layout_in_circle = TRUE, layout=igraph::in_circle(), remove.loops=FALSE,
                                edge.scale=1, v.scale=NULL, label.distance=0,
                                ...)
   # Requires igraph
@@ -90,7 +95,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma.network", add=argcheck)
-  checkmate::assertLogical(layout_in_circle, len=1, add=argcheck)
+  checkmate::assertClass(layout, "igraph_layout_spec", add=argcheck)
   checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(v.scale, lower = 0, finite=TRUE, null.ok=TRUE, len=1, add=argcheck)
@@ -230,17 +235,31 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
   igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
 
-  # Plot netgraph
-  if (layout_in_circle==TRUE) {
+  # Change label locations if layout_in_circle
+  laycheck <- as.character(layout)[2]
+  if (any(
+    grepl("layout_in_circle", laycheck) |
+          grepl("layout_as_star", laycheck))) {
     lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
     igraph::V(g)$label.degree <- lab.locs
-    igraph::plot.igraph(g,
-                        layout = igraph::layout_in_circle(g),
-                        ...
-    )
-  } else {
-    igraph::plot.igraph(g, ...)
   }
+
+  # Plot netgraph
+  layout <- layout_(g, layout)
+  igraph::plot.igraph(g,
+                      layout = layout,
+                      ...
+  )
+  # if (layout_in_circle==TRUE) {
+  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+  #   igraph::V(g)$label.degree <- lab.locs
+  #   igraph::plot.igraph(g,
+  #                       layout = igraph::layout_in_circle(g),
+  #                       ...
+  #   )
+  # } else {
+  #   igraph::plot.igraph(g, ...)
+  # }
 
   if (!is.null(doselink)) {
     message(paste0("Dose-response connections to placebo plotted based on a dose-response
