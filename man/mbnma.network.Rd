@@ -6,7 +6,7 @@
 \title{Create an mbnma.network object}
 \usage{
 \method{plot}{mbnma.network}(x, level = "treatment",
-  v.color = "connect", doselink = NULL, layout_in_circle = TRUE,
+  v.color = "connect", doselink = NULL, layout = igraph::in_circle(),
   remove.loops = FALSE, edge.scale = 1, v.scale = NULL,
   label.distance = 0, ...)
 
@@ -29,8 +29,11 @@ from which a dose-response function could be estimated and is equivalent to the 
 parameters in the desired dose-response function plus one. If left as \code{NULL} (the default), connections
 to placebo via dose-response relationships will not be included.}
 
-\item{layout_in_circle}{A boolean value indicating whether the network plot
-should be shown in a circle or left as the igraph default layout.}
+\item{layout}{An igraph layout specification. This is a function specifying an igraph
+layout that determines the arrangement of the vertices (nodes). The default
+\code{igraph::as_circle()} arranged vertices in a circle. Two other useful layouts for
+network plots are: \code{igraph::as_star()}, \code{igraph::with_fr()}. Others can be found
+in \code{\link[igraph]{layout_}}}
 
 \item{remove.loops}{A boolean value indicating whether to include loops that
 indicate comparisons within a node.}
@@ -130,6 +133,8 @@ plot(network, level="treatment", doselink=1, remove.loops=TRUE)
 # For a two parameter dose-response function (e.g. Emax)
 plot(network, level="treatment", doselink=2, remove.loops=TRUE)
 
+# Arrange network plot in a star with the reference treatment in the centre
+plot(network, layout=igraph::as_star(), label.distance=3)
 
 #### Plot a network with no placebo data included ####
 # Make data with no placebo

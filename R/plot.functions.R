@@ -513,7 +513,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
-temp <<- plotdata
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +
