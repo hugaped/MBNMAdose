@@ -83,7 +83,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' plot(net.noplac)
 #' @export
 plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink=NULL,
-                               layout_in_circle = TRUE, layout=igraph::in_circle(), remove.loops=FALSE,
+                               layout=igraph::in_circle(), remove.loops=FALSE,
                                edge.scale=1, v.scale=NULL, label.distance=0,
                                ...)
   # Requires igraph
@@ -245,7 +245,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   }
 
   # Plot netgraph
-  layout <- layout_(g, layout)
+  layout <- igraph::layout_(g, layout)
   igraph::plot.igraph(g,
                       layout = layout,
                       ...
