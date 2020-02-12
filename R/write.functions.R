@@ -69,7 +69,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @export
 mbnma.write <- function(fun="linear",
                         beta.1="rel",
-                        beta.2=NULL, beta.3=NULL,
+                        beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         method="common",
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
@@ -81,7 +81,7 @@ mbnma.write <- function(fun="linear",
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertCharacter(user.fun, len=1, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(user.fun, null.ok=TRUE, add=argcheck)
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -92,10 +92,10 @@ mbnma.write <- function(fun="linear",
 
   ####### VECTORS #######
 
-  parameters <- c("beta.1", "beta.2", "beta.3")
+  parameters <- c("beta.1", "beta.2", "beta.3", "beta.4")
 
   write.check(fun=fun, user.fun=user.fun,
-              beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+              beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
               method=method, cor.prior=cor.prior,
               var.scale=var.scale,
               class.effect=class.effect)
@@ -105,26 +105,38 @@ mbnma.write <- function(fun="linear",
   # Add dose-response function
   inserts <- write.inserts()
   dosefun <- write.dose.fun(fun=fun, user.fun=user.fun)
-  model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun, "\n\\2"), model)
+  model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
+
+  if (length(dosefun)==2) {  # For models with multiple DR functions
+    model <- gsub(inserts[["insert.study"]], paste0("\\1\n", dosefun[[2]], "\n\\2"), model)
+  }
+
+  # Edit beta parameters if they aren't in dose-response function
+  for (i in 1:4) {
+    if (!grepl(paste0("beta\\.", i), dosefun[[1]])) {
+      assign(paste0("beta.", i), NULL)
+    }
+  }
+
 
   # Add likelihood
   model <- write.likelihood(model, likelihood=likelihood, link=link)
 
   # Add treatment delta effects
-  model <- write.delta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+  model <- write.delta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                       method=method)
 
   # Add treatment beta effects
-  if (fun %in% c("nonparam.up", "nonparam.down")) {
+  if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
     model <- write.beta.nonparam(model, method=method, fun=fun)
   } else {
-    model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+    model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                         method=method, class.effect=class.effect)
   }
 
 
   # Add correlation between dose-response parameters
-  model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3,
+  model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                      method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale,
                      class.effect=class.effect)
 
@@ -252,49 +264,104 @@ write.inserts <- function() {
 #' write.dose.fun(fun="emax.hill")
 #'
 #' # Write a user-defined dose-response function
-#' doseresp <- "beta.1 + (dose ^ beta.2)"
+#' doseresp <- ~ beta.1 + (dose ^ beta.2)
 #' write.dose.fun(fun="user", user.fun=doseresp)
 write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
-  if (fun=="linear") {
-    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k]) - (beta.1[agent[i,1]] * dose[i,1])"
-    DR.1 <- "(beta.1[agent[i,k]] * dose[i,k])"
-  } else if (fun=="exponential") {
-    #DR <- "DR[i,k] <- exp(beta.1[agent[i,k]] * dose[i,k]) - exp(beta.1[agent[i,1]] * dose[i,1])"
-    #DR.1 <- "1 - exp(beta.1[agent[i,k]] * dose[i,k])"
-    DR.1 <- "beta.1[agent[i,k]] * (1 - exp(-abs(dose[i,k])))"
-    #message("Results for the rate of increase/decrease (`beta.1`) modelled on the exponential scale")
-  } else if (fun=="emax") {
-    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]]))) - (beta.1[agent[i,1]] * dose[i,1] / (dose[i,1] + exp(beta.2[agent[i,1]])))"
-    DR.1 <- "(beta.1[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.2[agent[i,k]])))"
-    message("Results for ED50 (`beta.2`) modelled on the exponential scale")
-  } else if (fun=="emax.hill") {
-    #DR <- "DR[i,k] <- (beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]])) - (beta.1[agent[i,1]] * (dose[i,1]^exp(beta.3[agent[i,1]]))) / ((dose[i,1]^exp(beta.3[agent[i,1]])) + exp(beta.2[agent[i,1]])^exp(beta.3[agent[i,1]]))"
-    DR.1 <- "(beta.1[agent[i,k]] * (dose[i,k]^exp(beta.3[agent[i,k]]))) / ((dose[i,k]^exp(beta.3[agent[i,k]])) + exp(beta.2[agent[i,k]])^exp(beta.3[agent[i,k]]))"
-    message("Results for ED50 (`beta.2`) and Hill (`beta.3`) modelled on the exponential scale")
-  } else if (fun=="nonparam.up" | fun=="nonparam.down") {
-    DR.1 <- "d.1[dose[i,k], agent[i,k]]"
-    message("Modelling non-parametric dose-response - arguments for dose-response parameters `beta.1`, `beta.2`, `beta.3` will be ignored")
-  } else if (fun=="user") {
-    DR.1 <- user.fun
-    DR.1 <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", DR.1)
-    DR.1 <- gsub("(dose)", "\\1[i,k]", DR.1)
+  DR.1 <- character()
+  paramcount <- 0
+  if ("user" %in% fun) {
+    user.str <- as.character(user.fun[2])
+    drtemp <- user.str
+    drtemp <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", drtemp)
+    drtemp <- gsub("(dose)", "\\1[i,k]", drtemp)
+    DR.1 <- append(DR.1, drtemp)
 
-    # DR.2 <- gsub("k", "1", DR.1)
-    #
-    # DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+    for (i in 1:4) {
+      if (grepl(paste0("beta.",i), user.str)) {
+        paramcount <- paramcount + 1
+      }
+    }
   }
 
+  if ("linear" %in% fun) {
+    drtemp <- paste0("(beta.", paramcount + 1, "[agent[i,k]] * dose[i,k])")
+
+    DR.1 <- append(DR.1, drtemp)
+    paramcount <- paramcount + 1
+  }
+
+  if ("exponential" %in% fun) {
+    drtemp <- paste0("beta.", paramcount + 1, "[agent[i,k]] * (1 - exp(- dose[i,k]))")
+
+    DR.1 <- append(DR.1, drtemp)
+    paramcount <- paramcount + 1
+  }
+
+  if ("emax" %in% fun) {
+    drtemp <- paste0("(beta.", paramcount + 1,
+                     "[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.", paramcount + 2,
+                     "[agent[i,k]])))")
+
+    DR.1 <- append(DR.1, drtemp)
+    paramcount <- paramcount + 2
+  }
+
+  if ("emax.hill" %in% fun) {
+    drtemp <- paste0("(beta.", paramcount+1,
+                     "[agent[i,k]] * (dose[i,k]^exp(beta.", paramcount+3,
+                     "[agent[i,k]]))) / ((dose[i,k]^exp(beta.", paramcount+3,
+                     "[agent[i,k]])) + exp(beta.", paramcount+2,
+                     "[agent[i,k]])^exp(beta.", paramcount+3,
+                     "[agent[i,k]]))")
+
+    DR.1 <- append(DR.1, drtemp)
+    paramcount <- paramcount + 3
+  }
+
+  if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+    DR.1 <- "d.1[dose[i,k], agent[i,k]]"
+    message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3` will be ignored")
+  }
+
+  # Add ifelse statement for multiple DR functions
+  if (length(DR.1)>1) {
+    drmult <- paste0("ifelse(X[i,k]==1, ", DR.1[1], ", insert)")
+    for (i in 2:length(DR.1)) {
+      drtemp <- paste0("ifelse(X[i,k]==", i, ", ", DR.1[i], ", insert)")
+      if (i==length(DR.1)) {
+        drmult <- gsub("insert", DR.1[i], drmult)
+      } else if (i<length(DR.1)) {
+        drmult <- gsub("insert", drtemp, drmult)
+      }
+    }
+    DR.1 <- drmult
+  }
+
+
   # Add "s." to indicate within-study betas
-  DR.1 <- gsub("(beta\\.[1-3])", "s.\\1", DR.1)
+  DR.1 <- gsub("(beta\\.[1-4])", "s.\\1", DR.1)
 
   DR.2 <- gsub("k", "1", DR.1)
   DR <- paste0("(", DR.1, ") - (", DR.2, ")")
 
-  if (effect=="rel") {
-    return(paste0("DR[i,k] <- ", DR))
-  } else if (effect=="abs") {
-    return(paste0("DR[i,k] <- ", DR.1))
+  # if (effect=="rel") {
+  #   return(paste0("DR[i,k] <- ", DR))
+  # } else if (effect=="abs") {
+  #   return(paste0("DR[i,k] <- ", DR.1))
+  # }
+  if (length(fun)==1) {
+    if (effect=="rel") {
+      return(list(paste0("DR[i,k] <- ", DR)))
+    } else if (effect=="abs") {
+      return(list(paste0("DR[i,k] <- ", DR.1)))
+    }
+  } else if (length(fun)>1) {
+    drmult <- list(paste0("DR[i,k] <- DR1[i,k] - DR2[i]\nDR1[i,k] <- ", DR.1))
+
+    DR.2 <- gsub(",k", ",1", DR.1)
+    drmult[[2]] <- paste0("DR2[i] <- ", DR.2)
+    return(drmult)
   }
 }
 
@@ -315,16 +382,17 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 #'   function will return informative errors if arguments are misspecified.
 #'
 write.check <- function(fun="linear",
-                        beta.1=list(pool="rel", method="common"),
+                        beta.1="rel",
                         beta.2=NULL,
                         beta.3=NULL,
+                        beta.4=NULL,
                         method="common",
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
                         user.fun=NULL,
                         class.effect=list()) {
-  parameters <- c("beta.1", "beta.2", "beta.3")
+  parameters <- c("beta.1", "beta.2", "beta.3", "beta.4")
 
   # Check fun
   dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill",
@@ -336,10 +404,14 @@ write.check <- function(fun="linear",
     stop(paste0("`fun` must be selected from the following dose-response function(s):\n",
                 paste(dosefuns, collapse=", ")))
   }
+  if (length(fun)>1) {
+    multifun <- TRUE
+  } else {multifun <- FALSE}
 
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(fun, null.ok=FALSE, add=argcheck)
+  #checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
@@ -349,56 +421,36 @@ write.check <- function(fun="linear",
 
   # Check betas
   # Checks that beta parameters have correct format
-  for (i in 1:3) {
+  for (i in 1:4) {
     betaparam <- get(paste0("beta.", i))
     if (!is.null(betaparam)) {
       if (!(betaparam %in% c("rel", "common", "random") | is.numeric(betaparam))) {
         paste0("beta.", i, " must take either `rel`, `common`, `random` or a numeric value")
       }
-      # if (!identical(sort(names(betaparam)), sort(c("pool", "method")))) {
-      #   stop("`pool` and `method` must both be specified for each dose-response parameter")
-      # }
-      #
-      # if (!(betaparam$pool %in% c("rel", "const"))) {
-      #   stop(paste0("beta.", i, ": `pool` can take either `rel` or `const`"))
-      # }
-      # if (!(betaparam$method %in% c("common", "random") | is.numeric(betaparam$method))) {
-      #   stop(paste0("beta.", i, ": `method` can take either `common`, `random` or a numeric value if `pool`=`const`"))
-      # }
-      # if (is.numeric(betaparam$method) & betaparam$pool!="const") {
-      #   stop(paste0("beta.", i, ": `method` can only take a numeric value if `pool`=`const`"))
-      # }
     }
-  }
-
-
-  # Checks for parameter classifications
-  if (fun=="emax.hill" & is.null(beta.3)) {
-    stop("Hill parameter (beta.3) for emax.hill function has not been specified.")
-  }
-  if (fun=="emax" & is.null(beta.2)) {
-    stop("ET50 parameter (beta.2) for emax function has not been specified.")
   }
 
 
   #### Check user.fun ####
-  if (fun!="user" & !is.null(user.fun)) {
+  if (!is.null(user.fun) & !("user" %in% fun)) {
     warning(paste0("user.fun is only applied if fun=`user`. Dose-response function used for this model will be ", fun))
   }
 
-  if (fun=="user") {
+  if ("user" %in% fun) {
     if (is.null(user.fun)) {
-      stop("user.fun must contain a string that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
+      stop("`user` specified as a dose-response function  and so `user.fun`` must contain a formula that includes a combination of beta parameters (e.g. `beta.1`) and `dose`")
     }
 
-    if (grepl("beta.2", user.fun)==TRUE & grepl("beta.1", user.fun==FALSE)) {
+    user.str <- as.character(user.fun[2])
+
+    if (grepl("beta.2", user.str)==TRUE & grepl("beta.1", user.str==FALSE)) {
       stop("user.fun cannot contain beta.2 if beta.1 is not present")
-    } else if (grepl("beta.3", user.fun)==TRUE & (grepl("beta.2", user.fun==FALSE) | grepl("beta.1", user.fun==FALSE))) {
+    } else if (grepl("beta.3", user.str)==TRUE & (grepl("beta.2", user.str==FALSE) | grepl("beta.1", user.str==FALSE))) {
       stop("user.fun cannot contain beta.3 if beta.2 and beta.1 are not present")
     }
 
-    for (i in 1:3) {
-      if (grepl(paste0("beta.",i), user.fun)==TRUE) {
+    for (i in 1:4) {
+      if (grepl(paste0("beta.",i), user.str)==TRUE) {
         if(is.null(get(paste0("beta.",i)))) {
           msg <- paste0("beta.",i, " has been specified in `user.fun` dose-response function yet no arguments have been given for it")
           stop(msg)
@@ -407,15 +459,68 @@ write.check <- function(fun="linear",
     }
   }
 
+
+  if (multifun==FALSE) {
+    # Checks for parameter classifications (no longer necessary due to multiple dose-respones bit...but error messages are clearer)
+    if (fun=="emax.hill" & is.null(beta.3)) {
+      stop("Hill parameter (beta.3) for emax.hill function has not been specified.")
+    }
+    if (fun=="emax" & is.null(beta.2)) {
+      stop("ET50 parameter (beta.2) for emax function has not been specified.")
+    }
+
+  } else if (multifun==TRUE) {
+    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+      stop("Nonparametric dose-response relationships cannot be specified with other dose-response functions")
+    }
+
+    paramcount <- 0
+    if ("linear" %in% fun) {
+      paramcount <- paramcount + 1
+    }
+    if ("exponential" %in% fun) {
+      paramcount <- paramcount + 1
+    }
+    if ("emax" %in% fun) {
+      paramcount <- paramcount + 2
+    }
+    if ("emax.hill" %in% fun) {
+      paramcount <- paramcount + 3
+    }
+    if ("user" %in% fun) {
+      for (i in 1:4) {
+        if (grepl(paste0("beta.",i), as.character(user.fun[2]))) {
+          paramcount <- paramcount + 1
+        }
+      }
+    }
+
+    for (i in 1:paramcount) {
+      if (is.null(get(paste0("beta.", i)))) {
+        stop(paste("Dose-response function(s) with", paramcount, "parameters in total have been specified and so", paste0("beta.",i), "\ncannot be NULL"))
+      }
+    }
+
+  }
+
+
+
+
+
   # Checks for class effects
   if (length(class.effect)>0) {
     # Cannot model class effects with nonparam functions
-    if (fun %in% c("nonparam.up, nonparam.down")) {
+    if (any(c("nonparam.up, nonparam.down") %in% fun)) {
       stop("Class effects cannot be used with non-parametric dose-response functions")
     }
 
+    # Cannot model class effects with multiple dose-response functions
+    if (length(fun)>1) {
+      stop("Class effects can only be modelled when using a single dose-response function")
+    }
+
     inclparams <- vector()
-    for (i in 1:3) {
+    for (i in 1:4) {
       if (!is.null(get(paste0("beta.",i)))) {
         inclparams <- append(inclparams, paste0("beta.", i))
       }
@@ -531,7 +636,7 @@ write.beta.vars <- function() {
                 )
 
 
-  for (i in 1:3) {
+  for (i in 1:4) {
 
     # s.beta for reference agent
     assign(paste("s.beta", i, "ref", sep="."),
@@ -652,7 +757,7 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
 #'   parameter components of the model
 #'
 write.delta <- function(model,
-                       beta.1, beta.2=NULL, beta.3=NULL,
+                       beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common"
 ) {
 
@@ -694,7 +799,7 @@ write.delta <- function(model,
 #'   parameter components of the model
 #'
 write.beta <- function(model,
-                       beta.1, beta.2=NULL, beta.3=NULL,
+                       beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common",
                        class.effect=list()
 ) {
@@ -705,7 +810,7 @@ write.beta <- function(model,
   vars <- write.beta.vars()
 
 
-  for (i in 1:3) {
+  for (i in 1:4) {
     # If a beta parameter has relative effects for indirect evidence calculation
     if (!is.null(get(paste0("beta.", i)))) {
 
@@ -797,7 +902,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #' @inheritParams mbnma.write
 #' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
-                      beta.1="rel", beta.2=NULL, beta.3=NULL,
+                      beta.1="rel", beta.2=NULL, beta.3=NULL, beta.4=NULL,
                       method="random", class.effect=list()) {
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
@@ -817,7 +922,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
     #if (method=="random") {
     if (cor==TRUE) {
       corparams <- vector()
-      for (i in 1:3) {
+      for (i in 1:4) {
         if (!is.null(get(paste0("beta.", i)))) {
           if (get(paste0("beta.", i))=="rel") {
             corparams <- append(corparams, paste0("beta.",i))

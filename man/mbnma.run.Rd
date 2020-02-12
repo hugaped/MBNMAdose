@@ -4,28 +4,31 @@
 \alias{mbnma.run}
 \title{Run MBNMA dose-response models}
 \usage{
-mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = NULL,
-  beta.3 = NULL, method = "common", class.effect = list(),
-  cor = TRUE, var.scale = NULL, user.fun = NULL,
-  parameters.to.save = NULL, pd = "pv", parallel = TRUE,
-  likelihood = NULL, link = NULL, priors = NULL, model.file = NULL,
-  n.iter = 10000, n.chains = 3, n.burnin = floor(n.iter/2),
-  n.thin = max(1, floor((n.iter - n.burnin)/1000)), arg.params = NULL,
-  ...)
+mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = "rel",
+  beta.3 = "rel", beta.4 = "rel", method = "common",
+  class.effect = list(), cor = TRUE, var.scale = NULL,
+  user.fun = NULL, parameters.to.save = NULL, pd = "pv",
+  parallel = FALSE, likelihood = NULL, link = NULL, priors = NULL,
+  model.file = NULL, n.iter = 10000, n.chains = 3,
+  n.burnin = floor(n.iter/2), n.thin = max(1, floor((n.iter -
+  n.burnin)/1000)), arg.params = NULL, ...)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
 
-\item{fun}{A string specifying a functional form to be assigned to the
+\item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
 
-\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
-\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function.
+\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.4}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
@@ -48,8 +51,8 @@ one dose-response parameter and \code{cor=TRUE} (see details). Each element of
 the vector refers to the relative scale of each of the dose-response parameters that is
 modelled using relative effects.}
 
-\item{user.fun}{A string specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}.}
+\item{user.fun}{A formula specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
@@ -115,7 +118,7 @@ to the name/number of the dose-response parameter to which they correspond
 \itemize{
 \item \code{d} The pooled effect for each agent for a given dose-response
 parameter. Will be estimated by the model if dose-response parameters (\code{beta.1},
-\code{beta.2}, \code{beta.3}) are set to \code{"rel"}.
+\code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"rel"}.
 \item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 \code{method="random"}.
 \item \code{D} The class effect for each class for a given dose-response
@@ -125,10 +128,10 @@ be estimated by the model if any dose-response parameter in \code{class.effect} 
 set to \code{"random"}.
 \item \code{beta} The absolute value of a given dose-response parameter across the whole
 network (does not vary by agent/class). Will be estimated by the model if
-dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}) are set to \code{"common"}
+dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"common"}
 or \code{"random"}.
 \item \code{sd} (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-parameters, reported if \code{beta.1}, \code{beta.2} or \code{beta.3} are set to \code{"random"}
+parameters, reported if \code{beta.1}, \code{beta.2}, \code{beta.3} or \code{beta.4} are set to \code{"random"}
 \item \code{totresdev} The residual deviance of the model
 \item \code{deviance} The deviance of the model
 }
@@ -156,7 +159,7 @@ by specifying the relative scale of variances between the dose-response paramete
 
 \itemize{
 \item \code{"rel"} implies that relative effects should be pooled for this dose-response
-parameter, that vary by agent.
+parameter separately for each agent in the network.
 \item \code{"common"} implies that all studies estimate the same true absolute effect
 (akin to a "fixed effects" meta-analysis) across the whole network
 \item \code{"random"} implies that all studies estimate a separate true absolute effect, but
@@ -174,7 +177,7 @@ specific dose-response parameters (e.g. Hill parameters in Emax functions) to a 
 Several general dose-response functions are provided, but a
 user-defined dose-response relationship can instead be used.
 
-Built-in time-course functions are:
+Built-in dose-response functions are:
 \itemize{
 \item \code{"linear"}: \code{beta.1} refers to the gradient
 \item \code{"exponential"}: \code{beta.1} refers to the rate of gain/decay
@@ -188,6 +191,18 @@ the method of \insertCite{owen2015;textual}{MBNMAdose})
 the method of \insertCite{owen2015;textual}{MBNMAdose})
 \item \code{"user"} (user-defined function: \code{user.fun} must be specified in arguments)
 }
+
+As of version 0.2.5, separate dose-response functions can be specified for
+different agents in the network by passing a character vector with multiple elements to \code{fun}.
+Each agent in \code{network} is assigned the dose-response function in the corresponding element in \code{fun}.
+\code{fun} must therefore be the same length as the number of agents in \code{network}. Dose-response parameters
+\code{beta.1}, \code{beta.2}, \code{beta.3} and \code{beta.4} refer to the corresponding dose-response parameters across
+the multiple functions in the following order: \code{user}, \code{linear}, \code{exponential}, \code{emax}, \code{emax.hill}.
+
+This would mean that if \code{fun} included \code{linear}, \code{exponential} and \code{emax} within it then for the
+corresponding agents \code{beta.1}
+would refer to linear slope parameters, \code{beta.2} to exponential rate of growth/decay parameters,
+\code{beta.3} to Emax parameters, and \code{beta.4} to ED50 parameters.
 }
 
 \examples{
@@ -205,7 +220,7 @@ result <- mbnma.run(network, fun="linear", beta.1="rel", method="common")
 result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
 
 # Fit a user-defined function (quadratic)
-fun.def <- "(beta.1 * dose) + (beta.2 * (dose^2))"
+fun.def <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 result <- mbnma.run(network, fun="user", user.fun=fun.def,
               beta.1="rel", beta.2="rel", method="common")
 
@@ -219,6 +234,10 @@ result <- mbnma.run(network, fun="emax",
 #therefore be modelled with a correlation between them).
 result <- mbnma.run(network, fun="emax.hill",
               beta.1="rel", beta.2="rel", beta.3=5, method="random")
+
+# Fit a model with different dose-response functions for each agent
+multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
+                 "emax", "emax", "exponential", "emax"))
 
 
 ########## Class effects ##########

@@ -99,6 +99,7 @@ Other contributors:
   \item Sofia Dias [reviewer]
   \item Meg Bennetts [reviewer]
   \item Martin Boucher [reviewer]
+  \item Lujin Li [reviewer]
   \item Adil Karim [contributor]
 }
 

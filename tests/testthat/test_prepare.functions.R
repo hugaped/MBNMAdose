@@ -6,6 +6,7 @@ df2$agent <- as.character(df2$agent)
 df2$agent[df2$dose==0] <- "almotriptan"
 
 df.class <- HF2PPITT
+df.class$class <- NA
 df.class$class[df.class$agent %in% c("placebo", "eletriptan")] <- 1
 df.class$class[is.na(df.class$class)] <- 2
 

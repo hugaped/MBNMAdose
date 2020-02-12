@@ -1,13 +1,13 @@
-testthat::context("Testing inconsistency.functions")
-
-### Datasets ####
-network <- mbnma.network(HF2PPITT)
-
-# Generate data without placebo
-noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- mbnma.network(noplac.df)
-
-
+# testthat::context("Testing inconsistency.functions")
+#
+# ### Datasets ####
+# network <- mbnma.network(HF2PPITT)
+#
+# # Generate data without placebo
+# noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+# net.noplac <- mbnma.network(noplac.df)
+#
+#
 # testthat::test_that("test.inconsistency.loops", {
 #   expect_equal(nrow(inconsistency.loops(network$data.ab)), 4)
 #   expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), 8) # more loops since ref treatment has changed

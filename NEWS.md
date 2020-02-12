@@ -4,14 +4,23 @@
 
 - Added Lujin Li to list of authors as a reviewer thanks to his considerable help in identifying issues in the previous version.
 
-## Additions
+## Additions/Changes
 
+- Each agent can be assigned a different dose-response function (by assigning a vector of functions to `fun` in `mbnma.run()`) so that multiple functions can be modelled simultaneously. Some downstream package functions still may not yet work with these models though.
 - `mbnma.network` objects returned from `plot.mbnma.network` now have specific igraph attributes assigned to them, which can be easily changed by the user.
+- `user.fun` now takes a formula as an argument (for example `~ (beta.1 * dose) + (beta.2 * dose^2)`) rather than a string.
+- `plot.mbnma.network()` now uses a `layout` argument that takes an igraph layout function instead of `layout_in_circle` (which was a logical argument). This allows any igraph layout to be plotted rather than just a circle (e.g. `igraph::as_star()`)
 
 ## Bug fixes
+ - Changed `if {class(x)=="matrix"}` statements to `if {is.matrix(x)}` to address R development changes
 
 ### Major
 - Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.
+- DIC reported correctly in output when using plugin (`pd="plugin"`), or Kullback-Leibler divergence (`pd="pd.kl"`)
+- Using the argument `parallel=TRUE` in `mbnma.run()` (or wrapper functions) now properly runs JAGS in parallel on multiple cores.
+
+### Minor
+- Downstream mbnma-related objects now store `mbnma.network` in their output rather than just treatment and agent names.
 
 
 # MBNMAdose 0.2.4

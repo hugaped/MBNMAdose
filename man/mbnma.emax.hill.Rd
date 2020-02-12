@@ -7,7 +7,7 @@
 mbnma.emax.hill(network, emax = "rel", ed50 = "rel", hill = "common",
   method = "common", class.effect = list(), cor = TRUE,
   var.scale = NULL, parameters.to.save = NULL, pd = "pv",
-  parallel = TRUE, likelihood = NULL, link = NULL, priors = NULL,
+  parallel = FALSE, likelihood = NULL, link = NULL, priors = NULL,
   arg.params = NULL, ...)
 }
 \arguments{
@@ -91,7 +91,7 @@ to the name/number of the dose-response parameter to which they correspond
 \itemize{
 \item \code{d} The pooled effect for each agent for a given dose-response
 parameter. Will be estimated by the model if dose-response parameters (\code{beta.1},
-\code{beta.2}, \code{beta.3}) are set to \code{"rel"}.
+\code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"rel"}.
 \item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
 \code{method="random"}.
 \item \code{D} The class effect for each class for a given dose-response
@@ -101,10 +101,10 @@ be estimated by the model if any dose-response parameter in \code{class.effect} 
 set to \code{"random"}.
 \item \code{beta} The absolute value of a given dose-response parameter across the whole
 network (does not vary by agent/class). Will be estimated by the model if
-dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}) are set to \code{"common"}
+dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"common"}
 or \code{"random"}.
 \item \code{sd} (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-parameters, reported if \code{beta.1}, \code{beta.2} or \code{beta.3} are set to \code{"random"}
+parameters, reported if \code{beta.1}, \code{beta.2}, \code{beta.3} or \code{beta.4} are set to \code{"random"}
 \item \code{totresdev} The residual deviance of the model
 \item \code{deviance} The deviance of the model
 }
@@ -125,7 +125,7 @@ uses more clearly defined parameter names.
 
 \itemize{
 \item \code{"rel"} implies that relative effects should be pooled for this dose-response
-parameter, that vary by agent.
+parameter separately for each agent in the network.
 \item \code{"common"} implies that all studies estimate the same true absolute effect
 (akin to a "fixed effects" meta-analysis) across the whole network
 \item \code{"random"} implies that all studies estimate a separate true absolute effect, but

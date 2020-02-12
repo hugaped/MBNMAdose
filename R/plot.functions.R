@@ -10,8 +10,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' @inheritParams mbnma.run
 #'
 #' @param x An object of class `mbnma.network`.
-#' @param layout_in_circle A boolean value indicating whether the network plot
-#'   should be shown in a circle or left as the igraph default layout.
+#' @param layout An igraph layout specification. This is a function specifying an igraph
+#'   layout that determines the arrangement of the vertices (nodes). The default
+#'   `igraph::as_circle()` arranged vertices in a circle. Two other useful layouts for
+#'   network plots are: `igraph::as_star()`, `igraph::with_fr()`. Others can be found
+#'   in \code{\link[igraph]{layout_}}
 #' @param edge.scale A number to scale the thickness of connecting lines
 #'   (edges). Line thickness is proportional to the number of studies for a
 #'   given comparison. Set to 0 to make thickness equal for all comparisons.
@@ -68,6 +71,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' # For a two parameter dose-response function (e.g. Emax)
 #' plot(network, level="treatment", doselink=2, remove.loops=TRUE)
 #'
+#' # Arrange network plot in a star with the reference treatment in the centre
+#' plot(network, layout=igraph::as_star(), label.distance=3)
 #'
 #' #### Plot a network with no placebo data included ####
 #' # Make data with no placebo
@@ -78,7 +83,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "5
 #' plot(net.noplac)
 #' @export
 plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink=NULL,
-                               layout_in_circle = TRUE, remove.loops=FALSE,
+                               layout=igraph::in_circle(), remove.loops=FALSE,
                                edge.scale=1, v.scale=NULL, label.distance=0,
                                ...)
   # Requires igraph
@@ -90,7 +95,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma.network", add=argcheck)
-  checkmate::assertLogical(layout_in_circle, len=1, add=argcheck)
+  checkmate::assertClass(layout, "igraph_layout_spec", add=argcheck)
   checkmate::assertNumeric(edge.scale, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(label.distance, finite=TRUE, len=1, add=argcheck)
   checkmate::assertNumeric(v.scale, lower = 0, finite=TRUE, null.ok=TRUE, len=1, add=argcheck)
@@ -200,6 +205,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
 
   if (remove.loops==TRUE) {
     g <- igraph::simplify(g, remove.multiple = FALSE, remove.loops = TRUE)
+    comparisons <- comparisons[comparisons$t1!=comparisons$t2,]
   }
 
   # Check network is connected and produce warning message if not
@@ -229,17 +235,31 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   if (!is.null(node.size)) {igraph::V(g)$size <- node.size}
   igraph::E(g)$width <- edge.scale * comparisons[["nr"]]
 
-  # Plot netgraph
-  if (layout_in_circle==TRUE) {
+  # Change label locations if layout_in_circle
+  laycheck <- as.character(layout)[2]
+  if (any(
+    grepl("layout_in_circle", laycheck) |
+          grepl("layout_as_star", laycheck))) {
     lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
     igraph::V(g)$label.degree <- lab.locs
-    igraph::plot.igraph(g,
-                        layout = igraph::layout_in_circle(g),
-                        ...
-    )
-  } else {
-    igraph::plot.igraph(g, ...)
   }
+
+  # Plot netgraph
+  layout <- igraph::layout_(g, layout)
+  igraph::plot.igraph(g,
+                      layout = layout,
+                      ...
+  )
+  # if (layout_in_circle==TRUE) {
+  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
+  #   igraph::V(g)$label.degree <- lab.locs
+  #   igraph::plot.igraph(g,
+  #                       layout = igraph::layout_in_circle(g),
+  #                       ...
+  #   )
+  # } else {
+  #   igraph::plot.igraph(g, ...)
+  # }
 
   if (!is.null(doselink)) {
     message(paste0("Dose-response connections to placebo plotted based on a dose-response
@@ -277,7 +297,7 @@ check.network <- function(g, reference=1) {
   treats <- rownames(connects)[connects==FALSE]
 
   if (length(treats>0)) {
-    warning(paste0("The following treatments/agents are not connected to the network reference:\n",
+    warning(paste0("The following treatments/agents are not connected\nto the network reference:\n",
                    paste(treats, collapse = "\n")))
   }
   return(treats)
@@ -433,10 +453,17 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     paramdata[["doseparam"]] <- rep(params[i], nrow(paramdata))
     plotdata <- rbind(plotdata, paramdata)
   }
-  plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-  if (any(is.na(plotdata[["param"]]))) {
+
+  if (all(grepl("^d\\.1\\[[0-9]+,[0-9]+\\]", rownames(plotdata)))) { # if nonparam function used
     plotdata[["param"]] <- c(1:nrow(plotdata))
+  } else {
+    plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
   }
+
+  # plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
+  # if (any(is.na(plotdata[["param"]]))) {
+  #   plotdata[["param"]] <- c(1:nrow(plotdata))
+  # }
 
   # Change param labels for agents
   agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
@@ -447,11 +474,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     } else {
       a.labs <- agent.labs[sort(unique(agentcodes))]
     }
-  } else if ("agents" %in% names(x)) {
-    if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
-      a.labs <- x[["treatments"]]
+  } else if ("agents" %in% names(x$network)) {
+    if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
+      a.labs <- x$network[["treatments"]]
     } else {
-      a.labs <- x[["agents"]][x[["agents"]]!="Placebo"]
+      a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
     }
   } else {
     a.labs <- sort(unique(agentdat$param))
@@ -486,6 +513,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
+temp <<- plotdata
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +
@@ -495,7 +523,8 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 
   # Axis labels
   g <- g + ggplot2::xlab("Agent / Class") +
-    ggplot2::ylab("Effect size")
+    ggplot2::ylab("Effect size") +
+    ggplot2::theme_bw()
 
   return(g)
 }
@@ -540,10 +569,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #'   advisable to ensure predictions in `predict` are estimated using an even
 #'   sequence of time points to avoid misrepresentation of shaded densities.
 #'
-#'   If `overlay.split = TRUE`, or `disp.obs = TRUE` then the original dataset must be specified
-#'   by including the original `mbnma.network` object used to estimate the model as the `network`
-#'   argument.
-#'
 #' @examples
 #' \donttest{
 #' # Using the triptans data
@@ -554,14 +579,14 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
-#' # Display observed doses on the plot (must include `network`)
-#' plot(pred, disp.obs=TRUE, network=network)
+#' # Display observed doses on the plot
+#' plot(pred, disp.obs=TRUE)
 #'
-#' # Display split NMA results on the plot (must include `network`)
-#' plot(pred, overlay.split=TRUE, network=network)
+#' # Display split NMA results on the plot
+#' plot(pred, overlay.split=TRUE)
 #'
 #' # Split NMA results estimated using random treatment effects model
-#' plot(pred, overlay.split=TRUE, network=network, method="random")
+#' plot(pred, overlay.split=TRUE, method="random")
 #'
 #' # Add agent labels
 #' plot(pred, agent.labs=c("Elet", "Suma", "Frov", "Almo", "Zolmi",
@@ -581,7 +606,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 #' }
 #'
 #' @export
-plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
+plot.mbnma.predict <- function(x, disp.obs=FALSE,
                                overlay.split=FALSE, method="common",
                                agent.labs=NULL, scales="free_x", ...) {
 
@@ -619,6 +644,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   # Plot observed data as shaded regions
   if (disp.obs==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
@@ -631,6 +657,7 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   }
   if (overlay.split==TRUE) {
+    network <- x$network
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that placebo is included (or dose=0 in networks without placebo)
@@ -661,7 +688,8 @@ plot.mbnma.predict <- function(x, network, disp.obs=FALSE,
 
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=c("Posterior Median"="solid",
-                                                   "95% CrI"="dashed"))
+                                                   "95% CrI"="dashed")) +
+    ggplot2::theme_bw()
 
   return(g)
 }
@@ -999,10 +1027,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     xlab <- "Follow-up count"
     facetscale <- "fixed"
   } else if (mbnma$type=="dose") {
-    agents <- mbnma$agents
+    agents <- mbnma$network$agents
 
     # Remove placebo results if they are present
-    if (mbnma$agents[1]=="Placebo") {
+    if (mbnma$network$agents[1]=="Placebo") {
       dev.df <- dev.df[dev.df$facet!=1,]
       agents <- agents[-1]
     }
@@ -1011,9 +1039,9 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     facetscale <- "free_x"
   }
 
-  if ("agents" %in% names(mbnma)) {
+  if ("agents" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=agents)
-  } else if ("treatments" %in% names(mbnma)) {
+  } else if ("treatments" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=mbnma$treatments)
   }
 
@@ -1027,7 +1055,8 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab("Posterior mean")
+    ggplot2::ylab("Posterior mean") +
+    ggplot2::theme_bw()
 
   if (facet==TRUE) {
     g <- g + ggplot2::facet_wrap(~facet, scales = facetscale) +
@@ -1213,13 +1242,13 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   ylab <- "Response on link scale"
 
   # Add facet labels
-  if ("agents" %in% names(mbnma)) {
-    if (mbnma$agents[1]=="Placebo" & mbnma$treatments[1]=="Placebo_0") {
-      labs <- mbnma$agents[-1]
-    } else {labs <- mbnma$agents}
+  if ("agents" %in% names(mbnma$network)) {
+    if (mbnma$network$agents[1]=="Placebo" & mbnma$network$treatments[1]=="Placebo_0") {
+      labs <- mbnma$network$agents[-1]
+    } else {labs <- mbnma$network$agents}
     theta.df$facet <- factor(theta.df$facet, labels=labs)
-  } else if ("treatments" %in% names(mbnma)) {
-    labs <- mbnma$treatments[-1]
+  } else if ("treatments" %in% names(mbnma$network)) {
+    labs <- mbnma$network$treatments[-1]
     theta.df$facet <- factor(theta.df$facet, labels=labs)
   }
 
@@ -1238,7 +1267,8 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
-    ggplot2::ylab(ylab)
+    ggplot2::ylab(ylab) +
+    ggplot2::theme_bw()
 
   suppressWarnings(graphics::plot(g))
 
@@ -1330,7 +1360,8 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
-      ggplot2::ggtitle(params[param])
+      ggplot2::ggtitle(params[param]) +
+      ggplot2::theme_bw()
 
     graphics::plot(g)
 
@@ -1402,7 +1433,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
                      axis.title = ggplot2::element_text(size=12),
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::facet_wrap(~factor(forestdata$comp))
+      ggplot2::facet_wrap(~factor(forestdata$comp)) +
+      ggplot2::theme_bw()
   }
   if ("density" %in% plot.type) {
 
@@ -1414,7 +1446,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(densitydata$comp))
+      ggplot2::facet_wrap(~factor(densitydata$comp)) +
+      ggplot2::theme_bw()
   }
 
   if (identical(sort(plot.type), c("density", "forest"))) {
@@ -1510,7 +1543,8 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
-      ggplot2::ylab("Effect size on link scale")
+      ggplot2::ylab("Effect size on link scale") +
+      ggplot2::theme_bw()
 
   } else if (bydose==FALSE) {
     # Plot conventional forest plot
@@ -1521,7 +1555,8 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
-      ggplot2::xlab("Treatment")
+      ggplot2::xlab("Treatment") +
+      ggplot2::theme_bw()
   }
 
   graphics::plot(g)

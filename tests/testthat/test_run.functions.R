@@ -1,19 +1,20 @@
-testthat::context("Testing run.functions")
-
-network <- mbnma.network(HF2PPITT)
-
-# Make class data
-df <- HF2PPITT
-df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-netclass <- mbnma.network(df)
-
-# Make data with no placebo
-noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- mbnma.network(noplac.df)
-
-
+# testthat::context("Testing run.functions")
+#
+# network <- mbnma.network(HF2PPITT)
+#
+# # Make class data
+# df <- HF2PPITT
+# df$class <- ifelse(df$agent=="placebo", "placebo", "active")
+# netclass <- mbnma.network(df)
+#
+# # Make data with no placebo
+# noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+# net.noplac <- mbnma.network(noplac.df)
+#
+#
 # test_that("mbnma.run functions correctly", {
-#   n.iter=500
+#   #n.iter=500
+#   n.iter=5000
 #
 #   # Single parameter DR functions
 #   result <- mbnma.run(network, fun="linear", beta.1="rel", method="common",
@@ -78,7 +79,7 @@ net.noplac <- mbnma.network(noplac.df)
 #   # Three parameter DR function
 #   result <- mbnma.run(network, fun="emax", beta.1="rel", beta.2="random", beta.3="common",
 #                       method="random", n.iter=n.iter)
-#   expect_equal(all(c("d.1", "sd", "beta.2", "sd.2", "beta.3") %in% result$parameters.to.save), TRUE)
+#   expect_equal(all(c("d.1", "sd", "beta.2", "sd.2") %in% result$parameters.to.save), TRUE)
 #   expect_error(summary(result), NA)
 #
 #
@@ -102,6 +103,19 @@ net.noplac <- mbnma.network(noplac.df)
 #   expect_equal(runprior$model.arg$priors$inv.R, prior$inv.R)
 #   expect_equal(result$model.arg$priors$inv.R!=runprior$model.arg$priors$inv.R, TRUE)
 #
+#
+#   # Multiple dose-response functions
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 3), rep("linear",2), rep("emax",3)))
+#   expect_equal(length(multifun$model.arg$fun)>1, TRUE)
+#   expect_equal(all(c("d.1", "d.2", "d.3", "d.4") %in% multifun$parameters.to.save), TRUE)
+#
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 3), rep("linear",5)), method="random")
+#   expect_equal(all(c("d.1", "d.2") %in% multifun$parameters.to.save), TRUE)
+#   expect_equal(all(c("d.3", "d.4") %in% multifun$parameters.to.save), FALSE)
+#
+#   expect_error(mbnma.run(netclass, fun=c(rep("exponential", 3), rep("linear",5)),
+#                        class.effect = list(beta.2="common")), "single dose-response function")
+#
 # })
 #
 #
@@ -122,7 +136,7 @@ net.noplac <- mbnma.network(noplac.df)
 #
 #   # Two parameter DR functions
 #   result <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-#                        class.effect=list(emax="common"), n.iter=n.iter)
+#                        class.effect=list(emax="common"), n.iter=n.iter, cor = FALSE)
 #   expect_equal(all(c("D.emax", "d.ed50") %in% result$parameters.to.save), TRUE)
 #   expect_equal(all(c("d.emax") %in% result$parameters.to.save), FALSE)
 #   expect_error(summary(result), NA)
@@ -134,27 +148,27 @@ net.noplac <- mbnma.network(noplac.df)
 #   expect_error(summary(result), NA)
 #
 # })
-
-
-
-test_that("check.likelink function correctly", {
-
-  expect_silent(check.likelink(df, likelihood = "binomial", link="identity"))
-  expect_silent(check.likelink(df, likelihood = "binomial", link="logit"))
-
-  # Expect error due to misspecified df
-  expect_error(check.likelink(df, likelihood = "normal", link="identity"))
-  expect_error(check.likelink(df, likelihood = "poisson", link="identity"))
-
-  # Expect errror due to misspecified arguments
-  expect_error(check.likelink(df, likelihood = "binomial", link="badger"))
-  expect_error(check.likelink(df, likelihood = "test", link="logit"))
-
-})
-
-
-
-
+#
+#
+#
+# test_that("check.likelink function correctly", {
+#
+#   expect_silent(check.likelink(df, likelihood = "binomial", link="identity"))
+#   expect_silent(check.likelink(df, likelihood = "binomial", link="logit"))
+#
+#   # Expect error due to misspecified df
+#   expect_error(check.likelink(df, likelihood = "normal", link="identity"))
+#   expect_error(check.likelink(df, likelihood = "poisson", link="identity"))
+#
+#   # Expect errror due to misspecified arguments
+#   expect_error(check.likelink(df, likelihood = "binomial", link="badger"))
+#   expect_error(check.likelink(df, likelihood = "test", link="logit"))
+#
+# })
+#
+#
+#
+#
 # test_that("nma.run function correctly", {
 #   n.iter <- 500
 #

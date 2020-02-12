@@ -1,30 +1,30 @@
-testthat::context("Testing plot.functions")
-
-network <- mbnma.network(HF2PPITT)
-netgout <- mbnma.network(GoutSUA_2wkCFB)
-netalog <- mbnma.network(alog_pcfb)
-netclass <- mbnma.network(osteopain_2wkabs)
-
-datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
-
-# Generate data without placebo
-noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- mbnma.network(noplac.df)
-
-netlist <- list(network, net.noplac)
-
-
-# Models
+# testthat::context("Testing plot.functions")
+#
+# network <- mbnma.network(HF2PPITT)
+# netgout <- mbnma.network(GoutSUA_2wkCFB)
+# netalog <- mbnma.network(alog_pcfb)
+# netclass <- mbnma.network(osteopain_2wkabs)
+#
+# datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
+#
+# # Generate data without placebo
+# noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+# net.noplac <- mbnma.network(noplac.df)
+#
+# netlist <- list(network, net.noplac)
+#
+#
+# # Models
 # linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear", n.iter=1000)
 #
 # emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
 # emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 #
-# emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-#                         class.effect=list(emax="random"), n.iter=1000)
+# emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+#                         class.effect=list(emax="random"), n.iter=1000))
 #
-# emax.class2 <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-#                         class.effect=list(emax="random"), n.iter=1000)
+# emax.class2 <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
+#                         class.effect=list(emax="random"), n.iter=1000))
 #
 # nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 #
@@ -33,62 +33,60 @@ netlist <- list(network, net.noplac)
 # resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
 #
 # modellist <- list(linear, emax, emax.class, emax.noplac)
-
-###################################################
-################## Run Tests ######################
-###################################################
-
-test_that("plot.mbnma.network functions correctly", {
-
-  expect_silent(plot(network, layout_in_circle = TRUE,
-                               edge.scale=1, label.distance=0))
-
-  expect_silent(plot(network, layout_in_circle = FALSE,
-                               edge.scale=1, label.distance=0))
-
-  expect_silent(plot(network, layout_in_circle = FALSE,
-                               edge.scale=0.5, label.distance=10))
-
-  g1 <- plot(network, layout_in_circle = TRUE,
-             level="treatment")
-  g2 <- plot(network, layout_in_circle = TRUE,
-             level="agent")
-
-  expect_silent(plot(g1))
-  expect_silent(plot(g2))
-
-  expect_equal(length(igraph::V(g1))==length(igraph::V(g2)), FALSE)
-
-  expect_silent(plot(network, layout_in_circle = TRUE,
-                     level="agent", remove.loops = TRUE))
-
-  expect_warning(plot(net.noplac, layout_in_circle = TRUE,
-                     level="agent"))
-
-  expect_warning(plot(net.noplac, layout_in_circle = TRUE,
-                      level="agent", doselink = 5))
-
-  g1 <- plot(network, layout_in_circle = TRUE,
-            level="treatment", v.color = "agent")
-  g2 <- plot(net.noplac, layout_in_circle = TRUE,
-             level="treatment", v.color="agent", doselink = 1)
-
-  expect_equal("Placebo_0" %in% names(igraph::V(g1)), TRUE)
-  expect_equal(length(network$treatments), length(igraph::V(g1)))
-  expect_equal(length(unique(igraph::V(g1)$color)), length(network$agents))
-
-  #expect_equal("Placebo" %in% names(igraph::V(g2)), TRUE)
-  expect_equal(length(net.noplac$treatments), length(igraph::V(g2))-1)
-  expect_equal(length(unique(igraph::V(g2)$color)), length(net.noplac$agents)+1)
-  expect_equal(length(unique(igraph::E(g2)$color)), 2)
-
-  expect_error(plot(network, layout_in_circle = TRUE,
-                              level="class"))
-
-})
-
-
-
+#
+# ###################################################
+# ################## Run Tests ######################
+# ###################################################
+#
+# test_that("plot.mbnma.network functions correctly", {
+#
+#   expect_silent(plot(network, layout = igraph::as_star(),
+#                                edge.scale=1, label.distance=0))
+#
+#   expect_silent(plot(network, layout = igraph::with_fr(),
+#                                edge.scale=1, label.distance=0))
+#
+#   expect_silent(plot(network, layout = igraph::in_circle(),
+#                                edge.scale=0.5, label.distance=10))
+#
+#   g1 <- plot(network, level="treatment")
+#   g2 <- plot(network, level="agent")
+#
+#   expect_silent(plot(g1))
+#   expect_silent(plot(g2))
+#
+#   expect_equal(length(igraph::V(g1))==length(igraph::V(g2)), FALSE)
+#
+#   expect_silent(plot(network, layout = igraph::in_circle(),
+#                      level="agent", remove.loops = TRUE))
+#
+#   expect_warning(plot(net.noplac, layout=igraph::as_star(),
+#                      level="agent"))
+#
+#   expect_warning(plot(net.noplac, layout=igraph::with_fr(),
+#                       level="agent", doselink = 5))
+#
+#   g1 <- plot(network,
+#             level="treatment", v.color = "agent")
+#   g2 <- plot(net.noplac,
+#              level="treatment", v.color="agent", doselink = 1)
+#
+#   expect_equal("Placebo_0" %in% names(igraph::V(g1)), TRUE)
+#   expect_equal(length(network$treatments), length(igraph::V(g1)))
+#   expect_equal(length(unique(igraph::V(g1)$color)), length(network$agents))
+#
+#   #expect_equal("Placebo" %in% names(igraph::V(g2)), TRUE)
+#   expect_equal(length(net.noplac$treatments), length(igraph::V(g2))-1)
+#   expect_equal(length(unique(igraph::V(g2)$color)), length(net.noplac$agents)+1)
+#   expect_equal(length(unique(igraph::E(g2)$color)), 2)
+#
+#   expect_error(plot(network, layout=igraph::in_circle(),
+#                               level="class"))
+#
+# })
+#
+#
+#
 # testthat::test_that("plot.mbnma functions correctly", {
 #   for (i in seq_along(modellist)) {
 #     expect_silent(plot(modellist[[i]]))
@@ -131,19 +129,19 @@ test_that("plot.mbnma.network functions correctly", {
 #   expect_silent(plot(pred))
 #
 #   # Test disp.obs
-#   expect_error(plot(pred, disp.obs = TRUE))
-#   expect_message(plot(pred, disp.obs = TRUE, network=netgout))
-#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   # expect_error(plot(pred, disp.obs = TRUE))
+#   expect_message(plot(pred, disp.obs = TRUE))
+#   # expect_error(plot(pred, disp.obs = TRUE))
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_error(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   #expect_error(plot(pred, disp.obs = TRUE))
 #
 #   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_silent(plot(pred, disp.obs=TRUE, network=network))
+#   expect_silent(plot(pred, disp.obs=TRUE))
 #
 #   pred <- predict(emax.noplac, E0 = 0.5)
-#   expect_silent(plot(pred, disp.obs = TRUE, network=net.noplac))
+#   expect_silent(plot(pred, disp.obs = TRUE))
 #
 #
 #   # Test agent.labs
@@ -157,31 +155,31 @@ test_that("plot.mbnma.network functions correctly", {
 #
 #   # Test overlay.split
 #   pred <- predict(linear, E0 = 0.5)
-#   expect_error(plot(pred, overlay.split = TRUE))
-#   expect_output(plot(pred, overlay.split = TRUE, network=netalog))
+#   #expect_error(plot(pred, overlay.split = TRUE))
+#   expect_output(plot(pred, overlay.split = TRUE))
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netgout))
+#   expect_output(plot(pred, overlay.split = TRUE))
 #
 #   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0,0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_output(plot(pred, overlay.split = TRUE, network=network))
+#   expect_output(suppressWarnings(plot(pred, overlay.split = TRUE)))
 #
 #   doses <- list("eletriptan"=c(1,2,3), "rizatriptan"=c(0.5,1,2))
 #   pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
-#   expect_error(plot(pred, overlay.split = TRUE, network=network))
+#   expect_error(plot(pred, overlay.split = TRUE))
 #
 #   pred <- predict(emax.noplac, E0 = 0.5)
-#   expect_error(plot(pred, overlay.split = TRUE, network=net.noplac))
+#   expect_error(plot(pred, overlay.split = TRUE))
 #
 #
 #   # Test method="common"
 #   pred <- predict(linear, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netalog, method="random"),
+#   expect_output(plot(pred, overlay.split = TRUE, method="random"),
 #                 "SD")
 #
 #   pred <- predict(emax, E0 = 0.5)
-#   expect_output(plot(pred, overlay.split = TRUE, network=netgout, method="random"),
+#   expect_output(plot(pred, overlay.split = TRUE, method="random"),
 #                 "SD")
 #
 #

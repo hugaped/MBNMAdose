@@ -235,8 +235,11 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (x$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+  if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
     stop("Ranking cannot currently be performed for non-parametric models")
+  }
+  if (length(x$model.arg$fun)>1) {
+    stop("Ranking cannot currently be performed for models with multiple dose-response functions")
   }
 
   # Change agent/class to agents/classes
@@ -252,7 +255,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
   }
 
   # If treats have not been specified then select all of them - WONT WORK IF PLACEBO NOT INCLUDED
-  starttrt <- ifelse(x$agents[1]=="Placebo", 2, 1)
+  starttrt <- ifelse(x$network$agents[1]=="Placebo", 2, 1)
   codes.mod <- c(starttrt:max(x[["model"]][["data"]]()[[level]], na.rm=TRUE))
   if (is.null(to.rank)) {
     to.rank <- codes.mod
@@ -261,21 +264,21 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
       stop("`to.rank` codes must match those in the dataset for either `agent` or `class`")
     }
   } else if (is.character(to.rank)) {
-    if (!all(to.rank %in% x[[levels]])) {
+    if (!all(to.rank %in% x$network[[levels]])) {
       stop("`to.rank` agent/class names must match those in the network for either `agent` or `class`")
     }
-    to.rank <- as.numeric(factor(to.rank, levels=x[[levels]]))
+    to.rank <- as.numeric(factor(to.rank, levels=x$network[[levels]]))
   }
 
-  if (x$agents[1]=="Placebo") {
+  if (x$network$agents[1]=="Placebo") {
     to.rank <- to.rank-1
     if (any(to.rank==0)) {
       warning("Placebo (d[1] or D[1]) cannot be included in the ranking for relative effects and will therefore be excluded")
       to.rank <- to.rank[to.rank!=0]
     }
-    agents <- x[[levels]][to.rank+1]
+    agents <- x$network[[levels]][to.rank+1]
   } else {
-    agents <- x[[levels]][to.rank]
+    agents <- x$network[[levels]][to.rank]
   }
 
 

@@ -92,10 +92,10 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab)
   } else {
-    if (!class(comparisons) %in% c("matrix", "data.frame")) {
-      stop("`comparisons` must be be either a matrix or a data frame of comparisons on which to nodesplit")
+    if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
+      stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
     }
-    if (class(comparisons)=="data.frame") {
+    if (is.data.frame(comparisons)) {
       if (all(c("t1", "t2") %in% names(comparisons))) {
         comparisons <- data.frame(comparisons$t1, comparisons$t2)
       }
@@ -249,7 +249,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       ggplot2::theme(axis.text = ggplot2::element_text(size=15),
                      axis.title = ggplot2::element_text(size=18),
                      title=ggplot2::element_text(size=18)) +
-      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm"))
+      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+      ggplot2::theme_bw()
 
     # Density plots (with shaded area of overlap)
     molten <- data.frame(ind.res, dir.res)
@@ -264,7 +265,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       ggplot2::ylab("Posterior density") +
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                     axis.title = ggplot2::element_text(size=14))
+                     axis.title = ggplot2::element_text(size=14)) +
+      ggplot2::theme_bw()
 
     nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
                       "direct"=dir.res, "indirect"=ind.res, "nma"=nma.res,

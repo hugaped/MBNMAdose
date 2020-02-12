@@ -1,26 +1,26 @@
-testthat::context("Testing rank.functions")
-
-network <- mbnma.network(HF2PPITT)
-
-# Make class data
-df <- HF2PPITT
-df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
-netclass <- mbnma.network(df)
-
-# Make data with no placebo
-noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-net.noplac <- mbnma.network(noplac.df)
-
-# Models
+# testthat::context("Testing rank.functions")
+#
+# network <- mbnma.network(HF2PPITT)
+#
+# # Make class data
+# df <- HF2PPITT
+# df$class <- ifelse(df$agent=="placebo", "placebo", "active")
+# df$class <- ifelse(df$agent=="eletriptan", "active2", df$class)
+# netclass <- mbnma.network(df)
+#
+# # Make data with no placebo
+# noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
+# net.noplac <- mbnma.network(noplac.df)
+#
+# # Models
 # linear.run <- mbnma.run(mbnma.network(GoutSUA_2wkCFB), fun="linear", n.iter=1000)
 #
 # exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", method="common", n.iter=1000)
 #
 # emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
 #
-# emax.class <- mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-#                          class.effect=list(emax="random"), n.iter=1000)
+# emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+#                          class.effect=list(emax="random"), n.iter=1000))
 #
 # nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
 #
@@ -92,6 +92,10 @@ net.noplac <- mbnma.network(noplac.df)
 #   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
 #   expect_error(print(rank), NA)
 #   expect_equal(class(summary(rank)[[1]]), "data.frame")
+#
+#   # With multiple-dose response functions
+#   multifun <- mbnma.run(network, fun=c(rep("exponential", 5), rep("emax",3)))
+#   expect_error(rank(multifun), "multiple dose-response")
 #
 # })
 #

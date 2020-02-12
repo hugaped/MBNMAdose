@@ -266,89 +266,138 @@ summary.nma.nodesplit <- function(object, ...) {
 
 
 
-get.beta.names <- function(mbnma) {
-  betanames <- list()
-  for (i in 1:4) {
-    if (!is.null(mbnma$model.arg[[paste0("beta.",i)]])) {
-      if (is.null(mbnma$model.arg$arg.params)) {
-        betanames[[paste0("beta.", i)]] <- paste0("beta.", i)
-      } else if (!is.null(mbnma$model.arg$arg.params)) {
-        temp <- mbnma$model.arg$arg.params$wrap.params[
-          mbnma$model.arg$arg.params$run.params==paste0("beta.", i)
-          ]
-        betanames[[paste0("beta.", i)]] <- temp
-      }
-    }
-  }
+# get.beta.names <- function(mbnma) {
+#   betanames <- list()
+#   if (!is.null(mbnma$model.arg$arg.params)) {  # For if using a wrapper function
+#     for (i in 1:4) {
+#       if (!is.null(mbnma$model.arg[[paste0("beta.",i)]])) {
+#         temp <- mbnma$model.arg$arg.params$wrap.params[
+#           mbnma$model.arg$arg.params$run.params==paste0("beta.", i)
+#           ]
+#         betanames[[paste0("beta.", i)]] <- temp
+#       }
+#     }
+#
+#   } else if (is.null(mbnma$model.arg$arg.params)) {   # For if using mbnma.run()
+#     drcount <- length(unique(mbnma$model.arg$fun))
+#     count <- 1
+#     betacount <- 1
+#     while(count<=drcount) {
+#       if (mbnma$model.arg$fun[count]=="user") {
+#         for (i in 1:4) {
+#           if (grepl(paste0("beta.", i)) %in% mbnma$model.arg$user.fun) {
+#             betanames[[paste0("beta.", i)]] <- rep(paste0("beta.", i),2)
+#             betacount <- i+1
+#           }
+#         }
+#       }
+#       if (mbnma$model.arg$fun[count]=="linear") {
+#         betanames[[paste0("beta.", betacount)]] <- c(paste0("beta.", betacount), "linear")
+#         betacount <- betacount+1
+#       }
+#       if (mbnma$model.arg$fun[count]=="exponential") {
+#         betanames[[paste0("beta.", betacount)]] <- c(paste0("beta.", betacount), "exponential")
+#         betacount <- betacount+1
+#       }
+#       if (mbnma$model.arg$fun[count]=="emax") {
+#         betanames[[paste0("beta.", betacount)]] <- c(paste0("beta.", betacount), "emax")
+#         betanames[[paste0("beta.", betacount+1)]] <- c(paste0("beta.", betacount+1), "ed50")
+#         betacount <- betacount+2
+#       }
+#       if (mbnma$model.arg$fun[count]=="emax.hill") {
+#         betanames[[paste0("beta.", betacount)]] <- c(paste0("beta.", betacount), "emax")
+#         betanames[[paste0("beta.", betacount+1)]] <- c(paste0("beta.", betacount+1), "ed50")
+#         betanames[[paste0("beta.", betacount+2)]] <- c(paste0("beta.", betacount+2), "hill")
+#         betacount <- betacount+3
+#       }
+#       count <- count+1
+#     }
+#   }
+#
+#   return(betanames)
+# }
 
-  return(betanames)
-}
 
 
 
-get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
-  betanames <- get.beta.names(mbnma)
 
-  if (grepl("beta", betanames[[beta]])) {
-    temp <- strsplit(betanames[[beta]], split="\\.")[[1]][2]
-  } else {
-    temp <- betanames[[beta]]
-  }
-
-  match <- paste0("^", param, "\\.", temp, "(\\[[0-9]+\\])?")
-
-  sum.mat <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
-                                      c(3,5,7)]
-
-  # Check for UME
-  if (any(grepl("\\[[0-9]+,[0-9]+\\]", rownames(sum.mat)))) {
-    sum.mat <- NULL
-  }
-
-  if (length(sum.mat)>0) {
-    tab.str <- c()
-
-    if (is.matrix(sum.mat)) {
-      if (any(grepl("^d\\..+\\[1\\]", rownames(sum.mat)[1]) |
-              grepl("^D\\..+\\[1\\]", rownames(sum.mat)[1]))) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[1], "Network reference",
-                               sep="\t"),
-                         sep="\n"
-        )
-        count <- 2
-      } else if (any(grepl("^beta\\..+", rownames(sum.mat)[1]) |
-                     grepl("^BETA\\..+", rownames(sum.mat)[1]))) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[1],
-                               neatCrI(sum.mat),
-                               sep="\t"),
-                         sep="\n"
-        )
-        count <- 1
-      } else {count <-1}
-
-      for (i in count:nrow(sum.mat)) {
-        tab.str <- paste(tab.str,
-                         paste(rownames(sum.mat)[i], neatCrI(sum.mat[i,]),
-                               sep="\t"),
-                         sep="\n"
-        )
-      }
-    } else if (is.vector(sum.mat)) {
-      tab.str <- paste(tab.str,
-                       paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
-                             neatCrI(sum.mat),
-                             sep="\t\t"),
-                       sep="\n"
-      )
-    }
-
-    return(tab.str)
-  } else {
-    return(NULL)
-  }
-}
+# get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
+#   # betanames <- get.beta.names(mbnma)
+#   #
+#   # if (grepl("beta", betanames[[beta]])) {
+#   #   temp <- strsplit(betanames[[beta]], split="\\.")[[1]][2]
+#   # } else {
+#   #   temp <- betanames[[beta]]
+#   # }
+#
+#   if (!is.null(mbnma$model.arg$arg.params)) {
+#     wrapper <- TRUE
+#   } else {wrapper <- FALSE}
+#
+#   betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
+#                       wrapper=wrapper)
+#
+#   if (grepl("beta", betas[[beta]]$betaname)) {
+#     temp <- strsplit(betas[[beta]]$betaname, split="\\.")[[1]][2]
+#   } else {
+#     temp <- betas[[beta]]$betaname
+#   }
+#
+#
+#   match <- paste0("^", param, "\\.", temp, "(\\[[0-9]+\\])?")
+#
+#   sum.mat <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
+#                                       c(3,5,7)]
+#
+#   # Check for UME
+#   if (any(grepl("\\[[0-9]+,[0-9]+\\]", rownames(sum.mat)))) {
+#     sum.mat <- NULL
+#   }
+#
+#   if (length(sum.mat)>0) {
+#     tab.str <- c()
+#
+#     if (is.matrix(sum.mat)) {
+#       if (any(grepl("^d\\..+\\[1\\]", rownames(sum.mat)[1]) |
+#               grepl("^D\\..+\\[1\\]", rownames(sum.mat)[1]))) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[1], "Network reference",
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#         count <- 2
+#       } else if (any(grepl("^beta\\..+", rownames(sum.mat)[1]) |
+#                      grepl("^BETA\\..+", rownames(sum.mat)[1]))) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[1],
+#                                neatCrI(sum.mat),
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#         count <- 1
+#       } else {count <-1}
+#
+#       for (i in count:nrow(sum.mat)) {
+#         tab.str <- paste(tab.str,
+#                          paste(rownames(sum.mat)[i], neatCrI(sum.mat[i,]),
+#                                sep="\t"),
+#                          sep="\n"
+#         )
+#       }
+#     } else if (is.vector(sum.mat)) {
+#       tab.str <- paste(tab.str,
+#                        paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
+#                              neatCrI(sum.mat),
+#                              sep="\t\t"),
+#                        sep="\n"
+#       )
+#     }
+#
+#     return(tab.str)
+#   } else {
+#     return(NULL)
+#   }
+# }
 
 
 
@@ -358,71 +407,126 @@ get.timeparam.str <- function(mbnma, beta=NULL, param="d") {
 #' @inheritParams predict.mbnma
 #' @noRd
 print.treat.str <- function(mbnma) {
-  betanames <- get.beta.names(mbnma)
+  #betanames <- get.beta.names(mbnma)
+
+  if (!is.null(mbnma$model.arg$arg.params)) {
+    wrapper <- TRUE
+  } else {wrapper <- FALSE}
+
+  betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
+                      wrapper=wrapper)
+
+  datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
+                                 mbnma$BUGSoutput$summary[,3],
+                                 mbnma$BUGSoutput$summary[,7]))
 
   treat.sect <- c()
   # DR parameters for each agent (generate treat.str)
-  for (i in seq_along(betanames)) {
-    if (!(names(betanames)[i] %in% names(mbnma$model.arg$class.effect))) {
+  for (i in seq_along(betas)) {
+    if (!(betas[[i]]$betaname %in% names(mbnma$model.arg$class.effect))) {
 
-      sect.head <- paste("####", betanames[[i]], "dose-response parameter results ####", sep=" ")
+      if (wrapper) {
+        headbeta <- betas[[i]]$betaname
+      } else {
+        headbeta <- paste0(betas[[i]]$betaname, " (", betas[[i]]$fun, ", ", betas[[i]]$param, ")")
+      }
 
-      data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
-      data.head <- paste(data.head, "---------------------------------", sep="\n")
+      sect.head <- paste("####", headbeta, "dose-response parameter results ####\n\n", sep=" ")
+      cat(sect.head)
 
-      if (is.character(mbnma$model.arg[[names(betanames)[i]]])) {
+      if (betas[[i]]$param %in% c("lambda", "ed50")) {
+        cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
+      }
 
-        if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
+      agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
+
+      if (is.character(mbnma$model.arg[[names(betas)[i]]])) {
+
+        if (mbnma$model.arg[[names(betas)[i]]]=="rel") {
           param <- "d"
-        } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
+          cat("Pooling: relative effects\n\n")
+        } else if (mbnma$model.arg[[names(betas)[i]]] %in% c("common", "random")) {
           param <- "beta"
+          cat("Pooling: single parameter shared across the network\n\n")
         }
 
-        data.tab <- get.timeparam.str(mbnma, beta=paste0("beta.",i), param = param)
-        if (!is.null(data.tab)) {
-          data.str <- paste(data.head,
-                            data.tab,
-                            sep="")
-        }
+        datai <- vector()
+        datai <- append(datai,
+                        which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
+        datai <- append(datai,
+                        which(grepl(paste0("^", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
+        datai <- datai[datai!=0]
 
-        if (mbnma$model.arg[[names(betanames)[i]]]=="random") {
-          sd.name <- paste0("sd.", betanames[[i]])
-          sd.vals <- neatCrI(mbnma$BUGSoutput$summary[
-            rownames(mbnma$BUGSoutput$summary)==sd.name, c(3,5,7)])
-          sd.str <- paste(sd.name, sd.vals, sep="\t")
-          data.str <- paste(data.str, sd.str, sep="\n")
+        datatab <- datasum
+        names(datatab) <- c("Median", "2.5%", "97.5%")
+        datatab$Parameter <- rownames(datatab)
+        datatab <- datatab[datai,c(4,1,2,3)]
+
+        #print(agents[betas[[i]]$agents])
+        #print(betas[[i]]$agents)
+
+        if (param=="d") {
+          rownames(datatab) <- agents[betas[[i]]$agents]
+        }
+        print(datatab)
+        cat("\n\n")
+
+        #data.tab <- get.timeparam.str(mbnma, beta=names(betas)[i], param = param)
+        #
+        # if (!is.null(data.tab)) {
+        #   data.str <- paste(data.head,
+        #                     data.tab,
+        #                     sep="")
+        # }
+
+        if (mbnma$model.arg[[names(betas)[i]]]=="random") {
+
+          datai <- vector()
+          datai <- append(datai, which(grepl(paste0("^sd\\.", i), rownames(mbnma$BUGSoutput$summary))))
+          datai <- append(datai, which(grepl(paste0("^sd\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
+          datai <- datai[datai!=0]
+
+          datatab <- as.matrix(datasum)
+          colnames(datatab) <- c("Median", "2.5%", "97.5%")
+          datatab <- datatab[datai,]
+          print(datatab)
+          cat("\n\n")
+
         }
 
         # Parameters on exponential scale
-        if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
-          if (names(betanames)[i] %in% c("beta.2", "et50")) {
-            sect.head <- paste(sect.head,
-                               "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
-          }
-        }
+        # if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
+        #   if (names(betanames)[i] %in% c("beta.2", "et50")) {
+        #     sect.head <- paste(sect.head,
+        #                        "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
+        #   }
+        # }
 
-        # String for pooling
-        if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
-          pool <- "relative effects"
-        } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
-          pool <- "absolute single parameter"
-        }
-        pool.str <- paste("Pooling:", pool, "\n", sep=" ")
+        # # String for pooling
+        # if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
+        #   pool <- "relative effects"
+        # } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
+        #   pool <- "absolute single parameter"
+        # }
+        # pool.str <- paste("Pooling:", pool, "\n", sep=" ")
+        #
+        # treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
 
-        treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
-
-      } else if (is.numeric(mbnma$model.arg[[names(betanames)[i]]])) {
+      } else if (is.numeric(mbnma$model.arg[[names(betas)[i]]])) {
         data.str <- paste("Assigned a numeric value:",
-                          mbnma$model.arg[[names(betanames)[i]]],
+                          mbnma$model.arg[[names(betas)[i]]],
                           sep=" ")
+        cat(data.str)
+        cat("\n\n")
 
-        treat.str <- paste(sect.head, data.str)
+        # treat.str <- paste(sect.head, data.str)
       }
 
-      treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
+      # treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
     }
   }
-  return(treat.sect)
+  # return(treat.sect)
+  invisible(mbnma)
 }
 
 
@@ -457,73 +561,91 @@ print.method.sect <- function(mbnma) {
   }
 
   method.str <- paste("Method:", method, sep=" ")
-  method.str <- paste("\n\n#### Pooling method ####", method.str, sep="\n\n")
+  method.str <- paste("\n\n#### Pooling method ####", method.str, "\n", sep="\n\n")
   return(method.str)
 }
 
 
 
 print.class.str <- function(mbnma) {
+
   if (length(mbnma$model.arg$class.effect)>0) {
+    if (!is.null(mbnma$model.arg$arg.params)) {
+      wrapper <- TRUE
+    } else {wrapper <- FALSE}
+
     classes <- mbnma$model.arg$class.effect
+    betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
+                        wrapper=wrapper)
+
+    datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
+                                   mbnma$BUGSoutput$summary[,3],
+                                   mbnma$BUGSoutput$summary[,7]))
 
     head <- "\n#### Class effects ####\n"
-    data.head <- paste("Parameter", "Median (95%CrI)", sep="\t")
-    data.head <- paste(data.head, "---------------------------------", sep="\n")
 
-    data.str <- c(data.head)
-    class.str <- c()
-    sd.str <- NULL
     for (i in seq_along(classes)) {
-      betaparam <- names(classes)[i]
+      if (wrapper) {
+        for (k in seq_along(betas)) {
+          if (names(classes)[i]==betas[[k]]$betaname) {
 
-      if (!is.null(mbnma$model.arg$arg.params)) {
-        wrapparam <- mbnma$model.arg$arg.params$wrap.params[
-          mbnma$model.arg$arg.params$run.params==names(classes)[i]]
+            sect.head <- paste("Class effect results for:", names(classes)[i], "\n\n", sep=" ")
+            cat(sect.head)
 
-        class.str <- c(class.str, paste("Class effect on",
-                                        paste0(wrapparam,":"), classes[[i]], "\n",
-                                        sep=" "))
-      } else {
-        wrapparam <- ""
-        class.str <- c(class.str, paste("Class effect on",
-                                        paste0(betaparam,":"), classes[[i]], "\n",
-                                        sep=" "))
-      }
+            if (mbnma$model.arg[[names(betas)[k]]]=="rel") {
+              param <- "D"
+            } else if (mbnma$model.arg[[names(betas)[k]]] %in% c("common", "random")) {
+              param <- "BETA"
+            }
 
-      if (mbnma$model.arg[[betaparam]]=="rel") {
-        data.str <- paste0(data.str,
-                           get.timeparam.str(mbnma, beta = names(classes)[i], param = "D"))
-      } else {
-        stop("`class.effects` seem to be specified on dose-response parameters not modelled by relative effects")
-      }
+            datai <- vector()
+            datai <- append(datai,
+                            which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
+            datai <- append(datai,
+                            which(grepl(paste0("^", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
+            datai <- datai[datai!=0]
 
-      if (classes[[i]]=="random") {
-        sd.str <- "\n# Within-class SD\n"
-        match.1 <- paste0("(", strsplit(names(classes)[i], split="\\.")[[1]][2], ")?")
-        match.2 <- paste0("(", wrapparam, ")?")
-        match <- paste0("^sd\\.[A-Z]+\\.", match.1, match.2)
-        temp <- mbnma$BUGSoutput$summary[grepl(match, rownames(mbnma$BUGSoutput$summary)),
-                                         c(3,5,7)]
-        if (!is.vector(temp)) {stop("temp should only be length 1")}
+            datatab <- datasum
+            names(datatab) <- c("Median", "2.5%", "97.5%")
+            datatab$Parameter <- rownames(datatab)
+            datatab <- datatab[datai,c(4,1,2,3)]
 
-        sd.str <- paste(sd.str, data.head,
-                        paste(rownames(mbnma$BUGSoutput$summary)[grepl(match, rownames(mbnma$BUGSoutput$summary))],
-                              neatCrI(temp), sep="\t\t"),
-                        sep="\n")
+            #print(agents[betas[[i]]$agents])
+            #print(betas[[i]]$agents)
+
+            if (param=="D") {
+              if (nrow(datatab)==length(mbnma$network$classes)) {
+                rownames(datatab) <- mbnma$network$classes
+              } else {
+                rownames(datatab) <- mbnma$network$classes[-1]
+              }
+            }
+            print(datatab)
+            cat("\n\n")
+
+
+            if (classes[[i]]=="random") {
+
+              cat(paste0("Within-class SD for ", names(classes)[i], "\n\n"))
+
+              datai <- vector()
+              datai <- append(datai, which(grepl(paste0("^sd\\.", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
+              datai <- append(datai, which(grepl(paste0("^sd\\.", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
+              datai <- datai[datai!=0]
+
+              datatab <- as.matrix(datasum)
+              colnames(datatab) <- c("Median", "2.5%", "97.5%")
+              datatab <- datatab[datai,]
+              print(datatab)
+              cat("\n\n")
+
+            }
+          }
+        }
       }
     }
-    class.sect <- c(head,
-                    paste(class.str, collapse="\n"),
-                    paste(data.str, collapse="\n"))
 
-    if (!is.null(sd.str)) {
-      class.sect <- c(class.sect, sd.str, "\n")
-    }
-
-    class.sect <- paste(class.sect, collapse="\n")
-
-    return(class.sect)
+    invisible(mbnma)
   }
 }
 
@@ -545,26 +667,26 @@ print.modfit.str <- function(mbnma) {
   } else if (mbnma$model.arg$pd=="popt") {
     pd <- "pD calculated using an optimism adjustment ="
   }
-  pd.str <- paste(pd.str, paste(pd, round(mbnma$BUGSoutput$pD,0), sep=" "), sep="\n")
+  pd.str <- paste(pd.str, paste(pd, round(mbnma$BUGSoutput$pD,1), sep=" "), sep="\n")
 
   # Deviance
   dev <- mbnma$BUGSoutput$summary[
     rownames(mbnma$BUGSoutput$summary)=="deviance", 5]
-  dev.str <- paste("Deviance =", round(dev, 0), sep=" ")
+  dev.str <- paste("Deviance =", round(dev, 1), sep=" ")
 
   # Totresdev
   if ("totresdev" %in% mbnma$parameters.to.save) {
     totresdev <- round(
       mbnma$BUGSoutput$summary[
         rownames(mbnma$BUGSoutput$summary)=="totresdev", 5],
-      0)
+      1)
   } else {
     totresdev <- "NOT MONITORED IN MODEL"
   }
   totresdev.str <- paste("Residual deviance =", totresdev, sep=" ")
 
   dic <- mbnma$BUGSoutput$DIC
-  dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 0), "\n", sep=" ")
+  dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 1), "\n", sep=" ")
 
   modfit.sect <- paste(head, pd.str, dev.str, totresdev.str, dic.str, sep="\n")
   return(modfit.sect)
@@ -585,7 +707,7 @@ summary.mbnma <- function(object, ...) {
   if (!is.null(object$model.arg$parameters.to.save)) {
     stop("Cannot use `summary()` method if `parameters.to.save` have been assigned. Use `print()` instead.")
   }
-  if (object$model.arg$fun %in% c("nonparam.up", "nonparam.down")) {
+  if (any(object$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
     stop("Cannot use `summary()` method for non-parametric dose-response functions. Use `print()` instead.")
   }
 
@@ -593,26 +715,42 @@ summary.mbnma <- function(object, ...) {
   rhat.warning(object)
 
   ##### Overall section #####
+
   # Print title
-  title <- "========================================\nDose-response MBNMA\n========================================\n"
+  cat("========================================\nDose-response MBNMA\n========================================\n\n")
 
   # Print DR function
-  overall.sect <- paste("Dose-response function:", object$model.arg$fun, sep=" ")
-  overall.sect <- paste(title, overall.sect, sep="\n")
+  if (length(object$model.arg$fun)==1) {
+    cat(paste("Dose-response function:", object$model.arg$fun, sep=" "))
+  } else if (length(object$model.arg$fun)>1) {
+    drtab <- matrix(object$model.arg$fun, ncol=1)
+    colnames(drtab) <- "Function"
+    rownames(drtab) <- object$network$agents
+
+    cat("Dose-response functions:\n\n")
+    print(drtab)
+  }
+
+
+
+  #overall.sect <- paste(title, overall.sect, sep="\n")
 
   # Print method section
-  method.sect <- print.method.sect(object)
+  #method.sect <- print.method.sect(object)
+  cat(print.method.sect(object))
 
   # Print treatment-level section
-  treat.sect <- print.treat.str(object)
+  #treat.sect <- print.treat.str(object)
+  print.treat.str(object)
 
   # Class-effect section
-  class.sect <- print.class.str(object)
+  print.class.str(object)
 
   # Model fit statistics section
   modfit.sect <- print.modfit.str(object)
 
-  output <- paste(overall.sect, treat.sect, method.sect, "\n", class.sect, "\n\n", modfit.sect, sep="")
+  #output <- paste(overall.sect, treat.sect, method.sect, "\n", class.sect, "\n\n", modfit.sect, sep="")
+  output <- paste("\n\n", modfit.sect, sep="")
   cat(output, ...)
 }
 
@@ -627,7 +765,7 @@ rhat.warning <- function(mbnma, cutoff=1.02) {
   if (length(rhats)>0) {
     msg <- paste0("The following parameters have Rhat values > ",
                   cutoff,
-                  " which could be due to convergence issues:\n")
+                  "\nwhich could be due to convergence issues:\n")
     warning(paste0(msg, paste(rhats, collapse="\n")))
   }
 }
