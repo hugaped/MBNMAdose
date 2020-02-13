@@ -566,7 +566,7 @@ mbnma.jags <- function(data.ab, model,
         fun=="nonparam.down"
       }
 
-      args$inits <- gen.inits(jagsdat, fun=fun, n.chains=args$n.chains)
+      args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
     }
   }
 
@@ -623,11 +623,11 @@ mbnma.jags <- function(data.ab, model,
 #' Ensures model runs properly
 #'
 #' @noRd
-gen.inits <- function(jagsdat, fun, n.chains) {
-  if ("maxdose" %in% names(jagsdat)) {
+gen.inits <- function(jagsdata, fun, n.chains) {
+  if ("maxdose" %in% names(jagsdata)) {
     inits <- list()
     for (i in 1:n.chains) {
-      inits[[length(inits)+1]] <- list("d.1"=gen.init(jagsdat, fun))
+      inits[[length(inits)+1]] <- list("d.1"=gen.init(jagsdata, fun))
     }
   }
   return(inits)
@@ -637,16 +637,16 @@ gen.inits <- function(jagsdat, fun, n.chains) {
 
 
 
-gen.init <- function(jagsdat, fun) {
-  sapply(jagsdat$maxdose, FUN=function(x, direction=fun) {
+gen.init <- function(jagsdata, fun) {
+  sapply(jagsdata$maxdose, FUN=function(x, direction=fun) {
    val <- x-1
 
    if (direction=="nonparam.up") {
      start <- runif(1,0,3)
-     c(NA, seq(start, start+runif(1,0,3), length.out=val), rep(NA, max(jagsdat$maxdose)-(val+1)))
+     c(NA, seq(start, start+runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
    } else if (direction=="nonparam.down") {
      start <- runif(1,-3,0)
-     c(NA, seq(start, start-runif(1,0,3), length.out=val), rep(NA, max(jagsdat$maxdose)-(val+1)))
+     c(NA, seq(start, start-runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
    }
   })
 }
