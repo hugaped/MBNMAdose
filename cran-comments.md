@@ -1,3 +1,10 @@
+## Resubmission
+
+This is a resubmission. In this version I have:
+
+* Ensured that the package has the correct version number
+
+
 ## Test environments
 
 * Ubuntu 16.04 (on travis-ci), R 3.2.4

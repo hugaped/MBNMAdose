@@ -835,10 +835,18 @@ index.dose <- function(data.ab) {
   for (i in seq_along(agents)) {
     df <- data.ab[data.ab$agent==agents[i],]
     doses <- sort(unique(df$dose))
-    maxdose <- append(maxdose, length(doses))
+    #maxdose <- append(maxdose, length(doses))
+    maxdose <- append(maxdose, max(doses))
+
     for (k in seq_along(doses)) {
+
+      if (doses[k]==0) {
+        data.ab$dose[data.ab$agent==agents[i] &
+                       data.ab$dose==doses[k]] <- -1
+      }
+
       data.ab$dose[data.ab$agent==agents[i] &
-                     data.ab$dose==doses[k]] <- -k
+                     data.ab$dose==doses[k]] <- -k -1
     }
   }
   data.ab$dose <- -data.ab$dose

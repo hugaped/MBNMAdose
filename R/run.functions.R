@@ -554,6 +554,7 @@ mbnma.jags <- function(data.ab, model,
     #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
     jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
   }
+  test <<- jagsdata
 
   # Put data from jagsdata into separate R objects
   for (i in seq_along(jagsdata)) {

@@ -455,6 +455,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   }
 
   if (all(grepl("^d\\.1\\[[0-9]+,[0-9]+\\]", rownames(plotdata)))) { # if nonparam function used
+    # Remove dose=0 from all agents except placebo
+    row <- plotdata[grepl("^d\\.1\\[1,1\\]", rownames(plotdata)),]
+    plotdata <- plotdata[!grepl("^d\\.1\\[1,[0-9]+\\]", rownames(plotdata)),]
+    plotdata <- rbind(row, plotdata)
+
     plotdata[["param"]] <- c(1:nrow(plotdata))
   } else {
     plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
