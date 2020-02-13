@@ -642,11 +642,11 @@ gen.init <- function(jagsdata, fun) {
    val <- x-1
 
    if (direction=="nonparam.up") {
-     start <- runif(1,0,3)
-     c(NA, seq(start, start+runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
+     start <- stats::runif(1,0,3)
+     c(NA, seq(start, start+stats::runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
    } else if (direction=="nonparam.down") {
-     start <- runif(1,-3,0)
-     c(NA, seq(start, start-runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
+     start <- stats::runif(1,-3,0)
+     c(NA, seq(start, start-stats::runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
    }
   })
 }
