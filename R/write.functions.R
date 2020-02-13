@@ -714,7 +714,7 @@ write.beta.vars <- function() {
 # "
 
     d.const.down <- "
-d.1[1,k] ~ dnorm(0,0.0001) T(,d.1[1,1])
+d.1[1,k] ~ 0
 for (c in 2:maxdose[k]) {
 d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])
 }
