@@ -594,17 +594,8 @@ mbnma.jags <- function(data.ab, model,
   out <- tryCatch({
     if (parallel==FALSE) {
       result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
-      # result <- R2jags::jags(data=jagsvars, model.file=tmpf,
-      #                        parameters.to.save=parameters.to.save,
-      #                        n.chains=n.chains, args,
-      #                        ...
-      # )
     } else if (parallel==TRUE) {
-      result <- R2jags::jags.parallel(data=jagsvars, model.file=tmpf,
-                             parameters.to.save=parameters.to.save,
-                             n.chains=n.chains,
-                             ...
-      )
+      result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
       class(result) <- class(result)[c(2,1)]
     }
   },
@@ -786,6 +777,8 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   checkmate::assertLogical(UME, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  args <- list(...)
+
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
   likelihood <- likelink[["likelihood"]]
@@ -842,11 +835,8 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   close(tmps)
 
   out <- tryCatch({
-    result <- R2jags::jags(data=jagsvars, model.file=tmpf,
-                           parameters.to.save=parameters.to.save,
-                           n.iter=n.iter,
-                           ...
-    )
+    result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf, n.iter=n.iter,
+                                                 parameters.to.save=parameters.to.save)))
   },
   error=function(cond) {
     message(cond)

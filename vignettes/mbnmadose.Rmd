@@ -513,11 +513,13 @@ In this way we can fully connect up treatments in an otherwise disconnected netw
 
 ### Non-parametric dose-response functions
 
-Two non-parametric monotonic dose-response functions, `"nonparam.up"` and `"nonparam.down"` can be specified in `mbnma.run()`. They impose restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater (most positive for `"nonparam.up"` and more negative for `"nonparam.down"`) than the previous dose, following the method of Owen et al. [-@owen2015]. By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modelled, it cannot be used to connect networks that are disconnected at the treatment-level, but connected at the agent-level.
+In addition to the parametric dose-response functions described above, two non-parametric monotonic dose-response relationships can also be specified in `mbnma.run()`. Setting `fun="nonparam.up"` or `fun="nonparam.down"` can be used to specify a monotonically increasing or decreasing dose-response respectively. This is achieved in the model by imposing restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater/less (for `"nonparam.up"` and `"nonparam.down"` respectively) than the previous dose. The approach results in a similar model to that developed by Owen et al. [-@owen2015]. 
+
+By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modelled, it cannot be used to connect networks that are disconnected at the treatment-level, unlike a parametric MBNMA.
 
 In the case of MBNMA, it may be useful to compare the fit of a non-parametric model to that of a parametric dose-response function, to ensure that fitting a parametric dose-response function does not lead to significantly poorer model fit.
 
-When fitting a non-parametric dose-response model, there is no need to specify arguments for dose-response parameters (`beta.1`, `beta.2`, `beta.3`), as these are ignored in this modelling approach. `method` can still be used to specify either `"common"` or `"random"` effects. It is important to correctly choose either `"nonparam.up"` or `"nonparam.down"` depending on the expected direction of effect, or this can lead to computation errors.
+When fitting a non-parametric dose-response model, there is no need to specify arguments for dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`), as these are ignored in this modelling approach. `method` can still be used to specify either `"common"` or `"random"` effects. It is important to correctly choose either `"nonparam.up"` or `"nonparam.down"` depending on the expected direction of effect, or this can lead to computation errors.
 
 ```{r, results="hide"}
 nonparam <- mbnma.run(tripnet, fun="nonparam.up", method="random")
@@ -526,9 +528,9 @@ nonparam <- mbnma.run(tripnet, fun="nonparam.up", method="random")
 print(nonparam)
 ```
 
-In the output from non-parametric models, `d` parameters represent the relative effect for each treatment (specific dose of a specific agent) versus the reference treatment, similar to in a standard Network Meta-Analysis. The first index of `d` represents the dose identifier, and the second index represents the agent identifier. Information on the specific values of the doses is not included in the model, as only the ordering of them (lowest to highest) is important.
+In the output from non-parametric models, `d.1` parameters represent the relative effect for each treatment (specific dose of a specific agent) versus the reference treatment, similar to in a standard Network Meta-Analysis. The first index of `d` represents the dose identifier, and the second index represents the agent identifier. Information on the specific values of the doses is not included in the model, as only the ordering of them (lowest to highest) is important.
 
-Note that post-estimation functions and plots (e.g. ranking, prediction) cannot be performed on non-parametric models at the moment, as these models are more intended as a confirmation of MBNMA model fit rather than a tool for inference.
+Note that some post-estimation functions (e.g. ranking, prediction) cannot be performed on non-parametric models within the package.
 
 
 ## Post-Estimation

@@ -1,3 +1,11 @@
+# MBNMAdose 0.2.6
+
+## Additions/Changes
+
+- Ensured non-parametric functions are properly monotonic by setting default initial values. Each agent now includes an index dose level of 1, which corresponds to the reference treatment effect (placebo)
+
+
+
 # MBNMAdose 0.2.5
 
 ## Additions/Changes
@@ -11,7 +19,7 @@
 
 ## Bug fixes
 
- - Changed `if {class(x)=="matrix"}` statements to `if {is.matrix(x)}` to address R development changes
+- Changed `if {class(x)=="matrix"}` statements to `if {is.matrix(x)}` to address R development changes
 
 
 ### Major
