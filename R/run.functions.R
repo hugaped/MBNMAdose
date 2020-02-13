@@ -521,7 +521,7 @@ mbnma.run <- function(network,
 
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
-                       parameters.to.save=parameters.to.save,
+                       #parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL, fun=NULL,
                        warn.rhat=FALSE, parallel=FALSE, ...) {
 
@@ -531,12 +531,13 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
-                             null.ok=TRUE, add=argcheck)
+  #checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
+  #                           null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  args <- list(...)
 
   if (is.null(likelihood) & is.null(link)) {
     # For MBNMAtime
@@ -555,8 +556,19 @@ mbnma.jags <- function(data.ab, model,
   } else if (grepl("maxdose", model)) {
     #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
     jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
+
+    # Generate monotonically increasing/decreasing initial values
+    # Check for user-defined initial values
+    if (!("inits" %in% names(args))) {
+      if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
+        fun="nonparam.up"
+      } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
+        fun=="nonparam.down"
+      }
+
+      args$inits <- gen.inits(jagsdat, fun=fun, n.chains=args$n.chains)
+    }
   }
-  test <<- jagsdata
 
   # Put data from jagsdata into separate R objects
   for (i in seq_along(jagsdata)) {
@@ -578,15 +590,19 @@ mbnma.jags <- function(data.ab, model,
   cat(model,file=tmps)
   close(tmps)
 
+  #print(args)
   out <- tryCatch({
     if (parallel==FALSE) {
-      result <- R2jags::jags(data=jagsvars, model.file=tmpf,
-                             parameters.to.save=parameters.to.save,
-                             ...
-      )
+      result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
+      # result <- R2jags::jags(data=jagsvars, model.file=tmpf,
+      #                        parameters.to.save=parameters.to.save,
+      #                        n.chains=n.chains, args,
+      #                        ...
+      # )
     } else if (parallel==TRUE) {
       result <- R2jags::jags.parallel(data=jagsvars, model.file=tmpf,
                              parameters.to.save=parameters.to.save,
+                             n.chains=n.chains,
                              ...
       )
       class(result) <- class(result)[c(2,1)]
@@ -608,6 +624,41 @@ mbnma.jags <- function(data.ab, model,
   return(list("jagsoutput"=out, "jagsdata"=jagsdata))
 }
 
+
+
+
+#' Generate initial values for non-parametric dose-response functions
+#'
+#' Ensures model runs properly
+#'
+#' @noRd
+gen.inits <- function(jagsdat, fun, n.chains) {
+  if ("maxdose" %in% names(jagsdat)) {
+    inits <- list()
+    for (i in 1:n.chains) {
+      inits[[length(inits)+1]] <- list("d.1"=gen.init(jagsdat, fun))
+    }
+  }
+  return(inits)
+}
+
+
+
+
+
+gen.init <- function(jagsdat, fun) {
+  sapply(jagsdat$maxdose, FUN=function(x, direction=fun) {
+   val <- x-1
+
+   if (direction=="nonparam.up") {
+     start <- runif(1,0,3)
+     c(NA, seq(start, start+runif(1,0,3), length.out=val), rep(NA, max(jagsdat$maxdose)-(val+1)))
+   } else if (direction=="nonparam.down") {
+     start <- runif(1,-3,0)
+     c(NA, seq(start, start-runif(1,0,3), length.out=val), rep(NA, max(jagsdat$maxdose)-(val+1)))
+   }
+  })
+}
 
 
 

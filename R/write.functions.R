@@ -723,7 +723,7 @@ d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])
   d.const.up <- "
 d.1[1,k] <- 0
 for (c in 2:maxdose[k]) {
-d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(0,)
+d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(d.1[c-1,k],)
 }
 "
 
