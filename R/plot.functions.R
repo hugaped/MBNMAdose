@@ -455,6 +455,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   }
 
   if (all(grepl("^d\\.1\\[[0-9]+,[0-9]+\\]", rownames(plotdata)))) { # if nonparam function used
+    # Remove dose=0 from all agents except placebo
+    row <- plotdata[grepl("^d\\.1\\[1,1\\]", rownames(plotdata)),]
+    plotdata <- plotdata[!grepl("^d\\.1\\[1,[0-9]+\\]", rownames(plotdata)),]
+    plotdata <- rbind(row, plotdata)
+
     plotdata[["param"]] <- c(1:nrow(plotdata))
   } else {
     plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
@@ -513,7 +518,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
-temp <<- plotdata
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
     ggplot2::geom_point() +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +

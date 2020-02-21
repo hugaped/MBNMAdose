@@ -321,7 +321,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
 
   if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
     DR.1 <- "d.1[dose[i,k], agent[i,k]]"
-    message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3` will be ignored")
+    message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3`, `beta.4` will be ignored")
   }
 
   # Add ifelse statement for multiple DR functions
@@ -714,16 +714,16 @@ write.beta.vars <- function() {
 # "
 
     d.const.down <- "
-d.1[1,k] ~ dnorm(0,0.0001) T(,d.1[1,1])
+d.1[1,k] <- 0
 for (c in 2:maxdose[k]) {
 d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])
 }
 "
 
   d.const.up <- "
-d.1[1,k] ~ dnorm(0,0.0001) T(d.1[1,1],)
+d.1[1,k] <- 0
 for (c in 2:maxdose[k]) {
-d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(-d.1[c-1,k],)
+d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(d.1[c-1,k],)
 }
 "
 

@@ -13,8 +13,7 @@
 #
 #
 # test_that("mbnma.run functions correctly", {
-#   #n.iter=500
-#   n.iter=5000
+#   n.iter=500
 #
 #   # Single parameter DR functions
 #   result <- mbnma.run(network, fun="linear", beta.1="rel", method="common",
