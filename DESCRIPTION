@@ -1,9 +1,9 @@
 Package: MBNMAdose
 Type: Package
 Title: Run Dose-Response MBNMA Models
-Version: 0.2.7.9000
+Version: 0.2.7
 Language: en-GB
-Date: 2020-02-13
+Date: 2020-03-02
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
     person("David", "Mawdsley", role = c("rev")),
     person("Nicky", "Welton", role = c("rev")),

@@ -85,7 +85,7 @@ plot(pred, disp.obs=TRUE, network=network)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/}
+  \item \url{https://doi.org/10.1002/psp4.12091}
 }
 
 }
