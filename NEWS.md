@@ -1,5 +1,9 @@
 # MBNMAdose 0.2.7
 
+## Bug fixes
+ 
+- Ensured stringsAsFactors = FALSE does not affect package in preparation for R 4.0.0.
+- Edited tests to ensure that any checks for matrix objects account for matrix objects now having matrix and array classes
 
 
 # MBNMAdose 0.2.6
