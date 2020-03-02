@@ -665,7 +665,7 @@ plot(pred)
 Shaded counts of the number of studies in the original dataset that investigate each dose of an agent can be plotted over the 95% CrI for each treatment by setting `disp.obs = TRUE`, though this requires that the original `"mbnma.network"` object used to estimate the MBNMA be provided via `network`.
 
 ```{r}
-plot(pred, disp.obs = TRUE, network=tripnet)
+plot(pred, disp.obs = TRUE)
 ```
 
 This can be used to identify any extrapolation/interpretation of the dose-response that might be occurring for a particular agent. As you can see, more observations typically leads to tighter 95% CrI for the predicted response at a particular point along the dose-response curve.
@@ -676,7 +676,7 @@ We can also plot the results of a "split" Network Meta-Analysis (NMA) in which a
 alognet <- mbnma.network(alog_pcfb)
 alog.emax <- mbnma.emax(alognet, method="random")
 pred <- predict(alog.emax, E0=0, n.dose=20)
-plot(pred, overlay.split = TRUE, network=alognet, method="random")
+plot(pred, overlay.split = TRUE, method="random")
 ```
 
 By plotting these, as well as observing how responses can be extrapolated/interpolated, we can also see which doses are likely to be providing most information to the dose-response relationship. The tighter 95% CrI on the predicted responses from the MBNMA also show that modelling the dose-response function also gives some additional precision even at doses for which there is information available.
