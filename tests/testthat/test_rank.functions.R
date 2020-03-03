@@ -32,8 +32,8 @@
 #   expect_equal(names(rank), "d.1")
 #   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
 #   expect_equal(class(rank[[1]]$summary), "data.frame")
-#   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
-#   expect_equal(class(rank[[1]]$prob.matrix), "matrix")
+#   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
+#   expect_equal("matrix" %in% class(rank[[1]]$prob.matrix), TRUE)
 #   expect_error(print(rank), NA)
 #   expect_equal(class(summary(rank)[[1]]), "data.frame")
 #
@@ -42,8 +42,8 @@
 #   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
 #   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
 #   expect_equal(class(rank[[2]]$summary), "data.frame")
-#   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
-#   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
+#   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
+#   expect_equal("matrix" %in% class(rank[[2]]$prob.matrix), TRUE)
 #   expect_error(print(rank), NA)
 #   expect_equal(class(summary(rank)[[1]]), "data.frame")
 #
@@ -88,8 +88,8 @@
 #   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
 #   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
 #   expect_equal(class(rank[[2]]$summary), "data.frame")
-#   expect_equal(class(rank[[1]]$rank.matrix), "matrix")
-#   expect_equal(class(rank[[2]]$prob.matrix), "matrix")
+#   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
+#   expect_equal("matrix" %in% class(rank[[2]]$prob.matrix), TRUE)
 #   expect_error(print(rank), NA)
 #   expect_equal(class(summary(rank)[[1]]), "data.frame")
 #
@@ -111,8 +111,8 @@
 #   expect_equal(names(rank), "Predictions")
 #   expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
 #   expect_equal(class(rank$Predictions$summary), "data.frame")
-#   expect_equal(class(rank$Predictions$rank.matrix), "matrix")
-#   expect_equal(class(rank$Predictions$prob.matrix), "matrix")
+#   expect_equal("matrix" %in% class(rank$Predictions$rank.matrix), TRUE)
+#   expect_equal("matrix" %in% class(rank$Predictions$prob.matrix), TRUE)
 #
 #
 #   doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
@@ -122,8 +122,8 @@
 #   expect_equal(names(rank), "Predictions")
 #   expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "direction"))
 #   expect_equal(class(rank$Predictions$summary), "data.frame")
-#   expect_equal(class(rank$Predictions$rank.matrix), "matrix")
-#   expect_equal(class(rank$Predictions$prob.matrix), "matrix")
+#   expect_equal("matrix" %in% class(rank$Predictions$rank.matrix), TRUE)
+#   expect_equal("matrix" %in% class(rank$Predictions$prob.matrix), TRUE)
 #
 #   expect_equal(nrow(rank$Predictions$summary), length(unlist(doses)))
 #

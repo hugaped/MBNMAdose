@@ -28,7 +28,7 @@ summary.mbnma.predict <- function(object, ...) {
       df <- data.frame("agent"=names(predict)[i],
                        "dose"=as.numeric(as.character(names(predict[[i]])[k])),
                        "mean"=mean(predict[[i]][[k]]),
-                       "sd"=stats::sd(predict[[i]][[k]]),
+                       "sd"=stats::sd(predict[[i]][[k]]), stringsAsFactors = TRUE,
                        ...
       )
       output <- rbind(output, cbind(df, t(quant)))

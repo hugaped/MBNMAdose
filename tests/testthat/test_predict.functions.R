@@ -85,7 +85,7 @@
 #   expect_equal(linear$model.arg$link, pred$link)
 #   expect_identical(names(pred$predicts), linear$network$agents)
 #   expect_silent(as.numeric(names(pred$predicts[[4]])))
-#   expect_equal(class(pred$predicts[[4]][[4]]), "matrix")
+#   expect_equal("matrix" %in% class(pred$predicts[[4]][[4]]), TRUE)
 #   expect_equal(nrow(pred$predicts[[4]][[4]]), linear$BUGSoutput$n.sims)
 #   expect_equal(all(pred$predicts[[2]][[2]][1] < 0), TRUE)
 #   expect_error(print(pred), NA)
