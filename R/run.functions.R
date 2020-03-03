@@ -451,12 +451,17 @@ mbnma.run <- function(network,
   jagsdata <- result.jags[["jagsdata"]]
 
   if (pd == "pd.kl" | pd == "popt") {
-    if (pd=="pd.kl") {
-      temp <- rjags::dic.samples(result$model, n.iter=1000, type="pD")
-    } else if (pd=="popt") {
-      temp <- rjags::dic.samples(result$model, n.iter=1000, type="popt")
+    if (parallel==TRUE) {
+      warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
+      pd <- "pv"
+    } else if (parallel==FALSE) {
+      if (pd=="pd.kl") {
+        temp <- rjags::dic.samples(result$model, n.iter=1000, type="pD")
+      } else if (pd=="popt") {
+        temp <- rjags::dic.samples(result$model, n.iter=1000, type="popt")
+      }
+      result$BUGSoutput$pD <- sum(temp$penalty)
     }
-    result$BUGSoutput$pD <- sum(temp$penalty)
 
   } else if (pd == "plugin") {
     # plugin method
@@ -496,8 +501,7 @@ mbnma.run <- function(network,
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
-  #result[["agents"]] <- network[["agents"]]
-  #result[["treatments"]] <- network[["treatments"]]
+
   if (length(class.effect)>0) {
     result[["classes"]] <- network[["classes"]]
   }
@@ -596,7 +600,7 @@ mbnma.jags <- function(data.ab, model,
       result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
     } else if (parallel==TRUE) {
       result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
-      class(result) <- class(result)[c(2,1)]
+      #class(result) <- class(result)[c(2,1)]
     }
   },
   error=function(cond) {

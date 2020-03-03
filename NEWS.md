@@ -1,5 +1,9 @@
 # MBNMAdose 0.2.8
 
+## Bug fixes
+
+- Ensured models run in parallel when `parallel=TRUE` and added a warning when `pd` is set to `"pd.kl"` or `"popt"` for these models.
+
 
 
 # MBNMAdose 0.2.7
