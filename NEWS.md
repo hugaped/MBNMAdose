@@ -6,6 +6,7 @@
 
 ## Additions/changes
 
+- `rank.mbnma()` also calculates cumulative ranking probabilities and stores them in `cum.matrix`
 - Data from `getjagsdata()` contains `studyID` and has been added to `mbnma` objects
 - Added studyID column to output from `devplot()` and `fitplot()`
 
