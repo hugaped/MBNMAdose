@@ -3,6 +3,13 @@
 ## Bug fixes
 
 - Ensured models run in parallel when `parallel=TRUE` and added a warning when `pd` is set to `"pd.kl"` or `"popt"` for these models.
+- Fix in `drop.discon` so that it properly drops all disconnected studies
+- Plot legends have more meaningful labels
+
+## Additions/Changes
+
+- Added `studyID` column to `devplot()` and `fitplot()` for easy reference of individual studies
+- `mbnma.network()` sorts studies by number of arms (descending), then studyID and treatment/agent code in order to match the way in which it is used by `getjagsdata()`
 
 
 
