@@ -368,6 +368,11 @@ add_index <- function(data.ab) {
     output[["classkey"]] <- classkey
   }
 
+  # Sort by order that data will eventually be used in getjagsdata
+  output[["data.ab"]] <- dplyr::arrange(output[["data.ab"]], dplyr::desc(output[["data.ab"]]$narm),
+                                        output[["data.ab"]]$studyID,
+                                        output[["data.ab"]]$arm)
+
   return(output)
 }
 
@@ -803,7 +808,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   data.ab$treatment <- as.character(factor(data.ab$treatment, labels=network$treatments))
 
   drops <- vector()
-  studies <- unique(data.ab$studyID)
+  studies <- unique(as.character(data.ab$studyID))
   for (i in seq_along(studies)) {
     if (any(discon %in% data.ab$treatment[data.ab$studyID==studies[i]])) {
       drops <- append(drops, studies[i])
@@ -811,7 +816,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   }
 
   #data.ab <- data.ab[!(data.ab$treatment %in% discon),]
-  data.ab <- data.ab[!(data.ab$studyID %in% drops),]
+  data.ab <- data.ab[!(as.character(data.ab$studyID) %in% drops),]
   trt.labs <- network$treatments[!(network$treatments %in% discon)]
 
   data.ab$treatment <- as.numeric(factor(data.ab$treatment, levels = trt.labs))
