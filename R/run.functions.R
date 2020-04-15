@@ -487,6 +487,7 @@ mbnma.run <- function(network,
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
                     "fun"=fun, "user.fun"=user.fun,
                     "jagscode"=model,
+                    "jagsdata"=jagsdata,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
                     "beta.4"=beta.4,
@@ -584,8 +585,10 @@ mbnma.jags <- function(data.ab, model,
 
   # Take names of variables in jagsdata for use in rjags
   jagsvars <- list()
-  for (i in seq_along(names(jagsdata))) {
-    jagsvars[[i]] <- names(jagsdata)[i]
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL # Remove studyID from jagsdata (not used in model)
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
   }
 
   # Create a temporary model file

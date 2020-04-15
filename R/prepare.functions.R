@@ -571,6 +571,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
 
+  df$studynam <- df$studyID
   df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
   for (i in seq_along(datavars)) {
@@ -585,7 +586,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   NS <- max(as.numeric(df$studyID))
 
   datalist <- list(get(datavars[1]), get(datavars[2]),
-                   narm=narm, NS=NS)
+                   narm=narm, NS=NS, studyID=vector())
   names(datalist)[1:2] <- datavars
 
   if (level=="agent") {
@@ -619,6 +620,8 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   for (i in 1:max(as.numeric(df$studyID))) {
     for (k in 1:max(df$arm[df$studyID==i])) {
+      datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
+                                                       df$arm==k])
       for (m in seq_along(datavars)) {
         datalist[[m]][i,k] <- df[[datavars[m]]][as.numeric(df$studyID)==i &
                               df$arm==k]
