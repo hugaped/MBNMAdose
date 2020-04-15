@@ -1026,6 +1026,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
     dev.df <- get.theta.dev(mbnma, param=dev.type)
   }
 
+  # Add studyID in addition to study index from model and sort data frame
+  dev.df$studyID <- mbnma$model.arg$jagsdata$studyID
+  dev.df <- dplyr::arrange(dev.df, dev.df$study, dev.df$arm)
+
   # Plots the residual deviances
   if (mbnma$type=="time") {
     xlab <- "Follow-up count"
@@ -1204,6 +1208,9 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   } else {
     theta.df <- get.theta.dev(mbnma, param="theta")
   }
+
+  # Add studyID in addition to study index from model
+  theta.df$studyID <- mbnma$model.arg$jagsdata$studyID
 
 
   # Obtain raw responses to plot over fitted

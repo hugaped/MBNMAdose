@@ -4,7 +4,10 @@
 
 - Ensured models run in parallel when `parallel=TRUE` and added a warning when `pd` is set to `"pd.kl"` or `"popt"` for these models.
 
+## Additions/changes
 
+- Data from `getjagsdata()` contains `studyID` and has been added to `mbnma` objects
+- Added studyID column to output from `devplot()` and `fitplot()`
 
 # MBNMAdose 0.2.7
 
