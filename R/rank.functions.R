@@ -404,3 +404,22 @@ sumrank <- function(rank.mat) {
 
   return(summary.rank)
 }
+
+
+
+
+
+
+calcauc <- function(df) {
+  str <- paste(paste(c(df$Var1[1], df$Var1, df$Var1[nrow(df)], df$Var1[1]),
+                     c(0, df$value, 0, 0),
+                     sep=" "),
+               collapse=",")
+  str <- paste0("POLYGON((", str, "))")
+
+  polygon <- rgeos::readWKT(str)
+  #temp$auc <- rgeos::gArea(polygon)
+  auc <- rgeos::gArea(polygon)
+  #auc <- rep(auc, nrow(temp))
+  return(auc)
+}

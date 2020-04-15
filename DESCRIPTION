@@ -45,6 +45,7 @@ Suggests:
     RColorBrewer (>= 1.1-2),
     mcmcplots (>= 0.4.3),
     testthat (>= 1.0.2),
+    rgeos (>= 0.5-2),
     knitr,
     rmarkdown
 SystemRequirements: JAGS (>= 4.3.0) (http://mcmc-jags.sourceforge.net)
