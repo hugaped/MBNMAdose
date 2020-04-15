@@ -30,7 +30,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' @details Agents/classes for arms that have dose = 0 will be relabelled as `"Placebo"`.
 #' Missing values (`NA`) cannot be included in the dataset. Single arm studies cannot
-#' be included.
+#' be included. Data will be sorted by the study with the most arms.
 #'
 #' @return `mbnma.network()`: An object of `class("mbnma.network")` which is a list containing:
 #' * `description` A short description of the network
