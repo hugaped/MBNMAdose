@@ -1235,6 +1235,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   theta.df <- dplyr::arrange(theta.df, theta.df$study, theta.df$facet, theta.df$fupdose)
 
+
   # Axis labels
   if (mbnma$type=="time") {
     xlab <- "Follow-up count"
@@ -1451,7 +1452,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
       ggplot2::facet_wrap(~factor(densitydata$comp)) +
-      ggplot2::theme_bw()
+      ggplot2::theme_bw() +
+      ggplot2::labs(linetype="Evidence", fill="Evidence")
   }
 
   if (identical(sort(plot.type), c("density", "forest"))) {
