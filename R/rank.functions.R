@@ -183,8 +183,9 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 #' @details Ranking cannot currently be performed on non-parametric dose-response MBNMA
 #'
 #' @return An object of `class("mbnma.rank")` which is a list containing a summary data
-#' frame, a matrix of rankings for each MCMC iteration, and a matrix of probabilities
-#' that each agent has a particular rank, for each parameter that has been ranked.
+#' frame, a matrix of rankings for each MCMC iteration, a matrix of probabilities
+#' that each agent has a particular rank, and a matrix of cumulative ranking probabilities
+#' for each agent, for each parameter that has been ranked.
 #'
 #' @examples
 #' \donttest{
@@ -320,11 +321,19 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
       #colnames(rank.mat) <- to.rank
       colnames(rank.mat) <- agents
 
+      # Calculate ranking probabilities
+      prob.mat <- calcprob(rank.mat, treats=agents)
+
+      # Calculate cumulative ranking probabilities
+      cum.mat <- apply(prob.mat, MARGIN=2,
+                       FUN=function(col) {cumsum(col)})
+
       rank.result[[params[i]]] <-
         list("summary"=sumrank(rank.mat),
              #"prob.matrix"=calcprob(rank.mat, treats=to.rank),
-             "prob.matrix"=calcprob(rank.mat, treats=agents),
+             "prob.matrix"=prob.mat,
              "rank.matrix"=rank.mat,
+             "cum.matrix"=cum.mat,
              "direction"=direction)
 
     }

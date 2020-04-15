@@ -30,7 +30,7 @@
 #
 #   rank <- rank.mbnma(linear.run)
 #   expect_equal(names(rank), "d.1")
-#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
+#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "direction"))
 #   expect_equal(class(rank[[1]]$summary), "data.frame")
 #   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
 #   expect_equal("matrix" %in% class(rank[[1]]$prob.matrix), TRUE)
@@ -40,7 +40,7 @@
 #
 #   rank <- rank.mbnma(emax)
 #   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
-#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
+#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "direction"))
 #   expect_equal(class(rank[[2]]$summary), "data.frame")
 #   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
 #   expect_equal("matrix" %in% class(rank[[2]]$prob.matrix), TRUE)
@@ -86,7 +86,7 @@
 #   # With no placebo data
 #   rank <- rank.mbnma(emax.noplac)
 #   expect_equal(sort(names(rank)), sort(c("d.emax", "d.ed50")))
-#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "direction"))
+#   expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "cum.matrix", "direction"))
 #   expect_equal(class(rank[[2]]$summary), "data.frame")
 #   expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
 #   expect_equal("matrix" %in% class(rank[[2]]$prob.matrix), TRUE)
