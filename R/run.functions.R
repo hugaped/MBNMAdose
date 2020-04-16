@@ -84,9 +84,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.
 #' @param autojags A boolean value that indicates whether the model should be continually updated until
 #' it has converged below a specific cutoff of `Rhat`
-#' @param Rhat A cutoff value for the Gelman-Rubin convergence diagnostic. Unless all parameters have
-#' Rhat values lower than this the model will continue to sequentially update up to a maximum of `n.update`.
-#' Default is `1.1`
+#' @param Rhat A cutoff value for the Gelman-Rubin convergence diagnostic\insertCite{gelmanrubin}{MBNMAdose}.
+#' Unless all parameters have Rhat values lower than this the model will continue to sequentially update up
+#' to a maximum of `n.update`. Default is `1.1`
 #' @param n.update The maximum number of updates. Each update is run for 1000 iterations, after which the
 #' Rhat values of all parameters are checked against `Rhat`. Default maximum updates
 #' is `10` (i.e. 10,000 additional iterations in total).
