@@ -82,6 +82,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @param n.burnin length of burn in, i.e. number of iterations to discard at the
 #' beginning. Default is `n.iter/2``, that is, discarding the first half of the
 #' simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.
+#' @param autojags A boolean value that indicates whether the model should be continually updated until
+#' it has converged below a specific cutoff of `Rhat`
+#' @param Rhat A cutoff value for the Gelman-Rubin convergence diagnostic. Unless all parameters have
+#' Rhat values lower than this the model will continue to sequentially update up to a maximum of `n.update`.
+#' Default is `1.1`
+#' @param n.update The maximum number of updates. Each update is run for 1000 iterations, after which the
+#' Rhat values of all parameters are checked against `Rhat`. Default maximum updates
+#' is `10` (i.e. 10,000 additional iterations in total).
 #' @param ... Arguments to be sent to R2jags.
 #'
 #'
@@ -295,6 +303,7 @@ mbnma.run <- function(network,
                       model.file=NULL,
                       n.iter=10000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
+                      autojags=FALSE, Rhat=1.1, n.update=10,
                       arg.params=NULL, ...
 ) {
 
@@ -446,6 +455,7 @@ mbnma.run <- function(network,
                             n.chains=n.chains,
                             n.burnin=n.burnin,
                             parallel=parallel,
+                            autojags=autojags, Rhat=Rhat, n.update=n.update,
                             ...)
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
@@ -528,7 +538,9 @@ mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        #parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL, fun=NULL,
-                       warn.rhat=FALSE, parallel=FALSE, ...) {
+                       warn.rhat=FALSE, parallel=FALSE,
+                       autojags=FALSE, Rhat=1.1, n.update=10,
+                       ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -540,6 +552,9 @@ mbnma.jags <- function(data.ab, model,
   #                           null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
+  checkmate::assertNumeric(n.update, lower=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
@@ -601,6 +616,11 @@ mbnma.jags <- function(data.ab, model,
   out <- tryCatch({
     if (parallel==FALSE) {
       result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
+
+      # AUtomatically update
+      if (autojags==TRUE) {
+        result <- R2jags::autojags(result, Rhat=Rhat, n.update=n.update, n.iter=1000, refresh=100)
+      }
     } else if (parallel==TRUE) {
       result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
       #class(result) <- class(result)[c(2,1)]
