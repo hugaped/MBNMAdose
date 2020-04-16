@@ -861,8 +861,10 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
 
   # Take names of variables in jagsdata for use in rjags
   jagsvars <- list()
-  for (i in seq_along(names(jagsdata))) {
-    jagsvars[[i]] <- names(jagsdata)[i]
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL # Remove studyID from jagsdata (not used in model)
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
   }
 
   # Create a temporary model file
