@@ -294,7 +294,7 @@ mbnma.run <- function(network,
                       priors=NULL,
                       model.file=NULL,
                       n.iter=10000, n.chains=3,
-                      n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
+                      n.burnin=floor(n.iter/2), n.thin=1,
                       arg.params=NULL, ...
 ) {
 
