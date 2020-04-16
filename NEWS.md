@@ -7,6 +7,7 @@
 ## Additions/changes
 
 - `cumrank()` added for cumulative ranking plots. Also calculates SUCRA values for each agent and dose-response parameter
+- `autojags` options added for `mbnma.run()` to allow users to run models until they converge (convergence defined by `Rhat`)
 - `rank.mbnma()` also calculates cumulative ranking probabilities and stores them in `cum.matrix`
 - Data from `getjagsdata()` contains `studyID` and has been added to `mbnma` objects
 - Added studyID column to output from `devplot()` and `fitplot()`

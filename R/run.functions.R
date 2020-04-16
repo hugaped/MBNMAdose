@@ -276,6 +276,16 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' mcmcplots::caterplot(result, "d.1")
 #'
 #'
+#'####### Automatically run jags until convergence is reached #########
+#'
+#' # Rhat of 1.08 is set as the criteria for convergence
+#' #on all monitored parameters
+#' conv.res <- mbnma.run(network, fun="emax",
+#'               beta.1="rel", beta.2="rel", method="random",
+#'               n.iter=10000, n.burnin=9000,
+#'               autojags=TRUE, Rhat=1.08, n.update=8)
+#'
+#'
 #' ########## Output ###########
 #'
 #' # Print R2jags output and summary
