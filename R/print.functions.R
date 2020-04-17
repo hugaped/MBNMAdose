@@ -625,7 +625,7 @@ summary.mbnma <- function(object, ...) {
 
 
 
-rhat.warning <- function(mbnma, cutoff=1.02) {
+rhat.warning <- function(mbnma, cutoff=1.2) {
   rhats <- mbnma$BUGSoutput$summary[,colnames(mbnma$BUGSoutput$summary)=="Rhat"]
   rhats <- names(rhats)[rhats>cutoff]
   if (length(rhats)>0) {
