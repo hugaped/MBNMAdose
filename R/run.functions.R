@@ -624,15 +624,17 @@ mbnma.jags <- function(data.ab, model,
   cat(model,file=tmps)
   close(tmps)
 
-  #print(args)
   out <- tryCatch({
     if (parallel==FALSE) {
-      result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
+      result <- do.call(R2jags::jags, c(args, list(data = jagsvars,
+                                                   model.file = tmpf)))
 
       # AUtomatically update
       if (autojags==TRUE) {
         result <- R2jags::autojags(result, Rhat=Rhat, n.update=n.update, n.iter=1000, refresh=100)
-      }
+      } else if (autojags==FALSE) {
+          result <- result
+        }
     } else if (parallel==TRUE) {
       if (autojags==TRUE) {
         stop("autojags=TRUE cannot be used with parallel=TRUE")
@@ -644,7 +646,7 @@ mbnma.jags <- function(data.ab, model,
   },
   error=function(cond) {
     message(cond)
-    return(list("error"=cond))
+    return(list(error=cond))
   }
   )
 
