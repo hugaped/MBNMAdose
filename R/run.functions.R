@@ -600,18 +600,20 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  # Remove studyID from jagsdata (not used in model)
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL
+
   # Put data from jagsdata into separate R objects
-  for (i in seq_along(jagsdata)) {
+  for (i in seq_along(tempjags)) {
     ##first extract the object value
-    temp <- jagsdata[[i]]
+    temp <- tempjags[[i]]
     ##now create a new variable with the original name of the list item
-    eval(parse(text=paste(names(jagsdata)[[i]],"<- temp")))
+    eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
   }
 
   # Take names of variables in jagsdata for use in rjags
   jagsvars <- list()
-  tempjags <- jagsdata
-  tempjags[["studyID"]] <- NULL # Remove studyID from jagsdata (not used in model)
   for (i in seq_along(names(tempjags))) {
     jagsvars[[i]] <- names(tempjags)[i]
   }
@@ -632,6 +634,10 @@ mbnma.jags <- function(data.ab, model,
         result <- R2jags::autojags(result, Rhat=Rhat, n.update=n.update, n.iter=1000, refresh=100)
       }
     } else if (parallel==TRUE) {
+      if (autojags==TRUE) {
+        stop("autojags=TRUE cannot be used with parallel=TRUE")
+      }
+
       result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
       #class(result) <- class(result)[c(2,1)]
     }
