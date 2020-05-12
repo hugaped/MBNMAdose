@@ -18,6 +18,7 @@
  
 - Ensured stringsAsFactors = FALSE does not affect package in preparation for R 4.0.0.
 - Edited tests to ensure that any checks for matrix objects account for matrix objects now having matrix and array classes
+- Allowed number of responders for binomial data to be greater than or equal to zero (rather than greater than zero)
 
 
 # MBNMAdose 0.2.6

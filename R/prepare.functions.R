@@ -176,8 +176,8 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
   var_tmp <- c("se", var_bin, "E")
   for (i in seq_along(var_tmp)) {
     if (var_tmp[i] %in% names(data.ab)) {
-      if (!all(data.ab[[var_tmp[i]]]>0)) {
-        stop(paste("All values for", var_tmp[i], "must be >0", sep=" "))
+      if (!all(data.ab[[var_tmp[i]]]>=0)) {
+        stop(paste("All values for", var_tmp[i], "must be >=0", sep=" "))
       }
     }
   }
