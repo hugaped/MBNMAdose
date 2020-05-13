@@ -11,6 +11,7 @@
 - `rank.mbnma()` also calculates cumulative ranking probabilities and stores them in `cum.matrix`
 - Data from `getjagsdata()` contains `studyID` and has been added to `mbnma` objects
 - Added studyID column to output from `devplot()` and `fitplot()`
+- `plot.nodesplit()` scales y-axis if density is >50 times larger in panel with highest density than in panel with lowest density. This improves legibility of the graph.
 
 # MBNMAdose 0.2.7
 

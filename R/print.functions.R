@@ -268,6 +268,136 @@ summary.nma.nodesplit <- function(object, ...) {
 
 
 
+#' Prints summary results from a nodesplit object
+#'
+#' @param x An object of `class("nodesplit")`
+#' @param ... further arguments passed to or from other methods
+#'
+#' @export
+print.nodesplit <- function(x, ...) {
+  checkmate::assertClass(x, "nodesplit")
+
+  width <- "\t\t"
+  output <- "========================================\nNode-splitting analysis of inconsistency\n========================================\n"
+
+  comparisons <- names(x)
+  colnam <- "comparison\tp.value\t\t\tMedian (95% CrI)"
+  paramsect <- colnam
+  for (i in seq_along(comparisons)) {
+    pval <- signif(x[[i]]$p.values,
+                   max(3L, getOption("digits") - 3L))
+    tab <- x[[i]]$quantiles
+
+    heading <- paste(names(x)[i], pval, sep=width)
+    direct <- paste("-> direct", "", neatCrI(tab$direct), sep=width)
+    indirect <- paste("-> indirect", "", neatCrI(tab$indirect), sep=width)
+
+    if ("mbnma" %in% names(x[[i]]$quantiles)) {
+      nma <- paste("-> MBNMA", "", neatCrI(tab$mbnma), sep=width)
+    } else if ("nma" %in% names(x[[i]]$quantiles)) {
+      nma <- paste("-> NMA", "\t", neatCrI(tab$nma), sep=width)
+    }
+
+    out <- paste(heading, direct, indirect, nma, "", sep="\n")
+
+    paramsect <- paste(paramsect, out, sep="\n")
+  }
+  output <- append(output, paramsect)
+  cat(output, ...)
+}
+
+
+
+
+
+#' Generates a summary data frame for nodesplit objects
+#'
+#' @param object An object of `class("nodesplit")`
+#' @param ... further arguments passed to or from other methods
+#'
+#' @export
+summary.nodesplit <- function(object, ...) {
+  checkmate::assertClass(object, "nodesplit")
+
+  if ("quantiles" %in% names(object[[1]])) {
+    type <- "dose"
+  } else if ("quantiles" %in% names(object[[1]][[1]])) {
+    type <- "time"
+  } else {stop("Type of MBNMA cannot be identified (dose or time)")}
+
+  sum.mat <- matrix(ncol=3)
+  comp <- vector()
+  time.param <- vector()
+  evidence <- vector()
+  pvals <- vector()
+
+  for (i in seq_along(object)) {
+
+    if (type=="dose") {
+      post <- object[[i]]$quantiles
+
+      sum.mat <- rbind(sum.mat, post$direct)
+      evidence <- c(evidence, "Direct")
+
+      sum.mat <- rbind(sum.mat, post$indirect)
+      evidence <- c(evidence, "Indirect")
+
+      if ("mbnma" %in% names(object[[i]]$quantiles)) {
+        sum.mat <- rbind(sum.mat, post$mbnma)
+        evidence <- c(evidence, "MBNMA")
+      } else if ("nma" %in% names(object[[i]]$quantiles)) {
+        sum.mat <- rbind(sum.mat, post$nma)
+        evidence <- c(evidence, "NMA")
+      }
+
+      pvals <- c(pvals, rep(object[[i]]$p.values, 3))
+      comp <- c(comp, rep(names(object)[i], 3))
+    } else if (type=="time") {
+      for (k in seq_along(object[[i]])) {
+        post <- object[[i]][[k]]$quantiles
+
+        sum.mat <- rbind(sum.mat, post$direct)
+        evidence <- c(evidence, "Direct")
+
+        sum.mat <- rbind(sum.mat, post$indirect)
+        evidence <- c(evidence, "Indirect")
+
+        pvals <- c(pvals, rep(object[[i]][[k]]$p.values, 2))
+        time.param <- c(time.param, rep(names(object[[i]])[k], 2))
+        comp <- c(comp, rep(names(object)[i], 2))
+      }
+    }
+  }
+  sum.mat <- round(sum.mat[-1,], digits = max(3L, getOption("digits") - 5L))
+  pvals <- round(pvals, max(3L, getOption("digits") - 5L))
+
+  if (type=="time") {
+    sum.df <- data.frame(comp, time.param,
+                         evidence, sum.mat[,2],
+                         sum.mat[,1], sum.mat[,3],
+                         pvals
+    )
+
+    names(sum.df) <- c("Comparison", "Parameter", "Evidence", "Median",
+                       "2.5%", "97.5%", "p.value")
+  } else if (type=="dose") {
+    sum.df <- data.frame(comp,
+                         evidence, sum.mat[,2],
+                         sum.mat[,1], sum.mat[,3],
+                         pvals, ...
+    )
+
+    names(sum.df) <- c("Comparison", "Evidence", "Median",
+                       "2.5%", "97.5%", "p.value")
+  }
+  return(sum.df)
+}
+
+
+
+
+
+
 #' Neatly prints a summary of results
 #'
 #' @inheritParams predict.mbnma

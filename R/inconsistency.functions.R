@@ -611,3 +611,435 @@ check.indirect.drops <- function(data=data, comp) {
 }
 
 
+
+
+
+
+
+#' Node-splitting model for testing consistency at the treatment level using MBNMA
+#'
+#' Splits contributions for a given set of treatment comparisons into direct and
+#' indirect evidence. A discrepancy between the two suggests that the consistency
+#' assumption required for NMA and MBNMA may violated.
+#'
+#' @param drop.discon A boolean object that indicates whether to drop treatments
+#' that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
+#' this could lead to identification of nodesplit comparisons that are not connected
+#' to the network reference treatment, or lead to errors in running the nodesplit models, though it
+#' can be useful for error checking.
+#' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
+#' The matrix must have two columns indicating each treatment for each comparison. Values can
+#' either be character (corresponding to the treatment names given in `network`) or
+#' numeric (corresponding to treatment codes within the `network` - note that these
+#' may change if `drop.discon = TRUE`).
+#' @inheritParams mbnma.run
+#'
+#' @examples
+#' \donttest{
+#' # Using the triptans data
+#' network <- mbnma.network(HF2PPITT)
+#'
+#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'   method="common")
+#'
+#'
+#'
+#' #### To perform nodesplit on selected comparisons ####
+#'
+#' # Check for closed loops of treatments with independent evidence sources
+#' loops <- inconsistency.loops(network$data.ab)
+#'
+#' # This...
+#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
+#'
+#' #...is the same as...
+#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#'              method="random", comparisons=rbind(c(6, 12)))
+#'
+#'
+#' # Plot results
+#' plot(split, plot.type="density") # Plot density plots of posterior densities
+#' plot(split, plot.type="forest") # Plot forest plots of direct and indirect evidence
+#'
+#' # Print and summarise results
+#' print(split)
+#' summary(split) # Generate a data frame of summary results
+#' }
+#' @export
+mbnma.nodesplit <- function(network, fun="linear",
+                            beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
+                            method="common",
+                            comparisons=NULL,
+                            ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
+  checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Load data
+  data.ab <- network$data.ab
+  trt.labs <- network$treatments
+
+
+  # Identify closed loops of treatments
+  if (is.null(comparisons)) {
+    comparisons <- inconsistency.loops(data.ab)
+  } else {
+    if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
+      stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
+    }
+    if (is.data.frame(comparisons)) {
+      if (all(c("t1", "t2") %in% names(comparisons))) {
+        comparisons <- data.frame(comparisons$t1, comparisons$t2)
+      }
+      comparisons <- as.matrix(comparisons)
+    }
+    if (ncol(comparisons)!=2) {
+      stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
+    }
+    if (is.numeric(comparisons)) {
+      # To ensure numbers correspond to original treatment numbers even if treatments are dropped from the network
+      comparisons <- apply(comparisons, MARGIN=2, FUN=function(x) (network$treatments[x]))
+    }
+    if (is.character(comparisons)) {
+      if (!all(comparisons %in% trt.labs)) {
+        stop("Treatment names given in `comparisons` do not match those within `network` or they match treatments that have been dropped from the network due to being disconnected")
+      }
+      comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
+    }
+    if (!all(comparisons %in% data.ab$treatment)) {
+      stop("Treatment codes given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
+    }
+
+    # Sort comparisons so that lowest is t1
+    comparisons <- t(apply(comparisons, MARGIN=1, FUN=function(x) {sort(x)}))
+
+    # Ensure comparisons are nested within inconsistency.loops
+    check <- paste(comparisons[,1], comparisons[,2], sep="_")
+    fullcomp <- inconsistency.loops(data.ab)
+    match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
+    if (any(is.na(match))) {
+      out <- comparisons[is.na(match),]
+      out <- matrix(unlist(lapply(out, FUN=function(x) {trt.labs[x]})), ncol=2)
+      printout <- c()
+      for (i in 1:nrow(out)) {
+        printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
+      }
+      stop(cat(paste0("\nThe following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
+                      printout, "\n\n")))
+    }
+  }
+
+
+  ##### Run MBNMA #####
+  mbnma.jags <- mbnma.run(network, method=method, fun=fun,
+                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
+                          warn.rhat=FALSE, ...)
+
+
+  # Get comparison treatment names (in format for get.relative) - NEEDS IMPROVEMENT!
+  compnames <- mbnma.jags$network$treatments[unique(c(comparisons[,1], comparisons[,2]))]
+
+  temp <- sapply(compnames,
+                 FUN=function(x) {
+                   y <- strsplit(x, split="_")[[1]]
+                   list(y[1], as.numeric(y[2]))
+                 })
+
+  comp.list <- list()
+  for (i in 1:ncol(temp)) {
+    if (!temp[,i][[1]] %in% names(comp.list)) {
+      comp.list[[temp[,i][[1]]]] <- temp[,i][[2]]
+    } else {
+      comp.list[[temp[,i][[1]]]] <- append(comp.list[[temp[,i][[1]]]], temp[,i][[2]])
+      comp.list[[temp[,i][[1]]]] <- sort(comp.list[[temp[,i][[1]]]])
+    }
+  }
+
+
+  # Calculate relative effects
+  mbnma.rel <- get.relative(mbnma.jags, treatments = comp.list)
+
+  nodesplit.result <- list()
+  for (split in seq_along(comparisons[,1])) {
+
+    comp <- as.numeric(comparisons[split,1:2])
+    print(paste0("Calculating nodesplit for: ",
+                 paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])))
+
+    ##### Estimate MBNMA #####
+    compnames <- mbnma.jags$network$treatments[c(comp[1], comp[2])]
+    mbnma.res <- mbnma.rel[compnames[2], compnames[1], ]
+
+
+    ##### Estimate Indirect #####
+
+    ind.df <- data.ab
+    ind.df$agent <- factor(ind.df$agent, labels=network$agents)
+    #ind.df$treatment <- mbnma$network$treatments[ind.df$treatment]
+
+    # Drop studies/comparisons that compare comps
+    dropID <- vector()
+    dropcomp <- vector()
+    studies <- unique(ind.df$studyID)
+    for (study in seq_along(studies)) {
+      subset <- ind.df[ind.df$studyID==studies[study],]
+      if (all(comp %in% subset$treatment)) {
+        if (subset$narm[1]<=2) {
+          dropID <- append(dropID, subset$studyID[1])
+        } else if (subset$narm[1]>2) {
+          dropcomp <- append(dropcomp, subset$studyID[1])
+        }
+      }
+    }
+
+    # Drop studies
+    ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
+
+    # Drop comparisons from studies
+    ind.df <- suppressWarnings(drop.comp(ind.df, drops=dropcomp, comp=comp))
+    # stoploop <- FALSE
+    # while(stoploop==FALSE) {
+    #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
+    #   temp.net <- mbnma.network(temp)
+    #   nt <- length(temp.net$treatments)
+    #   if (nt==length(nma.net$treatments)) {
+    #     g <- plot(temp.net, doseparam=1000)
+    #     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+    #                                                      to=1)[
+    #                                                        c(comp[1], comp[2])
+    #                                                        ])
+    #     if (all(connectcheck==TRUE)) {
+    #       ind.df <- temp
+    #       stoploop <- TRUE
+    #     }
+    #   }
+    #   #print("Restarting drop.comp")
+    # }
+
+
+    # Run NMA
+    ind.net <- suppressMessages(mbnma.network(ind.df))
+
+    ind.jags <- mbnma.run(ind.net, method=method, fun=fun,
+                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
+                          ...)
+
+    ind.res <- get.relative(ind.jags, treatments = comp.list)[ind.net$treatments[comp[2]],
+                                                              ind.net$treatments[comp[1]],
+                                                              ]
+
+
+    ##### Estimate Direct #####
+    dir.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
+    dir.jags <- nma.run(dir.net, method=method,
+                        likelihood=mbnma.jags$model.arg$likelihood, link=mbnma.jags$model.arg$link,
+                        warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
+    dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
+      ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
+      ]
+
+
+    ##### Generate plots/results #####
+
+    # Overlaps
+    overlap.mat <- list("direct"=dir.res, "indirect"=ind.res)
+    overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
+    p.values <- overlap$OV
+
+    # Quantiles
+    quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
+    quantile_dir <- stats::quantile(dir.res, c(0.025, 0.5, 0.975))
+    quantile_ind <- stats::quantile(ind.res, c(0.025, 0.5, 0.975))
+    quantile_mbnma <- stats::quantile(mbnma.res, c(0.025, 0.5, 0.975))
+    quantiles <- list("difference" = quantile_dif, "mbnma"=quantile_mbnma,
+                      "direct"=quantile_dir, "indirect"=quantile_ind)
+
+
+    # GGplots
+    source <- c("MBNMA", "Direct", "Indirect")
+    l95 <- c(quantile_mbnma[1], quantile_dir[1], quantile_ind[1])
+    med <- c(quantile_mbnma[2], quantile_dir[2], quantile_ind[2])
+    u95 <- c(quantile_mbnma[3], quantile_dir[3], quantile_ind[3])
+    plotdata <- data.frame(source, l95, med, u95)
+
+    title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
+
+    gg <-
+      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
+      ggplot2::geom_pointrange() +
+      ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
+      ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=15),
+                     axis.title = ggplot2::element_text(size=18),
+                     title=ggplot2::element_text(size=18)) +
+      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+      ggplot2::theme_bw()
+
+    # Density plots (with shaded area of overlap)
+    molten <- data.frame(ind.res, dir.res)
+    molten <- suppressMessages(reshape2::melt(molten))
+    names(molten) <- c("Estimate", "value")
+    linetypes <- c("solid", "dash")
+    levels(molten$Estimate) <- c("Indirect", "Direct")
+
+    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
+      ggplot2::geom_density(alpha=0.2) +
+      ggplot2::xlab(title) +
+      ggplot2::ylab("Posterior density") +
+      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
+      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
+                     axis.title = ggplot2::element_text(size=14)) +
+      ggplot2::theme_bw()
+
+    nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
+                      "direct"=dir.res, "indirect"=ind.res, "nma"=mbnma.res,
+                      "overlap matrix"=overlap.mat,
+                      "p.values"=p.values, "quantiles"=quantiles,
+                      "forest.plot"=gg, "density.plot"=dens,
+                      "direct.model"=dir.jags, "indirect.model"=ind.jags,
+                      "mbnma.model"=mbnma.jags)
+
+    nodesplit.result[[paste0(comp[2], "v", comp[1])]] <-
+      nodesplit
+  }
+
+  class(nodesplit.result) <- "nodesplit"
+
+  return(nodesplit.result)
+}
+
+
+
+
+
+
+#' Calculates relative effects between treatments in an MBNMA model
+#'
+#' @param mbnma An object of `class("mbnma")`
+#' @param treatments A list whose elements each represent different treatments.
+#' Treatment is defined as a combination of agent and dose. Only agents specified in
+#' `mbnma` can be included. Each element in `treatments` is named corresponding to the
+#' agent and contains a numeric vector of doses. Relative effects will be calculated between
+#' all treatments specified in `treatments`.
+#'
+#'
+#' @return An array of `length(treatments) x length(treatments) x nsims`, where `nsims`
+#' is the number of iterations monitored in `mbnma`. The array contains the individual
+#' MCMC values for each relative effect calculated between all `treatments`. The
+#' direction of effect is for the row-defined treatment versus the column-defined
+#' treatment.
+#'
+#'
+#' @examples
+#' # Using the osteoarthritis data
+#' network <- mbnma.network(osteopain_2wkabs)
+#'
+#' expon <- mbnma.exponential(network, method="random")
+#'
+#' # Calculate relative effects between:
+#' # Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d
+#' rel.eff <- get.relative(expon, treatments=list("Celebrex"=c(100,200), "Tramadol"=100))
+#'
+#' @export
+get.relative <- function(mbnma, treatments=list()) {
+
+  # Check that treatments is what it should be
+
+  if (length(mbnma$model.arg$fun)>1) {
+    stop("length(mbnma$model.arg$fun)>1: get.relative cannot be used\non MBNMA models with multiple dose-response functions")
+  }
+
+  if (length(treatments)<2) {
+    stop("`treatments` must have at least two elements to estimate relative\neffects between them")
+
+    if (!all(names(treatments) %in% mbnma$network$agents)) {
+      stop("names(treatments) are not all in mbnma$network$agents")
+    }
+  }
+
+  # Change `placebo` to dose=0 of an agent
+  if ("Placebo" %in% names(treatments)) {
+    treatments[[mbnma$network$agents[2]]] <- c(0, treatments[[mbnma$network$agents[2]]])
+    treatments$Placebo <- NULL
+  }
+
+
+  DR <- suppressMessages(
+    write.dose.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun,
+                   effect="abs"
+    )[[1]])
+  DR <- gsub("(^.+<-)(.+)", "\\2", DR)
+  DR <- gsub("s\\.", "", DR)
+
+  betaparams <- get.model.vals(mbnma)
+  betas <- assignfuns(mbnma$model.arg$fun, mbnma$network$agents, mbnma$model.arg$user.fun,
+                      wrapper = ifelse(is.null(mbnma$model.arg$arg.fun), FALSE, TRUE))
+
+
+  trtlist <- list()
+  for (i in seq_along(treatments)) {
+    for (k in seq_along(treatments[[i]])) {
+      trtlist[[length(trtlist)+1]] <- list(names(treatments)[i], treatments[[i]][k])
+    }
+  }
+
+  rel <- array(dim=c(length(trtlist), length(trtlist), mbnma$BUGSoutput$n.sims))
+  for (i in 1:length(trtlist)) {
+
+    for (k in 1:length(trtlist)) {
+
+      agnum.i <- which(mbnma$network$agents %in% trtlist[[i]][[1]])
+      agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
+
+      DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), DR)
+      DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]], DR1)
+
+      DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), DR)
+      DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]], DR2)
+
+      for (beta in seq_along(betaparams)) {
+        # If beta is modelled as absolute across all agents
+        if (betaparams[[beta]]$pool %in% c("common", "random")) {
+          DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
+          DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+        }
+
+        assign(names(betaparams)[beta], betaparams[[beta]]$result)
+      }
+
+      chunk <- eval(parse(text=paste0(DR1, " - ", DR2)))
+      # if (is.list(chunk)) {
+      #   chunk <- chunk[[1]]
+      # }
+      if (length(rel)<=1) {stop()}
+
+      rel[i,k,] <- chunk
+
+    }
+  }
+
+
+  # Change dose=0 back to `placebo`
+  for (i in seq_along(treatments)) {
+    if (0 %in% treatments[[i]]) {
+      treatments[[i]] <- treatments[[i]][treatments[[i]]!=0]
+      treatments$Placebo <- 0
+    }
+  }
+
+  trtnames <- vector()
+  for (i in seq_along(treatments)) {
+    for (k in seq_along(treatments[[i]])) {
+      trtnames <- append(trtnames, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
+    }
+  }
+
+  rownames(rel) <- trtnames
+  colnames(rel) <- trtnames
+
+  return(rel)
+}
