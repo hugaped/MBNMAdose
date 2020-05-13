@@ -461,9 +461,13 @@ print.treat.str <- function(mbnma) {
         #print(agents[betas[[i]]$agents])
         #print(betas[[i]]$agents)
 
+        # Drop rows that aren't relevant for multi-fun models
+        datatab <- datatab[betas[[i]]$agents,]
+
         if (param=="d") {
           rownames(datatab) <- agents[betas[[i]]$agents]
         }
+
         print(datatab)
         cat("\n\n")
 

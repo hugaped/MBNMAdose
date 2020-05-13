@@ -3,6 +3,7 @@
 ## Bug fixes
 
 - Ensured models run in parallel when `parallel=TRUE` and added a warning when `pd` is set to `"pd.kl"` or `"popt"` for these models.
+- Ensured results are printed properly for each parameter when using `summary()` for multiple dose-response function models
 
 ## Additions/changes
 
