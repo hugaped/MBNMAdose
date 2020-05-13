@@ -280,7 +280,8 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       nodesplit
   }
 
-  class(nodesplit.result) <- "nma.nodesplit"
+  #class(nodesplit.result) <- "nma.nodesplit"
+  class(nodesplit.result) <- "nodesplit"
 
   return(nodesplit.result)
 }
