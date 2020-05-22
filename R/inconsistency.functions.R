@@ -167,9 +167,17 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
       subset <- ind.df[ind.df$studyID==studies[study],]
       if (all(comp %in% subset$treatment)) {
         if (subset$narm[1]<=2) {
-          dropID <- append(dropID, subset$studyID[1])
+          if (is.factor(studies)) {
+            dropID <- append(dropID, as.character(subset$studyID[1]))
+          } else {
+            dropID <- append(dropID, subset$studyID[1])
+          }
         } else if (subset$narm[1]>2) {
-          dropcomp <- append(dropcomp, subset$studyID[1])
+          if (is.factor(studies)) {
+            dropcomp <- append(dropcomp, as.character(subset$studyID[1]))
+          } else {
+            dropcomp <- append(dropcomp, subset$studyID[1])
+          }
         }
       }
     }
@@ -307,6 +315,9 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'   Default is `TRUE` and should be kept as `TRUE` if working with dose-response data, though this requires
 #'   further computational iterations to confirm. If set to `FALSE`, additional comparisons may be identified, though computation will be much more
 #'   rapid.
+#' @param incldr A boolean object indicating whether or not to allow for indirect evidence contributions via
+#' the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
+#' for a greater number of potential loops in which to check for consistency.
 #'
 #' @details Similar to `gemtc::mtc.nodesplit.comparisons()` but uses a fixed
 #'   reference treatment and therefore identifies fewer loops in which to test for
@@ -329,6 +340,9 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' #in triptans dataset
 #' network <- mbnma.network(HF2PPITT)
 #' inconsistency.loops(network$data.ab)
+#'
+#' # Include indirect evidence via dose-response relationship
+#' inconsistency.loops(network$data.ab, incldr=TRUE)
 #' }
 #'
 #'
@@ -338,11 +352,12 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'             )
 #' inconsistency.loops(data, checkindirect=FALSE)
 #' @export
-inconsistency.loops <- function(data, checkindirect=TRUE)
+inconsistency.loops <- function(data, checkindirect=TRUE, incldr=FALSE)
 {
   # Assert checks
   checkmate::assertDataFrame(data)
   checkmate::assertLogical(checkindirect)
+  checkmate::assertLogical(incldr)
 
   treatments <- factor(unique(data$treatment))
 
@@ -357,6 +372,13 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
 
   comparisons <- ref.comparisons(data)
 
+  if (incldr==TRUE) {
+    # Add columns for agent
+    lookup <- unique(data[,c("treatment", "agent")])
+    comparisons$a1 <-lookup$agent[match(comparisons$t1, lookup$treatment)]
+    comparisons$a2 <-lookup$agent[match(comparisons$t2, lookup$treatment)]
+  }
+
   splits1 <- vector()
   splits2 <- vector()
   paths <- vector()
@@ -366,6 +388,7 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
   for (i in 1:nrow(comparisons)) {
     utils::setTxtProgressBar(pb, i)
 
+    added <- FALSE
     drops <- comparisons[-i,]
 
     # Alternative graph create (non-gemtc)
@@ -404,6 +427,17 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
         splits2 <- append(splits2, comparisons[["t2"]][i])
         paths <- append(paths, paste(path, collapse="->"))
         loops <- append(loops, paste(loop, collapse="->"))
+
+        added <- TRUE
+      }
+    }
+
+    if (added==FALSE & incldr==TRUE) {
+      if (all(comparisons[i,c("a1", "a2")] %in% c(drops$a1, drops$a2))) {
+        splits1 <- append(splits1, comparisons[["t1"]][i])
+        splits2 <- append(splits2, comparisons[["t2"]][i])
+        paths <- append(paths, "doseresp")
+        loops <- append(loops, paste(c(drops$t1, "dresp", drops$t2), collapse="->"))
       }
     }
   }
@@ -420,6 +454,10 @@ inconsistency.loops <- function(data, checkindirect=TRUE)
 
   return(splits)
 }
+
+
+
+
 
 
 
@@ -516,7 +554,7 @@ ref.comparisons <- function(data)
 #' @param start Can take either `0` or `1` to indicate whether to drop the treatment
 #' in `comp[1]` (`0`) or `comp[2]` (`1`)
 #'
-drop.comp <- function(ind.df, drops, comp, start=stats::rbinom(1,1,0.5)) {
+drop.comp <- function(ind.df, drops, comp, start=1) {
   index <- start
   #print(index)
   for (i in seq_along(drops)) {
@@ -636,6 +674,7 @@ check.indirect.drops <- function(data=data, comp) {
 #' numeric (corresponding to treatment codes within the `network` - note that these
 #' may change if `drop.discon = TRUE`).
 #' @inheritParams mbnma.run
+#' @inheritParams inconsistency.loops
 #'
 #' @examples
 #' \donttest{
@@ -674,6 +713,7 @@ mbnma.nodesplit <- function(network, fun="linear",
                             beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
                             method="common",
                             comparisons=NULL,
+                            incldr=TRUE,
                             ...) {
 
   # Run checks
@@ -689,7 +729,7 @@ mbnma.nodesplit <- function(network, fun="linear",
 
   # Identify closed loops of treatments
   if (is.null(comparisons)) {
-    comparisons <- inconsistency.loops(data.ab)
+    comparisons <- inconsistency.loops(data.ab, incldr = incldr)
   } else {
     if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
       stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
@@ -792,9 +832,17 @@ mbnma.nodesplit <- function(network, fun="linear",
       subset <- ind.df[ind.df$studyID==studies[study],]
       if (all(comp %in% subset$treatment)) {
         if (subset$narm[1]<=2) {
-          dropID <- append(dropID, subset$studyID[1])
+          if (is.factor(studies)) {
+            dropID <- append(dropID, as.character(subset$studyID[1]))
+          } else {
+            dropID <- append(dropID, subset$studyID[1])
+          }
         } else if (subset$narm[1]>2) {
-          dropcomp <- append(dropcomp, subset$studyID[1])
+          if (is.factor(studies)) {
+            dropcomp <- append(dropcomp, as.character(subset$studyID[1]))
+          } else {
+            dropcomp <- append(dropcomp, subset$studyID[1])
+          }
         }
       }
     }
@@ -1029,17 +1077,22 @@ get.relative <- function(mbnma, treatments=list()) {
 
 
   # Change dose=0 back to `placebo`
-  for (i in seq_along(treatments)) {
-    if (0 %in% treatments[[i]]) {
-      treatments[[i]] <- treatments[[i]][treatments[[i]]!=0]
-      treatments$Placebo <- 0
-    }
-  }
+  # for (i in seq_along(treatments)) {
+  #   if (0 %in% treatments[[i]]) {
+  #     treatments[[i]] <- treatments[[i]][treatments[[i]]!=0]
+  #     treatments$Placebo <- 0
+  #   }
+  # }
 
   trtnames <- vector()
   for (i in seq_along(treatments)) {
     for (k in seq_along(treatments[[i]])) {
-      trtnames <- append(trtnames, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
+      # Change dose=0 back to `placebo` if needed
+      if (treatments[[i]][k]==0) {
+        trtnames <- append(trtnames, paste("Placebo", 0, sep="_"))
+      } else {
+        trtnames <- append(trtnames, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
+      }
     }
   }
 
