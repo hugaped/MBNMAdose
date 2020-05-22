@@ -221,7 +221,9 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
     # Overlaps
     overlap.mat <- list("direct"=dir.res, "indirect"=ind.res)
     overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
-    p.values <- overlap$OV
+    #p.values <- overlap$OV
+    diff <- sum((dir.res-ind.res)>0) / length(dir.res)
+    p.values <- min(diff, 1-diff)
 
     # Quantiles
     quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
@@ -849,7 +851,9 @@ mbnma.nodesplit <- function(network, fun="linear",
     # Overlaps
     overlap.mat <- list("direct"=dir.res, "indirect"=ind.res)
     overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
-    p.values <- overlap$OV
+    #p.values <- overlap$OV
+    diff <- sum((dir.res-ind.res)>0) / length(dir.res)
+    p.values <- min(diff, 1-diff)
 
     # Quantiles
     quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
