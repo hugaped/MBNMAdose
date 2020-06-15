@@ -329,7 +329,14 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' @return A data frame of comparisons that are informed by direct and indirect
 #'   evidence from independent sources. Each row of the data frame is a
 #'   different treatment comparison. Numerical codes in `t1` and `t2` correspond
-#'   to treatment codes.
+#'   to treatment codes. `path` indicates the treatment codes that connect the
+#'   shortest path of indirect evidence.
+#'
+#'   If `incldr=TRUE` then `path` may indicate `doseresp` for some comparisons.
+#'   These are comparisons for which indirect evidence is only availbale via the
+#'   dose-response relationship. The two numbers given after (e.g. `3 2`) indicate the
+#'   number of doses available in the indirect evidence with which to estimate the
+#'   dose-response function for the treatments in `t1` and `t2` respectively/
 #'
 #' @references
 #' \insertAllCited{}
@@ -436,7 +443,32 @@ inconsistency.loops <- function(data, checkindirect=TRUE, incldr=FALSE)
       if (all(comparisons[i,c("a1", "a2")] %in% c(drops$a1, drops$a2))) {
         splits1 <- append(splits1, comparisons[["t1"]][i])
         splits2 <- append(splits2, comparisons[["t2"]][i])
-        paths <- append(paths, "doseresp")
+
+        # Count number of doses available to estimate indirect
+        lookup <- data.frame("a"=c(drops$a1, drops$a2), "t"=c(drops$t1, drops$t2))
+        lookup <- lookup %>% dplyr::group_by(a) %>% dplyr::mutate(count= dplyr::n_distinct(t))
+
+        param1 <- lookup$count[lookup$a %in% comparisons[i,"a1"]][1]
+        param2 <- lookup$count[lookup$a %in% comparisons[i,"a2"]][1]
+
+        # Add param if placebo is in dataset
+        if (all(data$dose[data$treatment==1] == 0)) { # if placebo is in dataset
+          if (1 %in% lookup$t) { # if placebo is in drops
+            param1 <- param1 + 1
+            param2 <- param2 + 1
+          }
+
+          # Assign placebo the max dose-response params
+          maxparam <- max(lookup$count)
+          if (comparisons[i,"a1"] == 1) {
+            param1 <- maxparam
+          }
+          if (comparisons[i,"a2"] == 1) {
+            param2 <- maxparam
+          }
+        }
+
+        paths <- append(paths, paste("drparams", param1, param2, sep=" "))
         loops <- append(loops, paste(c(drops$t1, "dresp", drops$t2), collapse="->"))
       }
     }
