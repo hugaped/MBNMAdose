@@ -14,6 +14,7 @@
 - Added studyID column to output from `devplot()` and `fitplot()`
 - `plot.nodesplit()` scales y-axis if density is >50 times larger in panel with highest density than in panel with lowest density. This improves legibility of the graph.
 - All nodesplit models now return object of `class("nodesplit")`
+- `mbnma.nodesplit()` includes potential splits via dose-response curve and direct and indirect evidence contributions are calculated simultaneously in the same model.
 - Corrected calculation for Bayesian p-value in `mbnma.nodesplit()` and `nma.nodesplit()`
 
 # MBNMAdose 0.2.7
