@@ -1382,3 +1382,49 @@ d[k,c] ~ dnorm(0,0.0001)
 
   return(model)
 }
+
+
+
+
+#' Write JAGS code for mbnma.nodesplit
+#'
+#' @inheritParams nma.run
+#' @noRd
+add.nodesplit <- function(model) {
+
+  # If method=="common"
+  if (grepl("delta\\[i\\,k\\] <-", model)) {
+
+    model <- gsub("(\ndelta\\[i\\,k\\] <- )(DR\\[i\\,k\\])",
+                  "\\1md[i,k]\nmd[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])",
+                  model)
+
+    # Else if method=="random
+  } else if (grepl("delta\\[i\\,k\\] ~", model)) {
+
+    model <- gsub("(\nmd\\[i\\,k\\] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+                  "\\1ifelse(split.ind[i,k]==1, direct, DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+                  model)
+
+    # To incorporate multi-arm correction into direct evidence
+    # model <- gsub("(\nmd[i,k] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+    #               "\\1ifelse(split.ind[i,k]==1, direct + sw[i,k], DR[i,k] + sw[i,k])",
+    #               model)
+
+    # Could be used if estimating separate tau for direct evidence (tau.dir)
+    # model <- gsub("(\ndelta\\[i\\,k\\] )(<- DR\\[i\\,k\\])",
+    #               "\\1~ dnorm(md[i,k], ifelse(split.ind[i,k]==1, taud[i,k], tau.dir))\nmd[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])",
+    #               model)
+    #
+    # # Add prior for tau.dir
+    # model <- gsub("(.+)(# Model ends\n})",
+    #               paste0("\\1", "tau.dir <- pow(sd.dir, -2)\nsd.dir ~ dnorm(0,0.0025) T(0,)", "\n\n\\2"),
+    #               model)
+  }
+
+  # Add prior for direct
+  model <- gsub("(.+)(# Model ends\n})",
+                paste0("\\1", "direct ~ dnorm(0,0.0001)", "\n\n\\2"),
+                model)
+
+}

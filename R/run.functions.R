@@ -548,6 +548,7 @@ mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        #parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL, fun=NULL,
+                       nodesplit=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
                        autojags=FALSE, Rhat=1.1, n.update=10,
                        ...) {
@@ -562,6 +563,7 @@ mbnma.jags <- function(data.ab, model,
   #                           null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
+  checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
   checkmate::assertNumeric(n.update, lower=1, add=argcheck)
@@ -576,7 +578,8 @@ mbnma.jags <- function(data.ab, model,
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link, fun=fun) # get data into jags correct format
+                            likelihood=likelihood, link=link, fun=fun,
+                            nodesplit=nodesplit) # get data into jags correct format
   }
 
 
@@ -599,6 +602,16 @@ mbnma.jags <- function(data.ab, model,
       args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
     }
   }
+
+  if (!is.null(nodesplit)) {
+    model <- add.nodesplit(model=model)
+
+    if ("parameters.to.save" %in% names(args)) {
+      args[["parameters.to.save"]] <- append(args[["parameters.to.save"]], "direct")
+    }
+  }
+
+
 
   # Remove studyID from jagsdata (not used in model)
   tempjags <- jagsdata

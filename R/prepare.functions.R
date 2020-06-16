@@ -522,7 +522,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
-                        level="agent", fun=NULL) {
+                        level="agent", fun=NULL, nodesplit=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -531,6 +531,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
+  checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
@@ -617,6 +618,10 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     datalist[["class"]] <- classcode
   }
 
+  if (!is.null(nodesplit)) {
+    datalist[["split.ind"]] <- datalist[["agent"]]
+  }
+
 
   for (i in 1:max(as.numeric(df$studyID))) {
     for (k in 1:max(df$arm[df$studyID==i])) {
@@ -635,6 +640,16 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       } else if (level=="treatment") {
         datalist[["treatment"]][i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
                                                    df$arm==k])
+      }
+
+      if (!is.null(nodesplit)) {
+        if (df$treatment[as.numeric(df$studyID)==i & df$arm==1] == nodesplit[1] &
+            df$treatment[as.numeric(df$studyID)==i & df$arm==k] == nodesplit[2]
+        ) {
+          datalist[["split.ind"]][i,k] <- 1
+        } else {
+          datalist[["split.ind"]][i,k] <- 0
+        }
       }
 
     }
