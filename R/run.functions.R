@@ -333,13 +333,19 @@ mbnma.run <- function(network,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Ensure pd.kl or popt not run with parallel
+  if (parallel==TRUE & pd %in% c("pd.kl", "popt")) {
+    warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
+    pd <- "pv"
+  }
+
   # Ensure rjags parameters make sense
   if (n.iter<=n.burnin) {
     stop(paste0("`n.iter` must be greater than `n.burnin`. `n.burnin` = ", n.burnin))
   }
 
   # Check if placebo has been included
-  if (network$agents[1]=="Placebo" & network$treatments[1]=="Placebo_0") {
+  if (network$agents[1]=="Placebo" & ("Placebo_0" %in% network$treatments)) {
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
@@ -470,43 +476,17 @@ mbnma.run <- function(network,
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
 
-  if (pd == "pd.kl" | pd == "popt") {
-    if (parallel==TRUE) {
-      warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
-      pd <- "pv"
-    } else if (parallel==FALSE) {
-      if (pd=="pd.kl") {
-        temp <- rjags::dic.samples(result$model, n.iter=1000, type="pD")
-      } else if (pd=="popt") {
-        temp <- rjags::dic.samples(result$model, n.iter=1000, type="popt")
-      }
-      result$BUGSoutput$pD <- sum(temp$penalty)
-    }
 
-  } else if (pd == "plugin") {
-    # plugin method
-    if (likelihood=="normal") {
-      obs1 <- jagsdata[["y"]]
-      obs2 <- jagsdata[["se"]]
-    } else if (likelihood=="binomial") {
-      obs1 <- jagsdata[["r"]]
-      obs2 <- jagsdata[["N"]]
-    } else if (likelihood=="poisson") {
-      obs1 <- jagsdata[["r"]]
-      obs2 <- jagsdata[["E"]]
-    }
-    result$BUGSoutput$pD <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                                   theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-                                   likelihood=likelihood, type="dose")
-  }
+  # Calculate model fit statistics (using differnt pD as specified)
+  fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
+  result$BUGSoutput$pD <- fitstats$pd
+  result$BUGSoutput$DIC <- fitstats$dic
 
-  # Recalculate DIC so it is adjusted for choice of pD
-  result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
                     "fun"=fun, "user.fun"=user.fun,
-                    "jagscode"=model,
+                    "jagscode"=result.jags$model,
                     "jagsdata"=jagsdata,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
@@ -670,7 +650,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
-  return(list("jagsoutput"=out, "jagsdata"=jagsdata))
+  return(list("jagsoutput"=out, "jagsdata"=jagsdata, "model"=model))
 }
 
 
@@ -823,7 +803,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
-                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {
+                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pv", ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -833,6 +813,7 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   checkmate::assertLogical(UME, add=argcheck)
+  checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
@@ -850,6 +831,18 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   parameters.to.save <- c("d", "totresdev")
   if (method=="random") {
     parameters.to.save <- append(parameters.to.save, "sd")
+  }
+
+  # Add nodes to monitor to calculate plugin pd
+  if (pd=="plugin") {
+    pluginvars <- c("psi", "resdev")
+    for (param in seq_along(pluginvars)) {
+      if (!(pluginvars[param] %in% parameters.to.save)) {
+        parameters.to.save <- append(parameters.to.save, pluginvars[param])
+      }
+    }
+    message("The following parameters have been monitored to allow pD plugin calculation: ",
+            paste(pluginvars, collapse=", "))
   }
 
   #### Prepare data ####
@@ -910,6 +903,11 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
       rhat.warning(out)
     }
   }
+
+  # Calculate model fit statistics (using differnt pD as specified)
+  fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
+  out$BUGSoutput$pD <- fitstats$pd
+  out$BUGSoutput$DIC <- fitstats$dic
 
   output <- list("jagsresult"=out, "trt.labs"=trt.labs)
   class(output) <- "nma"
@@ -1795,4 +1793,69 @@ mbnma.update <- function(mbnma, param="theta",
   }
 
   return(update.df)
+}
+
+
+
+
+
+
+
+
+#' Update model fit statistics depending on calculation for pD
+#'
+#' @param model A model object of class `"rjags"`
+#' @param jagsdata A list object containing data used to estimate `model`
+#' @param type Can take either `"dose"` for a dose-response MBNMA or `"time"` for a
+#' time-course MBNMA (this accounts for multiple observations within an arm)
+#'
+#' @return A list containing `pd` (effective number of parameters calculated using the method
+#' specified in arguments), `deviance` (the posterior mdedian of the total residual deviance)
+#' and `dic` (the model DIC)
+#'
+#' @inheritParams mbnma.run
+#' @noRd
+changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(model, "rjags", add=argcheck)
+  checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(likelihood, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(type, choices=c("dose", "time"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  pdout <- model$BUGSoutput$pD
+
+  if (pd == "pd.kl" | pd == "popt") {
+    if (pd=="pd.kl") {
+      temp <- rjags::dic.samples(model$model, n.iter=1000, type="pD")
+    } else if (pd=="popt") {
+      temp <- rjags::dic.samples(model$model, n.iter=1000, type="popt")
+    }
+    pdout <- sum(temp$penalty)
+
+  } else if (pd == "plugin") {
+    # plugin method
+    if (likelihood=="normal") {
+      obs1 <- jagsdata[["y"]]
+      obs2 <- jagsdata[["se"]]
+    } else if (likelihood=="binomial") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["N"]]
+    } else if (likelihood=="poisson") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["E"]]
+    }
+    pdout <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                    theta.result=model$BUGSoutput$mean$psi, resdev.result=model$BUGSoutput$mean$resdev,
+                    likelihood=likelihood, type=type)
+  }
+
+  # Recalculate DIC so it is adjusted for choice of pD
+  dicout <- pdout + model$BUGSoutput$median$deviance
+  devout <- model$BUGSoutput$median$deviance
+
+  return(list("pd"=pdout, "deviance"=devout, "dic"=dicout))
 }
