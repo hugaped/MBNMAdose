@@ -73,7 +73,7 @@ mbnma.write <- function(fun="linear",
                         method="common",
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
-                        class.effect=list(),
+                        class.effect=list(), UME=FALSE,
                         user.fun=NULL,
                         likelihood="binomial", link=NULL
                         ) {
@@ -98,13 +98,13 @@ mbnma.write <- function(fun="linear",
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
               method=method, cor.prior=cor.prior,
               var.scale=var.scale,
-              class.effect=class.effect)
+              class.effect=class.effect, UME=UME)
 
   model <- write.model()
 
   # Add dose-response function
   inserts <- write.inserts()
-  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun)
+  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun, UME=UME)
   model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
 
   if (length(dosefun)==2) {  # For models with multiple DR functions
@@ -266,7 +266,7 @@ write.inserts <- function() {
 #' # Write a user-defined dose-response function
 #' doseresp <- ~ beta.1 + (dose ^ beta.2)
 #' write.dose.fun(fun="user", user.fun=doseresp)
-write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
+write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE) {
 
   DR.1 <- character()
   paramcount <- 0
@@ -343,14 +343,21 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   DR.1 <- gsub("(beta\\.[1-4])", "s.\\1", DR.1)
 
   DR.2 <- gsub("k", "1", DR.1)
-  DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+
+  if (UME==FALSE) {
+    DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+  } else if (UME==TRUE) {
+    DR <- DR.1
+    DR <- gsub("(agent\\[i\\,k\\])", "\\1, agent[i,1]", DR)
+  }
+
 
   # if (effect=="rel") {
   #   return(paste0("DR[i,k] <- ", DR))
   # } else if (effect=="abs") {
   #   return(paste0("DR[i,k] <- ", DR.1))
   # }
-  if (length(fun)==1) {
+  if (length(fun)==1 | UME==TRUE) {
     if (effect=="rel") {
       return(list(paste0("DR[i,k] <- ", DR)))
     } else if (effect=="abs") {
@@ -413,6 +420,7 @@ write.check <- function(fun="linear",
   checkmate::assertCharacter(fun, null.ok=FALSE, add=argcheck)
   #checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
     checkmate::assertNumeric(var.scale, null.ok = TRUE)
@@ -539,9 +547,6 @@ write.check <- function(fun="linear",
       stop("`class.effect` elements must be either `common` or `random`")
     }
   }
-
-
-  # MIGHT NEED TO INCLUDE CHECKS FOR UME
 
 }
 
