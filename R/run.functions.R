@@ -48,7 +48,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   on the likelihood.
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-#' automatically set to `FALSE` if class effects are modelled.
+#' automatically set to `FALSE` if class effects are modelled or if multiple dose-reponse
+#' functions are fitted.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than
 #' one dose-response parameter and `cor=TRUE` (see details). Each element of
@@ -97,7 +98,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
 #' estimated using a vague Wishart prior. This prior can be made slightly more informative
 #' by specifying the relative scale of variances between the dose-response parameters using
-#' `var.scale`.
+#' `var.scale`. `cor` will automatically be set to `FALSE` if class effects are modelled or
+#' if a model is fitted with multiple dose-response functions.
 #'
 #' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
@@ -338,6 +340,9 @@ mbnma.run <- function(network,
     warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
     pd <- "pv"
   }
+
+  # Ensure cor set to FALSE if multiple dose-response functions are modelled
+  if (cor==TRUE & length(fun)>1) {cor <- FALSE}
 
   # Ensure rjags parameters make sense
   if (n.iter<=n.burnin) {
