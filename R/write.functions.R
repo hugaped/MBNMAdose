@@ -131,7 +131,7 @@ mbnma.write <- function(fun="linear",
     model <- write.beta.nonparam(model, method=method, fun=fun)
   } else {
     model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                        method=method, class.effect=class.effect)
+                        method=method, class.effect=class.effect, UME=UME)
   }
 
 
@@ -185,6 +185,8 @@ for (k in 2:Nagent){ # Priors on relative treatment effects
 for (k in 2:Nclass){ # Priors on relative class effects
 }
 
+for (k in 1:Nagent){ # UME prior ref
+}
 for (c in 1:(Nagent-1)) {
 for (k in (c+1):Nagent) { # UME priors
 }
@@ -222,6 +224,7 @@ write.inserts <- function() {
   insert.te.priors <- "(+.# Priors on relative treatment effects\n)(+.)"
   insert.end <- "(.+)(\n# Model ends)"
   insert.class.priors <- "(+.# Priors on relative class effects\n)(+.)"
+  insert.ume.ref.priors <- "(+.# UME prior ref\n)(+.)"
   insert.ume.priors <- "(+.# UME priors\n)(+.)"
 
   return(inserts <- list("insert.start"=insert.start,
@@ -231,6 +234,7 @@ write.inserts <- function() {
                          "insert.te.priors"=insert.te.priors,
                          "insert.end"=insert.end,
                          "insert.class.priors"=insert.class.priors,
+                         "insert.ume.ref.priors"=insert.ume.ref.priors,
                          "insert.ume.priors"=insert.ume.priors
   ))
 }
@@ -517,6 +521,11 @@ write.check <- function(fun="linear",
 
   # Checks for class effects
   if (length(class.effect)>0) {
+    # Cannot model class effects with UME
+    if (UME==TRUE) {
+      stop("Class effects cannot be modelled with UME")
+    }
+
     # Cannot model class effects with nonparam functions
     if (any(c("nonparam.up, nonparam.down") %in% fun)) {
       stop("Class effects cannot be used with non-parametric dose-response functions")
@@ -705,6 +714,19 @@ write.beta.vars <- function() {
            )
     )
 
+    ########### UME Priors ############
+    assign(paste("ume.ref.prior", i, sep="."),
+           paste0("\n", "s.beta.", i, "[k,k] <- 0",
+             "\n", "d.", i, "[k,k] <- 0", "\n"
+           )
+    )
+
+    assign(paste("ume.prior", i, sep="."),
+           paste0("\n", "s.beta.", i, "[k,c] <- d.", i, "[k,c]",
+             "\n", "d.", i, "[k,c] ~ dnorm(0,0.001)", "\n"
+           )
+    )
+
 
     ############# NON-PARAMETRIC EFFECTS #############
 
@@ -806,7 +828,7 @@ write.delta <- function(model,
 write.beta <- function(model,
                        beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common",
-                       class.effect=list()
+                       class.effect=list(), UME=FALSE
 ) {
 
   inserts <- write.inserts()
@@ -823,13 +845,16 @@ write.beta <- function(model,
       betaname <- paste0("beta.", i)
 
       # Add zero for s.beta reference
-      model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[[paste("s.beta", i, "ref", sep=".")]], "\\2"), model)
-
+      if (UME==FALSE) {
+        model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[[paste("s.beta", i, "ref", sep=".")]], "\\2"), model)
+      }
 
       # RELATIVE BETA PARAMETERS
       if (betaparam=="rel") {
         # Convert s.beta to d.
-        model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
+        if (UME==FALSE) {
+          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
+        }
 
         # Add priors / class effects for d
         if (betaname %in% names(class.effect)) {
@@ -841,7 +866,14 @@ write.beta <- function(model,
             model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("sd.D.prior", i, sep=".")]], "\\2"), model)
           }
         } else {
-          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("d.prior", i, sep=".")]], "\\2"), model)
+          if (UME==FALSE) {
+            model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("d.prior", i, sep=".")]], "\\2"), model)
+          } else if (UME==TRUE) {
+            model <- gsub(inserts[["insert.ume.priors"]], paste0("\\1", vars[[paste("ume.prior", i, sep=".")]], "\\2"), model)
+            model <- gsub(inserts[["insert.ume.ref.priors"]], paste0("\\1", vars[[paste("ume.ref.prior", i, sep=".")]], "\\2"), model)
+
+            # Swap s.beta.i[k] and d.i[k] for s.beta.i[k,k] and d.i[k,k]
+          }
         }
 
 
@@ -1076,6 +1108,7 @@ write.remove.loops <- function(model) {
     "for\\(k in 2\\:narm\\[i\\]\\)\\{ \\# Treatment effects\\\n\\}", # treatment effects loop
     "for \\(k in 2\\:Nclass\\)\\{ \\# Priors on relative class effects\\\n\\}", # rel class loop
     "for \\(k in 1\\:Nclass\\)\\{ \\# Priors on absolute class effects\\\n\\}", # arm class loop
+    "for \\(k in 1\\:Nagent\\) \\{ # UME prior ref\\\n\\}", # UME loop
     "for \\(c in 1\\:\\(Nagent-1\\)\\) \\{\\\nfor \\(k in \\(c\\+1\\)\\:Nagent\\) \\{ \\# UME priors\\\n\\}\\\n\\}" # UME loop
   )
 

@@ -304,7 +304,7 @@ mbnma.run <- function(network,
                       beta.1="rel",
                       beta.2="rel", beta.3="rel", beta.4="rel",
                       method="common",
-                      class.effect=list(),
+                      class.effect=list(), UME=FALSE,
                       cor=TRUE,
                       var.scale=NULL,
                       user.fun=NULL,
@@ -384,7 +384,7 @@ mbnma.run <- function(network,
     model <- mbnma.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                          method=method,
-                         class.effect=class.effect,
+                         class.effect=class.effect, UME=UME,
                          cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
@@ -717,7 +717,7 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
+    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] ~"), model)==TRUE |
         grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
     } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
@@ -1079,7 +1079,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 mbnma.linear <- function(network,
                          slope="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1099,7 +1099,7 @@ mbnma.linear <- function(network,
                       model.file=NULL,
                       beta.1=slope,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1196,7 +1196,7 @@ mbnma.linear <- function(network,
 mbnma.exponential <- function(network,
                          lambda="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1225,7 +1225,7 @@ mbnma.exponential <- function(network,
                       model.file=NULL,
                       beta.1=lambda,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1344,7 +1344,7 @@ mbnma.emax <- function(network,
                          emax="rel",
                          ed50="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1365,7 +1365,7 @@ mbnma.emax <- function(network,
                       beta.1=emax,
                       beta.2=ed50,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1494,7 +1494,7 @@ mbnma.emax.hill <- function(network,
                        ed50="rel",
                        hill="common",
                        method="common",
-                       class.effect=list(),
+                       class.effect=list(), UME=FALSE,
                        cor=TRUE,
                        var.scale=NULL,
                        parameters.to.save=NULL,
@@ -1516,7 +1516,7 @@ mbnma.emax.hill <- function(network,
                       beta.2=ed50,
                       beta.3=hill,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1824,7 +1824,7 @@ changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose"
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(model, "rjags", add=argcheck)
+  #checkmate::assertClass(model, "rjags", add=argcheck)
   checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertCharacter(likelihood, null.ok=TRUE, add=argcheck)
