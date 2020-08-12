@@ -7,6 +7,7 @@
 
 ## Additions/changes
 
+- Unrelated mean effects (UME) model now added to `mbnma.run()` to allow relaxing of the consistency assumption. This can be used to test its validity.
 - `cumrank()` added for cumulative ranking plots. Also calculates SUCRA values for each agent and dose-response parameter
 - `autojags` options added for `mbnma.run()` to allow users to run models until they converge (convergence defined by `Rhat`)
 - `rank.mbnma()` also calculates cumulative ranking probabilities and stores them in `cum.matrix`
