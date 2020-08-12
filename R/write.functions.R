@@ -1120,7 +1120,7 @@ write.remove.loops <- function(model) {
     "for\\(k in 2\\:narm\\[i\\]\\)\\{ \\# Treatment effects\\\n\\}", # treatment effects loop
     "for \\(k in 2\\:Nclass\\)\\{ \\# Priors on relative class effects\\\n\\}", # rel class loop
     "for \\(k in 1\\:Nclass\\)\\{ \\# Priors on absolute class effects\\\n\\}", # arm class loop
-    "for \\(k in 1\\:Nagent\\) \\{ # UME prior ref\\\n\\}", # UME loop
+    "for \\(k in 1\\:Nagent\\)\\{ # UME prior ref\\\n\\}", # UME loop
     "for \\(c in 1\\:\\(Nagent-1\\)\\) \\{\\\nfor \\(k in \\(c\\+1\\)\\:Nagent\\) \\{ \\# UME priors\\\n\\}\\\n\\}" # UME loop
   )
 
