@@ -40,6 +40,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   depend on whether or not a wrapper function has been used for `mbnma.run()`).
 #'   For example: `list("beta.2"="fixed", "beta.3"="random")` when using
 #'   `mbnma.run()` or `list("ed50"="fixed", "hill"="random")` when using `mbnma.emax.hill()`.
+#' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
+#'   that does not assume consistency and so can be used to test if the consistency
+#'   assumption is valid.
 #' @param likelihood A string indicating the likelihood to use in the model. Can take either `"binomial"`,
 #'   `"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.
 #' @param link A string indicating the link function to use in the model. Can take any link function
@@ -718,7 +721,7 @@ gen.parameters.to.save <- function(model.params, model) {
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
     if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] ~"), model)==TRUE |
-        grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
+        grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] <- mult\\["), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
     } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
       if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
@@ -784,9 +787,6 @@ gen.parameters.to.save <- function(model.params, model) {
 #' for any monitored parameter are >1.02 (suggestive of non-convergence).
 #' @param drop.discon A boolean object that indicates whether or not to drop disconnected
 #'   studies from the network.
-#' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
-#'   that does not assume consistency and so can be used to test if the consistency
-#'   assumption is valid.
 #' @param n.iter number of total iterations per chain (including burn in; default: 10000)
 #'
 #' @examples

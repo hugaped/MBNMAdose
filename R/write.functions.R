@@ -138,7 +138,7 @@ mbnma.write <- function(fun="linear",
   # Add correlation between dose-response parameters
   model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                      method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale,
-                     class.effect=class.effect)
+                     class.effect=class.effect, UME=UME)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -940,7 +940,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      method="random", class.effect=list()) {
+                      method="random", class.effect=list(), UME=FALSE) {
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
   # (i.e. rho[2,1], rho[3,1], rho[3,2])
@@ -975,7 +975,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams, cor="estimate", cor.prior=cor.prior,
-                             var.scale=var.scale)
+                             var.scale=var.scale, UME=UME)
     }
   }
 
@@ -996,7 +996,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 #' @inheritParams get.prior
 #' @noRd
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
-                          var.scale=NULL) {
+                          var.scale=NULL, UME=FALSE) {
 
   inserts <- write.inserts()
 
@@ -1029,18 +1029,26 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 }
 "
 
+  if (UME==FALSE) {
+    priorloc <- inserts[["insert.te.priors"]]
+    index <- "k"
+  } else if (UME==TRUE) {
+    priorloc <- inserts[["insert.ume.priors"]]
+    index <- "k\\,c"
+  }
+
   mat.size <- length(sufparams)
   for (i in seq_along(sufparams)) {
     # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
-    model <- gsub(paste0("d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
-                  paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]\n"),
+    model <- gsub(paste0("d\\.", sufparams[i], "\\[", index, "\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
+                  paste0("d.", sufparams[i], "[", index, "] <- mult[", i, ",", index, "]\n"),
                   model
     )
   }
 
   if (cor.prior=="wishart") {
     addcode <- jagswish
-    model <- gsub(inserts[["insert.te.priors"]],
+    model <- gsub(priorloc,
                   paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
                   model
     )
@@ -1059,7 +1067,7 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 
   } else if (cor.prior=="rho") {
     addcode <- jagsrho
-    model <- gsub(inserts[["insert.te.priors"]],
+    model <- gsub(priorloc,
                   paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])\\2"),
                   model
     )
@@ -1080,7 +1088,11 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
                       paste0("\\1rho[", m, "] <- ", cor[m]))
       }
   }
-}
+  }
+
+  if (UME==TRUE) {
+    model <- gsub("(mult\\[1\\:[0-9],k)(\\] ~)", "\\1,c\\2", model)
+  }
 
   addcode <- gsub("mat\\.size", mat.size, addcode)
   model <- gsub(inserts[["insert.end"]], paste0("\\1", addcode, "\\2"), model)
