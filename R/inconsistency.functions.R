@@ -92,7 +92,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab)
   } else {
-    comparisons <- check.nodesplit.comparisons(network, comparisons)
+    comparisons <- check.nodesplit.comparisons(data.ab, network, comparisons, trt.labs)
   }
 
 
@@ -721,7 +721,7 @@ mbnma.nodesplit <- function(network, fun="linear",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab, incldr = incldr)
   } else {
-    comparisons <- check.nodesplit.comparisons(network, comparisons)
+    comparisons <- check.nodesplit.comparisons(data.ab, network, comparisons, trt.labs)
   }
 
 
@@ -1079,9 +1079,11 @@ get.relative <- function(mbnma, treatments=list()) {
 
 #' Check validity of object supplied to `comparisons` in nodesplit
 #'
+#' @param data.ab A data frame with data for which to nodesplit
+#' @param trt.labs A character vector of treatment labels corresponding to treatment codes in `network`
 #' @inheritParams nma.nodesplit
 #' @noRd
-check.nodesplit.comparisons <- function(network, comparisons) {
+check.nodesplit.comparisons <- function(data.ab, network, comparisons, trt.labs) {
   if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
     stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
   }
