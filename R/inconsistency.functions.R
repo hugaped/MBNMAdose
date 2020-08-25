@@ -92,49 +92,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab)
   } else {
-    if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
-      stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
-    }
-    if (is.data.frame(comparisons)) {
-      if (all(c("t1", "t2") %in% names(comparisons))) {
-        comparisons <- data.frame(comparisons$t1, comparisons$t2)
-      }
-      comparisons <- as.matrix(comparisons)
-    }
-    if (ncol(comparisons)!=2) {
-      stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
-    }
-    if (is.numeric(comparisons)) {
-      # To ensure numbers correspond to original treatment numbers even if treatments are dropped from the network
-      comparisons <- apply(comparisons, MARGIN=2, FUN=function(x) (network$treatments[x]))
-    }
-    if (is.character(comparisons)) {
-      if (!all(comparisons %in% trt.labs)) {
-        stop("Treatment names given in `comparisons` do not match those within `network` or they match treatments that have been dropped from the network due to being disconnected")
-      }
-      comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
-    }
-    if (!all(comparisons %in% data.ab$treatment)) {
-      stop("Treatment codes given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
-    }
-
-    # Sort comparisons so that lowest is t1
-    comparisons <- t(apply(comparisons, MARGIN=1, FUN=function(x) {sort(x)}))
-
-    # Ensure comparisons are nested within inconsistency.loops
-    check <- paste(comparisons[,1], comparisons[,2], sep="_")
-    fullcomp <- inconsistency.loops(data.ab)
-    match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
-    if (any(is.na(match))) {
-      out <- comparisons[is.na(match),]
-      out <- matrix(unlist(lapply(out, FUN=function(x) {trt.labs[x]})), ncol=2)
-      printout <- c()
-      for (i in 1:nrow(out)) {
-        printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
-      }
-      stop(cat(paste0("\nThe following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
-                      printout, "\n\n")))
-    }
+    comparisons <- check.nodesplit.comparisons(network, comparisons)
   }
 
 
@@ -763,49 +721,7 @@ mbnma.nodesplit <- function(network, fun="linear",
   if (is.null(comparisons)) {
     comparisons <- inconsistency.loops(data.ab, incldr = incldr)
   } else {
-    if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
-      stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
-    }
-    if (is.data.frame(comparisons)) {
-      if (all(c("t1", "t2") %in% names(comparisons))) {
-        comparisons <- data.frame(comparisons$t1, comparisons$t2)
-      }
-      comparisons <- as.matrix(comparisons)
-    }
-    if (ncol(comparisons)!=2) {
-      stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
-    }
-    if (is.numeric(comparisons)) {
-      # To ensure numbers correspond to original treatment numbers even if treatments are dropped from the network
-      comparisons <- apply(comparisons, MARGIN=2, FUN=function(x) (network$treatments[x]))
-    }
-    if (is.character(comparisons)) {
-      if (!all(comparisons %in% trt.labs)) {
-        stop("Treatment names given in `comparisons` do not match those within `network` or they match treatments that have been dropped from the network due to being disconnected")
-      }
-      comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
-    }
-    if (!all(comparisons %in% data.ab$treatment)) {
-      stop("Treatment codes given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
-    }
-
-    # Sort comparisons so that lowest is t1
-    comparisons <- t(apply(comparisons, MARGIN=1, FUN=function(x) {sort(x)}))
-
-    # Ensure comparisons are nested within inconsistency.loops
-    check <- paste(comparisons[,1], comparisons[,2], sep="_")
-    fullcomp <- inconsistency.loops(data.ab)
-    match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
-    if (any(is.na(match))) {
-      out <- comparisons[is.na(match),]
-      out <- matrix(unlist(lapply(out, FUN=function(x) {trt.labs[x]})), ncol=2)
-      printout <- c()
-      for (i in 1:nrow(out)) {
-        printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
-      }
-      stop(cat(paste0("\nThe following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
-                      printout, "\n\n")))
-    }
+    comparisons <- check.nodesplit.comparisons(network, comparisons)
   }
 
 
@@ -853,9 +769,9 @@ mbnma.nodesplit <- function(network, fun="linear",
     ####### Estimate Indirect and Direct in same model #########
 
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
-    ind.jags <- mbnma.run(network, method=method, fun=fun,
+    ind.jags <- mbnma.run(ind.net, method=method, fun=fun,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                          warn.rhat=FALSE, nodesplit=comp, ...)
+                          warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
 
     # Get indirect
     # ind.res <- get.relative(ind.jags, treatments = comp.list)[ind.net$treatments[comp[2]],
@@ -951,9 +867,9 @@ mbnma.nodesplit <- function(network, fun="linear",
     # Overlaps
     overlap.mat <- list("direct"=dir.res, "indirect"=ind.res)
     overlap <- overlapping::overlap(overlap.mat, plot=FALSE)
-    #p.values <- overlap$OV
-    diff <- sum((dir.res-ind.res)>0) / length(dir.res)
-    p.values <- min(diff, 1-diff)
+    p.values <- overlap$OV
+    # diff <- sum((dir.res-ind.res)>0) / length(dir.res)
+    # p.values <- min(diff, 1-diff)
 
     # Quantiles
     quantile_dif <- stats::quantile(ind.res - dir.res, c(0.025, 0.5, 0.975))
@@ -1108,6 +1024,7 @@ get.relative <- function(mbnma, treatments=list()) {
 
       for (beta in seq_along(betaparams)) {
         # If beta is modelled as absolute across all agents
+        #if (betaparams[[beta]]$pool %in% c("common", "random")) {
         if (betaparams[[beta]]$pool %in% c("common", "random")) {
           DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
           DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
@@ -1152,4 +1069,62 @@ get.relative <- function(mbnma, treatments=list()) {
   colnames(rel) <- trtnames
 
   return(rel)
+}
+
+
+
+
+
+
+
+#' Check validity of object supplied to `comparisons` in nodesplit
+#'
+#' @inheritParams nma.nodesplit
+#' @noRd
+check.nodesplit.comparisons <- function(network, comparisons) {
+  if (!is.data.frame(comparisons) & !is.matrix(comparisons)) {
+    stop("`comparisons` must be either a matrix or a data frame of comparisons on which to nodesplit")
+  }
+  if (is.data.frame(comparisons)) {
+    if (all(c("t1", "t2") %in% names(comparisons))) {
+      comparisons <- data.frame(comparisons$t1, comparisons$t2)
+    }
+    comparisons <- as.matrix(comparisons)
+  }
+  if (ncol(comparisons)!=2) {
+    stop("`comparisons` must be a matrix of comparisons on which to split containing exactly two columns")
+  }
+  if (is.numeric(comparisons)) {
+    # To ensure numbers correspond to original treatment numbers even if treatments are dropped from the network
+    comparisons <- apply(comparisons, MARGIN=2, FUN=function(x) (network$treatments[x]))
+  }
+  if (is.character(comparisons)) {
+    if (!all(comparisons %in% trt.labs)) {
+      stop("Treatment names given in `comparisons` do not match those within `network` or they match treatments that have been dropped from the network due to being disconnected")
+    }
+    comparisons <- matrix(as.numeric(factor(comparisons, levels=trt.labs)), ncol=2)
+  }
+  if (!all(comparisons %in% data.ab$treatment)) {
+    stop("Treatment codes given in `comparisons` do not match those within `network` or match treatments that have been dropped from the network due to being disconnected")
+  }
+
+  # Sort comparisons so that lowest is t1
+  comparisons <- t(apply(comparisons, MARGIN=1, FUN=function(x) {sort(x)}))
+
+  # Ensure comparisons are nested within inconsistency.loops
+  check <- paste(comparisons[,1], comparisons[,2], sep="_")
+  fullcomp <- inconsistency.loops(data.ab)
+  match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
+  if (any(is.na(match))) {
+    out <- comparisons[is.na(match),]
+    out <- matrix(unlist(lapply(out, FUN=function(x) {trt.labs[x]})), ncol=2)
+    printout <- c()
+    for (i in 1:nrow(out)) {
+      printout <- paste(printout, paste(out[i,], collapse=" "), sep="\n")
+    }
+    stop(cat(paste0("\nThe following `comparisons` are not part of closed loops of treatments informed by direct and indirect evidence from independent sources:\n",
+                    printout, "\n\n")))
+  }
+
+  return(comparisons)
 }
