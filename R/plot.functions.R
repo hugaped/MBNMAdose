@@ -413,10 +413,15 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma", add=argcheck)
-  checkmate::assertChoice(params, choices=x[["parameters.to.save"]], null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check that specified params are monitored in model
+  if (!all(params %in% x[["parameters.to.save"]])) {
+    stop(paste0("Variable 'params': Must contain elements of set {", paste(x[["parameters.to.save"]], collapse = ", "), "}"))
+  }
 
   # Check that specified params are modelled using relative effects
   for (i in seq_along(params)) {
