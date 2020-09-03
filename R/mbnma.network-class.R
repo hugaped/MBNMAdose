@@ -42,7 +42,7 @@ summary.mbnma.network <- function(x,...) {
 
   cat(crayon::underline(crayon::bold("Description:", x$description, "\n")))
   cat("Number of studies:", length(unique(x$data.ab$studyID)), "\n")
-  cat("Number of treatments (dose-agent combination):", length(x$treatments), "\n")
+  cat("Number of treatments:", length(x$treatments), "\n")
   cat("Number of agents:", length(x$agents), "\n")
 
   if ("classes" %in% names(x)) {
