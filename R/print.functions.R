@@ -61,8 +61,8 @@ print.treat.str <- function(mbnma) {
         headbeta <- paste0(betas[[i]]$betaname, " (", betas[[i]]$fun, ", ", betas[[i]]$param, ")")
       }
 
-      sect.head <- paste("####", headbeta, "dose-response parameter results ####\n\n", sep=" ")
-      cat(sect.head)
+      sect.head <- paste(crayon::bold(headbeta), "dose-response parameter results\n\n", sep=" ")
+      cat(crayon::underline(sect.head))
 
       if (betas[[i]]$param %in% c("lambda", "ed50")) {
         cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
@@ -168,7 +168,7 @@ print.treat.str <- function(mbnma) {
 print.method.sect <- function(mbnma) {
   # String for method
   data.head <- paste("Parameter", "Median (95%CrI)", sep="\t\t\t\t\t")
-  data.head <- paste(data.head, "-----------------------------------------------------------------------", sep="\n")
+  data.head <- paste(crayon::bold(data.head, "-----------------------------------------------------------------------", sep="\n"))
 
   if (mbnma$model.arg$method=="common") {
     method <- "Common (fixed) effects estimated for relative effects"
@@ -195,7 +195,7 @@ print.method.sect <- function(mbnma) {
   }
 
   method.str <- paste("Method:", method, sep=" ")
-  method.str <- paste("\n\n#### Pooling method ####", method.str, "\n", sep="\n\n")
+  method.str <- paste(crayon::bold(crayon::underline("\n\nPooling method")), method.str, "\n", sep="\n\n")
   return(method.str)
 }
 
@@ -216,7 +216,7 @@ print.class.str <- function(mbnma) {
                                    mbnma$BUGSoutput$summary[,3],
                                    mbnma$BUGSoutput$summary[,7]))
 
-    head <- "\n#### Class effects ####\n"
+    head <- crayon::bold(crayon::underline("\nClass effects\n"))
 
     for (i in seq_along(classes)) {
       if (wrapper) {
@@ -288,7 +288,7 @@ print.class.str <- function(mbnma) {
 print.modfit.str <- function(mbnma) {
   totresdev.str <- c()
 
-  head <- "#### Model Fit Statistics ####\n"
+  head <- crayon::bold(crayon::underline("Model Fit Statistics\n"))
 
   # pD
   pd.str <- "Effective number of parameters:"
@@ -315,13 +315,13 @@ print.modfit.str <- function(mbnma) {
         rownames(mbnma$BUGSoutput$summary)=="totresdev", 5],
       1)
   } else {
-    totresdev <- "NOT MONITORED IN MODEL"
+    totresdev <- crayon::red("NOT MONITORED IN MODEL")
   }
   totresdev.str <- paste("Residual deviance =", totresdev, sep=" ")
 
   dic <- mbnma$BUGSoutput$DIC
   dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 1), "\n", sep=" ")
 
-  modfit.sect <- paste(head, pd.str, dev.str, totresdev.str, dic.str, sep="\n")
+  modfit.sect <- paste(head, pd.str, "", dev.str, totresdev.str, dic.str, sep="\n")
   return(modfit.sect)
 }

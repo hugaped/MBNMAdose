@@ -795,7 +795,7 @@ summary.mbnma <- function(object, ...) {
   ##### Overall section #####
 
   # Print title
-  cat("========================================\nDose-response MBNMA\n========================================\n\n")
+  cat(crayon::bold("========================================\nDose-response MBNMA\n========================================\n\n"))
 
   # Print DR function
   if (length(object$model.arg$fun)==1) {
