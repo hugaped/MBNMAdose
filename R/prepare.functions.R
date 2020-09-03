@@ -275,6 +275,12 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
 #' agent and class (if included in the data).
 #'
 #' @inheritParams mbnma.network
+#' @param agents A character string of agent names used to force a particular agent ordering.
+#' Default is `NULL`, which automatically orders `Placebo` (dose=0) as agent `1` and then
+#' subsequent agents by the order given in `data.ab`
+#' @param treatments A character string of treatment names used to force a particular treatment ordering.
+#' Default is `NULL`, which automatically orders `Placebo` (dose=0) as treatment `1` and then
+#' subsequent treatments by the order of agents and doses (smallest to highest) given in `data.ab`
 #'
 #' @return A data frame similar to `data.ab` but with additional columns:
 #' * `arm` Arm identifiers coded for each study
@@ -288,34 +294,36 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
 #' # Add indices to triptans headache dataset
 #' data.ab <- add_index(HF2PPITT)
 #'
-#' @export
-add_index <- function(data.ab) {
+add_index <- function(data.ab, agents=NULL, treatments=NULL) {
 
   # Run Checks
   checkmate::assertDataFrame(data.ab)
 
   if ("agent" %in% names(data.ab)) {
-    recoded <- recode.agent(data.ab, level = "agent")
-    agents <- recoded[["lvlnames"]]
-    data.ab <- recoded[["data.ab"]]
+    if (is.null(agents)) {
+      recoded <- recode.agent(data.ab, level = "agent")
+      agents <- recoded[["lvlnames"]]
+      data.ab <- recoded[["data.ab"]]
 
-    # Generate treatment labels
-    treatments.df <- recoded[["data.ab"]]
-    treatments.df$agent.fac <- factor(treatments.df$agent, labels=agents)
-    treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent.fac, treatments.df$dose)
-    treatments <- unique(paste(treatments.df$agent.fac, treatments.df$dose, sep="_"))
+      # Generate treatment labels
+      treatments.df <- recoded[["data.ab"]]
+      treatments.df$agent.fac <- factor(treatments.df$agent, labels=agents)
+      treatments.df <- dplyr::arrange(treatments.df, treatments.df$agent.fac, treatments.df$dose)
+      treatments <- unique(paste(treatments.df$agent.fac, treatments.df$dose, sep="_"))
 
-    # Generate treatment variable
-    data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
-                                                 data.ab$dose,
-                                                 sep="_"),
-                                           labels=treatments,
-                                           levels=unique(paste(treatments.df$agent,
-                                                               treatments.df$dose,
-                                                               sep="_"))
-    ))
+      # Generate treatment variable
+      data.ab$treatment <- as.numeric(factor(paste(data.ab$agent,
+                                                   data.ab$dose,
+                                                   sep="_"),
+                                             labels=treatments,
+                                             levels=unique(paste(treatments.df$agent,
+                                                                 treatments.df$dose,
+                                                                 sep="_"))
+      ))
 
-    data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
+      data.ab <- dplyr::arrange(data.ab, studyID, agent, dose)
+
+    }
   }
 
 
@@ -800,7 +808,6 @@ mbnma.comparisons <- function(data)
 #' drops <- drop.disconnected(net.noplac, connect.dose=TRUE)
 #' length(unique(net.noplac$data.ab$studyID))==length(unique(drops$data.ab$studyID))
 #'
-#' @export
 drop.disconnected <- function(network, connect.dose=FALSE) {
 
   # Run Checks
@@ -886,6 +893,7 @@ index.dose <- function(data.ab) {
 #' network for which to identify dose-response
 #' @inheritParams mbnma.network
 #'
+#' @noRd
 DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   t1 <- vector()
   t2 <- vector()
@@ -956,14 +964,26 @@ change.netref <- function(network, ref=1) {
   trtnames <- network$treatments
   trtnames <- c(trtnames[ref], trtnames[-ref])
 
-  data.ab$treatment <- trtcodes
-  data.ab$agent <- NULL
-  data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
-  data.ab <- add_index(data.ab)
+  if ("agents" %in% names(network)) {
+    data.ab$treatment <- trtcodes
+    #data.ab$agent <- NULL
+    data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
+    data.ab <- add_index(data.ab, agents = network$agents, treatments=trtnames)
 
-  network$data.ab <- data.ab$data.ab
-  network$treatments <- trtnames
-  network$agents <- NULL
+    network$data.ab <- data.ab$data.ab
+    network$treatments <- trtnames
+    #network$agents <- NULL
+
+  } else {
+    data.ab$treatment <- trtcodes
+    data.ab$agent <- NULL
+    data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
+    data.ab <- add_index(data.ab, agents = NULL, treatments=NULL)
+
+    network$data.ab <- data.ab$data.ab
+    network$treatments <- trtnames
+    network$agents <- NULL
+  }
 
   return(network)
 }
@@ -1134,4 +1154,37 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
   }
 
   return(betas)
+}
+
+
+
+
+
+
+#' Check if all nodes in the network are connected (identical to function in `MBNMAtime`)
+#'
+#' @param g An network plot of `class("igraph")`
+#' @param reference A numeric value indicating which treatment code to use as the reference treatment for
+#' testing that all other treatments connect to it
+#'
+#' @noRd
+check.network <- function(g, reference=1) {
+
+  # Can add component to test for if placebo is missing:
+  # First use check.network with reference=2 (so that next treatment is reference)
+
+  # Then any loops which aren't connected, check if there are X doses of ANY agent within
+  #that loop AND within the main loop. Report the max number of doses that are common to
+  #all loops in the network (perhaps even colour vertices of loops different depending on
+  #the number of doses they can connect via)
+
+  connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+                                               to=reference))
+  treats <- rownames(connects)[connects==FALSE]
+
+  if (length(treats>0)) {
+    warning(paste0("The following treatments/agents are not connected\nto the network reference:\n",
+                   paste(treats, collapse = "\n")))
+  }
+  return(treats)
 }
