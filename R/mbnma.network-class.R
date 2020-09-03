@@ -196,18 +196,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
                 "` but ", levels, " is not a variable within the dataset"))
   }
 
-  #nodes <- x[[levels]]
-  #data.ab$node <- as.character(factor(data.ab[[level]], labels=x[[levels]]))
-
-  # if (!(nodes[1] %in% c("Placebo", "Placebo_0"))) {
-  #   plac.incl <- FALSE
-  #   net.lbls <- c("Placebo", x[[levels]])
-  #   data.ab <- add.plac.row(data.ab)
-  #
-  # } else {
-  #   plac.incl <- TRUE
-  #   net.lbls <- x[[levels]]
-  # }
   net.lbls <- x[[levels]]
   nodes <- net.lbls
   data.ab$node <- as.character(factor(data.ab[[level]], labels=net.lbls))
@@ -242,9 +230,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   # Add coloured vertices for plac if plac.incl!=TRUE
   if ((x$agents[1] != "Placebo" & x$treatments[1]!="Placebo_0")) {
     plac.incl <- FALSE
-    # if (is.null(doselink)) {
-    #   doselink <- 2
-    # }
   } else {plac.incl <- TRUE}
 
   if (!is.null(doselink)) {
@@ -257,7 +242,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
         node.size <- c(1, node.size)
       }
     }
-    #comparisons <- rbind(comparisons, dr.comp)
     comparisons <- rbind(dr.comp, comparisons)
   }
 
@@ -268,7 +252,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   ed <- t(matrix(c(comparisons[["t1"]], comparisons[["t2"]]), ncol = 2))
   ed <- factor(as.vector(ed), labels=nodes)
   edges <- igraph::edges(ed, weight = comparisons[["nr"]], arrow.mode=0)
-  #edges <- igraph::edges(as.vector(ed), weight = comparisons[["nr"]], arrow.mode=0)
   g <- g + edges
 
 
@@ -277,8 +260,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   if (!is.null(doselink)) {
     igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),
                             rep("black", nrow(comparisons)-nrow(dr.comp)))
-    # igraph::E(g)$lty <- c(rep("dashed", nrow(dr.comp)),
-    #                       rep("solid", nrow(comparisons)-nrow(dr.comp)))
   }
 
 
@@ -301,7 +282,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
     cols <- genmaxcols()
 
     if (level=="treatment") {
-      #igraph::V(g)$color <- cols[1:length(sapply(nodes, function(x) strsplit(x, "[_]")[[1]][1]))]
       temp <- as.character(sapply(nodes, function(x) strsplit(x, "[_]")[[1]][1]))
       igraph::V(g)$color <- cols[as.numeric(factor(temp))]
     } else if (level=="agent") {
@@ -333,17 +313,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   if (v.color=="agent") {
     legend("bottomleft", x$agents, pt.bg=unique(igraph::V(g)$color), pch=21, pt.cex=1.5, cex=0.8)
   }
-
-  # if (layout_in_circle==TRUE) {
-  #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
-  #   igraph::V(g)$label.degree <- lab.locs
-  #   igraph::plot.igraph(g,
-  #                       layout = igraph::layout_in_circle(g),
-  #                       ...
-  #   )
-  # } else {
-  #   igraph::plot.igraph(g, ...)
-  # }
 
   if (!is.null(doselink)) {
     message(paste0("Dose-response connections to placebo plotted based on a dose-response
