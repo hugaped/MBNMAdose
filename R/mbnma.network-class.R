@@ -32,6 +32,58 @@ print.mbnma.network <- function(x,...) {
 
 
 
+#' Print summary mbnma.network information to the console
+#'
+#' @param x An object of class `mbnma.network`.
+#' @param ... further arguments passed to or from other methods
+#'
+#' @export
+summary.mbnma.network <- function(x,...) {
+
+  cat(crayon::underline(crayon::bold("Description:", x$description, "\n")))
+  cat("Number of studies:", length(unique(x$data.ab$studyID)), "\n")
+  cat("Number of treatments (dose-agent combination):", length(x$treatments), "\n")
+  cat("Number of agents:", length(x$agents), "\n")
+
+  if ("classes" %in% names(x)) {
+    cat("Number of classes:", length(x$classes), "\n")
+  }
+
+  # Count doses per agent
+  agentdf <- unique(x$data.ab[, c("treatment", "agent")])
+  agentdf <- agentdf %>% dplyr::group_by(agent) %>%
+    dplyr::mutate(ndose = dplyr::n())
+  agentdf <- dplyr::arrange(agentdf, agent)[,c("agent", "ndose")]
+  agentdf <- unique(agentdf)
+
+  cat("Median (max, min) doses per agent: ", median(agentdf$ndose),
+      " (", min(agentdf$ndose), ", ", max(agentdf$ndose), ")\n", sep="")
+
+  # Check network is connected at agent-level
+  g <- suppressMessages(plot.invisible(x, level="agent"))
+  connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+                                               to=1))
+  if (any(connects==FALSE)) {
+    cat("Agent-level network is", crayon::bold(crayon::red("DISCONNECTED"), "\n"))
+  } else {
+    cat("Agent-level network is", crayon::bold(crayon::green("CONNECTED"), "\n"))
+  }
+
+  # Check network is connected at treatment-level
+  g <- suppressMessages(plot.invisible(x, level="treatment"))
+  connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+                                               to=1))
+  if (any(connects==FALSE)) {
+    cat("Treatment-level network is", crayon::bold(crayon::red("DISCONNECTED"), "\n"))
+  } else {
+    cat("Ttreatment-level network is", crayon::bold(crayon::green("CONNECTED"), "\n"))
+  }
+  invisible(x)
+}
+
+
+
+
 
 #' @describeIn mbnma.network Generate a network plot
 #' @inheritParams mbnma.run
