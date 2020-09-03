@@ -329,6 +329,11 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
                       layout = layout,
                       ...
   )
+
+  if (v.color=="agent") {
+    legend("bottomleft", x$agents, pt.bg=unique(igraph::V(g)$color), pch=21, pt.cex=1.5, cex=0.8)
+  }
+
   # if (layout_in_circle==TRUE) {
   #   lab.locs <- radian.rescale(x=seq(1:length(nodes)), direction=-1, start=0)
   #   igraph::V(g)$label.degree <- lab.locs
