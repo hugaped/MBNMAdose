@@ -523,12 +523,12 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
   }
 
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=plotdata$`50%`, x=plotdata$param)) +
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
     ggplot2::geom_point() +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=plotdata$`2.5%`, ymax=plotdata$`97.5%`)) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
     ggplot2::coord_flip()
 
-  g <- g + ggplot2::facet_wrap(~plotdata$doseparam, scales="free")
+  g <- g + ggplot2::facet_wrap(~doseparam, scales="free")
 
   # Axis labels
   g <- g + ggplot2::xlab("Agent / Class") +
@@ -918,8 +918,8 @@ overlay.split <- function(g, network, method="common",
 
 
   # Add split NMAs to plot
-  g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=split.df$dose, y=split.df$`50%`)) +
-    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=split.df$dose, ymin=split.df$`2.5%`, ymax=split.df$`97.5%`))
+  g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=dose, y=`50%`)) +
+    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`))
 
 
   #### Report split NMA model fit statistics ####
@@ -1059,10 +1059,10 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   }
 
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=dev.df$fupdose, y=mean), group=dev.df$groupvar) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean), group=groupvar) +
       ggplot2::geom_point(...)
   } else if (plot.type=="box") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(dev.df$fupdose), y=mean)) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fupdose), y=mean)) +
       ggplot2::geom_boxplot(...)
   }
 
@@ -1271,16 +1271,16 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
-                       ggplot2::aes(x=theta.df$fupdose, y=mean, group=theta.df$groupvar)) +
+                       ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
     ggplot2::geom_line()
 
   # Overlay observed responses
   if (disp.obs==TRUE) {
-    g <- g + ggplot2::geom_point(ggplot2::aes(y=theta.df$y), size=1)
+    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
   }
 
   # Add facets
-  g <- g + ggplot2::facet_wrap(~theta.df$facet, scales = facetscale)
+  g <- g + ggplot2::facet_wrap(~facet, scales = facetscale)
 
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
@@ -1441,8 +1441,8 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
 
   if ("forest" %in% plot.type) {
     forest <-
-      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=forestdata$source, y=forestdata$med,
-                                                    ymin=forestdata$l95, ymax=forestdata$u95), ...) +
+      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=source, y=med,
+                                                    ymin=l95, ymax=u95), ...) +
       ggplot2::geom_pointrange() +
       ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
       ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
@@ -1450,20 +1450,20 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
                      axis.title = ggplot2::element_text(size=12),
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::facet_wrap(~factor(forestdata$comp)) +
+      ggplot2::facet_wrap(~factor(comp)) +
       ggplot2::theme_bw()
   }
   if ("density" %in% plot.type) {
 
-    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=densitydata$value,
-                                                         linetype=densitydata$Estimate, fill=densitydata$Estimate), ...) +
+    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value,
+                                                         linetype=Estimate, fill=Estimate), ...) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab("Treatment effect (95% CrI)") +
       ggplot2::ylab("Posterior density") +
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(densitydata$comp)) +
+      ggplot2::facet_wrap(~factor(comp)) +
       ggplot2::theme_bw() +
       ggplot2::labs(linetype="Evidence", fill="Evidence")
   }
@@ -1538,8 +1538,8 @@ plot.nodesplit <- function(x, plot.type=NULL, ...) {
 
   if ("forest" %in% plot.type) {
     forest <-
-      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=forestdata$source, y=forestdata$med,
-                                                    ymin=forestdata$l95, ymax=forestdata$u95), ...) +
+      ggplot2::ggplot(data=forestdata, ggplot2::aes(x=source, y=med,
+                                                    ymin=l95, ymax=u95), ...) +
       ggplot2::geom_pointrange() +
       ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
       ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") +
@@ -1547,20 +1547,20 @@ plot.nodesplit <- function(x, plot.type=NULL, ...) {
                      axis.title = ggplot2::element_text(size=12),
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::facet_wrap(~factor(forestdata$comp)) +
+      ggplot2::facet_wrap(~factor(comp)) +
       ggplot2::theme_bw()
   }
   if ("density" %in% plot.type) {
 
-    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=densitydata$value,
-                                                         linetype=densitydata$Estimate, fill=densitydata$Estimate), ...) +
+    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value,
+                                                         linetype=Estimate, fill=Estimate), ...) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab("Treatment effect (95% CrI)") +
       ggplot2::ylab("Posterior density") +
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(densitydata$comp)) +
+      ggplot2::facet_wrap(~factor(comp)) +
       ggplot2::theme_bw() +
       ggplot2::labs(linetype="Evidence", fill="Evidence")
 
@@ -1772,10 +1772,10 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
 
   df$Parameter <- factor(df$param)
 
-  g <- ggplot2::ggplot(df, ggplot2::aes(x=df$Var1, y=df$value, linetype=df$Parameter, colour=df$Parameter), ...) +
+  g <- ggplot2::ggplot(df, ggplot2::aes(x=Var1, y=value, linetype=Parameter, colour=Parameter), ...) +
     ggplot2::geom_line(size=1)
 
-  g <- g + ggplot2::facet_wrap(~factor(df$Var2)) +
+  g <- g + ggplot2::facet_wrap(~factor(Var2)) +
     ggplot2::xlab("Rank (1 = best)") +
     ggplot2::ylab("Cumulative probability") +
     ggplot2::labs(linetype="Parameter", colour="Parameter")
