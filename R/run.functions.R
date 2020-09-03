@@ -807,7 +807,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #' }
 #'
 #' @export
-nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
+nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
                     warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pv", ...) {
 
   # Run checks
@@ -818,6 +818,7 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   checkmate::assertLogical(UME, add=argcheck)
+  checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -831,6 +832,10 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   #### Write model for NMA ####
   model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME)
 
+  #### Add priors ####
+  if (!is.null(priors)) {
+    model <- replace.prior(priors=priors, model=model)
+  }
 
   #### Parameters ####
   parameters.to.save <- c("d", "totresdev")
