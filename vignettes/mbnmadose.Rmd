@@ -64,6 +64,14 @@ kable(head(HF2PPITT), digits=2)
 ```
 
 
+### Biologics for treatment of moderate-to-severe psoriasis
+
+`psoriasis` is from a systematic review of RCTs comparing biologics at different doses and placebo [@warren2019]. Three different binary outcomes are included, all based on the number of patients experiencing degrees of improvement on the Psoriasis Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset includes 28 Randomised-Controlled Trials (RCTs), comparing 9 different biologics at different doses with placebo. There are three response variables, indicating the number of participants who achieved >=75% (`r75`), >=90% (`r90`) and 100% (`r100`) improvement in PASI score after 12 weeks.
+
+```{r, echo=FALSE}
+kable(head(psoriasis), digits=2) 
+```
+
 ### Interventions for Serum Uric Acid (SUA) reduction in gout
 
 `GoutSUA_2wkCFB` is from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in patients with gout *[not published previously]*. The outcome is continuous, and aggregate data responses correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA) arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total there were 19 different treatments (combination of dose and agent). `GoutSUA_2wkCFB` is a data frame in long format (one row per arm and study), with the variables `studyID`, `y`, `se`, `agent` and `dose`.
@@ -252,8 +260,8 @@ Nodes that are automatically monitored (if present in the model) have the follow
 
 * `d` The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters specified as `"rel"` (e.g. `mbnma.run(beta.1="rel")`).
 * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if `method="random"`.
-* `D` The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effect` (see Class Effects (REF)) for a given dose-response parameter.
-* `sd.D` The within-class SD for different agents within the same class. This will be estimated by the model if any dose-response parameter specified in `class.effect` (see Class Effects (REF)) is set to `"random"`.
+* `D` The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effect` (see [Class effects]) for a given dose-response parameter.
+* `sd.D` The within-class SD for different agents within the same class. This will be estimated by the model if any dose-response parameter specified in `class.effect` (see [Class effects]) is set to `"random"`.
 * `beta` The common or mean value of a given dose-response parameter across the whole network (does not vary by agent/class). This will be estimated by the model for dose-response parameters specified as `"common"` or `"random"` (e.g. `mbnma.run(beta.1="common"`)).
 * `sd` (with a suffix) - the between-study SD (heterogeneity) for dose-response parameters modelled as exchangeable around a single mean value. This will be estimated by the model for dose-response parameters specified as `"random"`.
 * `totresdev` The residual deviance of the model
@@ -304,6 +312,8 @@ Several additional arguments can be given to `mbnma.run()` that require further 
 #### Class effects
 
 Similar effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
+
+In particular, the scales for different dose-response parameters must be the same for this assumption to be valid. For example, in an Emax model it may be reasonable to assume a class effect on the Emax parameter, as this is parameterised on the response scale and so could be similar across agents of the same class. However, the scale for the ED50 parameter is on the dose scale, which is likely to differ for each agent and so an assumption of similarity between agents for this parameter may be less valid.
 
 Class effects can only be applied to dose-response parameters which vary by agent. In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
