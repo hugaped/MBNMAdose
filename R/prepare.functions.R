@@ -1127,7 +1127,7 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
   count <- 0
   if ("user" %in% fun) {
     for (i in 1:4) {
-      if (grepl(paste0("beta.", i)) %in% user.str) {
+      if (grepl(paste0("beta.", i), user.str)) {
         betas[[paste0("beta.", i)]]$agents <- "user"
         betas[[paste0("beta.", i)]]$betaname <- paste0("beta.", i)
         betas[[paste0("beta.", i)]]$param <- paste0("beta.", i)
