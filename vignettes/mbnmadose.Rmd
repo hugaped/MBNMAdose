@@ -230,7 +230,7 @@ Several different functional forms are implemented within `MBNMAdose`, that allo
 * `"emax.hill"` - Emax with a Hill parameter
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
-* `"user"` - A function that can be explicitly specified by the user within `user.fun` (see `?mbnma.run()`)
+* `"user"` - A function that can be explicitly specified by the user within `user.fun` (see `?mbnma.run()` or [User-defined dose-response function])
 
 
 #### Dose-response parameters
@@ -613,7 +613,7 @@ plot(ranks, params = "d.ed50")
 
 ### Prediction
 
-After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"mbnma"` object. A number of important arguments should be specified for prediction.
+After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"mbnma"` object. A number of important arguments should be specified for prediction. See `?predict.mbnma` for detailed specification of these arguments.
 
 `E0` This is the response at dose = 0 (equivalent to the placebo response). Since relative effects are the parameters estimated in MBNMA, the placebo response is not explicitly modelled and therefore must be provided by the user in some way. The simplest approach is to provide either a single numeric value for `E0` (deterministic approach), or a string representing a distribution for `E0` that can take any Random Number Generator (RNG) distribution for which a function exists in R (stochastic approach). Values should be given on the natural scale. For example for a binomial outcome:
 
@@ -690,6 +690,8 @@ plot(pred, overlay.split = TRUE, method="random")
 ```
 
 By plotting these, as well as observing how responses can be extrapolated/interpolated, we can also see which doses are likely to be providing most information to the dose-response relationship. The tighter 95% CrI on the predicted responses from the MBNMA also show that modelling the dose-response function also gives some additional precision even at doses for which there is information available.
+
+More detailed documentation can be accessed using `?plot.mbnma.predict`.
 
 
 ### Ranking predicted responses
