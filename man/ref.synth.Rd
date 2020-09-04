@@ -4,11 +4,16 @@
 \alias{ref.synth}
 \title{Synthesise single arm dose = 0 / placebo studies to estimate E0}
 \usage{
-ref.synth(data.ab, mbnma, synth = "fixed",
+ref.synth(
+  data.ab,
+  mbnma,
+  synth = "fixed",
   n.iter = mbnma$BUGSoutput$n.iter,
   n.burnin = mbnma$BUGSoutput$n.burnin,
   n.thin = mbnma$BUGSoutput$n.thin,
-  n.chains = mbnma$BUGSoutput$n.chains, ...)
+  n.chains = mbnma$BUGSoutput$n.chains,
+  ...
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the
@@ -33,7 +38,7 @@ a dose-response MBNMA model}
 \item{synth}{A character object that can take the value \code{"fixed"} or \code{"random"} to
 specify the the type of pooling to use for synthesis of \code{E0} if a data frame
 has been provided for it. Using \code{"random"} rather
-than \code{"fixed"} for \code{synth} will result in wider 95\% CrI for predictions.}
+than \code{"fixed"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
 
 \item{n.iter}{number of total iterations per chain (including burn in;
     default: 2000)}

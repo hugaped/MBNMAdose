@@ -1144,7 +1144,6 @@ write.remove.loops <- function(model) {
 #' This function takes JAGS model presented as a string and identifies what
 #' prior values have been used for calculation.
 #'
-#' @inheritParams write.beta
 #' @param model A character object of JAGS MBNMA model code
 #'
 #' @return A character vector, each element of which is a line of JAGS code

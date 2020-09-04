@@ -86,7 +86,6 @@ summary.mbnma.network <- function(x,...) {
 
 
 #' @describeIn mbnma.network Generate a network plot
-#' @inheritParams mbnma.run
 #'
 #' @param x An object of class `mbnma.network`.
 #' @param layout An igraph layout specification. This is a function specifying an igraph

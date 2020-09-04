@@ -4,8 +4,15 @@
 \alias{getjagsdata}
 \title{Prepares data for JAGS}
 \usage{
-getjagsdata(data.ab, class = FALSE, likelihood = "binomial",
-  link = "logit", level = "agent", fun = NULL)
+getjagsdata(
+  data.ab,
+  class = FALSE,
+  likelihood = "binomial",
+  link = "logit",
+  level = "agent",
+  fun = NULL,
+  nodesplit = NULL
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:

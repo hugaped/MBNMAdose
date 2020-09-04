@@ -4,7 +4,7 @@
 \alias{drop.comp}
 \title{Drop treatments from multi-arm (>2) studies for node-splitting}
 \usage{
-drop.comp(ind.df, drops, comp, start = stats::rbinom(1, 1, 0.5))
+drop.comp(ind.df, drops, comp, start = 1)
 }
 \arguments{
 \item{ind.df}{A data frame in long format (one arm per row) from which to drop treatments}

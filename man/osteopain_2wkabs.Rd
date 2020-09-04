@@ -4,7 +4,8 @@
 \name{osteopain_2wkabs}
 \alias{osteopain_2wkabs}
 \title{Studies of treatments for pain relief in patients with osteoarthritis}
-\format{A data frame in long format (one row per arm and study), with 74 rows and 7 variables:
+\format{
+A data frame in long format (one row per arm and study), with 74 rows and 7 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{agent} Character data indicating the agent to which participants were randomised
@@ -12,7 +13,8 @@
 \item \code{class} Character data indicating the drug class to which the agent belongs to
 \item \code{y} Numeric data indicating the mean pain score on the WOMAC scale in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean pain score on the WOMAC scale in a study arm
-}}
+}
+}
 \source{
 Pfizer Ltd.
 }

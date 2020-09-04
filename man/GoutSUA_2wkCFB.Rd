@@ -4,14 +4,16 @@
 \name{GoutSUA_2wkCFB}
 \alias{GoutSUA_2wkCFB}
 \title{Studies of treatments for Serum Uric Acid reduction in patients with gout}
-\format{A data frame in long format (one row per arm and study), with 27 rows and 5 variables:
+\format{
+A data frame in long format (one row per arm and study), with 27 rows and 5 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{y} Numeric data indicating the mean change from baseline in SUA in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean change from baseline in SUA in a study arm
 \item \code{agent} Character data indicating the agent to which participants were randomised
 \item \code{dose} Numeric data indicating the standardised dose received
-}}
+}
+}
 \source{
 Pfizer Ltd.
 }
