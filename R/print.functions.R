@@ -95,11 +95,12 @@ print.treat.str <- function(mbnma) {
         #print(agents[betas[[i]]$agents])
         #print(betas[[i]]$agents)
 
-        # Drop rows that aren't relevant for multi-fun models
-        datatab <- datatab[betas[[i]]$agents,]
-
         if (param=="d") {
+          # Drop rows that aren't relevant for multi-fun models
+          datatab <- datatab[betas[[i]]$agents,]
           rownames(datatab) <- agents[betas[[i]]$agents]
+        } else if (param=="beta") {
+          rownames(datatab) <- ""
         }
 
         print(datatab)
@@ -120,9 +121,12 @@ print.treat.str <- function(mbnma) {
           datai <- append(datai, which(grepl(paste0("^sd\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
           datai <- datai[datai!=0]
 
-          datatab <- as.matrix(datasum)
+          datatab <- as.data.frame(datasum)
           colnames(datatab) <- c("Median", "2.5%", "97.5%")
-          datatab <- datatab[datai,]
+          datatab$Parameter <- rownames(datatab)
+          datatab <- datatab[datai,c(4,1,2,3)]
+
+          rownames(datatab) <- ""
           print(datatab)
           cat("\n\n")
 
