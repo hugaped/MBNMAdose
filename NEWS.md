@@ -17,6 +17,9 @@
 - All nodesplit models now return object of `class("nodesplit")`
 - `mbnma.nodesplit()` includes potential splits via dose-response curve and direct and indirect evidence contributions are calculated simultaneously in the same model.
 - Corrected calculation for Bayesian p-value in `mbnma.nodesplit()` and `nma.nodesplit()`
+- Added legend options to `plot.mbnma.network()`
+- Added `psoriasis` dataset to package
+- Used `crayon` package to neaten printed console outputs
 
 # MBNMAdose 0.2.7
 
