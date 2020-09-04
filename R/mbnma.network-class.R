@@ -118,6 +118,10 @@ summary.mbnma.network <- function(x,...) {
 #' from which a dose-response function could be estimated and is equivalent to the number of
 #' parameters in the desired dose-response function plus one. If left as `NULL` (the default), connections
 #' to placebo via dose-response relationships will not be included.
+#' @param legend A boolean object to indicate whether or not to plot a legend to indicate which node colour
+#'   corresponds to which agent if `v.color="agent"`. Default is `TRUE`.
+#' @param legend.x,legend.y The x and y co-ordinates to be used to position the legend. They can be specified
+#'   by keyword or in any way which is accepted by `xy.coords`.
 #' @param ... Options for plotting in `igraph`.
 #'
 #' @details The S3 method `plot()` on an `mbnma.network` object generates a
@@ -164,6 +168,7 @@ summary.mbnma.network <- function(x,...) {
 plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink=NULL,
                                layout=igraph::in_circle(), remove.loops=FALSE,
                                edge.scale=1, v.scale=NULL, label.distance=0,
+                               legend=TRUE, legend.x="bottomleft", legend.y=NULL,
                                ...)
   # Requires igraph
   #S3method(plot, mbnma.network)
@@ -310,8 +315,8 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
                       ...
   )
 
-  if (v.color=="agent") {
-    legend("bottomleft", x$agents, pt.bg=unique(igraph::V(g)$color), pch=21, pt.cex=1.5, cex=0.8)
+  if (v.color=="agent" & legend==TRUE) {
+    graphics::legend(x=legend.x, y=legend.y, legend=x$agents, pt.bg=unique(igraph::V(g)$color), pch=21, pt.cex=1.5, cex=0.8)
   }
 
   if (!is.null(doselink)) {
