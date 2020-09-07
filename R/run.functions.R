@@ -168,7 +168,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
 #'   * `"rcs"` restricted cubic splines with knot number/location defined by `knot`.`beta.1` refers to the
-#'   first spline coeffficient, `beta.2` to the second coefficient, etc.
+#'   first spline coeffficient, `beta.2` to the second coefficient, etc. Follows the method of \insertCite{hamza2020;textual}{MBNMAdose}
 #'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
 #'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following

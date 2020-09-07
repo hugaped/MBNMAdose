@@ -236,6 +236,7 @@ Several different functional forms are implemented within `MBNMAdose`, that allo
 * `"exponential"`
 * `"emax"` - Emax without a Hill parameter
 * `"emax.hill"` - Emax with a Hill parameter
+* `"rcs"` - Restricted cubic spline
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
 * `"user"` - A function that can be explicitly specified by the user within `user.fun` (see `?mbnma.run()` or [User-defined dose-response function])
@@ -374,10 +375,12 @@ The function assigned to `user.fun` needs to fulfil a few criteria to be valid:
 * Any mathematical/logical operators that can be implemented in JAGS can be added to the function (e.g. `exp()`, `ifelse()`)
 
 ```{r, eval=FALSE}
+depnet <- mbnma.network(ssri)
+
 # An example specifying a quadratic dose-response function
 quad <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-mbnma.run(alognet, fun="user", user.fun=quad,
+mbnma.run(depnet, fun="user", user.fun=quad,
           beta.1 = "rel", beta.2 = "rel")
 ```
 
@@ -399,6 +402,8 @@ multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 
 summary(multifun)
 ```
 
+
+#### Restricted cubic splines and `knots`
 
 #### Priors
 
