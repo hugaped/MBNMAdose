@@ -20,14 +20,14 @@ print.nodesplit <- function(x, ...) {
   output <- crayon::bold("========================================\nNode-splitting analysis of inconsistency\n========================================\n")
 
   comparisons <- names(x)
-  colnam <- crayon::bold("comparison\tp.value\t\t\tMedian (95% CrI)")
+  colnam <- "comparison\tp.value\t\t\tMedian (95% CrI)\n"
   paramsect <- colnam
   for (i in seq_along(comparisons)) {
     pval <- signif(x[[i]]$p.values,
                    max(3L, getOption("digits") - 3L))
     tab <- x[[i]]$quantiles
 
-    heading <- paste(names(x)[i], pval, sep=width)
+    heading <- paste(crayon::bold(names(x)[i]), pval, sep=width)
     direct <- paste("-> direct", "", neatCrI(tab$direct), sep=width)
     indirect <- paste("-> indirect", "", neatCrI(tab$indirect), sep=width)
 

@@ -133,7 +133,7 @@ summary.mbnma.rank <- function(object, ...) {
 print.mbnma.rank <- function(x, ...) {
   checkmate::assertClass(x, "mbnma.rank")
 
-  head <- "\n###### Ranking of dose-response MBNMA ######"
+  head <- crayon::bold("\n================================\nRanking of dose-response MBNMA\n================================")
 
   intro <- c()
   if ("Predictions" %in% names(x)) {
@@ -142,7 +142,7 @@ print.mbnma.rank <- function(x, ...) {
   if (any(grepl("^d\\.", names(x)))) {
     add <- "Includes ranking of relative effects from dose-response MBNMA:"
     add <- paste(add,
-                 paste(names(x)[grepl("^d\\.", names(x))], collapse="\t"),
+                 crayon::bold(paste(names(x)[grepl("^d\\.", names(x))], collapse="\t")),
                  sep="\n")
     intro <- c(intro, add)
   }
@@ -156,9 +156,9 @@ print.mbnma.rank <- function(x, ...) {
 
   rankinfo <- paste(nrow(x[[1]]$summary), "parameters ranked", sep=" ")
   if (x[[1]]$direction==1) {
-    rankinfo <- paste(rankinfo, "with positive responses ranked as `better`", sep=" ")
+    rankinfo <- paste(rankinfo, "with positive responses being", crayon::green(crayon::bold("`better`")), sep=" ")
   } else if (x[[1]]$direction==-1) {
-    rankinfo <- paste(rankinfo, "with negative responses ranked as `better`", sep=" ")
+    rankinfo <- paste(rankinfo, "with negative responses being", crayon::red(crayon::bold("`worse`")), sep=" ")
   }
 
   intro <- paste(intro, collapse="\n")

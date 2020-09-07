@@ -371,14 +371,14 @@ print.mbnma.predict <- function(x, ...) {
     named.a <- FALSE
   }
 
-  head <- "#### Predicted doses ####"
+  head <- crayon::bold("=====================\nPredicted doses\n=====================\n")
   info <- vector()
   for (i in seq_along(agents)) {
     doses <- sum.df$dose[sum.df$agent==agents[i]]
     if (named.a==FALSE) {
-      info <- append(info, paste0("Agent ", i, ": ", paste(doses, collapse=", ")))
+      info <- append(info, paste0(crayon::bold(paste0("Agent ", i, ": ")), paste(doses, collapse=", ")))
     } else {
-      info <- append(info, paste0(agents[i], ": ", paste(doses, collapse=", ")))
+      info <- append(info, paste0(crayon::bold(paste0(agents[i], ": ")), paste(doses, collapse=", ")))
     }
   }
   out <- c(head, info)

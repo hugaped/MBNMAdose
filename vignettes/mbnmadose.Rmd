@@ -622,6 +622,7 @@ Rankings can be calculated for different dose-response parameters from MBNMA mod
 
 ```{r}
 ranks <- rank(trip.emax, direction = 1)
+print(ranks)
 summary(ranks)
 ```
 
