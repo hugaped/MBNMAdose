@@ -763,6 +763,7 @@ mbnma.nodesplit <- function(network, fun="linear",
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
+    print(nrow(comparisons))
 
     comp <- as.numeric(comparisons[split,1:2])
     print(paste0("Calculating nodesplit for: ",
@@ -1038,6 +1039,13 @@ get.relative <- function(mbnma, treatments=list()) {
 
       agnum.i <- which(mbnma$network$agents %in% trtlist[[i]][[1]])
       agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
+
+      # Account for lack of placebo
+      if (as.numeric(strsplit(mbnma$network$treatments[1], split="_")[[1]][2]) != 0) {
+        agnum.i <- agnum.i+1
+        agnum.k <- agnum.k+1
+      }
+
 
       DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), DR)
       DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]][1], DR1)
