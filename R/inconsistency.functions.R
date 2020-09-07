@@ -265,7 +265,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' independent sources, which therefore fulfil the criteria for testing for
 #' inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
 #'
-#' @param data A data frame containing variables `studyID` and `treatment` (as
+#' @param df A data frame containing variables `studyID` and `treatment` (as
 #'   numeric codes) that indicate which treatments are used in which studies. If `checkindirect = TRUE`
 #'   then variables `agent` and `dose` are also required.
 #' @param checkindirect A boolean object to indicate whether or not to perform an additional
@@ -317,29 +317,29 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'             )
 #' inconsistency.loops(data, checkindirect=FALSE)
 #' @export
-inconsistency.loops <- function(data, checkindirect=TRUE, incldr=FALSE)
+inconsistency.loops <- function(df, checkindirect=TRUE, incldr=FALSE)
 {
   # Assert checks
-  checkmate::assertDataFrame(data)
+  checkmate::assertDataFrame(df)
   checkmate::assertLogical(checkindirect)
   checkmate::assertLogical(incldr)
 
-  treatments <- factor(unique(data$treatment))
+  treatments <- factor(unique(df$treatment))
 
-  data <- data %>%
+  df <- df %>%
     dplyr::group_by(studyID) %>%
-    dplyr::mutate(design=list(as.numeric(data$treatment)))
+    dplyr::mutate(design=list(as.numeric(df$treatment)))
 
-  data <- data %>%
+  df <- df %>%
     dplyr::group_by(studyID) %>%
     dplyr::mutate(narm=dplyr::n())
 
 
-  comparisons <- ref.comparisons(data)
+  comparisons <- ref.comparisons(df)
 
   if (incldr==TRUE) {
     # Add columns for agent
-    lookup <- unique(data[,c("treatment", "agent")])
+    lookup <- unique(df[,c("treatment", "agent")])
     comparisons$a1 <-lookup$agent[match(comparisons$t1, lookup$treatment)]
     comparisons$a2 <-lookup$agent[match(comparisons$t2, lookup$treatment)]
   }
@@ -374,7 +374,7 @@ inconsistency.loops <- function(data, checkindirect=TRUE, incldr=FALSE)
       check <- 1
       if (checkindirect==TRUE) {
         check <- suppressMessages(suppressWarnings(
-          check.indirect.drops(data, comp=c(as.numeric(comparisons[i,1]),
+          check.indirect.drops(df, comp=c(as.numeric(comparisons[i,1]),
                                             as.numeric(comparisons[i,2])))
         ))
       }
@@ -410,7 +410,7 @@ inconsistency.loops <- function(data, checkindirect=TRUE, incldr=FALSE)
         param2 <- lookup$count[lookup$a %in% comparisons[i,"a2"]][1]
 
         # Add param if placebo is in dataset
-        if (all(data$dose[data$treatment==1] == 0)) { # if placebo is in dataset
+        if (all(df$dose[df$treatment==1] == 0)) { # if placebo is in dataset
           if (1 %in% lookup$t) { # if placebo is in drops
             param1 <- param1 + 1
             param2 <- param2 + 1
@@ -555,12 +555,18 @@ drop.comp <- function(ind.df, drops, comp, start=1) {
     temp.df <- ind.df[!(ind.df$studyID %in% drops[i] &
                           ind.df$treatment==comp[index+1]),]
 
-    temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
+    if (all(comp %in% temp.df$treatment)) {
+      temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
 
-    connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
-                                                     to=comp[index+1])[
-                                                       c(comp[1], comp[2])
-                                                       ])
+      connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
+                                                       to=comp[index+1])[
+                                                         c(comp[1], comp[2])
+                                                         ])
+    } else {
+      connectcheck <- FALSE
+    }
+
+
 
     if (!(comp[index+1] %in% temp.df$treatment[!(temp.df$studyID %in% drops[i])] &
           all(connectcheck==TRUE))) {
@@ -586,18 +592,18 @@ drop.comp <- function(ind.df, drops, comp, start=1) {
 #' Requires repeatedly compiling `mbnma.network` objects to identify whether
 #' nodes remain connected by indirect evidence.
 #'
-#' @param A data frame containing arm data (one arm per row)
+#' @param df A data frame containing arm data (one arm per row)
 #' @param comp The comparison in which the function will check that both treatments are connected by studies
-#' in `data`
+#' in `df`
 #' @noRd
-check.indirect.drops <- function(data=data, comp) {
+check.indirect.drops <- function(df, comp) {
 
   # Drop studies/comparisons that compare comps
   dropID <- vector()
   dropcomp <- vector()
-  studies <- unique(data$studyID)
+  studies <- unique(df$studyID)
   for (study in seq_along(studies)) {
-    subset <- data[data$studyID==studies[study],]
+    subset <- df[df$studyID==studies[study],]
     if (all(comp %in% subset$treatment)) {
       if (subset$narm[1]<=2) {
         dropID <- append(dropID, subset$studyID[1])
@@ -608,23 +614,23 @@ check.indirect.drops <- function(data=data, comp) {
   }
 
   # Drop studies
-  data <- data[!(data$studyID %in% dropID),]
+  df <- df[!(df$studyID %in% dropID),]
 
   # Drop comparisons from studies
   stoploop <- FALSE
   count <- 1
   while(stoploop==FALSE) {
-    temp <- drop.comp(data, drops=dropcomp, comp=comp)
+    temp <- drop.comp(df, drops=dropcomp, comp=comp)
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
-    if (nt==length(unique(data$treatment))) {
+    if (nt==length(unique(df$treatment))) {
       g <- plot.invisible(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])
                                                          ])
       if (all(connectcheck==TRUE)) {
-        data <- temp
+        df <- temp
         stoploop <- TRUE
       }
     }
@@ -635,7 +641,7 @@ check.indirect.drops <- function(data=data, comp) {
     }
   }
   if (count<5) {
-    return(data)
+    return(df)
   } else {
     return(NULL)
   }
@@ -702,6 +708,7 @@ check.indirect.drops <- function(data=data, comp) {
 mbnma.nodesplit <- function(network, fun="linear",
                             beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
                             method="common",
+                            knots=3,
                             comparisons=NULL,
                             incldr=TRUE,
                             ...) {
@@ -726,7 +733,7 @@ mbnma.nodesplit <- function(network, fun="linear",
 
 
   ##### Run MBNMA #####
-  mbnma.jags <- mbnma.run(network, method=method, fun=fun,
+  mbnma.jags <- mbnma.run(network, method=method, fun=fun, knots=knots,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                           warn.rhat=FALSE, ...)
 
@@ -769,7 +776,7 @@ mbnma.nodesplit <- function(network, fun="linear",
     ####### Estimate Indirect and Direct in same model #########
 
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
-    ind.jags <- mbnma.run(ind.net, method=method, fun=fun,
+    ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                           warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
 
