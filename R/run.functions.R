@@ -49,6 +49,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   defined within JAGS (e.g. `"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
 #'   and identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
+#' @param knots The number/location of knots if a restricted cubic spline dose-response function is fitted (`fun="rcs"`).
+#' If a single number is given it indicates the number of knots (they will
+#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+#'   Minimum number of knots is 3.
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
 #' automatically set to `FALSE` if class effects are modelled or if multiple dose-reponse
@@ -308,6 +312,7 @@ mbnma.run <- function(network,
                       beta.2="rel", beta.3="rel", beta.4="rel",
                       method="common",
                       class.effect=list(), UME=FALSE,
+                      knots=3,
                       cor=TRUE,
                       var.scale=NULL,
                       user.fun=NULL,
@@ -386,7 +391,7 @@ mbnma.run <- function(network,
   if (is.null(model.file)) {
     model <- mbnma.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                         method=method,
+                         method=method, knots=knots,
                          class.effect=class.effect, UME=UME,
                          cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
@@ -473,7 +478,7 @@ mbnma.run <- function(network,
   result.jags <- mbnma.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
-                            likelihood=likelihood, link=link, fun=fun,
+                            likelihood=likelihood, link=link, fun=fun, knots=knots,
                             n.iter=n.iter,
                             n.thin=n.thin,
                             n.chains=n.chains,
@@ -503,6 +508,7 @@ mbnma.run <- function(network,
                     "likelihood"=likelihood, "link"=link,
                     #"class.effect"=class.effect,
                     "class.effect"=assigned.class,
+                    "knots"=knots,
                     "cor"=cor,
                     "var.scale"=var.scale,
                     "parallel"=parallel, "pd"=pd,
@@ -535,7 +541,7 @@ mbnma.run <- function(network,
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        #parameters.to.save=parameters.to.save,
-                       likelihood=NULL, link=NULL, fun=NULL,
+                       likelihood=NULL, link=NULL, fun=NULL, knots=3,
                        nodesplit=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
                        autojags=FALSE, Rhat=1.1, n.update=10,
@@ -566,7 +572,7 @@ mbnma.jags <- function(data.ab, model,
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link, fun=fun,
+                            likelihood=likelihood, link=link, fun=fun, knots=knots,
                             nodesplit=nodesplit) # get data into jags correct format
   }
 

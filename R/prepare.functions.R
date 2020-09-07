@@ -530,7 +530,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
-                        level="agent", fun=NULL, nodesplit=NULL) {
+                        level="agent", fun=NULL, nodesplit=NULL, knots=3) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -605,6 +605,31 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
                                   )
     datalist[["dose"]] <- datalist[["agent"]]
 
+    # Add spline matrix
+    if (!is.null(fun)) {
+      if (any(c("rcs", "ns", "bs") %in% fun)) {
+        splinefun <- unique(fun[c("rcs", "ns", "bs") %in% fun])
+
+        doses <- df[, colnames(df) %in% c("agent", "dose")]
+        doses <- unique(dplyr::arrange(doses, agent, dose))
+
+        # Generate spline matrix
+        dosespline <- doses %>% group_by(agent) %>%
+          mutate(spline=genspline(dose, spline=splinefun, knots=knots))
+        #dosespline$spline <- dosespline$spline[,-1]
+
+        df <- suppressMessages(left_join(df, dosespline))
+
+        knotnum <- ifelse(length(knots)>1, length(knots), knots)
+
+        datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
+                                            ncol(datalist[["dose"]]),
+                                            knotnum-1))
+
+
+      }
+    }
+
   } else if (level=="treatment") {
     datalist[["NT"]] <- max(df$treatment)
 
@@ -645,6 +670,12 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
                                                    df$arm==k])
         datalist[["dose"]][i,k] <- max(df$dose[as.numeric(df$studyID)==i &
                                                  df$arm==k])
+
+        if (any(c("rcs", "ns", "bs") %in% fun)) {
+          datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
+                                             df$arm==k,
+                                           grepl("spline", colnames(df))]
+        }
       } else if (level=="treatment") {
         datalist[["treatment"]][i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
                                                    df$arm==k])
@@ -1187,4 +1218,76 @@ check.network <- function(g, reference=1) {
                    paste(treats, collapse = "\n")))
   }
   return(treats)
+}
+
+
+
+
+
+#' Generates spline design matrices for fitting to dose-response function
+#'
+#' @param x A numeric vector indicating all doses of an agent available in the dataset (including placebo)
+#' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
+#'   spline (`"rcs"`) or B-spline (`"bs"`).
+#' @param ord a positive integer giving the order of the spline function. This is the number of coefficients in each
+#'   piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
+#' @param max.dose A number indicating the maximum dose between which to calculate knot points.
+#'   @inheritParams mbnma.run
+#'
+genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
+
+  if (x[1]==0 & length(unique(x))==1) {
+
+    if (length(knots)==1 & knots[1]>=1) {
+      return(matrix(rep(0,knots-1), nrow=1))
+    } else if (length(knots)>1 | knots[1]<1) {
+      return(matrix(rep(0,length(knots)-1), nrow=1))
+    }
+
+    # if (length(knots)==1 & knots[1]>=1) {
+    #   return(matrix(rep(0,knots+2), nrow=1))
+    # } else if (length(knots)>1 | knots[1]<1) {
+    #   return(matrix(rep(0,length(knots)+2), nrow=1))
+    # }
+
+  } else {
+
+    x0 <- x
+    if (!0 %in% x0) {
+      x0 <- c(0,x0)
+    }
+
+    #max.dose <- max(x0)
+
+    if (length(knots)==1 & knots[1]>=1) {
+      p <- seq(0,1,1/(knots+1))
+      p <- p[-c(1,length(p))]
+      knots <- quantile(0:max.dose, probs = p)
+      names(knots) <- NULL
+    } else if (length(knots)>1 | knots[1]<1) {
+      knots <- quantile(0:max.dose, probs = knots)
+    }
+
+    if (spline=="bs") {
+      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
+    } else if (spline=="rcs") {
+      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
+    } else if (spline=="ns") {
+      splinedesign <- splines::ns(x0, knots=knots)
+      splinedesign <- cbind(x0, splinedesign)
+    }
+
+    if (length(x0)>1) {
+      splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
+    } else {
+      #splinedesign <- t(matrix(splinedesign))
+      splinedesign <- matrix(0, ncol=length(splinedesign))
+    }
+
+
+    return(splinedesign)
+
+  }
+
+
 }

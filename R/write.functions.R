@@ -71,6 +71,7 @@ mbnma.write <- function(fun="linear",
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         method="common",
+                        knots=3,
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
                         class.effect=list(), UME=FALSE,
@@ -96,7 +97,7 @@ mbnma.write <- function(fun="linear",
 
   write.check(fun=fun, user.fun=user.fun,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-              method=method, cor.prior=cor.prior,
+              method=method, cor.prior=cor.prior, knots=knots,
               var.scale=var.scale,
               class.effect=class.effect, UME=UME)
 
@@ -104,7 +105,7 @@ mbnma.write <- function(fun="linear",
 
   # Add dose-response function
   inserts <- write.inserts()
-  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun, UME=UME)
+  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun, UME=UME, knots=knots)
   model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
 
   if (length(dosefun)==2) {  # For models with multiple DR functions
@@ -270,7 +271,7 @@ write.inserts <- function() {
 #' # Write a user-defined dose-response function
 #' doseresp <- ~ beta.1 + (dose ^ beta.2)
 #' write.dose.fun(fun="user", user.fun=doseresp)
-write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE) {
+write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE, knots=3) {
 
   DR.1 <- character()
   paramcount <- 0
@@ -321,6 +322,18 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE)
 
     DR.1 <- append(DR.1, drtemp)
     paramcount <- paramcount + 3
+  }
+  if (any(c("rcs", "ns", "bs") %in% fun)) {
+    knotnum <- ifelse(length(knots)>1, length(knots), knots)
+    drtemp <- ""
+    for (knot in 1:(knotnum-1)) {
+      drtemp <- paste0(drtemp, "(beta.", paramcount+1, "[agent[i,k]] * spline[i,k,", knot, "])")
+      if (knot<knotnum-1) {
+        drtemp <- paste0(drtemp, " + ")
+      }
+      paramcount <- paramcount + 1
+    }
+    DR.1 <- append(DR.1, drtemp)
   }
 
   if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
@@ -398,6 +411,7 @@ write.check <- function(fun="linear",
                         beta.3=NULL,
                         beta.4=NULL,
                         method="common",
+                        knots=3,
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
@@ -407,7 +421,7 @@ write.check <- function(fun="linear",
 
   # Check fun
   dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill",
-                "nonparam.up", "nonparam.down", "user")
+                "nonparam.up", "nonparam.down", "user", "rcs", "bs", "ns")
   if (is.null(fun)) {
     stop("`fun` must be assigned dose-response function(s)")
   }
@@ -429,7 +443,18 @@ write.check <- function(fun="linear",
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
     checkmate::assertNumeric(var.scale, null.ok = TRUE)
   }
+  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check knots
+  knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
+  if (length(knots)==1) {
+    if (knots<3) {
+      stop(knoterr)
+    }
+  } else if (length(knots)>1 & length(knots)<3) {
+    stop(knoterr)
+  }
 
   # Check betas
   # Checks that beta parameters have correct format

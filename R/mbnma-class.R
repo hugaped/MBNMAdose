@@ -603,7 +603,12 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
     }
   } else {
     # Automatically generate doses list for treatments included in data
-    dose <- as.vector(object$model$data()$dose)
+    if ("rcs" %in% object$model.arg$fun) {
+      dose <- as.vector(object$model$data()$spline[,,1])
+    } else {
+      dose <- as.vector(object$model$data()$dose)
+    }
+
     agent <- as.vector(agents)
 
     df <- data.frame("agent"=agent, "dose"=dose)
@@ -690,6 +695,16 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
   predict.result <- list()
 
+  if ("rcs" %in% object$model.arg$fun) {
+    realdoses <- doses
+    splinedoses <- doses
+    for (i in seq_along(doses)) {
+      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$knots,
+                              max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
+    }
+
+  }
+
   for (i in seq_along(doses)) {
     predict.result[[names(doses)[i]]] <- list()
     for (k in seq_along(doses[[i]])) {
@@ -701,6 +716,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
       } else {
         tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", DR)
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
+        tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
 
         # For multiple DR functions
         tempDR <- gsub("X==", "X[i]==", tempDR)
@@ -716,6 +732,10 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
 
         dose <- doses[[i]][k]
+        if ("rcs" %in% object$model.arg$fun) {
+          spline <- splinedoses[[i]][,k]
+        }
+
         for (param in seq_along(betaparams)) {
           #print(param)
           if (is.vector(betaparams[[param]]$result)) {
@@ -731,16 +751,6 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
             assign(paste0("s.", names(betaparams)[param]),
                    betaparams[[param]]$result[,colnum]
             )
-            #print(betaparams[[param]]$result[,colnum])
-
-            # assign(paste0("s.", names(betaparams)[param]),
-            #        betaparams[[param]]$result[,
-            #                                   grepl(
-            #                                     paste0("\\[", agent.num[i], "\\]"),
-            #                                     colnames(betaparams[[param]]$result)
-            #                                   )
-            #                                   ]
-            # )
           }
         }
 
