@@ -11,6 +11,7 @@ mbnma.write(
   beta.3 = NULL,
   beta.4 = NULL,
   method = "common",
+  knots = 3,
   cor = TRUE,
   cor.prior = "wishart",
   var.scale = NULL,
@@ -39,6 +40,11 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is

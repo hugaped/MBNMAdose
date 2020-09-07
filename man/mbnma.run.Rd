@@ -14,6 +14,7 @@ mbnma.run(
   method = "common",
   class.effect = list(),
   UME = FALSE,
+  knots = 3,
   cor = TRUE,
   var.scale = NULL,
   user.fun = NULL,
@@ -66,6 +67,11 @@ For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
 \item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
@@ -224,6 +230,8 @@ Built-in dose-response functions are:
 Emax parameter, \code{beta.2} refers to ET50 parameter
 \item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
 to ET50 parameter, \code{beta.3} refers to Hill parameter
+\item \code{"rcs"} restricted cubic splines with knot number/location defined by \code{knot}.\code{beta.1} refers to the
+first spline coeffficient, \code{beta.2} to the second coefficient, etc. Follows the method of \insertCite{hamza2020;textual}{MBNMAdose}
 \item \code{"nonparam.up"} (monotonically increasing non-parametric dose-response relationship following
 the method of \insertCite{owen2015;textual}{MBNMAdose})
 \item \code{"nonparam.down"} (monotonically decreasing non-parametric dose-response relationship following
@@ -273,6 +281,11 @@ result <- mbnma.run(network, fun="emax",
 #therefore be modelled with a correlation between them).
 result <- mbnma.run(network, fun="emax.hill",
               beta.1="rel", beta.2="rel", beta.3=5, method="random")
+
+# Fit a model with restricted cubic splines and 3 knots
+#at 10\% 30\% and 60\% quartiles of dose ranges
+depnet <- mbnma.network(ssri_dep)
+result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
 
 # Fit a model with different dose-response functions for each agent
 multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",

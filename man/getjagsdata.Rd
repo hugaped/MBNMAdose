@@ -11,7 +11,8 @@ getjagsdata(
   link = "logit",
   level = "agent",
   fun = NULL,
-  nodesplit = NULL
+  nodesplit = NULL,
+  knots = 3
 )
 }
 \arguments{
@@ -51,6 +52,11 @@ level (for NMA)}
 
 \item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

@@ -17,10 +17,10 @@ print.nodesplit <- function(x, ...) {
   checkmate::assertClass(x, "nodesplit")
 
   width <- "\t\t"
-  output <- "========================================\nNode-splitting analysis of inconsistency\n========================================\n"
+  output <- crayon::bold("========================================\nNode-splitting analysis of inconsistency\n========================================\n")
 
   comparisons <- names(x)
-  colnam <- "comparison\tp.value\t\t\tMedian (95% CrI)"
+  colnam <- crayon::bold("comparison\tp.value\t\t\tMedian (95% CrI)")
   paramsect <- colnam
   for (i in seq_along(comparisons)) {
     pval <- signif(x[[i]]$p.values,
