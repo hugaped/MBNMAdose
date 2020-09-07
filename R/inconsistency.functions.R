@@ -924,7 +924,7 @@ mbnma.nodesplit <- function(network, fun="linear",
       ggplot2::theme_bw()
 
     nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
-                      "direct"=dir.res, "indirect"=ind.res, "nma"=mbnma.res,
+                      "direct"=dir.res, "indirect"=ind.res, "mbnma"=mbnma.res,
                       "overlap matrix"=overlap.mat,
                       "p.values"=p.values, "quantiles"=quantiles,
                       "forest.plot"=gg, "density.plot"=dens,
@@ -1145,7 +1145,7 @@ check.nodesplit.comparisons <- function(data.ab, network, comparisons, trt.labs)
 
   # Ensure comparisons are nested within inconsistency.loops
   check <- paste(comparisons[,1], comparisons[,2], sep="_")
-  fullcomp <- inconsistency.loops(data.ab)
+  fullcomp <- inconsistency.loops(data.ab, incldr=TRUE)
   match <- match(check, paste(fullcomp[,1], fullcomp[,2], sep="_"))
   if (any(is.na(match))) {
     out <- comparisons[is.na(match),]
