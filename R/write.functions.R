@@ -455,6 +455,11 @@ write.check <- function(fun="linear",
   } else if (length(knots)>1 & length(knots)<3) {
     stop(knoterr)
   }
+  if (length(knots)>1) {
+    if (!(all(knots<=1 & all(knots>=0)))) {
+      stop("`knots` specified as quantiles must be between 0 and 1")
+    }
+  }
 
   # Check betas
   # Checks that beta parameters have correct format
