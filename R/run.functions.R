@@ -167,6 +167,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   Emax parameter, `beta.2` refers to ET50 parameter
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
+#'   * `"rcs"` restricted cubic splines with knot number/location defined by `knot`.`beta.1` refers to the
+#'   first spline coeffficient, `beta.2` to the second coefficient, etc.
 #'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
 #'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
@@ -222,6 +224,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' #therefore be modelled with a correlation between them).
 #' result <- mbnma.run(network, fun="emax.hill",
 #'               beta.1="rel", beta.2="rel", beta.3=5, method="random")
+#'
+#'# Fit a model with restricted cubic splines and 3 knots
+#' #at 10% 30% and 60% quartiles of dose ranges
+#'depnet <- mbnma.network(ssri_dep)
+#'result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
 #'
 #' # Fit a model with different dose-response functions for each agent
 #' multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
