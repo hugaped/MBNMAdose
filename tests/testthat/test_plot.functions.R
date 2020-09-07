@@ -1,8 +1,8 @@
 testthat::context("Testing plot.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "HF2PPITT"
-dataset <- HF2PPITT
+datanam <- "psoriasis"
+dataset <- psoriasis
 
 # network <- mbnma.network(HF2PPITT)
 # netgout <- mbnma.network(GoutSUA_2wkCFB)
