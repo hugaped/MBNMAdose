@@ -997,7 +997,7 @@ get.relative <- function(mbnma, treatments=list()) {
 
 
   DR <- suppressMessages(
-    write.dose.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun,
+    write.dose.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
                    effect="abs"
     )[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
@@ -1007,27 +1007,49 @@ get.relative <- function(mbnma, treatments=list()) {
   betas <- assignfuns(mbnma$model.arg$fun, mbnma$network$agents, mbnma$model.arg$user.fun,
                       wrapper = ifelse(is.null(mbnma$model.arg$arg.fun), FALSE, TRUE))
 
+  trtnew <- treatments
 
-  trtlist <- list()
-  for (i in seq_along(treatments)) {
-    for (k in seq_along(treatments[[i]])) {
-      trtlist[[length(trtlist)+1]] <- list(names(treatments)[i], treatments[[i]][k])
+  if (any(c("rcs", "bs", "ns") %in% mbnma$model.arg$fun)) {
+    for (i in seq_along(trtnew)) {
+      trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$knots,
+                                      max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
+                                                                                which(names(trtnew)[i] == network$agents)
+                                                                                ]))
     }
   }
 
+  trtlist <- list()
+  for (i in seq_along(trtnew)) {
+    if (is.matrix(trtnew[[i]])) { # Allows for splines
+      for (k in 1:nrow(trtnew[[i]])) {
+        trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], as.vector(trtnew[[i]][k,]))
+      }
+    } else {
+      for (k in seq_along(trtnew[[i]])) {
+        trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], trtnew[[i]][k])
+      }
+    }
+  }
+
+
   rel <- array(dim=c(length(trtlist), length(trtlist), mbnma$BUGSoutput$n.sims))
   for (i in 1:length(trtlist)) {
-
     for (k in 1:length(trtlist)) {
 
       agnum.i <- which(mbnma$network$agents %in% trtlist[[i]][[1]])
       agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
 
       DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), DR)
-      DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]], DR1)
+      DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]][1], DR1)
 
       DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), DR)
-      DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]], DR2)
+      DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]][1], DR2)
+
+      # Replace spline
+      for (m in 1:length(betaparams)) {
+        DR1 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR1)
+        DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR2)
+      }
 
       for (beta in seq_along(betaparams)) {
         # If beta is modelled as absolute across all agents
@@ -1041,10 +1063,11 @@ get.relative <- function(mbnma, treatments=list()) {
       }
 
       chunk <- eval(parse(text=paste0(DR1, " - ", DR2)))
+
       # if (is.list(chunk)) {
       #   chunk <- chunk[[1]]
       # }
-      if (length(rel)<=1) {stop()}
+      if (length(rel)<=1) {stop("length(rel)<=1")}
 
       rel[i,k,] <- chunk
 
