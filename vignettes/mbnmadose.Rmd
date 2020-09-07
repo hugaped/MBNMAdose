@@ -72,6 +72,14 @@ kable(head(HF2PPITT), digits=2)
 kable(head(psoriasis), digits=2) 
 ```
 
+### Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression
+
+`ssri` is from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo [@furukawa2019]. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks (4-12 week range) follow-up. The dataset includes 60 RCTs comparing 5 different SSRIs with placebo.
+
+```{r, echo=TRUE}
+summary(ssri)
+```
+
 ### Interventions for Serum Uric Acid (SUA) reduction in gout
 
 `GoutSUA_2wkCFB` is from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in patients with gout *[not published previously]*. The outcome is continuous, and aggregate data responses correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA) arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total there were 19 different treatments (combination of dose and agent). `GoutSUA_2wkCFB` is a data frame in long format (one row per arm and study), with the variables `studyID`, `y`, `se`, `agent` and `dose`.

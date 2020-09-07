@@ -152,3 +152,27 @@
 #' \insertAllCited{}
 #'
 "psoriasis"
+
+
+
+
+#' Studies of Selective Serotonin Reuptake Inhibirors (SSRIs) for major depression
+#'
+#' A dataset from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo
+#' \insertCite{furukawa2019}{MBNMAdose}. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks
+#' (4-12 week range) follow-up. The dataset includes 60 RCTs comparing 5 different SSRIs with placebo.
+#'
+#' @format A data frame in long format (one row per arm and study), with 145 rows and 8 variables:
+#' * `studyID` Study identifiers
+#' * `bias` Risk of bias evaluated on 6 domains
+#' * `age` Mean participant age
+#' * `weeks` Duration of study follow-up
+#' * `agent` Character data indicating the agent to which participants were randomised
+#' * `dose` Numeric data indicating the dose to which participants were randomsied in mg
+#' * `N` Numeric data indicating the number of participants randomised
+#' * `r` Numeric data indicating the number of participants who achieved >50% improvement in depression symptoms
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"ssri"
