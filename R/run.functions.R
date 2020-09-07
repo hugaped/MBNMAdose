@@ -779,6 +779,11 @@ gen.parameters.to.save <- function(model.params, model) {
     parameters.to.save <- append(parameters.to.save, "sd")
   }
 
+  # For non-monotonic DR functions
+  if (grepl(paste0("\\\nd\\.1\\[c,k\\] ~"), model)==TRUE) {
+    parameters.to.save <- append(parameters.to.save, "d.1")
+  }
+
   return(unique(parameters.to.save))
 
 }
