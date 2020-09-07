@@ -616,6 +616,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         # Generate spline matrix
         dosespline <- doses %>% group_by(agent) %>%
           mutate(spline=genspline(dose, spline=splinefun, knots=knots))
+
         #dosespline$spline <- dosespline$spline[,-1]
 
         df <- suppressMessages(left_join(df, dosespline))
@@ -1284,6 +1285,10 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
     } else {
       #splinedesign <- t(matrix(splinedesign))
       splinedesign <- matrix(0, ncol=length(splinedesign))
+    }
+
+    if (!is.matrix(splinedesign)) {
+      splinedesign <- matrix(splinedesign, nrow=1)
     }
 
 
