@@ -230,16 +230,23 @@ MBNMA is performed in `MBNMAdose` by applying `mbnma.run()`. A `"mbnma.network"`
 
 #### Dose-response functions
 
-Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `mbnma.run()`:
+Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `mbnma.run()`. $x_{i,k}$ refers to the dose and $t_{i,k}$ to the agent in arm $k$ of study $i$.
 
-* `"linear"`
-* `"exponential"`
-* `"emax"` - Emax without a Hill parameter
-* `"emax.hill"` - Emax with a Hill parameter
-* `"rcs"` - Restricted cubic spline
+* `"linear"`: $f(x_{i,k}, t_{i,k})=\beta_{t_{i,k}} x_{i,k}$ where $\beta_{t_{i,k}}$ is the slope
+
+* `"exponential"`: $f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} (1 - e^{-x_{i,k}})$ where $\lambda$ is the rate of exponential growth/decay
+
+* `"emax"`: $f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times x_{i,k}} {ED50_{t_{i,k}} + x_{i,k}}$ where $Emax$ is the maximum response that can be achieved and $ED50$ is the dose at which 50% of the maximum response is achieved
+
+* `"emax.hill"`: $f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times x_{i,k}^\gamma}{ED50_{t_{i,k}}^\gamma + x_{i,k}^\gamma}$ where $Emax$ is the maximum response that can be achieved, $ED50$ is the dose at which 50% of the maximum response is achieved and $\gamma$ is the Hill parameter.
+
+* `"rcs"` (restricted cubic spline): $f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$ where $\beta_{p,t_{i,k}}$ is the regression coefficient for spline $p^{th}$ and $X_{1:P,i,k}$ is the basis matrix for the spline.
+
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
+
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
-* `"user"` - A function that can be explicitly specified by the user within `user.fun` (see `?mbnma.run()` or [User-defined dose-response function])
+
+* `"user"`: Any function that can be explicitly defined by the user within `user.fun` (see [User-defined dose-response function])
 
 
 #### Dose-response parameters
