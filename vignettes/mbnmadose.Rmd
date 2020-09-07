@@ -405,6 +405,20 @@ summary(multifun)
 
 #### Restricted cubic splines and `knots`
 
+For a more flexible dose-response shape, restricted cubic splines can be fitted to the data by setting `fun="rcs"`. The model is very flexible and can allow for non-monotonic dose-response relationships, though parameters can be difficult to interpret. This follows the method of Hamza et a. (2020) [@hamza2020]. 
+
+To fit this model, the number/location of `knots` should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.
+
+```{r, eval=FALSE}
+knots <- 3
+# ...is equivalent to 
+knots <- c(0.25,0.5,0.75)
+
+depnet <- mbnma.network(ssri)
+mbnma.run(depnet, fun="rcs", knots=knots)
+```
+
+
 #### Priors
 
 Default vague priors for the model are as follows:
@@ -621,6 +635,13 @@ plot(ranks, params = "d.emax")
 
 # Ranking histograms for ED50
 plot(ranks, params = "d.ed50")
+```
+
+Alternatively, cumulative ranking plots for all parameters can be plotted simultaneously so as to be able to compare the effectiveness of different agents on different parameters. The surface under cumulative ranking curve (SUCRA) for each parameter can also be estimated by setting `sucra=TRUE`.
+
+```{r}
+# Cumulative ranking plot for both dose-response parameters
+cumrank(ranks)
 ```
 
 
