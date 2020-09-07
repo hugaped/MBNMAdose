@@ -1126,13 +1126,14 @@ cutjags <- function(jagsresult) {
 
 # I want something that for a given function (or set of functions), it tells me which parameter corresponds
 #to which function (including a parameter name) and which agents are modelled by that parameter (and therefore function)
-assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
+assignfuns <- function(fun, agents, user.fun, wrapper=FALSE, knots=3) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(fun, add=argcheck)
   checkmate::assertCharacter(agents, add=argcheck)
   checkmate::assertFormula(user.fun, null.ok = TRUE, add=argcheck)
+  checkmate::assertNumeric(knots, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Convert user.fun to string
@@ -1152,7 +1153,8 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE) {
   }
 
   funlist <- list("linear"="slope", "exponential"="lambda",
-                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"))
+                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"),
+                  "rcs"=paste0("beta.", 1:knots))
 
   betas <- list()
   count <- 0

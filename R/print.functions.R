@@ -44,7 +44,8 @@ print.treat.str <- function(mbnma) {
   } else {wrapper <- FALSE}
 
   betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
-                      wrapper=wrapper)
+                      wrapper=wrapper,
+                      knots=ifelse(length(mbnma$model.arg$knots)==1, mbnma$model.arg$knots, length(mbnma$model.arg$knots)))
 
   datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
                                  mbnma$BUGSoutput$summary[,3],
