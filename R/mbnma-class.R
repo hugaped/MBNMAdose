@@ -819,6 +819,10 @@ summary.mbnma <- function(object, ...) {
     print(drtab)
   }
 
+  if (any(object$model.arg$fun == "user")) {
+    cat("\nuser.fun:", as.character(object$model.arg$user.fun))
+  }
+
 
 
   #overall.sect <- paste(title, overall.sect, sep="\n")
