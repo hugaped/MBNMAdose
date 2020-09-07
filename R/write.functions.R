@@ -561,7 +561,7 @@ write.check <- function(fun="linear",
       stop("Class effects can only be modelled when using a single dose-response function")
     }
 
-    if (any(c("rcs", "ns", "bs") in fun)) {
+    if (any(c("rcs", "ns", "bs") %in% fun)) {
       warning("Class effects applied to spline function parameters may produce\n#
               non-interpretable results since knot locations will differ between agents")
     }
