@@ -28,7 +28,7 @@ emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000
 #emax.gout <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
 
 if ("class" %in% names(dataset)) {
-  emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
+  emax.class <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="random", method="common",
                                             class.effect=list(emax="random"), n.iter=1000))
 }
 

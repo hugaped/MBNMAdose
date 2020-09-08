@@ -197,11 +197,22 @@ testthat::test_that("test.mbnma.nodesplit", {
                              comparisons = rbind(c("badger","rizatriptan_0.5"))),
                "Treatment names given")
 
-  expect_error(mbnma.nodesplit(network, fun="emax",
-                             method="random", n.iter=1000,
-                             comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
-                                                 c("zolmitriptan_4", "eletriptan_1"),
-                                                 c("naratriptan_2", "Placebo_0"))),
-               "Treatment names given")
+  if (datanam=="HF2PPITT") {
+    expect_error(mbnma.nodesplit(network, fun="emax",
+                                 method="random", n.iter=1000,
+                                 comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
+                                                     c("zolmitriptan_4", "eletriptan_1"),
+                                                     c("naratriptan_2", "Placebo_0"))))
+
+  } else {
+    expect_error(mbnma.nodesplit(network, fun="emax",
+                                 method="random", n.iter=1000,
+                                 comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
+                                                     c("zolmitriptan_4", "eletriptan_1"),
+                                                     c("naratriptan_2", "Placebo_0"))),
+                 "Treatment names given")
+  }
+
+
 
 })
