@@ -47,6 +47,7 @@ Suggests:
     testthat (>= 1.0.2),
     rgeos (>= 0.5-2),
     crayon (>= 1.3.4),
+    Hmisc (>= 4.4-1),
     knitr,
     rmarkdown
 SystemRequirements: JAGS (>= 4.3.0) (http://mcmc-jags.sourceforge.net)
