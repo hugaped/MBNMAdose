@@ -19,16 +19,19 @@ testthat::test_that(paste0("test.inconsistency.loops for: ", datanam), {
 
   expect_equal(any(grepl("drparams", comps$path)), TRUE)
 
-  compsnodr <- inconsistency.loops(network$data.ab, incldr = FALSE)
-  expect_equal(nrow(compsnodr)<nrow(comps), TRUE)
+  if (datanam!="osteopain_2wkabs") {
+    compsnodr <- inconsistency.loops(network$data.ab, incldr = FALSE)
+    expect_equal(nrow(compsnodr)<nrow(comps), TRUE)
+
+    incon <- inconsistency.loops(network$data.ab)
+    expect_identical(names(incon), c("t1", "t2", "path"))
+  }
 
   if (datanam=="HF2PPITT") {
     expect_equal(nrow(inconsistency.loops(network$data.ab)), 4)
     expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), 8) # more loops since ref treatment has changed
   }
 
-  incon <- inconsistency.loops(network$data.ab)
-  expect_identical(names(incon), c("t1", "t2", "path"))
 })
 
 
@@ -36,23 +39,50 @@ testthat::test_that(paste0("test.inconsistency.loops for: ", datanam), {
 
 testthat::test_that(paste0("test.nma.nodesplit for: ", datanam), {
 
-  split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+  if (all(c("y", "se") %in% names(dataset))) {
+    like <- "normal"
+    link <- "identity"
+  } else if (all(c("r", "N") %in% names(dataset))) {
+    like <- "binomial"
+    link <- "logit"
+  }
+
+  if (datanam!="osteopain_2wkabs") {
+    split <- nma.nodesplit(network, likelihood = like, link=link,
                            method="common", n.iter=1000)
-  expect_equal(nrow(inconsistency.loops(network$data.ab)), length(split))
-  expect_equal(class(split), "nodesplit")
-  expect_identical(names(split[[1]]), c("comparison",
-                                        "direct", "indirect", "nma",
-                                        "overlap matrix", "p.values", "quantiles",
-                                        "forest.plot", "density.plot",
-                                        "direct.model", "indirect.model", "nma.model"))
-  expect_equal(is.numeric(split[[1]]$p.values), TRUE)
-  expect_equal(is.numeric(split[[1]]$indirect), TRUE)
-  expect_equal(is.numeric(split[[1]]$direct), TRUE)
-  expect_equal(length(split[[1]]$comparison), 2)
-  expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
-  expect_identical(class(split[[1]]$density.plot), c("gg", "ggplot"))
-  expect_error(print(split), NA)
-  expect_equal(class(summary(split)), "data.frame")
+    expect_equal(nrow(inconsistency.loops(network$data.ab)), length(split))
+    expect_equal(class(split), "nodesplit")
+    expect_identical(names(split[[1]]), c("comparison",
+                                          "direct", "indirect", "nma",
+                                          "overlap matrix", "p.values", "quantiles",
+                                          "forest.plot", "density.plot",
+                                          "direct.model", "indirect.model", "nma.model"))
+    expect_equal(is.numeric(split[[1]]$p.values), TRUE)
+    expect_equal(is.numeric(split[[1]]$indirect), TRUE)
+    expect_equal(is.numeric(split[[1]]$direct), TRUE)
+    expect_equal(length(split[[1]]$comparison), 2)
+    expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
+    expect_identical(class(split[[1]]$density.plot), c("gg", "ggplot"))
+    expect_error(print(split), NA)
+    expect_equal(class(summary(split)), "data.frame")
+
+
+    # Test comparisons
+    comps <- inconsistency.loops(network$data.ab, incldr = FALSE)
+    compsi <- c(comps$t1[1], comps$t2[1])
+    split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+                           method="random", n.iter=1000, drop.discon = TRUE,
+                           comparisons = rbind(compsi))
+    expect_equal(1, length(split))
+    expect_error(print(split), NA)
+    expect_equal(class(summary(split)), "data.frame")
+
+    expect_error(nma.nodesplit(network, likelihood = "binomial", link="logit",
+                               method="random", n.iter=1000, drop.discon = FALSE,
+                               comparisons = rbind(c("badger","rizatriptan_0.5"))),
+                 "Treatment names given")
+
+  }
 
 
   if (datanam=="HF2PPITT") {
@@ -76,21 +106,6 @@ testthat::test_that(paste0("test.nma.nodesplit for: ", datanam), {
   }
 
 
-  # Test comparisons
-  comps <- inconsistency.loops(network$data.ab, incldr = FALSE)
-  compsi <- c(comps$t1[1], comps$t2[1])
-  split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
-                           method="random", n.iter=1000, drop.discon = TRUE,
-                           comparisons = rbind(compsi))
-  expect_equal(1, length(split))
-  expect_error(print(split), NA)
-  expect_equal(class(summary(split)), "data.frame")
-
-  expect_error(nma.nodesplit(network, likelihood = "binomial", link="logit",
-                               method="random", n.iter=1000, drop.discon = FALSE,
-                               comparisons = rbind(c("badger","rizatriptan_0.5"))),
-               "Treatment names given")
-
   if (datanam=="HF2PPITT") {
     expect_error(nma.nodesplit(network, likelihood = "binomial", link="logit",
                                method="random", n.iter=1000, drop.discon = FALSE,
@@ -108,12 +123,22 @@ testthat::test_that(paste0("test.nma.nodesplit for: ", datanam), {
 
 testthat::test_that("test.mbnma.nodesplit", {
 
+  if (all(c("y", "se") %in% names(dataset))) {
+    like <- "normal"
+    link <- "identity"
+  } else if (all(c("r", "N") %in% names(dataset))) {
+    like <- "binomial"
+    link <- "logit"
+  }
+
   comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
 
-  split <- mbnma.nodesplit(network, fun="rcs", knots=3, likelihood = "binomial", link="logit",
+  split <- mbnma.nodesplit(network, fun="rcs", knots=3, likelihood = like, link=link,
                          method="common", n.iter=1000)
   expect_equal(nrow(comps), length(split))
-  expect_equal(nrow(inconsistency.loops(network$data.ab, incldr = FALSE))==length(split), FALSE)
+  if (datanam!="osteopain_2wkabs") {
+    expect_equal(nrow(inconsistency.loops(network$data.ab, incldr = FALSE))==length(split), FALSE)
+  }
   expect_equal(class(split), "nodesplit")
   expect_identical(names(split[[1]]), c("comparison",
                                         "direct", "indirect", "mbnma",
@@ -131,7 +156,7 @@ testthat::test_that("test.mbnma.nodesplit", {
 
 
   comps.noplac <- inconsistency.loops(net.noplac$data.ab, incldr = TRUE)
-  split <- mbnma.nodesplit(net.noplac, fun="exponential", likelihood = "binomial", link="logit",
+  split <- mbnma.nodesplit(net.noplac, fun="exponential", likelihood = like, link=link,
                          method="random", n.iter=1000)
   expect_equal(nrow(comps.noplac), length(split))
   expect_equal(class(split), "nodesplit")
@@ -152,7 +177,7 @@ testthat::test_that("test.mbnma.nodesplit", {
 
   # Test comparisons
   split <- mbnma.nodesplit(net.noplac, fun="user", user.fun= ~beta.1 * dose + beta.2 * (dose^2),
-                           likelihood = "binomial", link="logit",
+                           likelihood = like, link=link,
                          method="random", n.iter=1000,
                          comparisons = rbind(comps.noplac[1,], comps.noplac[3,]))
   expect_equal(2, length(split))
@@ -160,19 +185,19 @@ testthat::test_that("test.mbnma.nodesplit", {
   expect_equal(class(summary(split)), "data.frame")
 
   comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
-  split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
+  split <- mbnma.nodesplit(network, fun="emax",
                          method="random", n.iter=1000,
                          comparisons = rbind(c(network$treatment[comps$t1[2]], network$treatment[comps$t2[2]])))
   expect_equal(1, length(split))
   expect_error(print(split), NA)
   expect_equal(class(summary(split)), "data.frame")
 
-  expect_error(mbnma.nodesplit(network, fum="linear", likelihood = "binomial", link="logit",
+  expect_error(mbnma.nodesplit(network, fum="linear",
                              method="random", n.iter=1000,
                              comparisons = rbind(c("badger","rizatriptan_0.5"))),
                "Treatment names given")
 
-  expect_error(mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
+  expect_error(mbnma.nodesplit(network, fun="emax",
                              method="random", n.iter=1000,
                              comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                  c("zolmitriptan_4", "eletriptan_1"),

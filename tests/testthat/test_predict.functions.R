@@ -112,7 +112,13 @@ testthat::test_that(paste0("predict.mbnma functions correctly for: ", datanam), 
   # Determinsitic E0 values
   expect_silent(predict(linear, E0 = 0.01))
   expect_silent(predict(linear, E0 = 0.99))
-  expect_warning(predict(emax, E0 = 1.5))
+
+  if (all(c("y", "se") %in% names(dataset))) {
+    expect_warning(predict(emax, E0 = 1.5), NA)
+  } else if (all(c("r", "N") %in% names(dataset))) {
+    expect_warning(predict(emax, E0 = 1.5))
+  }
+
 
   # Changing n.doses
   pred <- predict(linear, E0=0.5, n.doses = 10)
@@ -164,7 +170,11 @@ testthat::test_that(paste0("predict.mbnma functions correctly for: ", datanam), 
   pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_identical(as.numeric(names(pred$predicts[[1]])), doses[[1]])
   expect_identical(as.numeric(names(pred$predicts[[2]])), doses[[2]])
-  expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
+
+  if (all(c("r", "N") %in% names(dataset))) {
+    expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
+  }
+
   expect_error(print(pred), NA)
   expect_equal(class(summary(pred)), "data.frame")
 

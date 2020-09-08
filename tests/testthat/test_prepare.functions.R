@@ -14,6 +14,10 @@ df2 <- df1
 df2$agent <- as.character(df2$agent)
 df2$agent[df2$dose==0] <- network$agents[2]
 
+if ("class" %in% names(dataset)) {
+  df.class <- dataset
+}
+
 # df.class <- HF2PPITT
 # df.class$class <- NA
 # df.class$class[df.class$agent %in% c("placebo", "eletriptan")] <- 1
@@ -89,7 +93,11 @@ test_that(paste0("add_index functions correctly for: ", datanam), {
 test_that(paste0("mbnma.network functions correctly for: ", datanam), {
   expect_message(mbnma.network(df1))
 
-  expect_message(mbnma.network(df2))
+  if (datanam!="osteopain_2wkabs") {
+    expect_message(mbnma.network(df2))
+  } else {
+    expect_error(mbnma.network(df2), "Class codes are different")
+  }
 
   df.err <- dataset
   arm <- df.err[df.err$studyID==df.err$studyID[1],]
@@ -108,16 +116,19 @@ test_that(paste0("mbnma.network functions correctly for: ", datanam), {
 test_that(paste0("mbnma.comparions functions correctly for: ", datanam), {
 
   for (i in seq_along(datalist)) {
-    network <- mbnma.network(datalist[[i]])
 
-    expect_error(mbnma.comparisons(network))
+    if (i==2 & datanam!="osteopain_2wkabs") {
+      network <- mbnma.network(datalist[[i]])
 
-    comps <- mbnma.comparisons(network$data.ab)
+      expect_error(mbnma.comparisons(network))
 
-    expect_equal(names(comps), c("t1", "t2", "nr"))
-    checkmate::assertDataFrame(comps, any.missing = FALSE, types="numeric")
+      comps <- mbnma.comparisons(network$data.ab)
 
-    expect_equal(all(comps$t1<=comps$t2), TRUE)
+      expect_equal(names(comps), c("t1", "t2", "nr"))
+      checkmate::assertDataFrame(comps, any.missing = FALSE, types="numeric")
+
+      expect_equal(all(comps$t1<=comps$t2), TRUE)
+    }
   }
 })
 

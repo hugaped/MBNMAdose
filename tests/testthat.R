@@ -14,7 +14,7 @@ datalist <- list("HF2PPITT"=HF2PPITT, "psoriasis"=psoriasis.r, "ssri"=ssri,
 
 
 
-datalist <- list("ssri"=ssri)
+datalist <- list("osteopain_2wkabs"=osteopain_2wkabs)
 for (z in seq_along(datalist)) {
   print(paste("Testing dataset:", names(datalist)[z]))
 

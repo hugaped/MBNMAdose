@@ -14,25 +14,6 @@ netlist <- list(network, net.noplac)
 
 
 # Models
-# linear <- mbnma.run(mbnma.network(alog_pcfb), fun="linear", n.iter=1000)
-#
-# emax <- mbnma.emax(netgout, emax="rel", ed50="rel", method="random", n.iter=1000)
-# emax.tript <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
-#
-# emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-#                         class.effect=list(emax="random"), n.iter=1000))
-#
-# emax.class2 <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-#                         class.effect=list(emax="random"), n.iter=1000))
-#
-# nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
-#
-# emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
-#
-# resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
-#
-# modellist <- list(linear, emax, emax.class, emax.noplac)
-
 linear <- mbnma.run(mbnma.network(dataset), fun="linear", n.iter=1000)
 
 emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
@@ -43,6 +24,7 @@ emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n
 
 resdev <- mbnma.linear(network, parameters.to.save = "resdev", n.iter=1000)
 
+modellist <- NULL
 modellist <- list(linear, emax, emax.noplac)
 
 if ("class" %in% names(dataset)) {
@@ -52,7 +34,7 @@ if ("class" %in% names(dataset)) {
   emax.class2 <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="rel", method="common",
                                              class.effect=list(emax="random"), n.iter=1000))
 
-  modellist <- c(modellist, emax.class)
+  modellist[[length(modellist)+1]] <- emax.class
 }
 
 
@@ -84,11 +66,14 @@ test_that(paste0("plot.mbnma.network functions correctly for:", datanam), {
   expect_silent(plot(network, layout = igraph::in_circle(),
                      level="agent", remove.loops = TRUE))
 
-  expect_warning(plot(net.noplac, layout=igraph::as_star(),
-                     level="agent"))
+  if (datanam %in% c("HF2PPITT", "psoriasis", "ssri")) {
+    expect_warning(plot(net.noplac, layout=igraph::as_star(),
+                        level="agent"))
 
-  expect_warning(plot(net.noplac, layout=igraph::with_fr(),
-                      level="agent", doselink = 5))
+    expect_warning(plot(net.noplac, layout=igraph::with_fr(),
+                        level="agent", doselink = 10))
+
+  }
 
   g1 <- plot(network,
             level="treatment", v.color = "agent")
@@ -113,7 +98,8 @@ test_that(paste0("plot.mbnma.network functions correctly for:", datanam), {
 
 testthat::test_that(paste0("plot.mbnma functions correctly for: ", datanam), {
   for (i in seq_along(modellist)) {
-    expect_silent(plot(modellist[[i]]))
+    mbnma <- modellist[[i]]
+    expect_silent(plot(mbnma))
   }
   expect_equal("ggplot" %in% class(plot(nonparam)), TRUE)
 

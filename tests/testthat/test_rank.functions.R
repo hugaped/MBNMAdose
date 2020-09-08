@@ -57,8 +57,8 @@ testthat::test_that(paste0("rank.mbnma functions correctly for: ", datanam), {
 
   # Checking direction=1 and direction=-1 are opposites
   rank.down <- rank(emax, direction=-1)
-  expect_equal(rank.down$d.emax$summary$rank.param[rank.down$d.emax$summary$`50%`==1]==
-                 rank$d.emax$summary$rank.param[rank$d.emax$summary$`50%`==length(rank.down$d.emax$summary$rank.param)],
+  expect_equal(dplyr::arrange(rank.down$d.emax$summary, '50%')$rank.param[1] %in%
+                 dplyr::arrange(rank$d.emax$summary, '50%')$rank.param[nrow(rank$d.emax$summary)-1:nrow(rank$d.emax$summary)],
                TRUE)
   expect_error(print(rank.down), NA)
   expect_equal(class(summary(rank)[[1]]), "data.frame")
@@ -74,7 +74,7 @@ testthat::test_that(paste0("rank.mbnma functions correctly for: ", datanam), {
     expect_error(rank.mbnma(emax, level="class"))
     expect_error(rank.mbnma(emax.class, level="agent"))
     rank <- rank.mbnma(emax.class, level="class")
-    expect_equal(ncol(rank$D.emax$rank.matrix), 2)
+    expect_equal(ncol(rank$D.emax$rank.matrix), length(unique(dataset$class[dataset$dose>0])))
     expect_error(print(rank), NA)
     expect_equal(class(summary(rank)[[1]]), "data.frame")
   }

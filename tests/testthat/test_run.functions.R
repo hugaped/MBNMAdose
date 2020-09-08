@@ -168,10 +168,12 @@ test_that(paste("mbnma.run wrappers function correctly for:", datanam), {
     expect_error(summary(result), NA)
 
     # Three parameter DR functions
-    result <- mbnma.emax.hill(netclass, emax="rel", ed50="rel", hill="rel",
-                              method="random", n.iter=n.iter)
-    expect_equal(all(c("d.emax", "d.ed50", "d.hill", "sd") %in% result$parameters.to.save), TRUE)
-    expect_error(summary(result), NA)
+    if (datanam!="osteopain_2wkabs") {
+      result <- mbnma.emax.hill(netclass, emax="rel", ed50="rel", hill="common",
+                                method="random", n.iter=n.iter)
+      expect_equal(all(c("d.emax", "d.ed50", "d.hill", "sd") %in% result$parameters.to.save), TRUE)
+      expect_error(summary(result), NA)
+    }
   }
 
 })
@@ -180,16 +182,30 @@ test_that(paste("mbnma.run wrappers function correctly for:", datanam), {
 
 test_that(paste("check.likelink function correctly for:", datanam), {
 
-  expect_silent(check.likelink(df, likelihood = "binomial", link="identity"))
-  expect_silent(check.likelink(df, likelihood = "binomial", link="logit"))
+  if (all(c("y", "se") %in% names(dataset))) {
+    expect_silent(check.likelink(df, likelihood = "normal", link="identity"))
+    expect_silent(check.likelink(df, likelihood = "normal", link="logit"))
 
-  # Expect error due to misspecified df
-  expect_error(check.likelink(df, likelihood = "normal", link="identity"))
-  expect_error(check.likelink(df, likelihood = "poisson", link="identity"))
+    # Expect error due to misspecified df
+    expect_error(check.likelink(df, likelihood = "binomial", link="identity"))
+    expect_error(check.likelink(df, likelihood = "poisson", link="identity"))
 
-  # Expect errror due to misspecified arguments
-  expect_error(check.likelink(df, likelihood = "binomial", link="badger"))
-  expect_error(check.likelink(df, likelihood = "test", link="logit"))
+    # Expect errror due to misspecified arguments
+    expect_error(check.likelink(df, likelihood = "normal", link="badger"))
+    expect_error(check.likelink(df, likelihood = "test", link="identity"))
+
+  } else if (all(c("r", "N") %in% names(dataset))) {
+    expect_silent(check.likelink(df, likelihood = "binomial", link="identity"))
+    expect_silent(check.likelink(df, likelihood = "binomial", link="logit"))
+
+    # Expect error due to misspecified df
+    expect_error(check.likelink(df, likelihood = "normal", link="identity"))
+    expect_error(check.likelink(df, likelihood = "poisson", link="identity"))
+
+    # Expect errror due to misspecified arguments
+    expect_error(check.likelink(df, likelihood = "binomial", link="badger"))
+    expect_error(check.likelink(df, likelihood = "test", link="logit"))
+  }
 
 })
 
@@ -199,7 +215,7 @@ test_that(paste("check.likelink function correctly for:", datanam), {
 test_that(paste("nma.run function correctly for:", datanam), {
   n.iter <- 500
 
-  expect_warning(nma.run(network, method="random", n.iter=100, warn.rhat = TRUE))
+  # expect_warning(nma.run(network, method="random", n.iter=100, warn.rhat = TRUE))
 
   expect_warning(nma.run(network, method="common", n.iter=n.iter, warn.rhat = FALSE), NA)
 
@@ -240,44 +256,52 @@ test_that(paste("nma.run function correctly for:", datanam), {
 test_that(paste("pDcalc functions correctly for:", datanam), {
   n.iter=1000
 
-  # For binomial likelihood
-  likelihood <- "binomial"
-  result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-                      parameters.to.save = c("psi", "resdev"),
-                      n.iter=n.iter)
+  if (all(c("y", "se") %in% names(dataset))) {
+    likelihood <- "normal"
+    link <- "identity"
+  } else if (all(c("r", "N") %in% names(dataset))) {
+    likelihood <- "binomial"
+    link <- "logit"
 
-  jagsdata <- getjagsdata(network$data.ab)
 
-  obs1 <- jagsdata$r
-  obs2 <- jagsdata$N
+    # For binomial likelihood
+    result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+                        parameters.to.save = c("psi", "resdev"),
+                        n.iter=n.iter)
 
-  pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-               theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-               likelihood=likelihood, type="dose")
-  expect_equal(length(pd),1)
-  expect_equal(class(pd),"numeric")
+    jagsdata <- getjagsdata(network$data.ab, likelihood = likelihood, link=link)
 
-  pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=5,
-               theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-               likelihood=likelihood, type="dose")
-  expect_equal(length(pd),1)
-  expect_equal(class(pd),"numeric")
+    obs1 <- jagsdata$r
+    obs2 <- jagsdata$N
 
-  pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=5,
-               theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-               likelihood="poisson", type="dose")
+    pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                 theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                 likelihood=likelihood, type="dose")
+    expect_equal(length(pd),1)
+    expect_equal(class(pd),"numeric")
 
-  expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                      theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-                      likelihood="poisson", type="time"))
+    pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=5,
+                 theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                 likelihood=likelihood, type="dose")
+    expect_equal(length(pd),1)
+    expect_equal(class(pd),"numeric")
 
-  expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                      theta.result=NULL, resdev.result=result$BUGSoutput$mean$resdev,
-                      likelihood="poisson", type="dose"))
+    pd <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=5,
+                 theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                 likelihood="poisson", type="dose")
 
-  expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=NULL,
-                      theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-                      likelihood="poisson", type="dose"))
+    expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                        theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                        likelihood="poisson", type="time"))
+
+    expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                        theta.result=NULL, resdev.result=result$BUGSoutput$mean$resdev,
+                        likelihood="poisson", type="dose"))
+
+    expect_error(pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=NULL,
+                        theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
+                        likelihood="poisson", type="dose"))
+  }
 
 })
 
