@@ -779,7 +779,7 @@ mbnma.nodesplit <- function(network, fun="linear",
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
     ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                          warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
+                          warn.rhat=FALSE, nodesplit=c(1, comp[2]))#, ...)
 
     # Get indirect
     # ind.res <- get.relative(ind.jags, treatments = comp.list)[ind.net$treatments[comp[2]],
@@ -793,82 +793,6 @@ mbnma.nodesplit <- function(network, fun="linear",
     dir.res <- ind.jags$BUGSoutput$sims.matrix[
       ,colnames(ind.jags$BUGSoutput$sims.matrix)=="direct"
       ]
-
-    # ##### Estimate Indirect #####
-    #
-    # ind.df <- data.ab
-    # ind.df$agent <- factor(ind.df$agent, labels=network$agents)
-    # #ind.df$treatment <- mbnma$network$treatments[ind.df$treatment]
-    #
-    # # Drop studies/comparisons that compare comps
-    # dropID <- vector()
-    # dropcomp <- vector()
-    # studies <- unique(ind.df$studyID)
-    # for (study in seq_along(studies)) {
-    #   subset <- ind.df[ind.df$studyID==studies[study],]
-    #   if (all(comp %in% subset$treatment)) {
-    #     if (subset$narm[1]<=2) {
-    #       if (is.factor(studies)) {
-    #         dropID <- append(dropID, as.character(subset$studyID[1]))
-    #       } else {
-    #         dropID <- append(dropID, subset$studyID[1])
-    #       }
-    #     } else if (subset$narm[1]>2) {
-    #       if (is.factor(studies)) {
-    #         dropcomp <- append(dropcomp, as.character(subset$studyID[1]))
-    #       } else {
-    #         dropcomp <- append(dropcomp, subset$studyID[1])
-    #       }
-    #     }
-    #   }
-    # }
-    #
-    # # Drop studies
-    # ind.df <- ind.df[!(ind.df$studyID %in% dropID),]
-    #
-    # # Drop comparisons from studies
-    # ind.df <- suppressWarnings(drop.comp(ind.df, drops=dropcomp, comp=comp))
-    # # stoploop <- FALSE
-    # # while(stoploop==FALSE) {
-    # #   temp <- drop.comp(ind.df, drops=dropcomp, comp=comp)
-    # #   temp.net <- mbnma.network(temp)
-    # #   nt <- length(temp.net$treatments)
-    # #   if (nt==length(nma.net$treatments)) {
-    # #     g <- plot(temp.net, doseparam=1000)
-    # #     connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
-    # #                                                      to=1)[
-    # #                                                        c(comp[1], comp[2])
-    # #                                                        ])
-    # #     if (all(connectcheck==TRUE)) {
-    # #       ind.df <- temp
-    # #       stoploop <- TRUE
-    # #     }
-    # #   }
-    # #   #print("Restarting drop.comp")
-    # # }
-    #
-    #
-    # # Run NMA
-    # ind.net <- suppressMessages(mbnma.network(ind.df))
-    #
-    # ind.jags <- mbnma.run(ind.net, method=method, fun=fun,
-    #                       beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-    #                       ...)
-    #
-    # ind.res <- get.relative(ind.jags, treatments = comp.list)[ind.net$treatments[comp[2]],
-    #                                                           ind.net$treatments[comp[1]],
-    #                                                           ]
-    #
-    #
-    # ##### Estimate Direct #####
-    # dir.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
-    # dir.jags <- nma.run(dir.net, method=method,
-    #                     likelihood=mbnma.jags$model.arg$likelihood, link=mbnma.jags$model.arg$link,
-    #                     warn.rhat=FALSE, drop.discon=FALSE, UME=TRUE, ...)
-    # dir.res <- dir.jags$jagsresult$BUGSoutput$sims.matrix[
-    #   ,colnames(dir.jags$jagsresult$BUGSoutput$sims.matrix)==paste0("d[", comp[2],",1]")
-    #   ]
-
 
     ##### Generate plots/results #####
 
@@ -1041,7 +965,7 @@ get.relative <- function(mbnma, treatments=list()) {
       agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
 
       # Account for lack of placebo
-      if (as.numeric(strsplit(mbnma$network$treatments[1], split="_")[[1]][2]) != 0) {
+      if (!"Placebo_0" %in% mbnma$network$treatments) {
         agnum.i <- agnum.i+1
         agnum.k <- agnum.k+1
       }
