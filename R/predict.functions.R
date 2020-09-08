@@ -188,6 +188,8 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
 #' @noRd
 E0.validate <- function(data.ab, likelihood=NULL) {
 
+  data.ab <- data.ab[,names(data.ab) %in% c("studyID", "dose", "agent", "treatment", "r", "N", "E", "y", "se")]
+
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, any.missing=FALSE, add=argcheck)
   checkmate::assertNames(names(data.ab), must.include = c("studyID"), add=argcheck)
