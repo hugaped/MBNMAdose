@@ -6,7 +6,7 @@
 if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
                                                         "Parameter", "do", "fupdose", "groupvar", "y",
                                                         "network", "a", "param", "med", "l95", "u95", "value",
-                                                        "Estimate"))
+                                                        "Estimate", "2.5%", "50%", "97.5%", "treatment"))
 
 #' Create an mbnma.network object
 #'
@@ -1299,7 +1299,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
     if (spline=="bs") {
       splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
     } else if (spline=="rcs") {
-      splinedesign <- Hmisc:::rcspline.eval(x0, knots = knots, inclx = TRUE)
+      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x0, knots=knots)
       splinedesign <- cbind(x0, splinedesign)
