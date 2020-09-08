@@ -3,7 +3,10 @@
 # Date created: 2019-04-26
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate"))
 
 #' Set rank as a method
 #'

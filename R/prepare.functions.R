@@ -3,7 +3,10 @@
 # Date created: 2019-04-07
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose"))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate"))
 
 #' Create an mbnma.network object
 #'
@@ -290,10 +293,6 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
 #' agents/classes in the returned data frame will be numbered and recoded to enforce sequential
 #' numbering (a warning will be shown stating this).
 #'
-#' @examples
-#' # Add indices to triptans headache dataset
-#' data.ab <- add_index(HF2PPITT)
-#'
 add_index <- function(data.ab, agents=NULL, treatments=NULL) {
 
   # Run Checks
@@ -484,6 +483,8 @@ recode.agent <- function(data.ab, level="agent") {
 #' @param level Can take either `"agent"` to indicate that data should be at the agent-
 #'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatemnt-
 #'   level (for NMA)
+#' @param nodesplit A numeric vector of length 2 containing treatment codes on which to perform
+#'   an MBNMA nodesplit.
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:
@@ -507,6 +508,8 @@ recode.agent <- function(data.ab, level="agent") {
 #'   * `class` Optional. A matrix of class codes within each study
 #'   * `classkey` Optional. A vector of class codes that correspond to agent codes.
 #'   Same length as the number of agent codes.
+#'   * `split.ind` Optional. A matrix indicating whether a specific arm contributes evidence
+#'    to a nodesplit comparison.
 #'
 #' @examples
 #' # Using the triptans headache dataset
@@ -617,12 +620,12 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         doses <- unique(dplyr::arrange(doses, agent, dose))
 
         # Generate spline matrix
-        dosespline <- doses %>% group_by(agent) %>%
-          mutate(spline=genspline(dose, spline=splinefun, knots=knots))
+        dosespline <- doses %>% dplyr::group_by(agent) %>%
+          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots))
 
         #dosespline$spline <- dosespline$spline[,-1]
 
-        df <- suppressMessages(left_join(df, dosespline))
+        df <- suppressMessages(dplyr::left_join(df, dosespline))
 
         knotnum <- ifelse(length(knots)>1, length(knots), knots)
 
@@ -1287,16 +1290,16 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
     if (length(knots)==1 & knots[1]>=1) {
       p <- seq(0,1,1/(knots+1))
       p <- p[-c(1,length(p))]
-      knots <- quantile(0:max.dose, probs = p)
+      knots <- stats::quantile(0:max.dose, probs = p)
       names(knots) <- NULL
     } else if (length(knots)>1 | knots[1]<1) {
-      knots <- quantile(0:max.dose, probs = knots)
+      knots <- stats::quantile(0:max.dose, probs = knots)
     }
 
     if (spline=="bs") {
-      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
+      splinedesign <- splines::splineDesign(/knots, x0, ord=ord, outer=TRUE)
     } else if (spline=="rcs") {
-      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
+      splinedesign <- Hmisc:::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x0, knots=knots)
       splinedesign <- cbind(x0, splinedesign)

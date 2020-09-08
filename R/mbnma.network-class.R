@@ -3,8 +3,10 @@
 ##############################################
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "2.5%", "97.5%", "50%",
-                                                        "treatment", "studyID", "agent", "dose"))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate"))
 
 #' Print mbnma.network information to the console
 #'
@@ -34,33 +36,33 @@ print.mbnma.network <- function(x,...) {
 
 #' Print summary mbnma.network information to the console
 #'
-#' @param x An object of class `mbnma.network`.
+#' @param object An object of class `mbnma.network`.
 #' @param ... further arguments passed to or from other methods
 #'
 #' @export
-summary.mbnma.network <- function(x,...) {
+summary.mbnma.network <- function(object,...) {
 
-  cat(crayon::underline(crayon::bold("Description:", x$description, "\n")))
-  cat("Number of studies:", length(unique(x$data.ab$studyID)), "\n")
+  cat(crayon::underline(crayon::bold("Description:", object$description, "\n")))
+  cat("Number of studies:", length(unique(object$data.ab$studyID)), "\n")
   cat("Number of treatments:", length(x$treatments), "\n")
-  cat("Number of agents:", length(x$agents), "\n")
+  cat("Number of agents:", length(object$agents), "\n")
 
-  if ("classes" %in% names(x)) {
-    cat("Number of classes:", length(x$classes), "\n")
+  if ("classes" %in% names(object)) {
+    cat("Number of classes:", length(object$classes), "\n")
   }
 
   # Count doses per agent
-  agentdf <- unique(x$data.ab[, c("treatment", "agent")])
+  agentdf <- unique(object$data.ab[, c("treatment", "agent")])
   agentdf <- agentdf %>% dplyr::group_by(agent) %>%
     dplyr::mutate(ndose = dplyr::n())
   agentdf <- dplyr::arrange(agentdf, agent)[,c("agent", "ndose")]
   agentdf <- unique(agentdf)
 
-  cat("Median (max, min) doses per agent: ", median(agentdf$ndose),
+  cat("Median (max, min) doses per agent: ", stats::median(agentdf$ndose),
       " (", min(agentdf$ndose), ", ", max(agentdf$ndose), ")\n", sep="")
 
   # Check network is connected at agent-level
-  g <- suppressWarnings(plot.invisible(x, level="agent"))
+  g <- suppressWarnings(plot.invisible(object, level="agent"))
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=1))
   if (any(connects==FALSE)) {
@@ -70,7 +72,7 @@ summary.mbnma.network <- function(x,...) {
   }
 
   # Check network is connected at treatment-level
-  g <- suppressWarnings(plot.invisible(x, level="treatment"))
+  g <- suppressWarnings(plot.invisible(object, level="treatment"))
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=1))
   if (any(connects==FALSE)) {
@@ -78,7 +80,7 @@ summary.mbnma.network <- function(x,...) {
   } else {
     cat("Ttreatment-level network is", crayon::bold(crayon::green("CONNECTED"), "\n"))
   }
-  invisible(x)
+  invisible(object)
 }
 
 

@@ -3,7 +3,10 @@
 # Date created: 2019-04-30
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate"))
 
 #' Node-splitting model for testing consistency at the treatment level
 #'
@@ -659,11 +662,6 @@ check.indirect.drops <- function(df, comp) {
 #' indirect evidence. A discrepancy between the two suggests that the consistency
 #' assumption required for NMA and MBNMA may violated.
 #'
-#' @param drop.discon A boolean object that indicates whether to drop treatments
-#' that are disconnected at the treatment level. Default is `TRUE`. If set to `FALSE` then
-#' this could lead to identification of nodesplit comparisons that are not connected
-#' to the network reference treatment, or lead to errors in running the nodesplit models, though it
-#' can be useful for error checking.
 #' @param comparisons A matrix specifying the comparisons to be split (one row per comparison).
 #' The matrix must have two columns indicating each treatment for each comparison. Values can
 #' either be character (corresponding to the treatment names given in `network`) or
@@ -677,22 +675,22 @@ check.indirect.drops <- function(df, comp) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#' split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
 #'   method="common")
-#'
 #'
 #'
 #' #### To perform nodesplit on selected comparisons ####
 #'
 #' # Check for closed loops of treatments with independent evidence sources
-#' loops <- inconsistency.loops(network$data.ab)
+#' # Including indirect evidence via the dose-response relationship
+#' loops <- inconsistency.loops(network$data.ab, incldr=TRUE)
 #'
 #' # This...
-#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#' single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
 #'
 #' #...is the same as...
-#' single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+#' single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c(6, 12)))
 #'
 #'
