@@ -46,14 +46,19 @@ if ("class" %in% names(dataset)) {
 
 test_that(paste0("plot.mbnma.network functions correctly for:", datanam), {
 
-  expect_silent(plot(network, layout = igraph::as_star(),
-                               edge.scale=1, label.distance=0))
+  if (datanam!="GoutSUA_2wkCFB") {
+    expect_silent(plot(network, layout = igraph::as_star(),
+                       edge.scale=1, label.distance=0))
 
-  expect_silent(plot(network, layout = igraph::with_fr(),
-                               edge.scale=1, label.distance=0))
+    expect_silent(plot(network, layout = igraph::with_fr(),
+                       edge.scale=1, label.distance=0))
 
-  expect_silent(plot(network, layout = igraph::in_circle(),
-                               edge.scale=0.5, label.distance=10))
+    expect_silent(plot(network, layout = igraph::in_circle(),
+                       edge.scale=0.5, label.distance=10))
+
+    expect_silent(plot(network, layout = igraph::in_circle(),
+                       level="agent", remove.loops = TRUE))
+  }
 
   g1 <- plot(network, level="treatment")
   g2 <- plot(network, level="agent")
@@ -63,8 +68,6 @@ test_that(paste0("plot.mbnma.network functions correctly for:", datanam), {
 
   expect_equal(length(igraph::V(g1))==length(igraph::V(g2)), FALSE)
 
-  expect_silent(plot(network, layout = igraph::in_circle(),
-                     level="agent", remove.loops = TRUE))
 
   if (datanam %in% c("HF2PPITT", "psoriasis", "ssri")) {
     expect_warning(plot(net.noplac, layout=igraph::as_star(),
