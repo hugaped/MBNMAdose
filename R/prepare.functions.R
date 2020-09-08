@@ -1297,7 +1297,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
     }
 
     if (spline=="bs") {
-      splinedesign <- splines::splineDesign(/knots, x0, ord=ord, outer=TRUE)
+      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
     } else if (spline=="rcs") {
       splinedesign <- Hmisc:::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {

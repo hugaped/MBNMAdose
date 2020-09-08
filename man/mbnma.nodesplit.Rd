@@ -68,12 +68,6 @@ for a greater number of potential loops in which to check for consistency.}
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
 only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
 default) to plot both types of plot.}
-
-\item{drop.discon}{A boolean object that indicates whether to drop treatments
-that are disconnected at the treatment level. Default is \code{TRUE}. If set to \code{FALSE} then
-this could lead to identification of nodesplit comparisons that are not connected
-to the network reference treatment, or lead to errors in running the nodesplit models, though it
-can be useful for error checking.}
 }
 \value{
 Plots the desired graph(s) and returns an object (or list of object if
@@ -99,22 +93,22 @@ of posterior densities for direct and indirect evidence.
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
-split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
   method="common")
-
 
 
 #### To perform nodesplit on selected comparisons ####
 
 # Check for closed loops of treatments with independent evidence sources
-loops <- inconsistency.loops(network$data.ab)
+# Including indirect evidence via the dose-response relationship
+loops <- inconsistency.loops(network$data.ab, incldr=TRUE)
 
 # This...
-single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
 
 #...is the same as...
-single.split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
+single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
              method="random", comparisons=rbind(c(6, 12)))
 
 

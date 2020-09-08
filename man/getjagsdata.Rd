@@ -53,6 +53,9 @@ level (for NMA)}
 \item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
 
+\item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
+an MBNMA nodesplit.}
+
 \item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
 If a single number is given it indicates the number of knots (they will
 be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
@@ -88,6 +91,8 @@ JAGS. List elements are:
 \item \code{class} Optional. A matrix of class codes within each study
 \item \code{classkey} Optional. A vector of class codes that correspond to agent codes.
 Same length as the number of agent codes.
+\item \code{split.ind} Optional. A matrix indicating whether a specific arm contributes evidence
+to a nodesplit comparison.
 }
 }
 \description{

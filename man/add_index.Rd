@@ -49,8 +49,3 @@ numbering (a warning will be shown stating this).
 Adds arm indices (\code{arms}, \code{narms}) to a dataset and adds numeric identifiers for
 agent and class (if included in the data).
 }
-\examples{
-# Add indices to triptans headache dataset
-data.ab <- add_index(HF2PPITT)
-
-}

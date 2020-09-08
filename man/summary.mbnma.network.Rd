@@ -4,10 +4,10 @@
 \alias{summary.mbnma.network}
 \title{Print summary mbnma.network information to the console}
 \usage{
-\method{summary}{mbnma.network}(x, ...)
+\method{summary}{mbnma.network}(object, ...)
 }
 \arguments{
-\item{x}{An object of class \code{mbnma.network}.}
+\item{object}{An object of class \code{mbnma.network}.}
 
 \item{...}{further arguments passed to or from other methods}
 }
