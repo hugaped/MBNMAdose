@@ -1,8 +1,8 @@
 testthat::context("Testing inconsistency.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "ssri"
-dataset <- ssri
+#datanam <- "ssri"
+#dataset <- ssri
 
 ### Datasets ####
 network <- mbnma.network(dataset)
@@ -77,14 +77,7 @@ testthat::test_that(paste0("test.nma.nodesplit for: ", datanam), {
 
 
   # Test comparisons
-  split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
-                           method="random", n.iter=1000, drop.discon = TRUE,
-                           comparisons = rbind(c(17,20), c(6,2)))
-  expect_equal(2, length(split))
-  expect_error(print(split), NA)
-  expect_equal(class(summary(split)), "data.frame")
-
-  comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
+  comps <- inconsistency.loops(network$data.ab, incldr = FALSE)
   compsi <- c(comps$t1[1], comps$t2[1])
   split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
                            method="random", n.iter=1000, drop.discon = TRUE,
@@ -158,7 +151,7 @@ testthat::test_that("test.mbnma.nodesplit", {
 
 
   # Test comparisons
-  split <- mbnma.nodesplit(net.noplac, fun="user", user.fun=~beta.1 * dose + beta.2 * (dose^2),
+  split <- mbnma.nodesplit(net.noplac, fun="user", user.fun= ~beta.1 * dose + beta.2 * (dose^2),
                            likelihood = "binomial", link="logit",
                          method="random", n.iter=1000,
                          comparisons = rbind(comps.noplac[1,], comps.noplac[3,]))

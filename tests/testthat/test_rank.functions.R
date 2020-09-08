@@ -1,37 +1,13 @@
 testthat::context("Testing rank.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "psoriasis"
-dataset <- psoriasis
+#datanam <- "psoriasis"
+#dataset <- psoriasis
 
 network <- mbnma.network(dataset)
 
-# # Make class data
-# if (class %in% names(dataset)) {
-#   netclass <- mbnma.network(df)
-# }
-#
-# # Make data with no placebo
-# noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
-# net.noplac <- mbnma.network(noplac.df)
-#
-# # Models
-# linear.run <- mbnma.run(mbnma.network(GoutSUA_2wkCFB), fun="linear", n.iter=1000)
-#
-# exponential <- mbnma.exponential(mbnma.network(osteopain_2wkabs), lambda="rel", method="common", n.iter=1000)
-#
-# emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random", n.iter=1000)
-#
-# emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",
-#                          class.effect=list(emax="random"), n.iter=1000))
-#
-# nonparam <- mbnma.run(network, fun="nonparam.up", n.iter=1000)
-#
-# emax.noplac <- mbnma.emax(net.noplac, emax="rel", ed50="rel", method="random", n.iter=1000)
-
-
 # Make class data
-if (class %in% names(dataset)) {
+if ("class" %in% names(dataset)) {
   netclass <- mbnma.network(df)
 
   emax.class <- suppressWarnings(mbnma.emax(netclass, emax="rel", ed50="random", method="common",

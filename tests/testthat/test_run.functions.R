@@ -1,8 +1,8 @@
 testthat::context("Testing run.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "HF2PPITT"
-dataset <- HF2PPITT
+#datanam <- "HF2PPITT"
+#dataset <- HF2PPITT
 
 ### Datasets ####
 network <- mbnma.network(dataset)
@@ -11,6 +11,7 @@ network <- mbnma.network(dataset)
 
 # Make class data
 df <- dataset
+df1 <- dataset
 
 if ("class" %in% names(dataset)) {
   netclass <- mbnma.network(df)
@@ -100,6 +101,7 @@ test_that(paste("mbnma.run functions correctly for:", datanam), {
                       method="random", n.iter=n.iter)
   expect_equal(all(c("d.1", "sd", "beta.2", "sd.2") %in% result$parameters.to.save), TRUE)
   expect_error(summary(result), NA)
+  expect_equal(grepl("spline", result$model.arg$jagscode), TRUE)
 
   result <- mbnma.run(network, fun="emax", beta.1="rel", beta.2="random", beta.3="common",
                       parameters.to.save = "psi",
@@ -197,7 +199,7 @@ test_that(paste("check.likelink function correctly for:", datanam), {
 test_that(paste("nma.run function correctly for:", datanam), {
   n.iter <- 500
 
-  expect_warning(nma.run(network, method="common", n.iter=n.iter, warn.rhat = TRUE))
+  expect_warning(nma.run(network, method="random", n.iter=100, warn.rhat = TRUE))
 
   expect_warning(nma.run(network, method="common", n.iter=n.iter, warn.rhat = FALSE), NA)
 

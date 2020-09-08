@@ -1,8 +1,8 @@
 testthat::context("Testing prepare.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "HF2PPITT"
-dataset <- HF2PPITT
+#datanam <- "HF2PPITT"
+#dataset <- HF2PPITT
 
 ### Datasets ####
 network <- mbnma.network(dataset)
@@ -25,7 +25,11 @@ datalist <- list(df1, df2)
 ################### Testing ################
 
 testthat::test_that(paste0("mbnma.validate.data functions correctly for: ", datanam), {
-  df.err <- dataset[-1,]
+  df.err <- dataset
+  arm <- df.err[df.err$studyID==df.err$studyID[1],]
+  arm <- arm[1,]
+  df.err <- df.err[df.err$studyID!=df.err$studyID[1],]
+  df.err <- rbind(arm, df.err)
   expect_error(mbnma.validate.data(df.err), regexp = "single study arm")
 
   df.err <- dataset
@@ -87,7 +91,11 @@ test_that(paste0("mbnma.network functions correctly for: ", datanam), {
 
   expect_message(mbnma.network(df2))
 
-  df.err <- dataset[-1,]
+  df.err <- dataset
+  arm <- df.err[df.err$studyID==df.err$studyID[1],]
+  arm <- arm[1,]
+  df.err <- df.err[df.err$studyID!=df.err$studyID[1],]
+  df.err <- rbind(arm, df.err)
   expect_error(mbnma.network(df.err), regex="single study arm")
 
   y <- 5
@@ -126,7 +134,7 @@ test_that(paste0("drop.disconnected functions correctly for: ", datanam), {
   keep <- df.num$studyID[df.num$treatment %in% c(sepcomp$t1, sepcomp$t2)]
   df.num <- df.num[!(df.num$studyID %in% keep & !df.num$treatment  %in% c(sepcomp$t1, sepcomp$t2)),]
 
-  df.num <- df.num %>% group_by(studyID) %>% mutate(narm=n())
+  df.num <- df.num %>% dplyr::group_by(studyID) %>% dplyr::mutate(narm=n())
   df.num <- df.num[df.num$narm>1,]
 
   network <- mbnma.network(df.num)

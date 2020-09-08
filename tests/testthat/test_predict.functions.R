@@ -1,8 +1,8 @@
 testthat::context("Testing predict.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "HF2PPITT"
-dataset <- HF2PPITT
+#datanam <- "HF2PPITT"
+#dataset <- HF2PPITT
 
 ### Datasets ####
 network <- mbnma.network(dataset)
@@ -47,7 +47,9 @@ testthat::test_that(paste0("ref.synth functions correctly for: ", datanam), {
   expect_equal(nrow(result$m.mu), emax$BUGSoutput$n.sims)
 
   ref.df <- network$data.ab[network$data.ab$agent==2,]
-  expect_error(ref.synth(ref.df, mbnma=linear, synth="fixed"), "contain >1 arm")
+  if (!length(unique(ref.df$studyID)) == nrow(ref.df)) {
+    expect_error(ref.synth(ref.df, mbnma=linear, synth="fixed"), "contain >1 arm")
+  }
 
   ref.df <- network$data.ab[network$data.ab$agent==network$data.ab$agent[10] & network$data.ab$dose==network$data.ab$dose[10],]
   expect_error(ref.synth(ref.df, mbnma=linear, synth="fixed"), NA)
@@ -132,8 +134,8 @@ testthat::test_that(paste0("predict.mbnma functions correctly for: ", datanam), 
   names(max.doses) <- emax$agents
   expect_silent(predict(emax, E0=0.1, max.doses = max.doses))
 
-  max.doses[[9]] <- 1
-  expect_error(predict(emax, E0=0.1, max.doses = max.doses))
+  max.doses[[length(max.doses)+1]] <- 1
+  expect_error(predict(emax, E0=0.1, max.doses = max.doses), "A greater number of agents")
 
 
   max.doses <- list()

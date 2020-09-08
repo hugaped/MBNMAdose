@@ -763,7 +763,7 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
-    print(nrow(comparisons))
+    print(paste0("Comparison ", split,"/",nrow(comparisons)))
 
     comp <- as.numeric(comparisons[split,1:2])
     print(paste0("Calculating nodesplit for: ",
@@ -779,7 +779,7 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
     ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots, user.fun=user.fun,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                          warn.rhat=FALSE, nodesplit=c(1, comp[2]))#, ...)
+                          warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
 
     # Get indirect
     # ind.res <- get.relative(ind.jags, treatments = comp.list)[ind.net$treatments[comp[2]],

@@ -1,15 +1,10 @@
 testthat::context("Testing plot.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-datanam <- "psoriasis"
-dataset <- psoriasis
+#datanam <- "psoriasis"
+#dataset <- psoriasis
 
-# network <- mbnma.network(HF2PPITT)
-# netgout <- mbnma.network(GoutSUA_2wkCFB)
-# netalog <- mbnma.network(alog_pcfb)
-# netclass <- mbnma.network(osteopain_2wkabs)
-#
-# datalist <- list(HF2PPITT, GoutSUA_2wkCFB, alog_pcfb)
+network <- mbnma.network(dataset)
 
 # Generate data without placebo
 noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
@@ -170,7 +165,7 @@ testthat::test_that(paste0("plot.mbnma.predict functions correctly for: ", datan
   doses <- list()
   doses[[network$agents[2]]] <- c(0,1,2,3)
   doses[[network$agents[5]]] <- c(0.5,1,2)
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_silent(plot(pred, disp.obs=TRUE))
 
   pred <- predict(emax.noplac, E0 = 0.5)
@@ -181,7 +176,7 @@ testthat::test_that(paste0("plot.mbnma.predict functions correctly for: ", datan
   doses <- list()
   doses[[network$agents[2]]] <- c(0,1,2,3)
   doses[[network$agents[5]]] <- c(0.5,1,2)
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   g <- plot(pred, agent.labs = c("Badger", "Ferret"))
   expect_identical(levels(g$data$agent), c("Badger", "Ferret"))
 
@@ -199,12 +194,12 @@ testthat::test_that(paste0("plot.mbnma.predict functions correctly for: ", datan
   doses <- list()
   doses[[network$agents[2]]] <- c(0,1,2,3)
   doses[[network$agents[5]]] <- c(0.5,1,2)
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_output(suppressWarnings(plot(pred, overlay.split = TRUE)))
 
   doses[[network$agents[2]]] <- c(1,2,3)
   doses[[network$agents[5]]] <- c(0.5,1,2)
-  pred <- predict(emax.tript, E0=0.1, exact.doses = doses)
+  pred <- predict(emax, E0=0.1, exact.doses = doses)
   expect_error(plot(pred, overlay.split = TRUE), "at least one agent")
 
   pred <- predict(emax.noplac, E0 = 0.5)
@@ -292,7 +287,7 @@ testthat::test_that(paste0("cumrank functions correctly for: ", datanam), {
   g <- cumrank(rank)
   expect_equal(names(g), c("cumplot", "sucra"))
 
-  expect_silent(cumrank(ranks, params="d.emax", sucra=FALSE))
-  expect_error(cumrank(ranks, params="badger", sucra=FALSE))
+  expect_silent(cumrank(rank, params="d.emax", sucra=FALSE))
+  expect_error(cumrank(rank, params="badger", sucra=FALSE))
 
 })
