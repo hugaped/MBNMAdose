@@ -77,7 +77,7 @@ kable(head(psoriasis), digits=2)
 `ssri` is from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo [@furukawa2019]. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks (4-12 week range) follow-up. The dataset includes 60 RCTs comparing 5 different SSRIs with placebo.
 
 ```{r, echo=TRUE}
-summary(ssri)
+kable(head(ssri), digits=2) 
 ```
 
 ### Interventions for Serum Uric Acid (SUA) reduction in gout
@@ -114,10 +114,10 @@ Before embarking on an analysis, the first step is to have a look at the raw dat
 ```{r}
 # Using the triptans dataset
 network <- mbnma.network(HF2PPITT)
-print(network)
+summary(network)
 ```
 
-This takes a dataset with the columns:
+This function takes a dataset with the columns:
 
 * `studyID` Study identifiers
 * `agent` Agent identifiers (can be character, factor or numeric)
@@ -164,6 +164,7 @@ Within these network plots, vertices are automatically aligned in a circle (as t
 ```{r, error = TRUE, purl = FALSE}
 # Prepare data using the triptans dataset
 tripnet <- mbnma.network(HF2PPITT)
+summary(tripnet)
 
 # Draw network plot
 plot(tripnet)
@@ -174,6 +175,7 @@ If some vertices are not connected to the network reference treatment through an
 ```{r, message=FALSE, warning=FALSE}
 # Prepare data using the gout dataset
 goutnet <- mbnma.network(GoutSUA_2wkCFB)
+summary(goutnet)
 ```
 ```{r}
 plot(goutnet, label.distance = 5)
@@ -649,7 +651,7 @@ Alternatively, cumulative ranking plots for all parameters can be plotted simult
 
 ```{r}
 # Cumulative ranking plot for both dose-response parameters
-cumrank(ranks)
+cumrank(ranks, sucra=TRUE)
 ```
 
 
