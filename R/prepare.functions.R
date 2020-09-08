@@ -1227,7 +1227,7 @@ check.network <- function(g, reference=1) {
 
 
 
-#' Generates spline design matrices for fitting to dose-response function
+#' Generates spline basis matrices for fitting to dose-response function
 #'
 #' @param x A numeric vector indicating all doses of an agent available in the dataset (including placebo)
 #' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
@@ -1235,9 +1235,28 @@ check.network <- function(g, reference=1) {
 #' @param ord a positive integer giving the order of the spline function. This is the number of coefficients in each
 #'   piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
 #' @param max.dose A number indicating the maximum dose between which to calculate knot points.
-#'   @inheritParams mbnma.run
+#' @inheritParams mbnma.run
+#'
 #'
 genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(spline, choices=c("rcs", "ns", "bs"), add=argcheck)
+  checkmate::assertNumeric(knots, add=argcheck)
+  checkmate::assertNumeric(ord, add=argcheck)
+  checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (length(knots)==1) {
+    if (knots<3) {
+      stop("Minimum number of knots is 3")
+    }
+  } else if (length(knots)>1) {
+    if (length(knots)<3){
+      stop("Minimum number of knots is 3")
+    }
+  }
 
   if (x[1]==0 & length(unique(x))==1) {
 
