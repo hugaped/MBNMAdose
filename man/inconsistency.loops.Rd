@@ -4,10 +4,10 @@
 \alias{inconsistency.loops}
 \title{Identify comparisons in loops that fulfil criteria for node-splitting}
 \usage{
-inconsistency.loops(data, checkindirect = TRUE, incldr = FALSE)
+inconsistency.loops(df, checkindirect = TRUE, incldr = FALSE)
 }
 \arguments{
-\item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as
+\item{df}{A data frame containing variables \code{studyID} and \code{treatment} (as
 numeric codes) that indicate which treatments are used in which studies. If \code{checkindirect = TRUE}
 then variables \code{agent} and \code{dose} are also required.}
 

@@ -8,11 +8,13 @@
 mbnma.nodesplit(
   network,
   fun = "linear",
+  user.fun = NULL,
   beta.1 = "rel",
   beta.2 = "rel",
   beta.3 = "rel",
   beta.4 = "rel",
   method = "common",
+  knots = 3,
   comparisons = NULL,
   incldr = TRUE,
   ...
@@ -25,6 +27,9 @@ mbnma.nodesplit(
 
 \item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
+
+\item{user.fun}{A formula specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function(s).
 Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
@@ -40,6 +45,11 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 
 \item{comparisons}{A matrix specifying the comparisons to be split (one row per comparison).
 The matrix must have two columns indicating each treatment for each comparison. Values can

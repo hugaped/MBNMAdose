@@ -2,7 +2,7 @@
 % Please edit documentation in R/prepare.functions.R
 \name{genspline}
 \alias{genspline}
-\title{Generates spline design matrices for fitting to dose-response function}
+\title{Generates spline basis matrices for fitting to dose-response function}
 \usage{
 genspline(x, spline = "rcs", knots = 3, ord = 4, max.dose = max(x))
 }
@@ -12,12 +12,16 @@ genspline(x, spline = "rcs", knots = 3, ord = 4, max.dose = max(x))
 \item{spline}{Indicates the type of spline function. Can be either natural cubic spline (\code{"ns"}), restricted cubic
 spline (\code{"rcs"}) or B-spline (\code{"bs"}).}
 
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
+
 \item{ord}{a positive integer giving the order of the spline function. This is the number of coefficients in each
 piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.}
 
-\item{max.dose}{A number indicating the maximum dose between which to calculate knot points.
-@inheritParams mbnma.run}
+\item{max.dose}{A number indicating the maximum dose between which to calculate knot points.}
 }
 \description{
-Generates spline design matrices for fitting to dose-response function
+Generates spline basis matrices for fitting to dose-response function
 }
