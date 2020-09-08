@@ -608,7 +608,10 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     # Add spline matrix
     if (!is.null(fun)) {
       if (any(c("rcs", "ns", "bs") %in% fun)) {
-        splinefun <- unique(fun[c("rcs", "ns", "bs") %in% fun])
+        splinefun <- unique(fun[which(fun %in% c("rcs", "bs", "ns"))])
+        if (length(splinefun)>1) {
+          stop("Only a single spline type (either 'rcs', 'bs' OR 'ns') can be used in a single model")
+        }
 
         doses <- df[, colnames(df) %in% c("agent", "dose")]
         doses <- unique(dplyr::arrange(doses, agent, dose))
@@ -704,7 +707,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         stop("`fun` must take the same length as the total number of agents in the dataset")
       }
 
-      funlist <- c("user", "linear", "exponential", "emax", "emax.hill")
+      funlist <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
       funvec <- sapply(fun, function(x) which(funlist==x))
       funvec <- funvec - (min(funvec)-1)
       datalist[["X"]] <- datalist[["agent"]]
@@ -1242,7 +1245,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertChoice(spline, choices=c("rcs", "ns", "bs"), add=argcheck)
+  #checkmate::assertChoice(spline, choices=c("rcs", "ns", "bs"), add=argcheck)
   checkmate::assertNumeric(knots, add=argcheck)
   checkmate::assertNumeric(ord, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
