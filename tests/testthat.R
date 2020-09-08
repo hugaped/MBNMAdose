@@ -14,21 +14,13 @@ datalist <- list("HF2PPITT"=HF2PPITT, "psoriasis"=psoriasis.r, "ssri"=ssri,
 
 
 
-datalist <- list("psoriasis"=psoriasis.r)
+datalist <- list("ssri"=ssri)
 for (z in seq_along(datalist)) {
   print(paste("Testing dataset:", names(datalist)[z]))
 
   datanam <- names(datalist)[z]
   dataset <- datalist[[z]]
 
-  # testsel <- test_env()
-  # with(testsel, currentdat <- list(
-  #      datanam = names(datalist)[z],
-  #      dataset = datalist[[z]]
-  # )
-  #      )
-
-  # testthat::test_dir("tests/testthat", filter="inconsistency", env=testsel)
   testthat::test_dir("tests/testthat")
 }
 

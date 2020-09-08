@@ -275,9 +275,9 @@ testthat::test_that(paste0("plot.mbnma.rank functions correctly for: ", datanam)
   expect_silent(plot(rank, treat.labs = net.noplac$agents))
   expect_error(plot(rank, treat.labs = network$agents))
 
-  rank <- rank.mbnma(emax.noplac, to.rank=c(3,5,6))
-  expect_silent(plot(rank, treat.labs = network$agents[c(3,5,6)]))
-  expect_error(plot(rank, treat.labs = net.noplac$agents))
+  rank <- rank.mbnma(emax.noplac, to.rank=c(2,4,5))
+  expect_silent(plot(rank, treat.labs = network$agents[c(2,4,5)]))
+  expect_error(plot(rank, treat.labs = net.noplac$agents), "same length as the number of ranked")
 
 })
 
