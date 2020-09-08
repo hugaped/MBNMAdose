@@ -166,7 +166,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 #' @noRd
 alpha.scale <- function(n.cut, col="blue") {
   # Run checks
-  checkmate::assertIntegerish(n.cut, lower=1, len=1)
+  checkmate::assertIntegerish(n.cut, lower=0, len=1)
 
   # Set colour intensities
   if (is.character(col)) {
