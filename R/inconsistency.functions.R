@@ -705,7 +705,7 @@ check.indirect.drops <- function(df, comp) {
 #' summary(split) # Generate a data frame of summary results
 #' }
 #' @export
-mbnma.nodesplit <- function(network, fun="linear",
+mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
                             beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
                             method="common",
                             knots=3,
@@ -733,7 +733,7 @@ mbnma.nodesplit <- function(network, fun="linear",
 
 
   ##### Run MBNMA #####
-  mbnma.jags <- mbnma.run(network, method=method, fun=fun, knots=knots,
+  mbnma.jags <- mbnma.run(network, method=method, fun=fun, knots=knots, user.fun=user.fun,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                           warn.rhat=FALSE, ...)
 
@@ -777,7 +777,7 @@ mbnma.nodesplit <- function(network, fun="linear",
     ####### Estimate Indirect and Direct in same model #########
 
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
-    ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots,
+    ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots, user.fun=user.fun,
                           beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                           warn.rhat=FALSE, nodesplit=c(1, comp[2]))#, ...)
 
