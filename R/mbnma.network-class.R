@@ -44,7 +44,7 @@ summary.mbnma.network <- function(object,...) {
 
   cat(crayon::underline(crayon::bold("Description:", object$description, "\n")))
   cat("Number of studies:", length(unique(object$data.ab$studyID)), "\n")
-  cat("Number of treatments:", length(x$treatments), "\n")
+  cat("Number of treatments:", length(object$treatments), "\n")
   cat("Number of agents:", length(object$agents), "\n")
 
   if ("classes" %in% names(object)) {
