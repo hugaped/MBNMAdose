@@ -230,7 +230,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #'# Fit a model with restricted cubic splines and 3 knots
 #' #at 10% 30% and 60% quartiles of dose ranges
-#'depnet <- mbnma.network(ssri_dep)
+#'depnet <- mbnma.network(ssri) # Using the sSRI depression dataset
 #'result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
 #'
 #' # Fit a model with different dose-response functions for each agent
@@ -245,11 +245,13 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
 #' netclass <- mbnma.network(class.df)
 #'
-#' # Fit an Emax function with common relative effects on Emax and ED50 and
-#' #a random class effect on ED50.
-#' result <- mbnma.run(netclass, fun="emax",
-#'               beta.1="rel", beta.2="rel", method="common",
-#'               class.effect=list(beta.2="random"))
+#' painnet <- mbnma.network(osteopain_2wkabs)
+#'
+#' # Fit an Emax function with random relative effects on Emax and ED50 and
+#' #a common class effect on Emax
+#' result <- mbnma.run(painnet, fun="emax", method="random",
+#'               beta.1="rel", beta.2="rel",
+#'               class.effect=list(beta.1="common"))
 #'
 #'
 #' ####### Priors #######
