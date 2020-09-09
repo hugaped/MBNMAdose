@@ -94,11 +94,6 @@ Useful links:
 
 Other contributors:
 \itemize{
-  \item David Mawdsley [reviewer]
-  \item Nicky Welton [reviewer]
-  \item Sofia Dias [reviewer]
-  \item Meg Bennetts [reviewer]
-  \item Martin Boucher [reviewer]
   \item Lujin Li [reviewer]
   \item Adil Karim [contributor]
 }
