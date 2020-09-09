@@ -9,7 +9,7 @@ A data frame in long format (one row per arm and study), with 81 rows and 9 vari
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{agent} Character data indicating the agent to which participants were randomised
-\item \code{dose_mg} Numeric data indicating the dose to which participants were randomsied in mg
+\item \code{dose_mg} Numeric data indicating the dose to which participants were randomised in mg
 \item \code{freq} Character data indicating the frequency of the dose to which participants were randomised
 \item \code{dose} Numeric data indicating the dose in mg/week to which the participants were randomised
 \item \code{N} Numeric data indicating the number of participants randomised

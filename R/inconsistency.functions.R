@@ -294,7 +294,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #'   shortest path of indirect evidence.
 #'
 #'   If `incldr=TRUE` then `path` may indicate `doseresp` for some comparisons.
-#'   These are comparisons for which indirect evidence is only availbale via the
+#'   These are comparisons for which indirect evidence is only available via the
 #'   dose-response relationship. The two numbers given after (e.g. `3 2`) indicate the
 #'   number of doses available in the indirect evidence with which to estimate the
 #'   dose-response function for the treatments in `t1` and `t2` respectively/

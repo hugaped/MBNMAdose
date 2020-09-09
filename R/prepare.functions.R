@@ -481,7 +481,7 @@ recode.agent <- function(data.ab, level="agent") {
 #' @param class A boolean object indicating whether or not `data.ab` contains
 #'   information on different classes of treatments
 #' @param level Can take either `"agent"` to indicate that data should be at the agent-
-#'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatemnt-
+#'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatment-
 #'   level (for NMA)
 #' @param nodesplit A numeric vector of length 2 containing treatment codes on which to perform
 #'   an MBNMA nodesplit.

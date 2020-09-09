@@ -47,7 +47,7 @@ and identity link function. If left as \code{NULL} the link function will be aut
 on the likelihood.}
 
 \item{level}{Can take either \code{"agent"} to indicate that data should be at the agent-
-level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatemnt-
+level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatment-
 level (for NMA)}
 
 \item{fun}{A character vector specifying a functional form to be assigned to the

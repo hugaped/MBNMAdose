@@ -22,7 +22,7 @@ a dose-response MBNMA model}
 \item{n.doses}{A number indicating the number of doses at which to make predictions
 within each agent. The default is \code{15}.}
 
-\item{max.doses}{A list of numbers. Each named element in the list correponds to an
+\item{max.doses}{A list of numbers. Each named element in the list corresponds to an
 agent (either named similarly to agent names given in the data, or named
 correspondingly to the codes for agents given in \code{mbnma})
 and each number for that element corresponds to the maximum dose of the given agent, below which several
@@ -44,7 +44,7 @@ to non-sensical predictions.
 \item \code{numeric()} A single numeric value representing the deterministic response at dose = 0,
 given on the natural scale - so for binomial data, proportions should be given and
 for Poisson data, a rate should be given.
-\item \code{character()} A single string respresenting a stochastic distribution for the response
+\item \code{character()} A single string representing a stochastic distribution for the response
 at dose = 0, given on the natural scale - so for binomial data, proportions should be given and
 for Poisson data, a rate should be given. This is specified as a random number generator
 (RNG) given as a string, and can take any RNG distribution for which a function exists

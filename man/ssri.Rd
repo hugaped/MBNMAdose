@@ -3,7 +3,7 @@
 \docType{data}
 \name{ssri}
 \alias{ssri}
-\title{Studies of Selective Serotonin Reuptake Inhibirors (SSRIs) for major depression}
+\title{Studies of Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression}
 \format{
 A data frame in long format (one row per arm and study), with 145 rows and 8 variables:
 \itemize{
@@ -12,7 +12,7 @@ A data frame in long format (one row per arm and study), with 145 rows and 8 var
 \item \code{age} Mean participant age
 \item \code{weeks} Duration of study follow-up
 \item \code{agent} Character data indicating the agent to which participants were randomised
-\item \code{dose} Numeric data indicating the dose to which participants were randomsied in mg
+\item \code{dose} Numeric data indicating the dose to which participants were randomised in mg
 \item \code{N} Numeric data indicating the number of participants randomised
 \item \code{r} Numeric data indicating the number of participants who achieved >50\% improvement in depression symptoms
 }

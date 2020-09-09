@@ -48,7 +48,7 @@ Minimum number of knots is 3.}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
-automatically set to \code{FALSE} if class effects are modelled or if multiple dose-reponse
+automatically set to \code{FALSE} if class effects are modelled or if multiple dose-response
 functions are fitted.}
 
 \item{cor.prior}{NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance

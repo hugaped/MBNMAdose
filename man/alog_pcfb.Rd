@@ -39,7 +39,7 @@ different doses of alogliptin with placebo, leading to 6 different treatments (c
 within the network.
 
 A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing different biologics for the
-treatment of psoriasisdoses of \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
+treatment of psoriasis \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
 provide data to illustrate a statistical methodology rather than for clinical inference. Alogliptin is
 a treatment aimed at reducing blood glucose concentration in type II diabetes. The outcome is continuous,
 and aggregate data responses correspond to the mean change in HbA1c from baseline to follow-up in studies

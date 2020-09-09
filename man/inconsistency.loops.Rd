@@ -29,7 +29,7 @@ to treatment codes. \code{path} indicates the treatment codes that connect the
 shortest path of indirect evidence.
 
 If \code{incldr=TRUE} then \code{path} may indicate \code{doseresp} for some comparisons.
-These are comparisons for which indirect evidence is only availbale via the
+These are comparisons for which indirect evidence is only available via the
 dose-response relationship. The two numbers given after (e.g. \verb{3 2}) indicate the
 number of doses available in the indirect evidence with which to estimate the
 dose-response function for the treatments in \code{t1} and \code{t2} respectively/

@@ -58,7 +58,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   Minimum number of knots is 3.
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-#' automatically set to `FALSE` if class effects are modelled or if multiple dose-reponse
+#' automatically set to `FALSE` if class effects are modelled or if multiple dose-response
 #' functions are fitted.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than

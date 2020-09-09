@@ -105,7 +105,7 @@
 #' Studies of biologics for psoriasis over 16 weeks
 #'
 #' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing different biologics for the
-#' treatment of psoriasisdoses of \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
+#' treatment of psoriasis \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
 #' provide data to illustrate a statistical methodology rather than for clinical inference. Alogliptin is
 #' a treatment aimed at reducing blood glucose concentration in type II diabetes. The outcome is continuous,
 #' and aggregate data responses correspond to the mean change in HbA1c from baseline to follow-up in studies
@@ -140,7 +140,7 @@
 #' @format A data frame in long format (one row per arm and study), with 81 rows and 9 variables:
 #' * `studyID` Study identifiers
 #' * `agent` Character data indicating the agent to which participants were randomised
-#' * `dose_mg` Numeric data indicating the dose to which participants were randomsied in mg
+#' * `dose_mg` Numeric data indicating the dose to which participants were randomised in mg
 #' * `freq` Character data indicating the frequency of the dose to which participants were randomised
 #' * `dose` Numeric data indicating the dose in mg/week to which the participants were randomised
 #' * `N` Numeric data indicating the number of participants randomised
@@ -156,7 +156,7 @@
 
 
 
-#' Studies of Selective Serotonin Reuptake Inhibirors (SSRIs) for major depression
+#' Studies of Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression
 #'
 #' A dataset from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo
 #' \insertCite{furukawa2019}{MBNMAdose}. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks
@@ -168,7 +168,7 @@
 #' * `age` Mean participant age
 #' * `weeks` Duration of study follow-up
 #' * `agent` Character data indicating the agent to which participants were randomised
-#' * `dose` Numeric data indicating the dose to which participants were randomsied in mg
+#' * `dose` Numeric data indicating the dose to which participants were randomised in mg
 #' * `N` Numeric data indicating the number of participants randomised
 #' * `r` Numeric data indicating the number of participants who achieved >50% improvement in depression symptoms
 #'
