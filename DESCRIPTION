@@ -1,15 +1,10 @@
 Package: MBNMAdose
 Type: Package
 Title: Dose-Response MBNMA Models
-Version: 0.2.8.9000
+Version: 0.2.8
 Language: en-GB
-Date: 2020-02-13
+Date: 2020-09-09
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
-    person("David", "Mawdsley", role = c("rev")),
-    person("Nicky", "Welton", role = c("rev")),
-    person("Sofia", "Dias", role = c("rev")),
-    person("Meg", "Bennetts", role = c("rev")),
-    person("Martin", "Boucher", role = c("rev")),
     person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
 URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
