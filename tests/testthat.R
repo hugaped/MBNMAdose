@@ -15,14 +15,14 @@ datalist <- list("HF2PPITT"=HF2PPITT,
                  )
 
 
-
-datalist <- list("osteopain_2wkabs"=osteopain_2wkabs)
-for (dataset.number in seq_along(datalist)) {
-  print(paste("Testing dataset:", names(datalist)[dataset.number]))
-
-  datanam <- names(datalist)[dataset.number]
-  dataset <- datalist[[dataset.number]]
-
-  testthat::test_dir("tests/testthat")
-}
+#
+# datalist <- list("osteopain_2wkabs"=osteopain_2wkabs)
+# for (dataset.number in seq_along(datalist)) {
+#   print(paste("Testing dataset:", names(datalist)[dataset.number]))
+#
+#   datanam <- names(datalist)[dataset.number]
+#   dataset <- datalist[[dataset.number]]
+#
+#   testthat::test_dir("tests/testthat")
+# }
 

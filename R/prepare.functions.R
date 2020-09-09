@@ -4,7 +4,7 @@
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
-                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "Parameter", "fupdose", "groupvar", "y",
                                                         "network", "a", "param", "med", "l95", "u95", "value",
                                                         "Estimate", "2.5%", "50%", "97.5%", "treatment"))
 
@@ -846,6 +846,7 @@ mbnma.comparisons <- function(data)
 #' drops <- drop.disconnected(net.noplac, connect.dose=TRUE)
 #' length(unique(net.noplac$data.ab$studyID))==length(unique(drops$data.ab$studyID))
 #'
+#' @export
 drop.disconnected <- function(network, connect.dose=FALSE) {
 
   # Run Checks

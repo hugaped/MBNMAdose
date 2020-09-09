@@ -4,7 +4,7 @@
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
 if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
-                                                        "Parameter", "do", "fupdose", "groupvar", "y",
+                                                        "Parameter", "fupdose", "groupvar", "y",
                                                         "network", "a", "param", "med", "l95", "u95", "value",
                                                         "Estimate", "2.5%", "50%", "97.5%", "treatment"))
 
@@ -742,7 +742,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   if (sucra==TRUE) {
     df.auc <- df %>%
       dplyr::group_by(df$Var2, df$param) %>%
-      do(data.frame(sucra=calcauc(.)))
+      dplyr::do(data.frame(sucra=calcauc(.)))
 
     df.auc <- dplyr::ungroup(df.auc)
 
