@@ -617,6 +617,12 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  if (length(fun)==1) {
+    if (fun %in% c("rcs", "ns", "bs")) {
+      jagsdata[["dose"]] <- NULL
+    }
+  }
+
 
 
   # Remove studyID from jagsdata (not used in model)

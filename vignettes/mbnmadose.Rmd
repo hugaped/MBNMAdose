@@ -136,7 +136,6 @@ Depending on the type of data (and the likelihood) the following columns are req
   + `r` Numeric data indicating the number of events in a given study arm
   + `E` Numeric data indicating the total exposure time in a given study arm
 
-Additional columns can be included in the dataset. These will simply be added to the `mbnma.network` object, though will not affect the classification of the data.
 
 It then performs the following checks on the data:
 
@@ -151,9 +150,9 @@ It then performs the following checks on the data:
 Finally it converts the data frame into an object of `class("mbnma.network")`, which contains indices for study arms, numeric variables for treatments, agents and classes, and stores a vector of treatment, agent and class names as an element within the object. By convention, agents are numbered alphabetically, though if the original data for agents is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAdose` functions.
 
 
-### Network connectivity
+### Examining network connectivity
 
-Looking at how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated and what information will be helping to inform those estimates. In particular, the complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available in the dataset.
+Examining how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated, what information will be helping to inform those estimates, and whether linking via the dose-response relationship is possible if the network is disconnected at the treatment-level. The complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available, so this is also important to know.
 
 Network plots can be plotted which shows which treatments/agents have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment/agent (provided `N` is included as a variable in the original dataset for `mbnma.network()`). 
 
@@ -188,7 +187,7 @@ However, whilst at the treatment-level (specific dose of a specific agent), many
 plot(goutnet, level="agent", label.distance = 6)
 ```
 
-One agent (RDEA) is still not connected to the network, but `MBNMAdose` allows agents to connect via a placebo response *even if they do not include placebo in a head-to-head trial*. The connectivity of this will depend on the number of doses compared within an agent, and on the complexity of the dose-response relationship [@mawdsley2016].
+One agent (RDEA) is still not connected to the network, but `MBNMAdose` allows agents to connect via a placebo response *even if they do not include placebo in a head-to-head trial* (see [Linking disconnected treatments via the dose-response relationship]).
 
 ```{r}
 # Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)
@@ -470,22 +469,6 @@ emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
                    priors=new.priors)
 ```
 
-
-Mathematical errors can be more likely for certain types of models. For dose-response relationships which include a dose-response parameter as an exponent (e.g. an exponential dose-response function), default prior distributions may result in numerical values that are too extreme for computation. One way to fix this problem is to use tighter priors for `d`'s. However, a contributing factor to this issue is that doses within a dataset can be very variable in magnitude, thus leading to excessively high/low exponents. A solution for this is is to standardise doses within an agent by some common value (i.e. the most commonly prescribed dose or the maximum dose investigated). This leads to all doses being relative to the standard dose, but can improve computation.
-
-```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE, eval=FALSE}
-# Exponential model currently returns an error on gout dataset
-exponetial <- mbnma.exponential(goutnet, lambda="rel")
-```
-```{r, eval=FALSE}
-# Standardise gout dataset doses relative to maximum investigated dose
-std.gout <- GoutSUA_2wkCFB
-std.gout <- std.gout %>% group_by(agent) %>% mutate(dose=dose/max(dose))
-std.gout$dose[std.gout$agent=="Plac"] <- 0
-std.gout <- mbnma.network(std.gout)
-
-exponential <- mbnma.exponential(std.gout, lambda="rel")
-```
 
 
 #### pD (effective number of parameters)

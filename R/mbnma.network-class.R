@@ -58,7 +58,12 @@ summary.mbnma.network <- function(object,...) {
   agentdf <- dplyr::arrange(agentdf, agent)[,c("agent", "ndose")]
   agentdf <- unique(agentdf)
 
-  cat("Median (max, min) doses per agent: ", stats::median(agentdf$ndose),
+  if (object$agents[1]=="Placebo") {
+    agentdf <- agentdf[-1,]
+    agentdf$ndose <- agentdf$ndose + 1
+  }
+
+  cat("Median (min, max) doses per agent (incl placebo): ", stats::median(agentdf$ndose),
       " (", min(agentdf$ndose), ", ", max(agentdf$ndose), ")\n", sep="")
 
   # Check network is connected at agent-level

@@ -639,8 +639,8 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$fun)>1) {
     #stop("`predict() currently does not work with models that use multiple dose-response functions")
 
-    funs <- c(NA, 1,1,2,3)
-    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
+    funs <- c(NA, 1,1,2,3, rep(object$model.arg$knots-1, 3))
+    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
     funs <- funs[names(funs) %in% object$model.arg$fun]
 
     # Want to find the location of the agents within the vector of agent names in network
@@ -698,7 +698,6 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   predict.result <- list()
 
   if ("rcs" %in% object$model.arg$fun) {
-    realdoses <- doses
     splinedoses <- doses
     for (i in seq_along(doses)) {
       splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$knots,
