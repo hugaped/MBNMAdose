@@ -2,7 +2,7 @@
 
 This is a resubmission. In this version I have:
 
-* Ensured that the URLs have trailing /
+* Ensured that the pubmed reference have correct URLs
 
 
 ## Test environments
