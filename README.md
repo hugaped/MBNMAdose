@@ -9,7 +9,7 @@ status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.
 status](https://travis-ci.com/hugaped/MBNMAdose.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAdose)
 <!-- badges: end -->
 
-# MBNMAdose 0.2.8
+# MBNMAdose 0.3.0
 
 The goal of `MBNMAdose` is to provide a collection of useful commands
 that allow users to run dose-response Model-Based Network Meta-Analyses

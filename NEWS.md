@@ -1,4 +1,4 @@
-# MBNMAdose 0.3.1
+# MBNMAdose 0.3.0
 
 ## Bug fixes
 

@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![Travis build status](https://travis-ci.com/hugaped/MBNMAdose.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAdose)
 <!-- badges: end -->
 
-# MBNMAdose 0.2.8
+# MBNMAdose 0.3.0
 
 The goal of `MBNMAdose` is to provide a collection of useful commands that allow users to run dose-response Model-Based Network Meta-Analyses (MBNMA). This allows evidence synthesis of studies that compare multiple doses
 of different agents in a way that can account for the dose-response relationship.

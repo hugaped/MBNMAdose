@@ -1,9 +1,9 @@
 Package: MBNMAdose
 Type: Package
 Title: Dose-Response MBNMA Models
-Version: 0.3.1
+Version: 0.3.0
 Language: en-GB
-Date: 2020-09-09
+Date: 2020-09-10
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
     person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
