@@ -334,20 +334,22 @@ In particular, the scales for different dose-response parameters must be the sam
 
 Class effects can only be applied to dose-response parameters which vary by agent. In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
-When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`.
+When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`. Below we assign a class for two similar agents in the dataset - Naproxcinod and Naproxen. We will estimate separate effects for all other agents, so we set their classes to be equal to their agents.
 
 ```{r, results="hide", message=FALSE, warning=FALSE}
-# Using the osteoarthritis dataset (contains info on classes)
-painnet <- mbnma.network(osteopain_2wkabs)
-```
-```{r, results="hide"}
-# Emax MBNMA with a single absolute parameter for Emax and random relative effects on ED50
-# Common class effects on ED50
-emax <- mbnma.emax(painnet, emax="common", ed50="rel", method="random",
-                   class.effect=list(ed50="common"))
-```
-```{r, eval=FALSE}
-summary(emax)
+# Using the osteoarthritis dataset
+pain.df <- osteopain_2wkabs
+
+# Set class equal to agent for all agents
+pain.df$class <- pain.df$class
+
+# Set a shared class (NSAID) only for Naproxcinod and Naproxen
+pain.df$class[pain.df$agent %in% c("Naproxcinod", "Naproxen")] <- 
+  "NSAID"
+
+# Run a restricted cubic spline MBNMA with a common class effect on beta.1
+classnet <- mbnma.network(pain.df)
+splines <- mbnma.run(classnet, fun="rcs", class.effect = list(beta.1="common"))
 ```
 
 Mean class effects are given in the output as `D.ed50`/`D.1` parameters. These can be interpreted as the effect of each class for Emax parameters (`beta.1`). Note the number of `D.ed50` parameters is therefore equal to the number of classes defined in the dataset.
@@ -399,14 +401,19 @@ Different dose-response functions can be used for different agents within the ne
 
 This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
 
-Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
+Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`, `"rcs"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
 
 ```{r, eval=FALSE}
-# Frovatriptan and rizatriptan modelled using an exponential function as only two active
-#doses are available for these agents
-# All other agents are modelled using an Emax function
-multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"),
-            beta.1="rel", beta.2="rel", beta.3="random")
+# Placebo can be modeled using any function (since it will evaluate to 0)
+# Adalimubab and Guselkumab: exponential function (limited dose-response info)
+# All others: restricted cubic spline with 3 knots
+dr.funs <- rep(NA, length(psorinet$agents))
+dr.funs[which(psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
+  "exponential"
+dr.funs[which(!psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
+  "rcs"
+
+multifun <- mbnma.run(psorinet, fun=dr.funs, method="common", knots=3, n.iter=50000)
 summary(multifun)
 ```
 
