@@ -1,18 +1,13 @@
 Package: MBNMAdose
 Type: Package
-Title: Run Dose-Response MBNMA Models
-Version: 0.2.7
+Title: Dose-Response MBNMA Models
+Version: 0.3.0
 Language: en-GB
-Date: 2020-03-02
+Date: 2020-09-10
 Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
-    person("David", "Mawdsley", role = c("rev")),
-    person("Nicky", "Welton", role = c("rev")),
-    person("Sofia", "Dias", role = c("rev")),
-    person("Meg", "Bennetts", role = c("rev")),
-    person("Martin", "Boucher", role = c("rev")),
     person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
-URL: https://doi.org/10.1002/psp4.12091
+URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
 Description: Fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
     that incorporate multiple doses within an agent by modelling different dose-response functions, as
@@ -31,26 +26,31 @@ Imports:
     graphics,
     utils,
     scales,
+    utf8,
+    formatR,
     dplyr (>= 0.7.4),
     R2jags (>= 0.5-7), 
     rjags (>= 4-8),
     magrittr (>= 1.5),
     checkmate (>= 1.8.5),
     Rdpack (>= 0.11-0),
+    igraph (>= 1.1.2),
+    rgeos (>= 0.5-2),
     reshape2 (>= 1.4.3)
 Suggests:
     overlapping (>= 1.5.0),
     ggplot2 (>= 2.2.1),
-    igraph (>= 1.1.2),
     RColorBrewer (>= 1.1-2),
     mcmcplots (>= 0.4.3),
     testthat (>= 1.0.2),
+    crayon (>= 1.3.4),
+    Hmisc (>= 4.4-1),
     knitr,
     rmarkdown
-SystemRequirements: JAGS (>= 4.3.0) (http://mcmc-jags.sourceforge.net)
+SystemRequirements: JAGS (>= 4.3.0) (https://mcmc-jags.sourceforge.net/)
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 RdMacros: Rdpack

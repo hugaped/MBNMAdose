@@ -4,11 +4,25 @@
 \alias{mbnma.emax.hill}
 \title{Run MBNMA model with an Emax dose-response function (with a Hill parameter)}
 \usage{
-mbnma.emax.hill(network, emax = "rel", ed50 = "rel", hill = "common",
-  method = "common", class.effect = list(), cor = TRUE,
-  var.scale = NULL, parameters.to.save = NULL, pd = "pv",
-  parallel = FALSE, likelihood = NULL, link = NULL, priors = NULL,
-  arg.params = NULL, ...)
+mbnma.emax.hill(
+  network,
+  emax = "rel",
+  ed50 = "rel",
+  hill = "common",
+  method = "common",
+  class.effect = list(),
+  UME = FALSE,
+  cor = TRUE,
+  var.scale = NULL,
+  parameters.to.save = NULL,
+  pd = "pv",
+  parallel = FALSE,
+  likelihood = NULL,
+  link = NULL,
+  priors = NULL,
+  arg.params = NULL,
+  ...
+)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
@@ -32,9 +46,14 @@ depend on whether or not a wrapper function has been used for \code{mbnma.run()}
 For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
 \code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
 
+\item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
+that does not assume consistency and so can be used to test if the consistency
+assumption is valid.}
+
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
-automatically set to \code{FALSE} if class effects are modelled.}
+automatically set to \code{FALSE} if class effects are modelled or if multiple dose-response
+functions are fitted.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than

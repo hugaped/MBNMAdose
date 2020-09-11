@@ -4,15 +4,28 @@
 \name{alog_pcfb}
 \alias{alog_pcfb}
 \title{Studies of alogliptin for lowering blood glucose concentration in patients with type II diabetes}
-\format{A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
+\format{
+A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{agent} Character data indicating the agent to which participants were randomised
 \item \code{dose} Numeric data indicating the standardised dose received
 \item \code{y} Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
 \item \code{se} Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-}}
+}
+
+A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
+\itemize{
+\item \code{studyID} Study identifiers
+\item \code{agent} Character data indicating the agent to which participants were randomised
+\item \code{dose} Numeric data indicating the standardised dose received
+\item \code{y} Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
+\item \code{se} Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
+}
+}
 \usage{
+alog_pcfb
+
 alog_pcfb
 }
 \description{
@@ -24,11 +37,24 @@ and aggregate data responses correspond to the mean change in HbA1c from baselin
 of at least 12 weeks follow-up. The dataset includes 14 Randomised-Controlled Trials (RCTs), comparing 5
 different doses of alogliptin with placebo, leading to 6 different treatments (combination of dose and agent)
 within the network.
+
+A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing different biologics for the
+treatment of psoriasis \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
+provide data to illustrate a statistical methodology rather than for clinical inference. Alogliptin is
+a treatment aimed at reducing blood glucose concentration in type II diabetes. The outcome is continuous,
+and aggregate data responses correspond to the mean change in HbA1c from baseline to follow-up in studies
+of at least 12 weeks follow-up. The dataset includes 14 Randomised-Controlled Trials (RCTs), comparing 5
+different doses of alogliptin with placebo, leading to 6 different treatments (combination of dose and agent)
+within the network.
 }
 \details{
 \code{alog_pcfb} is a data frame in long format (one row per arm and study), with the variables \code{studyID}, \code{agent}, \code{dose}, \code{y}, \code{se}, and \code{N}.
+
+\code{alog_pcfb} is a data frame in long format (one row per arm and study), with the variables \code{studyID}, \code{agent}, \code{dose}, \code{y}, \code{se}, and \code{N}.
 }
 \references{
+\insertAllCited{}
+
 \insertAllCited{}
 }
 \keyword{datasets}

@@ -1,7 +1,15 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# MBNMAdose
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.org/package=MBNMAdose)
+[![Travis build
+status](https://travis-ci.com/hugaped/MBNMAdose.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAdose)
+<!-- badges: end -->
+
+# MBNMAdose 0.3.0
 
 The goal of `MBNMAdose` is to provide a collection of useful commands
 that allow users to run dose-response Model-Based Network Meta-Analyses
@@ -16,7 +24,7 @@ dose/treatment level, and help improve precision of estimates. It avoids
 “lumping” of doses that is often done in standard Network Meta-Analysis
 (NMA). All models and analyses are implemented in a Bayesian framework,
 following an extension of the standard NMA methodology presented by (Lu
-and Ades 2004) and are run in JAGS (JAGS Computer Program 2017). For
+and Ades 2004) and are run in JAGS (Just Another Gibbs Sampler). For
 full details of dose-response MBNMA methodology see Mawdsley et
 al. (2016). Throughout this package we refer to a **treatment** as a
 specific **dose** or a specific **agent**.
@@ -62,12 +70,6 @@ model fitting. Exported functions in the package are connected like so:
 ## References
 
 <div id="refs" class="references">
-
-<div id="ref-jags">
-
-JAGS Computer Program. 2017. <http://mcmc-jags.sourceforge.net>.
-
-</div>
 
 <div id="ref-lu2004">
 

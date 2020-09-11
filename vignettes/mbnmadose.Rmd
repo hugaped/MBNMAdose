@@ -35,7 +35,7 @@ knitr::opts_chunk$set(
 
 This vignette demonstrates how to use `MBNMAdose` to perform Model-Based Network Meta-Analysis (MBNMA) of studies with multiple doses of different agents by accounting for the dose-response relationship. This can connect disconnected networks via the dose-response relationship and the placebo response, improve precision of estimated effects and allow interpolation/extrapolation of predicted response based on the dose-response relationship.
 
-Modelling the dose-response relationship also avoids the "lumping" of different doses of an agent which is often done in Network Meta-Analysis (NMA) and can introduce additional heterogeneity or inconsistency. All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is requried)* [-@jags]. For full details of dose-response MBNMA methodology see Mawdsley et al. [-@mawdsley2016]. Throughout this vignette we refer to a **treatment** as a specific **dose** or a specific **agent**
+Modelling the dose-response relationship also avoids the "lumping" of different doses of an agent which is often done in Network Meta-Analysis (NMA) and can introduce additional heterogeneity or inconsistency. All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS *(version 4.3.0 or later is required)* [-@jags]. For full details of dose-response MBNMA methodology see Mawdsley et al. [-@mawdsley2016]. Throughout this vignette we refer to a **treatment** as a specific **dose** or a specific **agent**
 
 This package has been developed alongside `MBNMAtime`, a package that allows users to perform time-course MBNMA to incorporate multiple time points within different studies. However, *they should not be loaded into R at the same time* as there are a number of functions with shared names that perform similar tasks yet are specific to dealing with either time-course *or* dose-response data.
 
@@ -63,6 +63,22 @@ At each of these stages there are a number of informative plots that can be gene
 kable(head(HF2PPITT), digits=2) 
 ```
 
+
+### Biologics for treatment of moderate-to-severe psoriasis
+
+`psoriasis` is from a systematic review of RCTs comparing biologics at different doses and placebo [@warren2019]. Three different binary outcomes are included, all based on the number of patients experiencing degrees of improvement on the Psoriasis Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset includes 28 Randomised-Controlled Trials (RCTs), comparing 9 different biologics at different doses with placebo. There are three response variables, indicating the number of participants who achieved >=75% (`r75`), >=90% (`r90`) and 100% (`r100`) improvement in PASI score after 12 weeks.
+
+```{r, echo=FALSE}
+kable(head(psoriasis), digits=2) 
+```
+
+### Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression
+
+`ssri` is from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo [@furukawa2019]. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks (4-12 week range) follow-up. The dataset includes 60 RCTs comparing 5 different SSRIs with placebo.
+
+```{r, echo=TRUE}
+kable(head(ssri), digits=2) 
+```
 
 ### Interventions for Serum Uric Acid (SUA) reduction in gout
 
@@ -98,10 +114,10 @@ Before embarking on an analysis, the first step is to have a look at the raw dat
 ```{r}
 # Using the triptans dataset
 network <- mbnma.network(HF2PPITT)
-print(network)
+summary(network)
 ```
 
-This takes a dataset with the columns:
+This function takes a dataset with the columns:
 
 * `studyID` Study identifiers
 * `agent` Agent identifiers (can be character, factor or numeric)
@@ -120,7 +136,6 @@ Depending on the type of data (and the likelihood) the following columns are req
   + `r` Numeric data indicating the number of events in a given study arm
   + `E` Numeric data indicating the total exposure time in a given study arm
 
-Additional columns can be included in the dataset. These will simply be added to the `mbnma.network` object, though will not affect the classification of the data.
 
 It then performs the following checks on the data:
 
@@ -135,9 +150,9 @@ It then performs the following checks on the data:
 Finally it converts the data frame into an object of `class("mbnma.network")`, which contains indices for study arms, numeric variables for treatments, agents and classes, and stores a vector of treatment, agent and class names as an element within the object. By convention, agents are numbered alphabetically, though if the original data for agents is provided as a factor then the factor codes will be used. This then contains all the necessary information for subsequent `MBNMAdose` functions.
 
 
-### Network connectivity
+### Examining network connectivity
 
-Looking at how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated and what information will be helping to inform those estimates. In particular, the complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available in the dataset.
+Examining how the evidence in the network is connected and identifying which studies compare which treatments/agents helps to understand which effects can be estimated, what information will be helping to inform those estimates, and whether linking via the dose-response relationship is possible if the network is disconnected at the treatment-level. The complexity of dose-response relationships that can be estimated is dependent on the number of doses of each agent available, so this is also important to know.
 
 Network plots can be plotted which shows which treatments/agents have been compared in head-to-head trials. Typically the thickness of connecting lines ("edges") is proportional to the number of studies that make a particular comparison and the size of treatment nodes ("vertices") is proportional to the total number of patients in the network who were randomised to a given treatment/agent (provided `N` is included as a variable in the original dataset for `mbnma.network()`). 
 
@@ -148,6 +163,7 @@ Within these network plots, vertices are automatically aligned in a circle (as t
 ```{r, error = TRUE, purl = FALSE}
 # Prepare data using the triptans dataset
 tripnet <- mbnma.network(HF2PPITT)
+summary(tripnet)
 
 # Draw network plot
 plot(tripnet)
@@ -158,6 +174,7 @@ If some vertices are not connected to the network reference treatment through an
 ```{r, message=FALSE, warning=FALSE}
 # Prepare data using the gout dataset
 goutnet <- mbnma.network(GoutSUA_2wkCFB)
+summary(goutnet)
 ```
 ```{r}
 plot(goutnet, label.distance = 5)
@@ -170,7 +187,7 @@ However, whilst at the treatment-level (specific dose of a specific agent), many
 plot(goutnet, level="agent", label.distance = 6)
 ```
 
-One agent (RDEA) is still not connected to the network, but `MBNMAdose` allows agents to connect via a placebo response *even if they do not include placebo in a head-to-head trial*. The connectivity of this will depend on the number of doses compared within an agent, and on the complexity of the dose-response relationship [@mawdsley2016].
+One agent (RDEA) is still not connected to the network, but `MBNMAdose` allows agents to connect via a placebo response *even if they do not include placebo in a head-to-head trial* (see [Linking disconnected treatments via the dose-response relationship]).
 
 ```{r}
 # Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)
@@ -214,15 +231,23 @@ MBNMA is performed in `MBNMAdose` by applying `mbnma.run()`. A `"mbnma.network"`
 
 #### Dose-response functions
 
-Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `mbnma.run()`:
+Several different functional forms are implemented within `MBNMAdose`, that allow a variety of parameterizations and dose-response shapes. These are provided to the `fun` argument in `mbnma.run()`. $x_{i,k}$ refers to the dose and $t_{i,k}$ to the agent in arm $k$ of study $i$.
 
-* `"linear"`
-* `"exponential"`
-* `"emax"` - Emax without a Hill parameter
-* `"emax.hill"` - Emax with a Hill parameter
+* `"linear"`: $f(x_{i,k}, t_{i,k})=\beta_{t_{i,k}} x_{i,k}$ where $\beta_{t_{i,k}}$ is the slope
+
+* `"exponential"`: $f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} (1 - e^{-x_{i,k}})$ where $\lambda$ is the rate of exponential growth/decay
+
+* `"emax"`: $f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times x_{i,k}} {ED50_{t_{i,k}} + x_{i,k}}$ where $Emax$ is the maximum response that can be achieved and $ED50$ is the dose at which 50% of the maximum response is achieved
+
+* `"emax.hill"`: $f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times x_{i,k}^\gamma}{ED50_{t_{i,k}}^\gamma + x_{i,k}^\gamma}$ where $Emax$ is the maximum response that can be achieved, $ED50$ is the dose at which 50% of the maximum response is achieved and $\gamma$ is the Hill parameter.
+
+* `"rcs"` (restricted cubic spline): $f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$ where $\beta_{p,t_{i,k}}$ is the regression coefficient for spline $p^{th}$ and $X_{1:P,i,k}$ is the basis matrix for the spline.
+
 * `"nonparam.up"` - Non-parametric monotonically increasing dose-response
+
 * `"nonparam.down"` - Non-parametric monotonically decreasing dose-response
-* `"user"` - A function that can be explicitly specified by the user within `user.fun` (see `?mbnma.run()`)
+
+* `"user"`: Any function that can be explicitly defined by the user within `user.fun` (see [User-defined dose-response function])
 
 
 #### Dose-response parameters
@@ -252,8 +277,8 @@ Nodes that are automatically monitored (if present in the model) have the follow
 
 * `d` The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters specified as `"rel"` (e.g. `mbnma.run(beta.1="rel")`).
 * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if `method="random"`.
-* `D` The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effect` (see Class Effects (REF)) for a given dose-response parameter.
-* `sd.D` The within-class SD for different agents within the same class. This will be estimated by the model if any dose-response parameter specified in `class.effect` (see Class Effects (REF)) is set to `"random"`.
+* `D` The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effect` (see [Class effects]) for a given dose-response parameter.
+* `sd.D` The within-class SD for different agents within the same class. This will be estimated by the model if any dose-response parameter specified in `class.effect` (see [Class effects]) is set to `"random"`.
 * `beta` The common or mean value of a given dose-response parameter across the whole network (does not vary by agent/class). This will be estimated by the model for dose-response parameters specified as `"common"` or `"random"` (e.g. `mbnma.run(beta.1="common"`)).
 * `sd` (with a suffix) - the between-study SD (heterogeneity) for dose-response parameters modelled as exchangeable around a single mean value. This will be estimated by the model for dose-response parameters specified as `"random"`.
 * `totresdev` The residual deviance of the model
@@ -305,22 +330,26 @@ Several additional arguments can be given to `mbnma.run()` that require further 
 
 Similar effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
 
+In particular, the scales for different dose-response parameters must be the same for this assumption to be valid. For example, in an Emax model it may be reasonable to assume a class effect on the Emax parameter, as this is parameterised on the response scale and so could be similar across agents of the same class. However, the scale for the ED50 parameter is on the dose scale, which is likely to differ for each agent and so an assumption of similarity between agents for this parameter may be less valid.
+
 Class effects can only be applied to dose-response parameters which vary by agent. In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
-When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`.
+When working with class effects in `MBNMAdose` a variable named `class` must be included in the original data frame provided to `mbnma.network()`. Below we assign a class for two similar agents in the dataset - Naproxcinod and Naproxen. We will estimate separate effects for all other agents, so we set their classes to be equal to their agents.
 
 ```{r, results="hide", message=FALSE, warning=FALSE}
-# Using the osteoarthritis dataset (contains info on classes)
-painnet <- mbnma.network(osteopain_2wkabs)
-```
-```{r, results="hide"}
-# Emax MBNMA with a single absolute parameter for Emax and random relative effects on ED50
-# Common class effects on ED50
-emax <- mbnma.emax(painnet, emax="common", ed50="rel", method="random",
-                   class.effect=list(ed50="common"))
-```
-```{r, eval=FALSE}
-summary(emax)
+# Using the osteoarthritis dataset
+pain.df <- osteopain_2wkabs
+
+# Set class equal to agent for all agents
+pain.df$class <- pain.df$class
+
+# Set a shared class (NSAID) only for Naproxcinod and Naproxen
+pain.df$class[pain.df$agent %in% c("Naproxcinod", "Naproxen")] <- 
+  "NSAID"
+
+# Run a restricted cubic spline MBNMA with a common class effect on beta.1
+classnet <- mbnma.network(pain.df)
+splines <- mbnma.run(classnet, fun="rcs", class.effect = list(beta.1="common"))
 ```
 
 Mean class effects are given in the output as `D.ed50`/`D.1` parameters. These can be interpreted as the effect of each class for Emax parameters (`beta.1`). Note the number of `D.ed50` parameters is therefore equal to the number of classes defined in the dataset.
@@ -356,10 +385,12 @@ The function assigned to `user.fun` needs to fulfil a few criteria to be valid:
 * Any mathematical/logical operators that can be implemented in JAGS can be added to the function (e.g. `exp()`, `ifelse()`)
 
 ```{r, eval=FALSE}
+depnet <- mbnma.network(ssri)
+
 # An example specifying a quadratic dose-response function
 quad <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-mbnma.run(alognet, fun="user", user.fun=quad,
+mbnma.run(depnet, fun="user", user.fun=quad,
           beta.1 = "rel", beta.2 = "rel")
 ```
 
@@ -370,15 +401,36 @@ Different dose-response functions can be used for different agents within the ne
 
 This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
 
-Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
+Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`, `"rcs"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
 
 ```{r, eval=FALSE}
-# Frovatriptan and rizatriptan modelled using an exponential function as only two active
-#doses are available for these agents
-# All other agents are modelled using an Emax function
-multifun <- mbnma.run(painnet, fun=c(rep("emax", 3), "exponential", rep("emax", 2), "exponential", "emax"),
-            beta.1="rel", beta.2="rel", beta.3="random")
+# Placebo can be modeled using any function (since it will evaluate to 0)
+# Adalimubab and Guselkumab: exponential function (limited dose-response info)
+# All others: restricted cubic spline with 3 knots
+dr.funs <- rep(NA, length(psorinet$agents))
+dr.funs[which(psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
+  "exponential"
+dr.funs[which(!psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
+  "rcs"
+
+multifun <- mbnma.run(psorinet, fun=dr.funs, method="common", knots=3, n.iter=50000)
 summary(multifun)
+```
+
+
+#### Restricted cubic splines and `knots`
+
+For a more flexible dose-response shape, restricted cubic splines can be fitted to the data by setting `fun="rcs"`. The model is very flexible and can allow for non-monotonic dose-response relationships, though parameters can be difficult to interpret. This follows the method of Hamza et a. (2020) [@hamza2020]. 
+
+To fit this model, the number/location of `knots` should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.
+
+```{r, eval=FALSE}
+knots <- 3
+# ...is equivalent to 
+knots <- c(0.25,0.5,0.75)
+
+depnet <- mbnma.network(ssri)
+mbnma.run(depnet, fun="rcs", knots=knots)
 ```
 
 
@@ -424,22 +476,6 @@ emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
                    priors=new.priors)
 ```
 
-
-Mathematical errors can be more likely for certain types of models. For dose-response relationships which include a dose-response parameter as an exponent (e.g. an exponential dose-response function), default prior distributions may result in numerical values that are too extreme for computation. One way to fix this problem is to use tighter priors for `d`'s. However, a contributing factor to this issue is that doses within a dataset can be very variable in magnitude, thus leading to excessively high/low exponents. A solution for this is is to standardise doses within an agent by some common value (i.e. the most commonly prescribed dose or the maximum dose investigated). This leads to all doses being relative to the standard dose, but can improve computation.
-
-```{r, result="hide", message=FALSE, warning=FALSE, error=TRUE, eval=FALSE}
-# Exponential model currently returns an error on gout dataset
-exponetial <- mbnma.exponential(goutnet, lambda="rel")
-```
-```{r, eval=FALSE}
-# Standardise gout dataset doses relative to maximum investigated dose
-std.gout <- GoutSUA_2wkCFB
-std.gout <- std.gout %>% group_by(agent) %>% mutate(dose=dose/max(dose))
-std.gout$dose[std.gout$agent=="Plac"] <- 0
-std.gout <- mbnma.network(std.gout)
-
-exponential <- mbnma.exponential(std.gout, lambda="rel")
-```
 
 
 #### pD (effective number of parameters)
@@ -585,6 +621,7 @@ Rankings can be calculated for different dose-response parameters from MBNMA mod
 
 ```{r}
 ranks <- rank(trip.emax, direction = 1)
+print(ranks)
 summary(ranks)
 ```
 
@@ -600,10 +637,17 @@ plot(ranks, params = "d.emax")
 plot(ranks, params = "d.ed50")
 ```
 
+Alternatively, cumulative ranking plots for all parameters can be plotted simultaneously so as to be able to compare the effectiveness of different agents on different parameters. The surface under cumulative ranking curve (SUCRA) for each parameter can also be estimated by setting `sucra=TRUE`.
+
+```{r}
+# Cumulative ranking plot for both dose-response parameters
+cumrank(ranks, sucra=TRUE)
+```
+
 
 ### Prediction
 
-After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"mbnma"` object. A number of important arguments should be specified for prediction.
+After performing an MBNMA, responses can be predicted from the model parameter estimates using `predict()` on an `"mbnma"` object. A number of important arguments should be specified for prediction. See `?predict.mbnma` for detailed specification of these arguments.
 
 `E0` This is the response at dose = 0 (equivalent to the placebo response). Since relative effects are the parameters estimated in MBNMA, the placebo response is not explicitly modelled and therefore must be provided by the user in some way. The simplest approach is to provide either a single numeric value for `E0` (deterministic approach), or a string representing a distribution for `E0` that can take any Random Number Generator (RNG) distribution for which a function exists in R (stochastic approach). Values should be given on the natural scale. For example for a binomial outcome:
 
@@ -681,6 +725,8 @@ plot(pred, overlay.split = TRUE, method="random")
 
 By plotting these, as well as observing how responses can be extrapolated/interpolated, we can also see which doses are likely to be providing most information to the dose-response relationship. The tighter 95% CrI on the predicted responses from the MBNMA also show that modelling the dose-response function also gives some additional precision even at doses for which there is information available.
 
+More detailed documentation can be accessed using `?plot.mbnma.predict`.
+
 
 ### Ranking predicted responses
 
@@ -705,7 +751,7 @@ When performing a MBNMA by pooling relative treatment effects, the modelling app
 
 However, if this assumption does not hold, this is extremely problematic for inference, so it is important to be able to test it. A number of different approaches exist to allow for this in standard Network Meta-Analysis (NMA) [@dias2013], but within dose-response MBNMA there is added complexity because the consistency assumption can be conceptualised either for each treatment comparison (combination of dose and agent), or for each agent, where consistency is required for the agent-level parameters governing the dose-response relationship.
 
-Testing for consistency at the agent-level is challenging as there is unlikely to be the required data available to be able to do this - included studies in the dataset must have multiple doses of multiple agents, so that sufficient information is available to estimate dose-response parameters *within that study*. However, testing for consistency at the treatment-level is possible, and this follows standard NMA methods which will be described below. In practice, testing for consistency at the treatment-level should suffice, as any inconsistency identified at the treatment level will also translate to inconsistency at the agent level and vice versa *[manuscript in progress]*.
+Testing for consistency at the agent-level is challenging as there is unlikely to be the required data available to be able to do this - included studies in the dataset must have multiple doses of multiple agents, so that sufficient information is available to estimate dose-response parameters *within that study*. However, testing for consistency at the treatment-level is possible in MBNMA, and this is described below. In practice, testing for consistency at the treatment-level should suffice, as any inconsistency identified at the treatment level will also translate to inconsistency at the agent level and vice versa *[manuscript in progress]*.
 
 Consistency also depends on the functional form assumed for the dose-response relationship, and so is inextricably linked to model fit of the dose-response relationship. A thorough assessment of the validity of the fitted model is therefore important to be confident that the resulting treatment effect estimates provide a firm basis for decision making.
 
@@ -714,7 +760,7 @@ When meta-analysing dose-response studies, the potential for inconsistency testi
 
 ### Unrelated Mean Effects (UME) model at the treatment level
 
-To check for consistency at the treatment level using UME we fit an NMA that does not assume consistency relationships, and that only models the direct relative effects between each arm in a study and the study reference treatment. If the consistency assumption holds true then the results from the UME model and the NMA will be very similar. However, if there is a discrepancy between direct and indirect evidence in the network, then the consistency assumption may not be valid, and the UME results are likely differ in several ways:
+To check for consistency at the treatment level using UME we fit an NMA that does not assume consistency relationships, and that only models the direct relative effects between each arm in a study and the study reference treatment [@dias2013]. If the consistency assumption holds true then the results from the UME model and the NMA will be very similar. However, if there is a discrepancy between direct and indirect evidence in the network, then the consistency assumption may not be valid, and the UME results are likely differ in several ways:
 
 * The UME model may provide a better fit to the data, as measured by residual deviance
 * The between-study SD for different parameters may be lower in the UME model
@@ -739,27 +785,43 @@ col.names=c("Model", "Residual Deviance", "Betwen-study SD"))
 
 As both the residual deviances and between-study SDs are similar, this would suggest that there is no evidence of inconsistency in this network, though comparing results for individual comparisons from the models can also be useful.
 
+Deviance-deviance plots [@dias2013] can be compared between different models to investigate different data points, and we suggest comparing the following models using these plots:
+
+1. Selected dose-response MBNMA model
+2. Treatment-level NMA model (using same common/random treatment effects as for the MBNMA)
+3. Treatment-level UME model (using same common/random treatment effects as for the MBNMA)
+
+Differences in deviance contributions between models 1 and 2 will highlight data points which may fit the dose-response relationship poorly. Difference in deviance contributions between models 2 and 3 will highlight data points which are suggestive of inconsistency.
+
 
 ### Node-splitting at the treatment level
 
-Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity [@vanvalkenhoef2016]. `NMA.nodesplit()` takes similar arguments to `NMA.run()`, and returns an object of `class("NMA.nodesplit")`. 
+Another approach for consistency checking is node-splitting. This splits contributions for a particular treatment comparison into direct and indirect evidence, and the two can then be compared to test their similarity [@vanvalkenhoef2016]. Node-splitting in dose-response MBNMA is an extension to this method, as indirect evidence contributions can be calculated incorporating the dose-response function. `mbnma.nodesplit()` takes similar arguments to `mbnma.run()`, and returns an object of `class("nodesplit")`. 
 
-In addition to these, the argument `comparisons` can be used to indicate which treatment comparisons to perform a nodesplit on. If left as `NULL` (the default) node-splits will automatically be performed in all closed loops of treatments in which comparisons are informed by independent sources of evidence. This is somewhat similar to the function `gemtc::mtc.nodesplit.comparisons()`, but uses a fixed network reference treatment and therefore identifies fewer loops in which to test for inconsistency.
+In addition to these, the argument `comparisons` can be used to indicate which treatment comparisons to perform a nodesplit on. If left as `NULL` (the default) node-splits will automatically be performed in all closed loops of treatments in which comparisons are informed by independent sources of evidence. This is somewhat similar to the function `gemtc::mtc.nodesplit.comparisons()`, but uses a fixed network reference treatment and therefore ensures differences between direct and indirect evidence are parameterised as inconsistency rather than as heterogeneity [@dias2013]. However, it also allows for indirect evidence to be informed via the dose-response relationship even if there is no pathway of evidence between the treatments, which can in fact lead to additional potentially inconsistent loops. To incorporate indirect evidence in this way `incldr=TRUE` can be set in `inconsistency.loops()`, the default when using `mbnma.nodesplit()`
+
+The complexity of the dose-response relationship fitted and the amount of indirect evidence available will also affect the number of comparisons on which node-splitting is possible *[manuscript in progress]*. If there is only limited indirect dose-response information for a given comparison (e.g. only two doses available for the agents in the comparison), then only a simpler dose-response function (e.g. exponential) can be fitted. The values given in `inconsistency.loops()$path` can give an indication as to the number of doses available for each comparison. For example, `drparams 3 4` would indicate that the indirect evidence is estimated only via the dose-response relationship, and that within the indirect evidence there are three doses available for estimating the dose-response of the agent in `t1` of the comparison, and four doses available for estimating the dose-responses of the agent in `t2` of the comparison. This means that a three-parameter dose-response function would be the most complex function that could be used when node-splitting this comparison.
 
 As several models have to be run for each closed loop of treatments, node-splitting can take some time to run, and it therefore is not shown for the purposes of this vignette.
 
 ```{r, results="hide", warning=FALSE, message=FALSE, fig.show = "hide", eval=FALSE}
-# Using the triptans dataset
-tripnet <- mbnma.network(HF2PPITT)
+# Using the psoriasis dataset (>75% improvement in PASI score)
+psoriasis$r <- psoriasis$r75
+psorinet <- mbnma.network(psoriasis)
 
-# Nodesplit using a random effects model
-nodesplit <- nma.nodesplit(tripnet, method="random")
+# Identify comparisons on which node-splitting is possible
+splitcomps <- inconsistency.loops(psorinet$data.ab, incldr=TRUE)
+print(splitcomps)
+
+# If we want to fit an Emax dose-response function, there is insufficient
+#indirect evidence in all but the first 6 comparisons
+nodesplit <- mbnma.nodesplit(psorinet, fun="emax", comparisons=splitcomps[1:6,], method="common")
 ```
 ```{r, eval=FALSE}
 print(nodesplit)
 ```
 
-Performing the `print()` method on an object of `class("NMA.nodesplit")` prints a summary of the node-split results to the console, whilst the `summary()` method will return a data frame of posterior summaries for direct and indirect estimates for each split treatment comparison. 
+Performing the `print()` method on an object of `class("nodesplit")` prints a summary of the node-split results to the console, whilst the `summary()` method will return a data frame of posterior summaries for direct and indirect estimates for each split treatment comparison. 
 
 The nodesplit object itself is a list with results for each treatment comparison that has been split. There is a lot of information within the results, but the most useful (and easily interpretable) elements are:
 
@@ -771,7 +833,7 @@ The nodesplit object itself is a list with results for each treatment comparison
 It is possible to generate different plots of each nodesplit comparison using `plot()`:
 
 ```{r, eval=FALSE}
-# Plot forest plots of direct, indirect and pooled (NMA) results for each comparison
+# Plot forest plots of direct, indirect and pooled (MBNMA) results for each comparison
 plot(nodesplit, plot.type="forest")
 
 # Plot posterior densities of direct and indirect results for each nodesplit comparisons

@@ -3,7 +3,10 @@
 # Date created: 2019-04-16
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate", "2.5%", "50%", "97.5%", "treatment"))
 
 #' Write MBNMA dose-response model JAGS code
 #'
@@ -71,9 +74,10 @@ mbnma.write <- function(fun="linear",
                         beta.1="rel",
                         beta.2=NULL, beta.3=NULL, beta.4=NULL,
                         method="common",
+                        knots=3,
                         cor=TRUE, cor.prior="wishart",
                         var.scale=NULL,
-                        class.effect=list(),
+                        class.effect=list(), UME=FALSE,
                         user.fun=NULL,
                         likelihood="binomial", link=NULL
                         ) {
@@ -96,15 +100,15 @@ mbnma.write <- function(fun="linear",
 
   write.check(fun=fun, user.fun=user.fun,
               beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-              method=method, cor.prior=cor.prior,
+              method=method, cor.prior=cor.prior, knots=knots,
               var.scale=var.scale,
-              class.effect=class.effect)
+              class.effect=class.effect, UME=UME)
 
   model <- write.model()
 
   # Add dose-response function
   inserts <- write.inserts()
-  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun)
+  dosefun <- write.dose.fun(fun=fun, user.fun=user.fun, UME=UME, knots=knots)
   model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
 
   if (length(dosefun)==2) {  # For models with multiple DR functions
@@ -131,14 +135,14 @@ mbnma.write <- function(fun="linear",
     model <- write.beta.nonparam(model, method=method, fun=fun)
   } else {
     model <- write.beta(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                        method=method, class.effect=class.effect)
+                        method=method, class.effect=class.effect, UME=UME)
   }
 
 
   # Add correlation between dose-response parameters
   model <- write.cor(model, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                      method=method, cor=cor, cor.prior=cor.prior, var.scale=var.scale,
-                     class.effect=class.effect)
+                     class.effect=class.effect, UME=UME)
 
   # Remove empty loops
   model <- write.remove.loops(model)
@@ -185,6 +189,8 @@ for (k in 2:Nagent){ # Priors on relative treatment effects
 for (k in 2:Nclass){ # Priors on relative class effects
 }
 
+for (k in 1:Nagent){ # UME prior ref
+}
 for (c in 1:(Nagent-1)) {
 for (k in (c+1):Nagent) { # UME priors
 }
@@ -222,6 +228,7 @@ write.inserts <- function() {
   insert.te.priors <- "(+.# Priors on relative treatment effects\n)(+.)"
   insert.end <- "(.+)(\n# Model ends)"
   insert.class.priors <- "(+.# Priors on relative class effects\n)(+.)"
+  insert.ume.ref.priors <- "(+.# UME prior ref\n)(+.)"
   insert.ume.priors <- "(+.# UME priors\n)(+.)"
 
   return(inserts <- list("insert.start"=insert.start,
@@ -231,6 +238,7 @@ write.inserts <- function() {
                          "insert.te.priors"=insert.te.priors,
                          "insert.end"=insert.end,
                          "insert.class.priors"=insert.class.priors,
+                         "insert.ume.ref.priors"=insert.ume.ref.priors,
                          "insert.ume.priors"=insert.ume.priors
   ))
 }
@@ -266,7 +274,7 @@ write.inserts <- function() {
 #' # Write a user-defined dose-response function
 #' doseresp <- ~ beta.1 + (dose ^ beta.2)
 #' write.dose.fun(fun="user", user.fun=doseresp)
-write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
+write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE, knots=3) {
 
   DR.1 <- character()
   paramcount <- 0
@@ -318,6 +326,18 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
     DR.1 <- append(DR.1, drtemp)
     paramcount <- paramcount + 3
   }
+  if (any(c("rcs", "ns", "bs") %in% fun)) {
+    knotnum <- ifelse(length(knots)>1, length(knots), knots)
+    drtemp <- ""
+    for (knot in 1:(knotnum-1)) {
+      drtemp <- paste0(drtemp, "(beta.", paramcount+1, "[agent[i,k]] * spline[i,k,", knot, "])")
+      if (knot<knotnum-1) {
+        drtemp <- paste0(drtemp, " + ")
+      }
+      paramcount <- paramcount + 1
+    }
+    DR.1 <- append(DR.1, drtemp)
+  }
 
   if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
     DR.1 <- "d.1[dose[i,k], agent[i,k]]"
@@ -343,14 +363,21 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel") {
   DR.1 <- gsub("(beta\\.[1-4])", "s.\\1", DR.1)
 
   DR.2 <- gsub("k", "1", DR.1)
-  DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+
+  if (UME==FALSE) {
+    DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+  } else if (UME==TRUE) {
+    DR <- DR.1
+    DR <- gsub("(agent\\[i\\,k\\])", "\\1, agent[i,1]", DR)
+  }
+
 
   # if (effect=="rel") {
   #   return(paste0("DR[i,k] <- ", DR))
   # } else if (effect=="abs") {
   #   return(paste0("DR[i,k] <- ", DR.1))
   # }
-  if (length(fun)==1) {
+  if (length(fun)==1 | UME==TRUE) {
     if (effect=="rel") {
       return(list(paste0("DR[i,k] <- ", DR)))
     } else if (effect=="abs") {
@@ -387,6 +414,7 @@ write.check <- function(fun="linear",
                         beta.3=NULL,
                         beta.4=NULL,
                         method="common",
+                        knots=3,
                         UME=FALSE,
                         cor.prior="wishart",
                         var.scale=NULL,
@@ -396,7 +424,7 @@ write.check <- function(fun="linear",
 
   # Check fun
   dosefuns <- c("none", "linear", "exponential", "emax", "emax.hill",
-                "nonparam.up", "nonparam.down", "user")
+                "nonparam.up", "nonparam.down", "user", "rcs", "bs", "ns")
   if (is.null(fun)) {
     stop("`fun` must be assigned dose-response function(s)")
   }
@@ -413,11 +441,28 @@ write.check <- function(fun="linear",
   checkmate::assertCharacter(fun, null.ok=FALSE, add=argcheck)
   #checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
     checkmate::assertNumeric(var.scale, null.ok = TRUE)
   }
+  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check knots
+  knoterr <- "Minimum number of `knots` for fun=`rcs` is 3"
+  if (length(knots)==1) {
+    if (knots<3) {
+      stop(knoterr)
+    }
+  } else if (length(knots)>1 & length(knots)<3) {
+    stop(knoterr)
+  }
+  if (length(knots)>1) {
+    if (!(all(knots<=1 & all(knots>=0)))) {
+      stop("`knots` specified as quantiles must be between 0 and 1")
+    }
+  }
 
   # Check betas
   # Checks that beta parameters have correct format
@@ -509,6 +554,11 @@ write.check <- function(fun="linear",
 
   # Checks for class effects
   if (length(class.effect)>0) {
+    # Cannot model class effects with UME
+    if (UME==TRUE) {
+      stop("Class effects cannot be modelled with UME")
+    }
+
     # Cannot model class effects with nonparam functions
     if (any(c("nonparam.up, nonparam.down") %in% fun)) {
       stop("Class effects cannot be used with non-parametric dose-response functions")
@@ -517,6 +567,11 @@ write.check <- function(fun="linear",
     # Cannot model class effects with multiple dose-response functions
     if (length(fun)>1) {
       stop("Class effects can only be modelled when using a single dose-response function")
+    }
+
+    if (any(c("rcs", "ns", "bs") %in% fun)) {
+      warning("Class effects applied to spline function parameters may produce\n#
+              non-interpretable results since knot locations will differ between agents")
     }
 
     inclparams <- vector()
@@ -539,9 +594,6 @@ write.check <- function(fun="linear",
       stop("`class.effect` elements must be either `common` or `random`")
     }
   }
-
-
-  # MIGHT NEED TO INCLUDE CHECKS FOR UME
 
 }
 
@@ -700,6 +752,19 @@ write.beta.vars <- function() {
            )
     )
 
+    ########### UME Priors ############
+    assign(paste("ume.ref.prior", i, sep="."),
+           paste0("\n", "s.beta.", i, "[k,k] <- 0",
+             "\n", "d.", i, "[k,k] <- 0", "\n"
+           )
+    )
+
+    assign(paste("ume.prior", i, sep="."),
+           paste0("\n", "s.beta.", i, "[k,c] <- d.", i, "[k,c]",
+             "\n", "d.", i, "[k,c] ~ dnorm(0,0.001)", "\n"
+           )
+    )
+
 
     ############# NON-PARAMETRIC EFFECTS #############
 
@@ -801,7 +866,7 @@ write.delta <- function(model,
 write.beta <- function(model,
                        beta.1, beta.2=NULL, beta.3=NULL, beta.4=NULL,
                        method="common",
-                       class.effect=list()
+                       class.effect=list(), UME=FALSE
 ) {
 
   inserts <- write.inserts()
@@ -818,13 +883,16 @@ write.beta <- function(model,
       betaname <- paste0("beta.", i)
 
       # Add zero for s.beta reference
-      model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[[paste("s.beta", i, "ref", sep=".")]], "\\2"), model)
-
+      if (UME==FALSE) {
+        model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[[paste("s.beta", i, "ref", sep=".")]], "\\2"), model)
+      }
 
       # RELATIVE BETA PARAMETERS
       if (betaparam=="rel") {
         # Convert s.beta to d.
-        model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
+        if (UME==FALSE) {
+          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("btod", i, sep=".")]], "\\2"), model)
+        }
 
         # Add priors / class effects for d
         if (betaname %in% names(class.effect)) {
@@ -836,7 +904,14 @@ write.beta <- function(model,
             model <- gsub(inserts[["insert.end"]], paste0("\\1", vars[[paste("sd.D.prior", i, sep=".")]], "\\2"), model)
           }
         } else {
-          model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("d.prior", i, sep=".")]], "\\2"), model)
+          if (UME==FALSE) {
+            model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[[paste("d.prior", i, sep=".")]], "\\2"), model)
+          } else if (UME==TRUE) {
+            model <- gsub(inserts[["insert.ume.priors"]], paste0("\\1", vars[[paste("ume.prior", i, sep=".")]], "\\2"), model)
+            model <- gsub(inserts[["insert.ume.ref.priors"]], paste0("\\1", vars[[paste("ume.ref.prior", i, sep=".")]], "\\2"), model)
+
+            # Swap s.beta.i[k] and d.i[k] for s.beta.i[k,k] and d.i[k,k]
+          }
         }
 
 
@@ -903,7 +978,7 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 #' @noRd
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL, beta.4=NULL,
-                      method="random", class.effect=list()) {
+                      method="random", class.effect=list(), UME=FALSE) {
   #or be a numeric vector of values to assign to rho to fill correlation
   #matrix between random effects dose-response parameters
   # (i.e. rho[2,1], rho[3,1], rho[3,2])
@@ -938,7 +1013,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 
     if (mat.size>=2) {
       model <- write.cov.mat(model, sufparams=sufparams, cor="estimate", cor.prior=cor.prior,
-                             var.scale=var.scale)
+                             var.scale=var.scale, UME=UME)
     }
   }
 
@@ -959,7 +1034,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
 #' @inheritParams get.prior
 #' @noRd
 write.cov.mat <- function(model, sufparams, cor="estimate", cor.prior="wishart",
-                          var.scale=NULL) {
+                          var.scale=NULL, UME=FALSE) {
 
   inserts <- write.inserts()
 
@@ -992,18 +1067,26 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 }
 "
 
+  if (UME==FALSE) {
+    priorloc <- inserts[["insert.te.priors"]]
+    index <- "k"
+  } else if (UME==TRUE) {
+    priorloc <- inserts[["insert.ume.priors"]]
+    index <- "k\\,c"
+  }
+
   mat.size <- length(sufparams)
   for (i in seq_along(sufparams)) {
     # Change d.1[k] ~ dnorm(0,0.001)  to   d.1[k] <- d.mult[1,k]
-    model <- gsub(paste0("d\\.", sufparams[i], "\\[k\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
-                  paste0("d.", sufparams[i], "[k] <- mult[", i, ",k]\n"),
+    model <- gsub(paste0("d\\.", sufparams[i], "\\[", index, "\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\\n"),
+                  paste0("d.", sufparams[i], "[", index, "] <- mult[", i, ",", index, "]\n"),
                   model
     )
   }
 
   if (cor.prior=="wishart") {
     addcode <- jagswish
-    model <- gsub(inserts[["insert.te.priors"]],
+    model <- gsub(priorloc,
                   paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])\\2"),
                   model
     )
@@ -1022,7 +1105,7 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
 
   } else if (cor.prior=="rho") {
     addcode <- jagsrho
-    model <- gsub(inserts[["insert.te.priors"]],
+    model <- gsub(priorloc,
                   paste0("\\1mult[1:", mat.size, ",k] ~ dmnorm.vcov(d.prior[], R[1:", mat.size, ", 1:", mat.size, "])\\2"),
                   model
     )
@@ -1043,7 +1126,11 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
                       paste0("\\1rho[", m, "] <- ", cor[m]))
       }
   }
-}
+  }
+
+  if (UME==TRUE) {
+    model <- gsub("(mult\\[1\\:[0-9],k)(\\] ~)", "\\1,c\\2", model)
+  }
 
   addcode <- gsub("mat\\.size", mat.size, addcode)
   model <- gsub(inserts[["insert.end"]], paste0("\\1", addcode, "\\2"), model)
@@ -1071,6 +1158,7 @@ write.remove.loops <- function(model) {
     "for\\(k in 2\\:narm\\[i\\]\\)\\{ \\# Treatment effects\\\n\\}", # treatment effects loop
     "for \\(k in 2\\:Nclass\\)\\{ \\# Priors on relative class effects\\\n\\}", # rel class loop
     "for \\(k in 1\\:Nclass\\)\\{ \\# Priors on absolute class effects\\\n\\}", # arm class loop
+    "for \\(k in 1\\:Nagent\\)\\{ # UME prior ref\\\n\\}", # UME loop
     "for \\(c in 1\\:\\(Nagent-1\\)\\) \\{\\\nfor \\(k in \\(c\\+1\\)\\:Nagent\\) \\{ \\# UME priors\\\n\\}\\\n\\}" # UME loop
   )
 
@@ -1094,7 +1182,6 @@ write.remove.loops <- function(model) {
 #' This function takes JAGS model presented as a string and identifies what
 #' prior values have been used for calculation.
 #'
-#' @inheritParams write.beta
 #' @param model A character object of JAGS MBNMA model code
 #'
 #' @return A character vector, each element of which is a line of JAGS code
@@ -1381,4 +1468,50 @@ d[k,c] ~ dnorm(0,0.0001)
                 model)
 
   return(model)
+}
+
+
+
+
+#' Write JAGS code for mbnma.nodesplit
+#'
+#' @inheritParams nma.run
+#' @noRd
+add.nodesplit <- function(model) {
+
+  # If method=="common"
+  if (grepl("delta\\[i\\,k\\] <-", model)) {
+
+    model <- gsub("(\ndelta\\[i\\,k\\] <- )(DR\\[i\\,k\\])",
+                  "\\1md[i,k]\nmd[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])",
+                  model)
+
+    # Else if method=="random
+  } else if (grepl("delta\\[i\\,k\\] ~", model)) {
+
+    model <- gsub("(\nmd\\[i\\,k\\] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+                  "\\1ifelse(split.ind[i,k]==1, direct, DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+                  model)
+
+    # To incorporate multi-arm correction into direct evidence
+    # model <- gsub("(\nmd[i,k] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
+    #               "\\1ifelse(split.ind[i,k]==1, direct + sw[i,k], DR[i,k] + sw[i,k])",
+    #               model)
+
+    # Could be used if estimating separate tau for direct evidence (tau.dir)
+    # model <- gsub("(\ndelta\\[i\\,k\\] )(<- DR\\[i\\,k\\])",
+    #               "\\1~ dnorm(md[i,k], ifelse(split.ind[i,k]==1, taud[i,k], tau.dir))\nmd[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])",
+    #               model)
+    #
+    # # Add prior for tau.dir
+    # model <- gsub("(.+)(# Model ends\n})",
+    #               paste0("\\1", "tau.dir <- pow(sd.dir, -2)\nsd.dir ~ dnorm(0,0.0025) T(0,)", "\n\n\\2"),
+    #               model)
+  }
+
+  # Add prior for direct
+  model <- gsub("(.+)(# Model ends\n})",
+                paste0("\\1", "direct ~ dnorm(0,0.0001)", "\n\n\\2"),
+                model)
+
 }

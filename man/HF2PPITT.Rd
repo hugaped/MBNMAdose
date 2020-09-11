@@ -4,7 +4,8 @@
 \name{HF2PPITT}
 \alias{HF2PPITT}
 \title{Studies of triptans for headache pain relief}
-\format{A data frame in long format (one row per arm and study), with with 181 rows and 6 variables:
+\format{
+A data frame in long format (one row per arm and study), with with 181 rows and 6 variables:
 \itemize{
 \item \code{studyID} Study identifiers
 \item \code{AuthorYear} The author and year published of the study
@@ -12,7 +13,8 @@
 \item \code{r} Numeric data indicating the number of responders (headache free at 2 hours) in a study arm
 \item \code{dose} Numeric data indicating the standardised dose received
 \item \code{agent} Factor data indicating the agent to which participants were randomised
-}}
+}
+}
 \source{
 \insertAllCited{}
 }

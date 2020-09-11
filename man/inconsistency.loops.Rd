@@ -4,10 +4,10 @@
 \alias{inconsistency.loops}
 \title{Identify comparisons in loops that fulfil criteria for node-splitting}
 \usage{
-inconsistency.loops(data, checkindirect = TRUE)
+inconsistency.loops(df, checkindirect = TRUE, incldr = FALSE)
 }
 \arguments{
-\item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as
+\item{df}{A data frame containing variables \code{studyID} and \code{treatment} (as
 numeric codes) that indicate which treatments are used in which studies. If \code{checkindirect = TRUE}
 then variables \code{agent} and \code{dose} are also required.}
 
@@ -16,12 +16,23 @@ check to ensure network remains connected even after dropping direct evidence on
 Default is \code{TRUE} and should be kept as \code{TRUE} if working with dose-response data, though this requires
 further computational iterations to confirm. If set to \code{FALSE}, additional comparisons may be identified, though computation will be much more
 rapid.}
+
+\item{incldr}{A boolean object indicating whether or not to allow for indirect evidence contributions via
+the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
+for a greater number of potential loops in which to check for consistency.}
 }
 \value{
 A data frame of comparisons that are informed by direct and indirect
 evidence from independent sources. Each row of the data frame is a
 different treatment comparison. Numerical codes in \code{t1} and \code{t2} correspond
-to treatment codes.
+to treatment codes. \code{path} indicates the treatment codes that connect the
+shortest path of indirect evidence.
+
+If \code{incldr=TRUE} then \code{path} may indicate \code{doseresp} for some comparisons.
+These are comparisons for which indirect evidence is only available via the
+dose-response relationship. The two numbers given after (e.g. \verb{3 2}) indicate the
+number of doses available in the indirect evidence with which to estimate the
+dose-response function for the treatments in \code{t1} and \code{t2} respectively/
 }
 \description{
 Identify comparisons informed by both direct and indirect evidence from
@@ -42,6 +53,9 @@ reference treatment would also be identifying heterogeneity. Depends on
 #in triptans dataset
 network <- mbnma.network(HF2PPITT)
 inconsistency.loops(network$data.ab)
+
+# Include indirect evidence via dose-response relationship
+inconsistency.loops(network$data.ab, incldr=TRUE)
 }
 
 

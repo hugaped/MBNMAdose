@@ -4,10 +4,23 @@
 \alias{mbnma.write}
 \title{Write MBNMA dose-response model JAGS code}
 \usage{
-mbnma.write(fun = "linear", beta.1 = "rel", beta.2 = NULL,
-  beta.3 = NULL, beta.4 = NULL, method = "common", cor = TRUE,
-  cor.prior = "wishart", var.scale = NULL, class.effect = list(),
-  user.fun = NULL, likelihood = "binomial", link = NULL)
+mbnma.write(
+  fun = "linear",
+  beta.1 = "rel",
+  beta.2 = NULL,
+  beta.3 = NULL,
+  beta.4 = NULL,
+  method = "common",
+  knots = 3,
+  cor = TRUE,
+  cor.prior = "wishart",
+  var.scale = NULL,
+  class.effect = list(),
+  UME = FALSE,
+  user.fun = NULL,
+  likelihood = "binomial",
+  link = NULL
+)
 }
 \arguments{
 \item{fun}{A character vector specifying a functional form to be assigned to the
@@ -28,9 +41,15 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
 
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
+
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
-automatically set to \code{FALSE} if class effects are modelled.}
+automatically set to \code{FALSE} if class effects are modelled or if multiple dose-response
+functions are fitted.}
 
 \item{cor.prior}{NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
 between relative effects. Must be kept as \code{"wishart"}}
@@ -47,6 +66,10 @@ parameters to model with a class effect and what that effect should be
 depend on whether or not a wrapper function has been used for \code{mbnma.run()}).
 For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
 \code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
+
+\item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
+that does not assume consistency and so can be used to test if the consistency
+assumption is valid.}
 
 \item{user.fun}{A formula specifying any relationship including \code{dose} and
 one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
@@ -72,7 +95,8 @@ When relative effects are modelled on more than one dose-response parameter and
 \code{cor = TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-\code{var.scale}.
+\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled or
+if a model is fitted with multiple dose-response functions.
 }
 \examples{
 # Write model code for a model with an exponential dose-response function,

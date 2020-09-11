@@ -4,8 +4,16 @@
 \alias{getjagsdata}
 \title{Prepares data for JAGS}
 \usage{
-getjagsdata(data.ab, class = FALSE, likelihood = "binomial",
-  link = "logit", level = "agent", fun = NULL)
+getjagsdata(
+  data.ab,
+  class = FALSE,
+  likelihood = "binomial",
+  link = "logit",
+  level = "agent",
+  fun = NULL,
+  nodesplit = NULL,
+  knots = 3
+)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -39,11 +47,19 @@ and identity link function. If left as \code{NULL} the link function will be aut
 on the likelihood.}
 
 \item{level}{Can take either \code{"agent"} to indicate that data should be at the agent-
-level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatemnt-
+level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatment-
 level (for NMA)}
 
 \item{fun}{A character vector specifying a functional form to be assigned to the
 dose-response. Options are given in \code{details}.}
+
+\item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
+an MBNMA nodesplit.}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to
@@ -75,6 +91,8 @@ JAGS. List elements are:
 \item \code{class} Optional. A matrix of class codes within each study
 \item \code{classkey} Optional. A vector of class codes that correspond to agent codes.
 Same length as the number of agent codes.
+\item \code{split.ind} Optional. A matrix indicating whether a specific arm contributes evidence
+to a nodesplit comparison.
 }
 }
 \description{

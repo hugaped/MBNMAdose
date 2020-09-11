@@ -4,14 +4,37 @@
 \alias{mbnma.run}
 \title{Run MBNMA dose-response models}
 \usage{
-mbnma.run(network, fun = "linear", beta.1 = "rel", beta.2 = "rel",
-  beta.3 = "rel", beta.4 = "rel", method = "common",
-  class.effect = list(), cor = TRUE, var.scale = NULL,
-  user.fun = NULL, parameters.to.save = NULL, pd = "pv",
-  parallel = FALSE, likelihood = NULL, link = NULL, priors = NULL,
-  model.file = NULL, n.iter = 10000, n.chains = 3,
-  n.burnin = floor(n.iter/2), n.thin = max(1, floor((n.iter -
-  n.burnin)/1000)), arg.params = NULL, ...)
+mbnma.run(
+  network,
+  fun = "linear",
+  beta.1 = "rel",
+  beta.2 = "rel",
+  beta.3 = "rel",
+  beta.4 = "rel",
+  method = "common",
+  class.effect = list(),
+  UME = FALSE,
+  knots = 3,
+  cor = TRUE,
+  var.scale = NULL,
+  user.fun = NULL,
+  parameters.to.save = NULL,
+  pd = "pv",
+  parallel = FALSE,
+  likelihood = NULL,
+  link = NULL,
+  priors = NULL,
+  model.file = NULL,
+  n.iter = 10000,
+  n.chains = 3,
+  n.burnin = floor(n.iter/2),
+  n.thin = max(1, floor((n.iter - n.burnin)/1000)),
+  autojags = FALSE,
+  Rhat = 1.1,
+  n.update = 10,
+  arg.params = NULL,
+  ...
+)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
@@ -41,9 +64,19 @@ depend on whether or not a wrapper function has been used for \code{mbnma.run()}
 For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
 \code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
 
+\item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
+that does not assume consistency and so can be used to test if the consistency
+assumption is valid.}
+
+\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
+
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
-automatically set to \code{FALSE} if class effects are modelled.}
+automatically set to \code{FALSE} if class effects are modelled or if multiple dose-response
+functions are fitted.}
 
 \item{var.scale}{A numeric vector indicating the relative scale of variances between
 correlated dose-response parameters when relative effects are modelled on more than
@@ -98,8 +131,19 @@ specified options.}
 beginning. Default is `n.iter/2``, that is, discarding the first half of the
 simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.}
 
-\item{n.thin}{thinning rate. Must be a positive integer. Set \code{n.thin > 1`` to save memory and computation time if n.iter is large. Default is }max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
+\item{n.thin}{thinning rate. Must be a positive integer. Set \verb{n.thin > 1`` to save memory and computation time if n.iter is large. Default is }max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
 simulations.}
+
+\item{autojags}{A boolean value that indicates whether the model should be continually updated until
+it has converged below a specific cutoff of \code{Rhat}}
+
+\item{Rhat}{A cutoff value for the Gelman-Rubin convergence diagnostic\insertCite{gelmanrubin}{MBNMAdose}.
+Unless all parameters have Rhat values lower than this the model will continue to sequentially update up
+to a maximum of \code{n.update}. Default is \code{1.1}}
+
+\item{n.update}{The maximum number of updates. Each update is run for 1000 iterations, after which the
+Rhat values of all parameters are checked against \code{Rhat}. Default maximum updates
+is \code{10} (i.e. 10,000 additional iterations in total).}
 
 \item{arg.params}{Contains a list of arguments sent to \code{mbnma.run()} by dose-response
 specific wrapper functions}
@@ -153,7 +197,8 @@ When relative effects are modelled on more than one dose-response parameter and
 \code{cor = TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-\code{var.scale}.
+\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled or
+if a model is fitted with multiple dose-response functions.
 }
 \section{Dose-response parameters}{
 
@@ -185,6 +230,8 @@ Built-in dose-response functions are:
 Emax parameter, \code{beta.2} refers to ET50 parameter
 \item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
 to ET50 parameter, \code{beta.3} refers to Hill parameter
+\item \code{"rcs"} restricted cubic splines with knot number/location defined by \code{knot}.\code{beta.1} refers to the
+first spline coeffficient, \code{beta.2} to the second coefficient, etc. Follows the method of \insertCite{hamza2020;textual}{MBNMAdose}
 \item \code{"nonparam.up"} (monotonically increasing non-parametric dose-response relationship following
 the method of \insertCite{owen2015;textual}{MBNMAdose})
 \item \code{"nonparam.down"} (monotonically decreasing non-parametric dose-response relationship following
@@ -235,6 +282,11 @@ result <- mbnma.run(network, fun="emax",
 result <- mbnma.run(network, fun="emax.hill",
               beta.1="rel", beta.2="rel", beta.3=5, method="random")
 
+# Fit a model with restricted cubic splines and 3 knots
+#at 10\% 30\% and 60\% quartiles of dose ranges
+depnet <- mbnma.network(ssri) # Using the sSRI depression dataset
+result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
+
 # Fit a model with different dose-response functions for each agent
 multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
                  "emax", "emax", "exponential", "emax"))
@@ -247,11 +299,13 @@ class.df <- HF2PPITT
 class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
 netclass <- mbnma.network(class.df)
 
-# Fit an Emax function with common relative effects on Emax and ED50 and
-#a random class effect on ED50.
-result <- mbnma.run(netclass, fun="emax",
-              beta.1="rel", beta.2="rel", method="common",
-              class.effect=list(beta.2="random"))
+painnet <- mbnma.network(osteopain_2wkabs)
+
+# Fit an Emax function with random relative effects on Emax and ED50 and
+#a common class effect on Emax
+result <- mbnma.run(painnet, fun="emax", method="random",
+              beta.1="rel", beta.2="rel",
+              class.effect=list(beta.1="common"))
 
 
 ####### Priors #######
@@ -295,6 +349,16 @@ mcmcplots::traplot(result)
 
 # Caterpillar plots
 mcmcplots::caterplot(result, "d.1")
+
+
+####### Automatically run jags until convergence is reached #########
+
+# Rhat of 1.08 is set as the criteria for convergence
+#on all monitored parameters
+conv.res <- mbnma.run(network, fun="emax",
+              beta.1="rel", beta.2="rel", method="random",
+              n.iter=10000, n.burnin=9000,
+              autojags=TRUE, Rhat=1.08, n.update=8)
 
 
 ########## Output ###########

@@ -5,8 +5,17 @@
 \title{Calculate plugin pD from a JAGS model with univariate likelihood for studies
 with repeated measurements}
 \usage{
-pDcalc(obs1, obs2, fups = NULL, narm, NS, theta.result, resdev.result,
-  likelihood = "normal", type = "time")
+pDcalc(
+  obs1,
+  obs2,
+  fups = NULL,
+  narm,
+  NS,
+  theta.result,
+  resdev.result,
+  likelihood = "normal",
+  type = "time"
+)
 }
 \arguments{
 \item{obs1}{A matrix (study x arm) or array (study x arm x time point) containing

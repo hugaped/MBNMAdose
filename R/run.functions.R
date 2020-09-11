@@ -3,7 +3,10 @@
 # Date created: 2019-04-18
 
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate", "2.5%", "50%", "97.5%", "treatment"))
 
 #' Run MBNMA dose-response models
 #'
@@ -40,15 +43,23 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   depend on whether or not a wrapper function has been used for `mbnma.run()`).
 #'   For example: `list("beta.2"="fixed", "beta.3"="random")` when using
 #'   `mbnma.run()` or `list("ed50"="fixed", "hill"="random")` when using `mbnma.emax.hill()`.
+#' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
+#'   that does not assume consistency and so can be used to test if the consistency
+#'   assumption is valid.
 #' @param likelihood A string indicating the likelihood to use in the model. Can take either `"binomial"`,
 #'   `"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.
 #' @param link A string indicating the link function to use in the model. Can take any link function
 #'   defined within JAGS (e.g. `"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
 #'   and identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
+#' @param knots The number/location of knots if a restricted cubic spline dose-response function is fitted (`fun="rcs"`).
+#' If a single number is given it indicates the number of knots (they will
+#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+#'   Minimum number of knots is 3.
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters (`TRUE`) or not (`FALSE`). This is
-#' automatically set to `FALSE` if class effects are modelled.
+#' automatically set to `FALSE` if class effects are modelled or if multiple dose-response
+#' functions are fitted.
 #' @param var.scale A numeric vector indicating the relative scale of variances between
 #' correlated dose-response parameters when relative effects are modelled on more than
 #' one dose-response parameter and `cor=TRUE` (see details). Each element of
@@ -82,6 +93,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @param n.burnin length of burn in, i.e. number of iterations to discard at the
 #' beginning. Default is `n.iter/2``, that is, discarding the first half of the
 #' simulations. If n.burnin is 0, jags() will run 100 iterations for adaption.
+#' @param autojags A boolean value that indicates whether the model should be continually updated until
+#' it has converged below a specific cutoff of `Rhat`
+#' @param Rhat A cutoff value for the Gelman-Rubin convergence diagnostic\insertCite{gelmanrubin}{MBNMAdose}.
+#' Unless all parameters have Rhat values lower than this the model will continue to sequentially update up
+#' to a maximum of `n.update`. Default is `1.1`
+#' @param n.update The maximum number of updates. Each update is run for 1000 iterations, after which the
+#' Rhat values of all parameters are checked against `Rhat`. Default maximum updates
+#' is `10` (i.e. 10,000 additional iterations in total).
 #' @param ... Arguments to be sent to R2jags.
 #'
 #'
@@ -89,7 +108,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
 #' estimated using a vague Wishart prior. This prior can be made slightly more informative
 #' by specifying the relative scale of variances between the dose-response parameters using
-#' `var.scale`.
+#' `var.scale`. `cor` will automatically be set to `FALSE` if class effects are modelled or
+#' if a model is fitted with multiple dose-response functions.
 #'
 #' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
@@ -150,6 +170,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'   Emax parameter, `beta.2` refers to ET50 parameter
 #'   * `"emax.hill"` (emax with a Hill parameter): `beta.1` refers to Emax parameter, `beta.2` refers
 #'   to ET50 parameter, `beta.3` refers to Hill parameter
+#'   * `"rcs"` restricted cubic splines with knot number/location defined by `knot`.`beta.1` refers to the
+#'   first spline coeffficient, `beta.2` to the second coefficient, etc. Follows the method of \insertCite{hamza2020;textual}{MBNMAdose}
 #'   * `"nonparam.up"` (monotonically increasing non-parametric dose-response relationship following
 #'   the method of \insertCite{owen2015;textual}{MBNMAdose})
 #'   * `"nonparam.down"` (monotonically decreasing non-parametric dose-response relationship following
@@ -206,6 +228,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' result <- mbnma.run(network, fun="emax.hill",
 #'               beta.1="rel", beta.2="rel", beta.3=5, method="random")
 #'
+#'# Fit a model with restricted cubic splines and 3 knots
+#' #at 10% 30% and 60% quartiles of dose ranges
+#'depnet <- mbnma.network(ssri) # Using the sSRI depression dataset
+#'result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
+#'
 #' # Fit a model with different dose-response functions for each agent
 #' multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
 #'                  "emax", "emax", "exponential", "emax"))
@@ -218,11 +245,13 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
 #' netclass <- mbnma.network(class.df)
 #'
-#' # Fit an Emax function with common relative effects on Emax and ED50 and
-#' #a random class effect on ED50.
-#' result <- mbnma.run(netclass, fun="emax",
-#'               beta.1="rel", beta.2="rel", method="common",
-#'               class.effect=list(beta.2="random"))
+#' painnet <- mbnma.network(osteopain_2wkabs)
+#'
+#' # Fit an Emax function with random relative effects on Emax and ED50 and
+#' #a common class effect on Emax
+#' result <- mbnma.run(painnet, fun="emax", method="random",
+#'               beta.1="rel", beta.2="rel",
+#'               class.effect=list(beta.1="common"))
 #'
 #'
 #' ####### Priors #######
@@ -268,6 +297,16 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' mcmcplots::caterplot(result, "d.1")
 #'
 #'
+#'####### Automatically run jags until convergence is reached #########
+#'
+#' # Rhat of 1.08 is set as the criteria for convergence
+#' #on all monitored parameters
+#' conv.res <- mbnma.run(network, fun="emax",
+#'               beta.1="rel", beta.2="rel", method="random",
+#'               n.iter=10000, n.burnin=9000,
+#'               autojags=TRUE, Rhat=1.08, n.update=8)
+#'
+#'
 #' ########## Output ###########
 #'
 #' # Print R2jags output and summary
@@ -284,7 +323,8 @@ mbnma.run <- function(network,
                       beta.1="rel",
                       beta.2="rel", beta.3="rel", beta.4="rel",
                       method="common",
-                      class.effect=list(),
+                      class.effect=list(), UME=FALSE,
+                      knots=3,
                       cor=TRUE,
                       var.scale=NULL,
                       user.fun=NULL,
@@ -295,6 +335,7 @@ mbnma.run <- function(network,
                       model.file=NULL,
                       n.iter=10000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
+                      autojags=FALSE, Rhat=1.1, n.update=10,
                       arg.params=NULL, ...
 ) {
 
@@ -314,13 +355,22 @@ mbnma.run <- function(network,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Ensure pd.kl or popt not run with parallel
+  if (parallel==TRUE & pd %in% c("pd.kl", "popt")) {
+    warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
+    pd <- "pv"
+  }
+
+  # Ensure cor set to FALSE if multiple dose-response functions are modelled
+  if (cor==TRUE & length(fun)>1) {cor <- FALSE}
+
   # Ensure rjags parameters make sense
   if (n.iter<=n.burnin) {
     stop(paste0("`n.iter` must be greater than `n.burnin`. `n.burnin` = ", n.burnin))
   }
 
   # Check if placebo has been included
-  if (network$agents[1]=="Placebo" & network$treatments[1]=="Placebo_0") {
+  if (network$agents[1]=="Placebo" & ("Placebo_0" %in% network$treatments)) {
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
@@ -353,8 +403,8 @@ mbnma.run <- function(network,
   if (is.null(model.file)) {
     model <- mbnma.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                         method=method,
-                         class.effect=class.effect,
+                         method=method, knots=knots,
+                         class.effect=class.effect, UME=UME,
                          cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
@@ -440,48 +490,29 @@ mbnma.run <- function(network,
   result.jags <- mbnma.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
-                            likelihood=likelihood, link=link, fun=fun,
+                            likelihood=likelihood, link=link, fun=fun, knots=knots,
                             n.iter=n.iter,
                             n.thin=n.thin,
                             n.chains=n.chains,
                             n.burnin=n.burnin,
                             parallel=parallel,
+                            autojags=autojags, Rhat=Rhat, n.update=n.update,
                             ...)
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
 
-  if (pd == "pd.kl" | pd == "popt") {
-    if (pd=="pd.kl") {
-      temp <- rjags::dic.samples(result$model, n.iter=1000, type="pD")
-    } else if (pd=="popt") {
-      temp <- rjags::dic.samples(result$model, n.iter=1000, type="popt")
-    }
-    result$BUGSoutput$pD <- sum(temp$penalty)
 
-  } else if (pd == "plugin") {
-    # plugin method
-    if (likelihood=="normal") {
-      obs1 <- jagsdata[["y"]]
-      obs2 <- jagsdata[["se"]]
-    } else if (likelihood=="binomial") {
-      obs1 <- jagsdata[["r"]]
-      obs2 <- jagsdata[["N"]]
-    } else if (likelihood=="poisson") {
-      obs1 <- jagsdata[["r"]]
-      obs2 <- jagsdata[["E"]]
-    }
-    result$BUGSoutput$pD <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
-                                   theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
-                                   likelihood=likelihood, type="dose")
-  }
+  # Calculate model fit statistics (using differnt pD as specified)
+  fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
+  result$BUGSoutput$pD <- fitstats$pd
+  result$BUGSoutput$DIC <- fitstats$dic
 
-  # Recalculate DIC so it is adjusted for choice of pD
-  result$BUGSoutput$DIC <- result$BUGSoutput$pD + result$BUGSoutput$median$deviance
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
                     "fun"=fun, "user.fun"=user.fun,
-                    "jagscode"=model,
+                    "jagscode"=result.jags$model,
+                    "jagsdata"=jagsdata,
                     "beta.1"=beta.1, "beta.2"=beta.2,
                     "beta.3"=beta.3,
                     "beta.4"=beta.4,
@@ -489,6 +520,7 @@ mbnma.run <- function(network,
                     "likelihood"=likelihood, "link"=link,
                     #"class.effect"=class.effect,
                     "class.effect"=assigned.class,
+                    "knots"=knots,
                     "cor"=cor,
                     "var.scale"=var.scale,
                     "parallel"=parallel, "pd"=pd,
@@ -496,8 +528,7 @@ mbnma.run <- function(network,
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
-  #result[["agents"]] <- network[["agents"]]
-  #result[["treatments"]] <- network[["treatments"]]
+
   if (length(class.effect)>0) {
     result[["classes"]] <- network[["classes"]]
   }
@@ -522,8 +553,11 @@ mbnma.run <- function(network,
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
                        #parameters.to.save=parameters.to.save,
-                       likelihood=NULL, link=NULL, fun=NULL,
-                       warn.rhat=FALSE, parallel=FALSE, ...) {
+                       likelihood=NULL, link=NULL, fun=NULL, knots=3,
+                       nodesplit=NULL,
+                       warn.rhat=FALSE, parallel=FALSE,
+                       autojags=FALSE, Rhat=1.1, n.update=10,
+                       ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -535,6 +569,10 @@ mbnma.jags <- function(data.ab, model,
   #                           null.ok=TRUE, add=argcheck)
   checkmate::assertCharacter(fun, any.missing=FALSE,
                              null.ok=TRUE, add=argcheck)
+  checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
+  checkmate::assertNumeric(n.update, lower=1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
@@ -546,7 +584,8 @@ mbnma.jags <- function(data.ab, model,
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link, fun=fun) # get data into jags correct format
+                            likelihood=likelihood, link=link, fun=fun, knots=knots,
+                            nodesplit=nodesplit) # get data into jags correct format
   }
 
 
@@ -570,18 +609,38 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  if (!is.null(nodesplit)) {
+    model <- add.nodesplit(model=model)
+
+    if ("parameters.to.save" %in% names(args)) {
+      args[["parameters.to.save"]] <- append(args[["parameters.to.save"]], "direct")
+    }
+  }
+
+  if (length(fun)==1) {
+    if (fun %in% c("rcs", "ns", "bs")) {
+      jagsdata[["dose"]] <- NULL
+    }
+  }
+
+
+
+  # Remove studyID from jagsdata (not used in model)
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL
+
   # Put data from jagsdata into separate R objects
-  for (i in seq_along(jagsdata)) {
+  for (i in seq_along(tempjags)) {
     ##first extract the object value
-    temp <- jagsdata[[i]]
+    temp <- tempjags[[i]]
     ##now create a new variable with the original name of the list item
-    eval(parse(text=paste(names(jagsdata)[[i]],"<- temp")))
+    eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
   }
 
   # Take names of variables in jagsdata for use in rjags
   jagsvars <- list()
-  for (i in seq_along(names(jagsdata))) {
-    jagsvars[[i]] <- names(jagsdata)[i]
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
   }
 
   # Create a temporary model file
@@ -590,18 +649,29 @@ mbnma.jags <- function(data.ab, model,
   cat(model,file=tmps)
   close(tmps)
 
-  #print(args)
   out <- tryCatch({
     if (parallel==FALSE) {
-      result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf)))
+      result <- do.call(R2jags::jags, c(args, list(data = jagsvars,
+                                                   model.file = tmpf)))
+
+      # AUtomatically update
+      if (autojags==TRUE) {
+        result <- R2jags::autojags(result, Rhat=Rhat, n.update=n.update, n.iter=1000, refresh=100)
+      } else if (autojags==FALSE) {
+          result <- result
+        }
     } else if (parallel==TRUE) {
+      if (autojags==TRUE) {
+        stop("autojags=TRUE cannot be used with parallel=TRUE")
+      }
+
       result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
-      class(result) <- class(result)[c(2,1)]
+      #class(result) <- class(result)[c(2,1)]
     }
   },
   error=function(cond) {
     message(cond)
-    return(list("error"=cond))
+    return(list(error=cond))
   }
   )
 
@@ -612,7 +682,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
-  return(list("jagsoutput"=out, "jagsdata"=jagsdata))
+  return(list("jagsoutput"=out, "jagsdata"=jagsdata, "model"=model))
 }
 
 
@@ -674,8 +744,8 @@ gen.parameters.to.save <- function(model.params, model) {
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
   for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[(c,)?k\\] ~"), model)==TRUE |
-        grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] <- mult\\["), model)==TRUE) {
+    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] ~"), model)==TRUE |
+        grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] <- mult\\["), model)==TRUE) {
       parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
     } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
       if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
@@ -720,6 +790,11 @@ gen.parameters.to.save <- function(model.params, model) {
     parameters.to.save <- append(parameters.to.save, "sd")
   }
 
+  # For non-monotonic DR functions
+  if (grepl(paste0("\\\nd\\.1\\[c,k\\] ~"), model)==TRUE) {
+    parameters.to.save <- append(parameters.to.save, "d.1")
+  }
+
   return(unique(parameters.to.save))
 
 }
@@ -741,9 +816,6 @@ gen.parameters.to.save <- function(model.params, model) {
 #' for any monitored parameter are >1.02 (suggestive of non-convergence).
 #' @param drop.discon A boolean object that indicates whether or not to drop disconnected
 #'   studies from the network.
-#' @param UME A boolean object to indicate whether to fit an Unrelated Mean Effects model
-#'   that does not assume consistency and so can be used to test if the consistency
-#'   assumption is valid.
 #' @param n.iter number of total iterations per chain (including burn in; default: 10000)
 #'
 #' @examples
@@ -764,8 +836,8 @@ gen.parameters.to.save <- function(model.params, model) {
 #' }
 #'
 #' @export
-nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
-                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, ...) {
+nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
+                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pv", ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -775,6 +847,8 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   checkmate::assertIntegerish(n.iter, null.ok = TRUE, add=argcheck)
   checkmate::assertLogical(drop.discon, add=argcheck)
   checkmate::assertLogical(UME, add=argcheck)
+  checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
@@ -787,11 +861,27 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
   #### Write model for NMA ####
   model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME)
 
+  #### Add priors ####
+  if (!is.null(priors)) {
+    model <- replace.prior(priors=priors, model=model)
+  }
 
   #### Parameters ####
   parameters.to.save <- c("d", "totresdev")
   if (method=="random") {
     parameters.to.save <- append(parameters.to.save, "sd")
+  }
+
+  # Add nodes to monitor to calculate plugin pd
+  if (pd=="plugin") {
+    pluginvars <- c("psi", "resdev")
+    for (param in seq_along(pluginvars)) {
+      if (!(pluginvars[param] %in% parameters.to.save)) {
+        parameters.to.save <- append(parameters.to.save, pluginvars[param])
+      }
+    }
+    message("The following parameters have been monitored to allow pD plugin calculation: ",
+            paste(pluginvars, collapse=", "))
   }
 
   #### Prepare data ####
@@ -824,8 +914,10 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
 
   # Take names of variables in jagsdata for use in rjags
   jagsvars <- list()
-  for (i in seq_along(names(jagsdata))) {
-    jagsvars[[i]] <- names(jagsdata)[i]
+  tempjags <- jagsdata
+  tempjags[["studyID"]] <- NULL # Remove studyID from jagsdata (not used in model)
+  for (i in seq_along(names(tempjags))) {
+    jagsvars[[i]] <- names(tempjags)[i]
   }
 
   # Create a temporary model file
@@ -850,6 +942,11 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL,
       rhat.warning(out)
     }
   }
+
+  # Calculate model fit statistics (using differnt pD as specified)
+  fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
+  out$BUGSoutput$pD <- fitstats$pd
+  out$BUGSoutput$DIC <- fitstats$dic
 
   output <- list("jagsresult"=out, "trt.labs"=trt.labs)
   class(output) <- "nma"
@@ -1016,7 +1113,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 mbnma.linear <- function(network,
                          slope="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1036,7 +1133,7 @@ mbnma.linear <- function(network,
                       model.file=NULL,
                       beta.1=slope,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1133,7 +1230,7 @@ mbnma.linear <- function(network,
 mbnma.exponential <- function(network,
                          lambda="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1162,7 +1259,7 @@ mbnma.exponential <- function(network,
                       model.file=NULL,
                       beta.1=lambda,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1281,7 +1378,7 @@ mbnma.emax <- function(network,
                          emax="rel",
                          ed50="rel",
                          method="common",
-                         class.effect=list(),
+                         class.effect=list(), UME=FALSE,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
@@ -1302,7 +1399,7 @@ mbnma.emax <- function(network,
                       beta.1=emax,
                       beta.2=ed50,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1431,7 +1528,7 @@ mbnma.emax.hill <- function(network,
                        ed50="rel",
                        hill="common",
                        method="common",
-                       class.effect=list(),
+                       class.effect=list(), UME=FALSE,
                        cor=TRUE,
                        var.scale=NULL,
                        parameters.to.save=NULL,
@@ -1453,7 +1550,7 @@ mbnma.emax.hill <- function(network,
                       beta.2=ed50,
                       beta.3=hill,
                       method=method,
-                      class.effect=class.effect,
+                      class.effect=class.effect, UME=UME,
                       cor=cor, var.scale=var.scale,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
@@ -1735,4 +1832,69 @@ mbnma.update <- function(mbnma, param="theta",
   }
 
   return(update.df)
+}
+
+
+
+
+
+
+
+
+#' Update model fit statistics depending on calculation for pD
+#'
+#' @param model A model object of class `"rjags"`
+#' @param jagsdata A list object containing data used to estimate `model`
+#' @param type Can take either `"dose"` for a dose-response MBNMA or `"time"` for a
+#' time-course MBNMA (this accounts for multiple observations within an arm)
+#'
+#' @return A list containing `pd` (effective number of parameters calculated using the method
+#' specified in arguments), `deviance` (the posterior mdedian of the total residual deviance)
+#' and `dic` (the model DIC)
+#'
+#' @inheritParams mbnma.run
+#' @noRd
+changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  #checkmate::assertClass(model, "rjags", add=argcheck)
+  checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(likelihood, null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(type, choices=c("dose", "time"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  pdout <- model$BUGSoutput$pD
+
+  if (pd == "pd.kl" | pd == "popt") {
+    if (pd=="pd.kl") {
+      temp <- rjags::dic.samples(model$model, n.iter=1000, type="pD")
+    } else if (pd=="popt") {
+      temp <- rjags::dic.samples(model$model, n.iter=1000, type="popt")
+    }
+    pdout <- sum(temp$penalty)
+
+  } else if (pd == "plugin") {
+    # plugin method
+    if (likelihood=="normal") {
+      obs1 <- jagsdata[["y"]]
+      obs2 <- jagsdata[["se"]]
+    } else if (likelihood=="binomial") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["N"]]
+    } else if (likelihood=="poisson") {
+      obs1 <- jagsdata[["r"]]
+      obs2 <- jagsdata[["E"]]
+    }
+    pdout <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
+                    theta.result=model$BUGSoutput$mean$psi, resdev.result=model$BUGSoutput$mean$resdev,
+                    likelihood=likelihood, type=type)
+  }
+
+  # Recalculate DIC so it is adjusted for choice of pD
+  dicout <- pdout + model$BUGSoutput$median$deviance
+  devout <- model$BUGSoutput$median$deviance
+
+  return(list("pd"=pdout, "deviance"=devout, "dic"=dicout))
 }

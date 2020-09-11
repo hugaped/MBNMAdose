@@ -85,7 +85,7 @@ plot(pred, disp.obs=TRUE, network=network)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://doi.org/10.1002/psp4.12091}
+  \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/}
 }
 
 }
@@ -94,11 +94,6 @@ Useful links:
 
 Other contributors:
 \itemize{
-  \item David Mawdsley [reviewer]
-  \item Nicky Welton [reviewer]
-  \item Sofia Dias [reviewer]
-  \item Meg Bennetts [reviewer]
-  \item Martin Boucher [reviewer]
   \item Lujin Li [reviewer]
   \item Adil Karim [contributor]
 }

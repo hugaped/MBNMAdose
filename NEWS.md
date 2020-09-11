@@ -1,9 +1,35 @@
+# MBNMAdose 0.3.0
+
+## Bug fixes
+
+- Ensured `summary.mbnma.network()` returns valid minimum doses per agent
+- Ensured models run in parallel when `parallel=TRUE` and added a warning when `pd` is set to `"pd.kl"` or `"popt"` for these models.
+- Ensured results are printed properly for each parameter when using `summary()` for multiple dose-response function models
+
+## Additions/changes
+
+- Added restricted cubic spline dose-response function (`fun="rcs"`) in `mbnma.run()`
+- Unrelated mean effects (UME) model now added to `mbnma.run()` to allow relaxing of the consistency assumption. This can be used to test its validity.
+- `cumrank()` added for cumulative ranking plots. Also calculates SUCRA values for each agent and dose-response parameter
+- `autojags` options added for `mbnma.run()` to allow users to run models until they converge (convergence defined by `Rhat`)
+- `rank.mbnma()` also calculates cumulative ranking probabilities and stores them in `cum.matrix`
+- Data from `getjagsdata()` contains `studyID` and has been added to `mbnma` objects
+- Added studyID column to output from `devplot()` and `fitplot()`
+- `plot.nodesplit()` scales y-axis if density is >50 times larger in panel with highest density than in panel with lowest density. This improves legibility of the graph.
+- All nodesplit models now return object of `class("nodesplit")`
+- `mbnma.nodesplit()` includes potential splits via dose-response curve and direct and indirect evidence contributions are calculated simultaneously in the same model.
+- Corrected calculation for Bayesian p-value in `mbnma.nodesplit()` and `nma.nodesplit()`
+- Added legend options to `plot.mbnma.network()`
+- Added `psoriasis` and `ssri` datasets to package
+- Used `crayon` package to neaten printed console outputs
+
 # MBNMAdose 0.2.7
 
 ## Bug fixes
  
 - Ensured stringsAsFactors = FALSE does not affect package in preparation for R 4.0.0.
 - Edited tests to ensure that any checks for matrix objects account for matrix objects now having matrix and array classes
+- Allowed number of responders for binomial data to be greater than or equal to zero (rather than greater than zero)
 
 
 # MBNMAdose 0.2.6

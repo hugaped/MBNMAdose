@@ -4,7 +4,7 @@
 \alias{add_index}
 \title{Add arm indices and agent identifiers to a dataset}
 \usage{
-add_index(data.ab)
+add_index(data.ab, agents = NULL, treatments = NULL)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:
@@ -25,6 +25,14 @@ for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.
 }}
+
+\item{agents}{A character string of agent names used to force a particular agent ordering.
+Default is \code{NULL}, which automatically orders \code{Placebo} (dose=0) as agent \code{1} and then
+subsequent agents by the order given in \code{data.ab}}
+
+\item{treatments}{A character string of treatment names used to force a particular treatment ordering.
+Default is \code{NULL}, which automatically orders \code{Placebo} (dose=0) as treatment \code{1} and then
+subsequent treatments by the order of agents and doses (smallest to highest) given in \code{data.ab}}
 }
 \value{
 A data frame similar to \code{data.ab} but with additional columns:
@@ -40,9 +48,4 @@ numbering (a warning will be shown stating this).
 \description{
 Adds arm indices (\code{arms}, \code{narms}) to a dataset and adds numeric identifiers for
 agent and class (if included in the data).
-}
-\examples{
-# Add indices to triptans headache dataset
-data.ab <- add_index(HF2PPITT)
-
 }
