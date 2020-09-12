@@ -507,7 +507,6 @@ mbnma.run <- function(network,
   result$BUGSoutput$pD <- fitstats$pd
   result$BUGSoutput$DIC <- fitstats$dic
 
-
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
                     "fun"=fun, "user.fun"=user.fun,
@@ -617,6 +616,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  dosedat <- jagsdata[["dose"]]
   if (length(fun)==1) {
     if (fun %in% c("rcs", "ns", "bs")) {
       jagsdata[["dose"]] <- NULL
@@ -681,6 +681,8 @@ mbnma.jags <- function(data.ab, model,
       rhat.warning(out)
     }
   }
+
+  jagsdata[["dose"]] <- dosedat # important for if spline is used in data
 
   return(list("jagsoutput"=out, "jagsdata"=jagsdata, "model"=model))
 }
@@ -1819,12 +1821,12 @@ mbnma.update <- function(mbnma, param="theta",
     update.df <- update.df[stats::complete.cases(update.df),]
 
     # Agent as facet
-    update.df$facet <- as.vector(mbnma$model$data()$agent)[
-      stats::complete.cases(as.vector(mbnma$model$data()$agent))
+    update.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
       ]
 
-    update.df$fupdose <- as.vector(mbnma$model$data()$dose)[
-      stats::complete.cases(as.vector(mbnma$model$data()$dose))
+    update.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
       ]
 
     # Study as group

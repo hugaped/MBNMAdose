@@ -485,12 +485,12 @@ get.theta.dev <- function(mbnma, param="theta") {
     )
 
     # Agent as facet
-    dev.df$facet <- as.vector(mbnma$model$data()$agent)[
-      stats::complete.cases(as.vector(mbnma$model$data()$agent))
+    dev.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
       ]
 
-    dev.df$fupdose <- as.vector(mbnma$model$data()$dose)[
-      stats::complete.cases(as.vector(mbnma$model$data()$dose))
+    dev.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
       ]
     dev.df$groupvar <- as.numeric(id[,1])
   }

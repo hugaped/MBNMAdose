@@ -2,6 +2,8 @@
 
 ## Bug fixes
 
+- Spline functions also return doses as well as spline basis matrices in jagsdata
+
 
 ## Additions/changes
 
