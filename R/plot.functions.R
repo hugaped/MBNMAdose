@@ -732,7 +732,8 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   g <- g + ggplot2::facet_wrap(~factor(Var2)) +
     ggplot2::xlab("Rank (1 = best)") +
     ggplot2::ylab("Cumulative probability") +
-    ggplot2::labs(linetype="Parameter", colour="Parameter")
+    ggplot2::labs(linetype="Parameter", colour="Parameter") +
+    ggplot2::theme_bw()
 
   graphics::plot(g)
 

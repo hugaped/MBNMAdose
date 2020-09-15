@@ -178,8 +178,8 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   }
 
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
-    ggplot2::geom_point() +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+    ggplot2::geom_point(...) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), ...) +
     ggplot2::coord_flip()
 
   g <- g + ggplot2::facet_wrap(~doseparam, scales="free")
