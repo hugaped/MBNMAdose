@@ -3,6 +3,7 @@
 ## Bug fixes
 
 - Spline functions also return doses as well as spline basis matrices in jagsdata
+- Added informative error for if `params` in `plot.mbnma.rank()` is not a subset of `x`
 
 
 ## Additions/changes

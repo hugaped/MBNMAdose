@@ -60,6 +60,11 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 
   if (is.null(params)) {
     params <- names(x)
+  } else {
+    # Check params is in x
+    if (!all(params %in% names(x))) {
+      stop("'params' must be a subset of named list elements in 'x' representing ranked parameters")
+    }
   }
 
   for (param in seq_along(params)) {
