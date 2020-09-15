@@ -290,12 +290,11 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
       stop("`x` must include a predicted response at dose = 0 for at least one agent")
     }
 
-    g <- overlay.split(g=g, network=network, method=method,
+    g <- overlay.split(g=g, network=network, E0=x$E0, method=method,
                        likelihood = x[["likelihood"]],
                        link = x[["link"]])
 
   }
-
 
   # Add overlayed lines and legends
   g <- g +

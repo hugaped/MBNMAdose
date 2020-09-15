@@ -8,6 +8,8 @@
 
 ## Additions/changes
 
+- `overlay.split()` uses full distribution of `E0` rather than summary statistics
+- `mbnma.predict` object now contains values assigned/estimated for `E0` to be used in `overlay.split()`
 
 
 # MBNMAdose 0.3.0

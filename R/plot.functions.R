@@ -219,9 +219,10 @@ alpha.scale <- function(n.cut, col="blue") {
 #' Requires automatically running an NMA
 #'
 #' @inheritParams plot.mbnma.predict
+#' @inheritParams predict.mbnma
 #' @inheritParams disp.obs
 #' @noRd
-overlay.split <- function(g, network, method="common",
+overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), method="common",
                           likelihood="binomial", link="logit", ...) {
 
   # Check/assign link and likelihood
@@ -232,41 +233,47 @@ overlay.split <- function(g, network, method="common",
   splitNMA <- nma.run(network=network, method=method,
                       likelihood=likelihood, link=link, ...)
 
-  split.df <- splitNMA[["jagsresult"]]$BUGSoutput$summary
-  split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
+  splitmat <- splitNMA[["jagsresult"]]$BUGSoutput$sims.list$d
 
-  split.df$treatment <- splitNMA[["trt.labs"]]
-  split.df$agent <- sapply(splitNMA[["trt.labs"]],
-                       function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1])
-  split.df$dose <- as.numeric(sapply(splitNMA[["trt.labs"]],
-                           function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2]))
-
-  split.df$agent <- factor(split.df$agent, levels=network$agents)
-  #split.df$agent <- as.numeric(factor(split.df$agent, levels=network$agents))
-  #split.df$agent <- factor(split.df$agent, labels=levels(g$data$agent))
-
-  # Drop d[1] (reference)
-  #split.df <- split.df[-1,]
-
-  # Only include agents whose predictions are plotted
-  split.df <- split.df[split.df$agent %in% g$data$agent,]
-
-  # Add E0 (on correct scale)
-  E0 <- unique(g$data$`50%`[g$data$dose==0])
-  if (length(E0)>1) {
-    warning("E0 in predictions appears to differ for different agents")
+  if (splitNMA[["trt.labs"]][1]!="Placebo_0") {
+    warning("Split NMA network does not include placebo:\nresults cannot be displayed over MBNMA predictions")
+    return(g)
   }
 
-  # Convert to scale using link function
-  E0 <- rescale.link(E0, direction="link", link=link)
+  trtvec <- splitNMA[["trt.labs"]]
+  agentvec <- as.vector(sapply(splitNMA[["trt.labs"]],
+                           function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1]))
+  dosevec <- as.vector(as.numeric(sapply(splitNMA[["trt.labs"]],
+                                     function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2])))
+  agentvec <- factor(agentvec, levels=network$agents)
 
-  split.df[,c(1:3)] <- split.df[,c(1:3)] + E0
+  # Ensure only agents whose predictions are plotted are included
+  splitmat <- splitmat[, agentvec %in% g$data$agent]
+  dosevec <- dosevec[agentvec %in% g$data$agent]
+  trtvec <- trtvec[agentvec %in% g$data$agent]
+  agentvec <- agentvec[agentvec %in% g$data$agent]
 
-  # Convert split.df to natural scale
-  for (i in 1:3) {
-    split.df[,i] <- rescale.link(split.df[,i], direction="natural", link=link)
+
+  # Ensure E0 is correct length to add to splitmat
+  if (length(E0)<nrow(splitmat)) {
+    E0 <- rep(E0, length.out=nrow(splitmat))
+  } else if (length(E0)>nrow(splitmat)) {
+    E0 <- replicate(nrow(splitmat), sample(E0))
   }
 
+  splitmat <- splitmat + E0
+
+  quants <- apply(splitmat, MARGIN=2, FUN=function(x) {
+    stats::quantile(x, probs=c(0.025,0.5,0.975))
+  })
+
+  # Return to natural scale
+  quants <- rescale.link(quants, direction="natural", link=link)
+
+  split.df <- data.frame("agent"=agentvec, "dose"=dosevec, "treatment"=trtvec,
+                         "2.5%"=quants[1,], "50%"=quants[2,], "97.5%"=quants[3,])
+
+  names(split.df)[4:6] <- c("2.5%", "50%", "97.5%")
 
 
   # Add split NMAs to plot

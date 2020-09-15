@@ -438,14 +438,20 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 #' @return An S3 object of class `mbnma.predict` that contains the following
 #'   elements:
 #'
-#' * `summary` A named list of data frames. Each data frame contains
-#'   a summary of predicted responses at follow-up times specified in `times`
-#'   for each treatment specified in `treats`
-#'
-#' * `pred.mat` A named list of
+#' * `predicts` A named list of
 #'   matrices. Each matrix contains the MCMC results of predicted responses at
 #'   follow-up times specified in `times` for each treatment specified in
 #'   `treats`
+#'
+#' * `likelihood` The likelihood used in the MBNMA model `object`
+#'
+#' * `link` The link function used in the MBNMA model `object`
+#'
+#' * `network` The dataset in `mbnma.network` format
+#'
+#' * `E0` A numeric vector of value(s) used for E0 in the prediction, on the
+#'   link scale.
+#'
 #'
 #' @details
 #' The range of doses on which to make predictions can be specified in one of two ways:
@@ -773,7 +779,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
   output <- list("predicts"=predict.result,
                  "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link,
-                 "network"=object$network)
+                 "network"=object$network, "E0"=E0)
 
   class(output) <- "mbnma.predict"
 
