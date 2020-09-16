@@ -717,6 +717,13 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Check if multiple DR functions used
+  if (length(fun)>1) {
+    stop("mbnma.nodesplit cannot be used with agent-specific dose-response functions.\n
+         Suggest checking for inconsistency in treatment-level network using nma.nodesplit().\n
+         Inconsistency in such a network would also imply inconsistency in MBNMA")
+  }
+
   # Load data
   data.ab <- network$data.ab
   trt.labs <- network$treatments
