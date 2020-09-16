@@ -763,3 +763,66 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
 
   return(invisible(output))
 }
+
+
+
+
+#' Returns a forest plot of nodesplit results
+#'
+#' @param ... Optional arguments to be passed to `forestplot::forestplot`
+#' @inheritParams plot.nodesplit
+#' @noRd
+forest.splits <- function(x, ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(x, "nodesplit", add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+
+  df <- summary.nodesplit(x)
+
+  df$Evidence[df$Evidence %in% c("MBNMA", "NMA")] <- "Overall"
+
+  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs\n")})
+
+  df$Comparison <- unlist(comps)[match(df$Comparison, names(comps))]
+
+  df <- dplyr::arrange(df, Comparison, Evidence)
+
+  names(df)[4:5] <- c("l95", "u95")
+
+
+  df$p.value <- format(df$p.value)
+  df$p.value[df$p.value=="0.000"] <- "<0.001"
+
+  # Remove surplus labels
+  df$Comparison[df$Evidence!="Direct"] <- NA
+  df$p.value[df$Evidence!="Indirect"] <- NA
+
+
+  # Add blank between groups
+  temp <- df[0,]
+  for (i in 1:(nrow(df)/3)) {
+    seg <- rbind(df[((i-1)*3+1):(i*3),], rep(NA,ncol(df)), rep(NA,ncol(df)))
+    temp <- rbind(temp, seg)
+  }
+  df <- temp
+
+  # Add summary dividing lines
+  # comprow <- which(!is.na(df$Comparison))
+  # if (length(comprow)>1) {
+  #   sumind <- rep(F, nrow(df))
+  #   sumind[which(!is.na(df$Comparison))-2] <- T
+  # } else {
+  #   sumind <- rep(F, nrow(df))
+  # }
+
+
+  forestplot::forestplot(labeltext=cbind(df$Comparison, df$Evidence, df$p.value),
+                         mean=df$Median, lower=df$l95, upper=df$u95,
+                         boxsize=0.2, graph.pos=3,
+                         xlab="Effect size (95% CrI)", hrzl_lines = TRUE, #is.summary=sumind#,
+                         ...)
+
+}
