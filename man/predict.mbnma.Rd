@@ -68,13 +68,15 @@ reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 An S3 object of class \code{mbnma.predict} that contains the following
 elements:
 \itemize{
-\item \code{summary} A named list of data frames. Each data frame contains
-a summary of predicted responses at follow-up times specified in \code{times}
-for each treatment specified in \code{treats}
-\item \code{pred.mat} A named list of
+\item \code{predicts} A named list of
 matrices. Each matrix contains the MCMC results of predicted responses at
 follow-up times specified in \code{times} for each treatment specified in
 \code{treats}
+\item \code{likelihood} The likelihood used in the MBNMA model \code{object}
+\item \code{link} The link function used in the MBNMA model \code{object}
+\item \code{network} The dataset in \code{mbnma.network} format
+\item \code{E0} A numeric vector of value(s) used for E0 in the prediction, on the
+link scale.
 }
 }
 \description{

@@ -20,7 +20,7 @@ mbnma.nodesplit(
   ...
 )
 
-\method{plot}{nodesplit}(x, plot.type = NULL, ...)
+\method{plot}{nodesplit}(x, plot.type = "forest", ...)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
@@ -61,17 +61,16 @@ may change if \code{drop.discon = TRUE}).}
 the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
 for a greater number of potential loops in which to check for consistency.}
 
-\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{\link[forestplot:forestplot]{forestplot::forestplot()}}}
 
 \item{x}{An object of \code{class("nodesplit")}}
 
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
-only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
-default) to plot both types of plot.}
+forest plots or \code{"density"} to plot posterior density plots.}
 }
 \value{
-Plots the desired graph(s) and returns an object (or list of object if
-\code{plot.type=NULL}) of \code{class(c("gg", "ggplot"))}
+Plots the desired graph if \code{plot.type="forest"} and plots and returns an object
+of \code{class(c("gg", "ggplot"))} if \code{plot.type="density"}.
 }
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
