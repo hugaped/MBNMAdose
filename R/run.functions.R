@@ -681,7 +681,6 @@ mbnma.jags <- function(data.ab, model,
 #'
 #' Ensures model runs properly
 #'
-#' @noRd
 gen.inits <- function(jagsdata, fun, n.chains) {
   if ("maxdose" %in% names(jagsdata)) {
     inits <- list()
@@ -720,7 +719,6 @@ gen.init <- function(jagsdata, fun) {
 #' @param model.params A character or numeric vector containing the names of the
 #' dose-response parameters in the model
 #' @param model A JAGS model written as a character object
-#' @noRd
 gen.parameters.to.save <- function(model.params, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
@@ -1808,7 +1806,6 @@ mbnma.update <- function(mbnma, param="theta",
 #' and `dic` (the model DIC)
 #'
 #' @inheritParams mbnma.run
-#' @noRd
 changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose") {
 
   # Run checks

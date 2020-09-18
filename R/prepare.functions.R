@@ -51,9 +51,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' print(HF2PPITT)
 #'
 #' # Define network
-#' network <- mbnma.network(HF2PPITT, description="Example")
+#' network <- mbnma.network(HF2PPITT, description="Example network")
 #'
-#' # Plot network
+#' summary(network)
 #' plot(network)
 #'
 #' @export
@@ -79,7 +79,7 @@ mbnma.network <- function(data.ab, description="Network") {
 
 
 
-#' Validates that a dataset fulfils requirements for MBNMA
+#' Validates that a dataset fulfills requirements for MBNMA
 #'
 #' @inheritParams mbnma.network
 #' @param single.arm A boolean object to indicate whether to allow single arm studies in the dataset (`TRUE`)
@@ -99,8 +99,6 @@ mbnma.network <- function(data.ab, description="Network") {
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
 mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
-  # data.ab must have columns c("studyID", "agent", "dose", and either "y" and "se" or "r" and "N")
-  # optional column of class
 
   varnames <- c("studyID", "agent", "dose")
   var_norm <- c("y", "se")
@@ -139,6 +137,7 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
     numeric.error <- append(numeric.error, "dose")
   }
 
+  # Check for NA values in data variables
   for (i in 1:2) {
     if (all(var_norm %in% names(data.ab))) {
       if (anyNA(data.ab[[var_norm[i]]])) {
@@ -326,7 +325,7 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
   }
 
 
-  #### Add indices
+  #### Add indices ####
 
   # Do not run this function with pylr loaded!!
   data.ab <- data.ab %>%
@@ -364,7 +363,6 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
     classes <- recoded[["lvlnames"]]
 
     # Generate class key
-    #classdata <- data.ab[, names(data.ab) %in% c("agent", "class")]
     classdata <- recoded$data.ab[, names(recoded$data.ab) %in% c("agent", "class")]
     classkey <- unique(classdata)
     classkey$agent <- factor(classkey$agent, labels=agents)
@@ -390,14 +388,10 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
 #' @return A list containing a data frame with recoded agent/class identifiers and
 #'   a character vector of original agent/class names
 #'
-#' @noRd
 recode.agent <- function(data.ab, level="agent") {
   # Run Checks
   checkmate::assertDataFrame(data.ab)
   checkmate::assertChoice(level, choices = c("agent", "class"))
-
-  # Check for consistency across all dose=0
-  #dose.df <- data.ab[, names(data.ab) %in% c(level, "dose")]
 
   # Check that there are no NA values
   if (any(is.na(data.ab[[level]]))) {
@@ -408,6 +402,7 @@ recode.agent <- function(data.ab, level="agent") {
 
   lvls <- as.character(sort(unique(data.ab[[level]])))
 
+  # Convert agent/class to numeric codes
   if (is.factor(data.ab[[level]])) {
     data.ab[[level]] <- as.numeric(data.ab[[level]])
   } else if (is.character(data.ab[[level]])) {
@@ -484,7 +479,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatment-
 #'   level (for NMA)
 #' @param nodesplit A numeric vector of length 2 containing treatment codes on which to perform
-#'   an MBNMA nodesplit.
+#'   an MBNMA nodesplit (see \code\link{mbnma.nodesplit}).
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:
@@ -514,21 +509,16 @@ recode.agent <- function(data.ab, level="agent") {
 #' @examples
 #' # Using the triptans headache dataset
 #' network <- mbnma.network(HF2PPITT)
-#'
 #' jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 #'
 #'
 #' # Get JAGS data with class
-#' df <- HF2PPITT
-#' df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-#' netclass <- mbnma.network(df)
-#'
+#' netclass <- mbnma.network(osteopain_2wkabs)
 #' jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 #'
 #'
-#' # Get JAGS data at the treatment level for Network Meta-Analysis
+#' # Get JAGS data at the treatment level for split Network Meta-Analysis
 #' network <- mbnma.network(HF2PPITT)
-#'
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
 #' @export
@@ -552,6 +542,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   df <- data.ab
 
+  # Create vector of variable names for which data will be required
   varnames <- c("studyID", "arm", "narm")
 
   if (level=="agent") {
@@ -564,6 +555,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     varnames <- append(varnames, "class")
   }
 
+  # Add variables depending on likelihood
   if (likelihood == "binomial") {
     datavars <- c("r", "N")
   } else if (likelihood == "poisson") {
@@ -575,6 +567,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   }
   varnames <- append(varnames, datavars)
 
+  # Check required variables are in df
   if (!all(varnames %in% names(df))) {
     msg <- paste0("Variables are missing from dataset:\n",
                   paste(varnames[!(varnames %in% names(df))], collapse="\n"))
@@ -586,6 +579,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   df$studynam <- df$studyID
   df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
 
+  # Create a separate object for each datavars
   for (i in seq_along(datavars)) {
     assign(datavars[i], array(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
                               dim=c(max(as.numeric(df$studyID)),
@@ -597,6 +591,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   narm <- vector()
   NS <- max(as.numeric(df$studyID))
 
+  # Generate list in which to store individual data variables
   datalist <- list(get(datavars[1]), get(datavars[2]),
                    narm=narm, NS=NS, studyID=vector())
   names(datalist)[1:2] <- datavars
@@ -608,7 +603,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
                                   )
     datalist[["dose"]] <- datalist[["agent"]]
 
-    # Add spline matrix
+    # Generate empty spline matrix
     if (!is.null(fun)) {
       if (any(c("rcs", "ns", "bs") %in% fun)) {
         splinefun <- unique(fun[which(fun %in% c("rcs", "bs", "ns"))])
@@ -619,11 +614,9 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         doses <- df[, colnames(df) %in% c("agent", "dose")]
         doses <- unique(dplyr::arrange(doses, agent, dose))
 
-        # Generate spline matrix
+        # Generate spline basis matrix
         dosespline <- doses %>% dplyr::group_by(agent) %>%
           dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots))
-
-        #dosespline$spline <- dosespline$spline[,-1]
 
         df <- suppressMessages(dplyr::left_join(df, dosespline))
 
@@ -646,6 +639,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   }
 
 
+  # Add empty list element for class data if classes are to be modelled
   if (class==TRUE) {
     Nclass <- max(df$class)
 
@@ -654,15 +648,16 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     classcode <- unique(codes)$df.class
 
     datalist[["Nclass"]] <- Nclass
-    #datalist[["classcode"]] <- classcode
     datalist[["class"]] <- classcode
   }
 
+  # Add empty matrix indicating which data points contribute to direct/indirect in node-split model
   if (!is.null(nodesplit)) {
     datalist[["split.ind"]] <- datalist[["agent"]]
   }
 
 
+  # Add data to datalist elements
   for (i in 1:max(as.numeric(df$studyID))) {
     for (k in 1:max(df$arm[df$studyID==i])) {
       datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
@@ -703,7 +698,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     datalist[["narm"]] <- append(datalist[["narm"]], max(df$arm[as.numeric(df$studyID)==i]))
   }
 
-  # Add design matrix for multiple functions
+  # Add design matrix for multiple dose-response functions
   if (!is.null(fun)) {
     if (length(fun)>1) {
       if (length(fun)!=datalist[["Nagent"]]) {
@@ -733,7 +728,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' Identify unique contrasts within a network that make up all the head-to-head comparisons. Repetitions
 #' of the same treatment comparison are grouped together.
 #'
-#' @param data A data frame containing variables `studyID` and `treatment` (as numeric codes) that
+#' @param df A data frame containing variables `studyID` and `treatment` (as numeric codes) that
 #' indicate which treatments are used in which studies.
 #'
 #' @return A data frame of unique comparisons in which each row represents a different comparison.
@@ -749,12 +744,12 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' compared.
 #'
 #' @examples
-#' data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
+#' df <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
 #'   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
 #'   )
 #'
 #' # Identify unique comparisons within the data
-#' mbnma.comparisons(data)
+#' mbnma.comparisons(df)
 #'
 #'
 #' # Using the triptans headache dataset
@@ -762,30 +757,30 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #' mbnma.comparisons(network$data.ab)
 #'
 #' @export
-mbnma.comparisons <- function(data)
+mbnma.comparisons <- function(df)
 {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertDataFrame(data, add=argcheck)
-  checkmate::assertNames(names(data), must.include = c("studyID", "treatment"), add=argcheck)
-  #checkmate::assertInt(doselink, null.ok = TRUE, add=argcheck)
+  checkmate::assertDataFrame(df, add=argcheck)
+  checkmate::assertNames(names(df), must.include = c("studyID", "treatment"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  data <- dplyr::arrange(data, data$studyID, data$treatment)
+  df <- dplyr::arrange(df, df$studyID, df$treatment)
 
   t1 <- vector()
   t2 <- vector()
 
-  for (i in seq_along(data[["studyID"]])) {
+  # Generate vectors of treatment comparisons
+  for (i in seq_along(df[["studyID"]])) {
 
     k <- i+1
 
-    while (k<=nrow(data) &
-           data[["studyID"]][k] == data[["studyID"]][i] &
-           !is.null(data[["studyID"]][k])) {
+    while (k<=nrow(df) &
+           df[["studyID"]][k] == df[["studyID"]][i] &
+           !is.null(df[["studyID"]][k])) {
 
       # Ensures ordering of t1 to t2 is lowest to highest
-      t <- sort(c(data[["treatment"]][i], data[["treatment"]][k]))
+      t <- sort(c(df[["treatment"]][i], df[["treatment"]][k]))
 
       t1 <- append(t1, t[1])
       t2 <- append(t2, t[2])
@@ -797,10 +792,12 @@ mbnma.comparisons <- function(data)
 
   comparisons <- data.frame("t1"=t1, "t2"=t2)
 
+  # Count number of repeats for each comparison
   comparisons <- comparisons %>%
     dplyr::group_by(t1, t2) %>%
     dplyr::mutate(nr=dplyr::n())
 
+  # Make unique set of comparisons
   comparisons <- unique(comparisons)
   comparisons <- dplyr::arrange(comparisons, t1, t2)
 
@@ -855,17 +852,21 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   checkmate::assertLogical(connect.dose, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Set number of parameters for minimum connection
   if (connect.dose==FALSE) {
-    doselink <- 10000
+    doselink <- 10000 # Impossibly large number of doses (i.e. forces disconnectedness)
   } else {doselink <- 1}
 
   trt.labs <- network$treatments
+
+  # Check connectivity
   discon <- suppressMessages(suppressWarnings(check.network(plot.invisible(network, level="treatment", v.color = "connect", doselink=doselink))))
 
   data.ab <- network$data.ab
 
   data.ab$treatment <- as.character(factor(data.ab$treatment, labels=network$treatments))
 
+  # Identify disconnected studies via disconnected treatments dropped from discon
   drops <- vector()
   studies <- unique(data.ab$studyID)
   for (i in seq_along(studies)) {
@@ -874,7 +875,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
     }
   }
 
-  #data.ab <- data.ab[!(data.ab$treatment %in% discon),]
+  # Drop drops studies from data
   data.ab <- data.ab[!(data.ab$studyID %in% drops),]
   trt.labs <- network$treatments[!(network$treatments %in% discon)]
 
@@ -899,7 +900,6 @@ index.dose <- function(data.ab) {
   for (i in seq_along(agents)) {
     df <- data.ab[data.ab$agent==agents[i],]
     doses <- sort(unique(df$dose))
-    #maxdose <- append(maxdose, length(doses))
     maxdose <- append(maxdose, max(doses))
 
     for (k in seq_along(doses)) {
@@ -927,12 +927,11 @@ index.dose <- function(data.ab) {
 #' for the relationship between placebo and other agents via the dose-response
 #' relationship.
 #'
-#' @param data.ab A data frame stored in `mbnma.network` object (`mbnma.network$data.ab`)
+#' @param data.ab A data frame stored in an `mbnma.network` object (`mbnma.network$data.ab`)
 #' @param level A character that can take either `"treatment"` or `"agent"` to indicate the level of the
 #' network for which to identify dose-response
 #' @inheritParams mbnma.network
 #'
-#' @noRd
 DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
   t1 <- vector()
   t2 <- vector()
@@ -945,11 +944,6 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
       dplyr::mutate(nagent=dplyr::n())
 
     if (any(subset$nagent>=doselink)) {
-      # temp <- subset[subset$nagent>=doselink,]
-      # for (k in 1:nrow(temp)) {
-      #   t1 <- append(t1, 0)
-      #   t2 <- append(t2, temp[[level]][k])
-      # }
       for (k in 1:nrow(subset)) {
         t1 <- append(t1, 0)
         t2 <- append(t2, subset[[level]][k])
@@ -982,7 +976,6 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 #' not be properly encoded.
 #'
 #' @inheritParams mbnma.network
-#' @noRd
 change.netref <- function(network, ref=1) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1004,16 +997,18 @@ change.netref <- function(network, ref=1) {
   trtnames <- c(trtnames[ref], trtnames[-ref])
 
   if ("agents" %in% names(network)) {
+
+    # Recode by agent
     data.ab$treatment <- trtcodes
-    #data.ab$agent <- NULL
     data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
     data.ab <- add_index(data.ab, agents = network$agents, treatments=trtnames)
 
     network$data.ab <- data.ab$data.ab
     network$treatments <- trtnames
-    #network$agents <- NULL
 
   } else {
+
+    # Recode by treatment
     data.ab$treatment <- trtcodes
     data.ab$agent <- NULL
     data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$treatment)
@@ -1032,7 +1027,11 @@ change.netref <- function(network, ref=1) {
 
 
 
-
+#' Used to remove superfluous outputs from rjags object if agent-specific dose-response functions are fitted
+#'
+#' Function not currently in use
+#'
+#' @noRd
 cutjags <- function(jagsresult) {
 
   # Run Checks
@@ -1065,7 +1064,6 @@ cutjags <- function(jagsresult) {
     for (i in seq_along(funs)) { # i is the function index
 
       for (k in count:cumsum(funs)[i]) { # k is beta parameter index
-        #print(k)
         dropagent <- which(!fun %in% names(funs)[i])
         droplist[[length(droplist)+1]] <- dropagent
 
@@ -1080,12 +1078,9 @@ cutjags <- function(jagsresult) {
 
           dropindex <- append(dropindex, temp)
 
-          #print(m)
-          #print(dropindex)
         }
       }
       count <- count + funs[i]
-      #print(count)
 
     }
     dropindex <- dropindex[dropindex!=0]
@@ -1132,8 +1127,13 @@ cutjags <- function(jagsresult) {
 
 
 
-# I want something that for a given function (or set of functions), it tells me which parameter corresponds
-#to which function (including a parameter name) and which agents are modelled by that parameter (and therefore function)
+#' Assigns different parameters for agent-specific (multiple) dose-response functions in a model
+#'
+#' For a given  function (or set of functions), it indicates which parameter corresponds
+#' to which function (including a parameter name) and which agents are modelled by that parameter
+#' (and therefore that function)
+#'
+#' @noRd
 assignfuns <- function(fun, agents, user.fun, wrapper=FALSE, knots=3) {
 
   # Run Checks
@@ -1208,16 +1208,7 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE, knots=3) {
 #' @param reference A numeric value indicating which treatment code to use as the reference treatment for
 #' testing that all other treatments connect to it
 #'
-#' @noRd
 check.network <- function(g, reference=1) {
-
-  # Can add component to test for if placebo is missing:
-  # First use check.network with reference=2 (so that next treatment is reference)
-
-  # Then any loops which aren't connected, check if there are X doses of ANY agent within
-  #that loop AND within the main loop. Report the max number of doses that are common to
-  #all loops in the network (perhaps even colour vertices of loops different depending on
-  #the number of doses they can connect via)
 
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=reference))
@@ -1249,12 +1240,12 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  #checkmate::assertChoice(spline, choices=c("rcs", "ns", "bs"), add=argcheck)
   checkmate::assertNumeric(knots, add=argcheck)
   checkmate::assertNumeric(ord, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Check knot specification
   if (length(knots)==1) {
     if (knots<3) {
       stop("Minimum number of knots is 3")
@@ -1265,6 +1256,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
     }
   }
 
+  # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
 
     if (length(knots)==1 & knots[1]>=1) {
@@ -1273,12 +1265,6 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
       return(matrix(rep(0,length(knots)-1), nrow=1))
     }
 
-    # if (length(knots)==1 & knots[1]>=1) {
-    #   return(matrix(rep(0,knots+2), nrow=1))
-    # } else if (length(knots)>1 | knots[1]<1) {
-    #   return(matrix(rep(0,length(knots)+2), nrow=1))
-    # }
-
   } else {
 
     x0 <- x
@@ -1286,8 +1272,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
       x0 <- c(0,x0)
     }
 
-    #max.dose <- max(x0)
-
+    # Calculate quantiles for knots
     if (length(knots)==1 & knots[1]>=1) {
       p <- seq(0,1,1/(knots+1))
       p <- p[-c(1,length(p))]
@@ -1297,6 +1282,7 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
       knots <- stats::quantile(0:max.dose, probs = knots)
     }
 
+    # Generate spline basis matrix
     if (spline=="bs") {
       splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
     } else if (spline=="rcs") {
@@ -1306,10 +1292,10 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
       splinedesign <- cbind(x0, splinedesign)
     }
 
+    # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
     if (length(x0)>1) {
       splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
     } else {
-      #splinedesign <- t(matrix(splinedesign))
       splinedesign <- matrix(0, ncol=length(splinedesign))
     }
 
