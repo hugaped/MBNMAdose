@@ -75,8 +75,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 #'   non-sensical values, due to skewed deviances that can arise with non-linear models.
 #'   * `pd.kl` calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
-#'   will require running the model for additional iterations but
-#'   will always produce a positive result.
+#'   will require running the model for additional iterations but is a more robust calculation for the effective
+#'   number of parameters in non-linear models.
 #'   * `popt` calculates pD using an optimism adjustment which allows for calculation
 #'   of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 #' @param parallel A boolean value that indicates whether JAGS should be run in
@@ -116,27 +116,18 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   traceplots using `R2jags::traceplot()` or various functions from the package `mcmcplots`.
 #'
 #'   Nodes that are automatically monitored (if present in the model) have the
-#'   following interpretation. These will have an additional suffix that relates
-#'   to the name/number of the dose-response parameter to which they correspond
-#'   (e.g. `d.ed50` or `d.1`):
-#'   * `d` The pooled effect for each agent for a given dose-response
-#'   parameter. Will be estimated by the model if dose-response parameters (`beta.1`,
-#'   `beta.2`, `beta.3`, `beta.4`) are set to `"rel"`.
-#'   * `sd` (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
-#'   `method="random"`.
-#'   * `D` The class effect for each class for a given dose-response
-#'   parameter. Will be estimated by the model if specified in `class.effect`.
-#'   * `sd.D` The within-class SD for different agents within the same class. Will
-#'   be estimated by the model if any dose-response parameter in `class.effect` is
-#'   set to `"random"`.
-#'   * `beta` The absolute value of a given dose-response parameter across the whole
-#'   network (does not vary by agent/class). Will be estimated by the model if
-#'   dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) are set to `"common"`
-#'   or `"random"`.
-#'   * `sd` (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-#'   parameters, reported if `beta.1`, `beta.2`, `beta.3` or `beta.4` are set to `"random"`
-#'   * `totresdev` The residual deviance of the model
-#'   * `deviance` The deviance of the model
+#'   following interpretation:
+#'
+#'   | \strong{Parameters(s)}              | \strong{Interpretation} |
+#'   | -------------------------- | -------------- |
+#'   | `d.1`, `d.2`, `d.3`, `d.4` | The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) specified as `"rel"` (e.g.`mbnma.run(beta.1="rel")`) |
+#'   | `sd` | The between-study SD (heterogeneity) for relative effects, reported if `method="random"` |
+#'   | `D.1`, `D.2`, `D.3`, `D.4` | The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in `class.effects` for a given dose-response parameter. |
+#'   | `sd.D.1`, `sd.D.2`, `sd.D.3`, `sd.D.4` | The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in `class.effect` is set to `"random"`. |
+#'   | `beta.1`, `beta.2`, `beta.3`, `beta.4` | The absolute value of a given dose-response parameter across the whole network (i.e. does not vary by agent/class). Will be estimated by the model for dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) specified as `"common"` or `"random"`. |
+#'   | `sd.1`, `sd.2`, `sd.3`, `sd.4` |  Between-study SD (heterogeneity) for absolute dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`) specified as `"random"`. |
+#'   | `totresdev` | The residual deviance of the model |
+#'   | `deviance` | The deviance of the model |
 #'
 #'
 #'   If there are errors in the JAGS model code then the object will be a list
@@ -145,18 +136,15 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   which includes `jagscode`, the JAGS code for the model that can help
 #'   users identify the source of the error.
 #'
-#' @section Dose-response parameters:
-#' * `"rel"` implies that relative effects should be pooled for this dose-response
-#' parameter separately for each agent in the network.
-#' * `"common"` implies that all studies estimate the same true absolute effect
-#' (akin to a "fixed effects" meta-analysis) across the whole network
-#' * `"random"` implies that all studies estimate a separate true absolute effect, but
-#' that each of these true effects vary randomly around a true mean effect. This
-#' approach allows for modelling of between-study heterogeneity.
-#' * `numeric()` Assigned a numeric value. It indicates that
-#' this dose-response parameter should not be estimated from the data but should be
-#' assigned the numeric value determined by the user. This can be useful for fixing
-#' specific dose-response parameters (e.g. Hill parameters in Emax functions) to a value.
+#' @section Dose-response parameter arguments:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
+#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network. |
+#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
+#'
 #'
 #'
 #' @section Dose-response function:
@@ -184,12 +172,15 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   Each agent in `network` is assigned the dose-response function in the corresponding element in `fun`.
 #'   `fun` must therefore be the same length as the number of agents in `network`. Dose-response parameters
 #'   `beta.1`, `beta.2`, `beta.3` and `beta.4` refer to the corresponding dose-response parameters across
-#'   the multiple functions in the following order: `user`, `linear`, `exponential`, `emax`, `emax.hill`.
+#'   the multiple functions in the following order: `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`, `"rcs"`.
 #'
-#'   This would mean that if `fun` included `linear`, `exponential` and `emax` within it then for the
-#'   corresponding agents `beta.1`
-#'   would refer to linear slope parameters, `beta.2` to exponential rate of growth/decay parameters,
-#'   `beta.3` to Emax parameters, and `beta.4` to ED50 parameters.
+#'   This would mean that if `fun` included `"linear"`, `"exponential"` and `"emax"` within it then for the
+#'   corresponding agents:
+#'
+#'    * `beta.1` would refer to linear slope parameters
+#'    * `beta.2` to exponential rate of growth/decay parameters
+#'    * `beta.3` to Emax parameters
+#'    * `beta.4` to ED50 parameters
 #'
 #'
 #' @importFrom Rdpack reprompt
@@ -329,7 +320,7 @@ mbnma.run <- function(network,
                       var.scale=NULL,
                       user.fun=NULL,
                       parameters.to.save=NULL,
-                      pd="pv", parallel=FALSE,
+                      pd="pd.kl", parallel=FALSE,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
                       model.file=NULL,
@@ -839,7 +830,7 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
-                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pv", ...) {
+                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pd.kl", ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1044,7 +1035,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' @param slope Refers to the slope parameter of the linear dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection mbnma.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameter arguments
 #'
 #' @references
 #'   \insertAllCited
@@ -1119,7 +1110,7 @@ mbnma.linear <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=FALSE,
+                         pd="pd.kl", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1161,7 +1152,7 @@ mbnma.linear <- function(network,
 #' @param lambda Refers to the rate of growth/decay of the exponential dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection mbnma.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameter arguments
 #'
 #' @references
 #'   \insertAllCited
@@ -1236,7 +1227,7 @@ mbnma.exponential <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=FALSE,
+                         pd="pd.kl", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1290,7 +1281,7 @@ mbnma.exponential <- function(network,
 #' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection mbnma.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameter arguments
 #'
 #' @references
 #'   \insertAllCited
@@ -1384,7 +1375,7 @@ mbnma.emax <- function(network,
                          cor=TRUE,
                          var.scale=NULL,
                          parameters.to.save=NULL,
-                         pd="pv", parallel=FALSE,
+                         pd="pd.kl", parallel=FALSE,
                          likelihood=NULL, link=NULL,
                          priors=NULL,
                          arg.params=NULL, ...)
@@ -1432,7 +1423,7 @@ mbnma.emax <- function(network,
 #' @param hill Refers to the Hill parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #'
-#' @inheritSection mbnma.run Dose-response parameters
+#' @inheritSection mbnma.run Dose-response parameter arguments
 #'
 #' @references
 #'   \insertAllCited
@@ -1534,7 +1525,7 @@ mbnma.emax.hill <- function(network,
                        cor=TRUE,
                        var.scale=NULL,
                        parameters.to.save=NULL,
-                       pd="pv", parallel=FALSE,
+                       pd="pd.kl", parallel=FALSE,
                        likelihood=NULL, link=NULL,
                        priors=NULL,
                        arg.params=NULL, ...)
