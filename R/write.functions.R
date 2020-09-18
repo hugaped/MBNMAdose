@@ -89,10 +89,6 @@ mbnma.write <- function(fun="linear",
   checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Store argument values
-  #argList <- as.list(match.call(expand.dots = TRUE)[-1])
-
-
 
   ####### VECTORS #######
 
@@ -371,12 +367,7 @@ write.dose.fun <- function(fun="linear", user.fun=NULL, effect="rel", UME=FALSE,
     DR <- gsub("(agent\\[i\\,k\\])", "\\1, agent[i,1]", DR)
   }
 
-
-  # if (effect=="rel") {
-  #   return(paste0("DR[i,k] <- ", DR))
-  # } else if (effect=="abs") {
-  #   return(paste0("DR[i,k] <- ", DR.1))
-  # }
+  # Return final DR function depending on number of DR functions and UME
   if (length(fun)==1 | UME==TRUE) {
     if (effect=="rel") {
       return(list(paste0("DR[i,k] <- ", DR)))
@@ -439,7 +430,6 @@ write.check <- function(fun="linear",
   # Run argument checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(fun, null.ok=FALSE, add=argcheck)
-  #checkmate::assertChoice(fun, choices=c("none", "nonparam.up", "nonparam.down", "linear", "exponential", "emax", "emax.hill", "user"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
   if (method=="random") {
@@ -771,13 +761,6 @@ write.beta.vars <- function() {
     d.zero <- "d.1[1,1] <- 0\n"
     ind <- "ind <- 1\n"
 
-#     d.const.up <- "
-# d.1[k,1] ~ dnorm(d.1[1,1],0.0001) T(d.1[1,1],)
-# for (c in 2:maxdose[k]) {
-# d.1[k,c] ~ dnorm(d.1[k,c-1],0.0001) T(d.1[k,c-1],)
-# }
-# "
-
     d.const.down <- "
 d.1[1,k] <- 0
 for (c in 2:maxdose[k]) {
@@ -909,8 +892,6 @@ write.beta <- function(model,
           } else if (UME==TRUE) {
             model <- gsub(inserts[["insert.ume.priors"]], paste0("\\1", vars[[paste("ume.prior", i, sep=".")]], "\\2"), model)
             model <- gsub(inserts[["insert.ume.ref.priors"]], paste0("\\1", vars[[paste("ume.ref.prior", i, sep=".")]], "\\2"), model)
-
-            # Swap s.beta.i[k] and d.i[k] for s.beta.i[k,k] and d.i[k,k]
           }
         }
 
@@ -950,7 +931,6 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
   vars <- write.beta.vars()
 
   model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[["d.zero"]], "\\2"), model)
-  #model <- gsub(inserts[["insert.start"]], paste0("\\1", vars[["ind"]], "\\2"), model)
 
   if (fun=="nonparam.up") {
     model <- gsub(inserts[["insert.te.priors"]], paste0("\\1", vars[["d.const.up"]], "\\2"), model)
@@ -979,22 +959,12 @@ write.beta.nonparam <- function(model, method="common", fun="nonparam.up") {
 write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
                       beta.1="rel", beta.2=NULL, beta.3=NULL, beta.4=NULL,
                       method="random", class.effect=list(), UME=FALSE) {
-  #or be a numeric vector of values to assign to rho to fill correlation
-  #matrix between random effects dose-response parameters
-  # (i.e. rho[2,1], rho[3,1], rho[3,2])
 
-  #if (length(class.effect)>0 & method=="random" & (!is.null(beta.2) | !is.null(beta.3))) {
   if (length(class.effect)>0 & cor==TRUE & (!is.null(beta.2) | !is.null(beta.3))) {
     warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
   } else {
-    # if (is.numeric(cor) & cor.prior=="wishart") {
-    #   stop("Fixed (rather than estimated) values for `cor`` can only be given for `rho`, not for a wishart prior")
-    # }
-    # if (!is.numeric(cor) & cor!="estimate") {
-    #   stop("`cor` can only take the value `estimate` or be assigned numerical value(s) corresponding to `rho`")
-    # }
 
-    #if (method=="random") {
+    # Prepare covariance matrix if cor=TRUE
     if (cor==TRUE) {
       corparams <- vector()
       for (i in 1:4) {
@@ -1012,6 +982,7 @@ write.cor <- function(model, cor=TRUE, cor.prior="wishart", var.scale=NULL,
     }
 
     if (mat.size>=2) {
+      # Write covariance matrix in JAGS code
       model <- write.cov.mat(model, sufparams=sufparams, cor="estimate", cor.prior=cor.prior,
                              var.scale=var.scale, UME=UME)
     }
@@ -1103,6 +1074,7 @@ R[c,r] <- 1000*rho[1]   # Upper triangle
                     model)
     }
 
+    # If cor.prior is given as a correlation parameter, rho, rather than Wishart
   } else if (cor.prior=="rho") {
     addcode <- jagsrho
     model <- gsub(priorloc,
@@ -1257,11 +1229,6 @@ get.prior <- function(model) {
 #'   priors in place of original priors
 #'
 replace.prior <- function(priors, model=NULL, mbnma=NULL) {
-  # priors is a named list of parameter values (without indices) and replacement
-  #prior values given as strings USING DISTRIBUTIONS AS SPECIFIED IN JAGS SYNTAX (i.e.
-  #dnorm() is specified using mean and precision rather than mean and SD.
-  #It can include JAGS functions (e.g. censoring/truncation)
-  #e.g. for a half-normal SD prior list("sd.et50"="dnorm(0,0.5) T(0,)")
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1286,11 +1253,8 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
     # Checks
     if (length(grep(paste0("^( +)?", names(priors)[i]), model))==0) {
       stop("Prior named ", names(priors)[i], " not found in the model code. Check priors currently present in model code using get.prior()")
-      # } else if (length(grep(paste0("^( +)?", names(priors)[i]), model))>1) {
-      #   stop("Prior named ", names(priors)[i], " has matched on multiple instances in the model code. Check priors currently present in model code using get.prior()")
     }
 
-    #line <- grep(paste0("^( +)?", names(priors)[i]), model)
     line <- grep(paste0("^( +)?", names(priors)[i], ".+~"), model)
     state <- model[line]
     model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
@@ -1492,21 +1456,6 @@ add.nodesplit <- function(model) {
     model <- gsub("(\nmd\\[i\\,k\\] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
                   "\\1ifelse(split.ind[i,k]==1, direct, DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
                   model)
-
-    # To incorporate multi-arm correction into direct evidence
-    # model <- gsub("(\nmd[i,k] <- )(DR\\[i\\,k\\] \\+ sw\\[i\\,k\\])",
-    #               "\\1ifelse(split.ind[i,k]==1, direct + sw[i,k], DR[i,k] + sw[i,k])",
-    #               model)
-
-    # Could be used if estimating separate tau for direct evidence (tau.dir)
-    # model <- gsub("(\ndelta\\[i\\,k\\] )(<- DR\\[i\\,k\\])",
-    #               "\\1~ dnorm(md[i,k], ifelse(split.ind[i,k]==1, taud[i,k], tau.dir))\nmd[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])",
-    #               model)
-    #
-    # # Add prior for tau.dir
-    # model <- gsub("(.+)(# Model ends\n})",
-    #               paste0("\\1", "tau.dir <- pow(sd.dir, -2)\nsd.dir ~ dnorm(0,0.0025) T(0,)", "\n\n\\2"),
-    #               model)
   }
 
   # Add prior for direct

@@ -87,8 +87,7 @@ calcauc <- function(df) {
   str <- paste0("POLYGON((", str, "))")
 
   polygon <- rgeos::readWKT(str)
-  #temp$auc <- rgeos::gArea(polygon)
   auc <- rgeos::gArea(polygon)
-  #auc <- rep(auc, nrow(temp))
+
   return(auc)
 }

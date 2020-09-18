@@ -153,13 +153,11 @@ summary.nodesplit <- function(object, ...) {
 #'
 #' @export
 plot.nodesplit <- function(x, plot.type="forest", ...) {
-  # ... are commands to be sent to geom_histogram
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "nodesplit", add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=FALSE, add=argcheck)
-  #checkmate::assertLogical(facet, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (plot.type == "forest") {

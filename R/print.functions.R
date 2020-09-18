@@ -11,7 +11,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 
 
-
+#' Print results as string with credible intervals in brackets
 neatCrI <- function(vals, digits=3) {
   vals <- signif(vals, digits = digits)
   neat <- paste0(vals[2], " (", vals[1], ", ", vals[3], ")")
@@ -20,7 +20,7 @@ neatCrI <- function(vals, digits=3) {
 
 
 
-
+#' Print a warning if any monitored parameters have rhat above the cutoff in an MBNMA model
 rhat.warning <- function(mbnma, cutoff=1.2) {
   rhats <- mbnma$BUGSoutput$summary[,colnames(mbnma$BUGSoutput$summary)=="Rhat"]
   rhats <- names(rhats)[rhats>cutoff]
@@ -40,7 +40,6 @@ rhat.warning <- function(mbnma, cutoff=1.2) {
 #' @inheritParams predict.mbnma
 #' @noRd
 print.treat.str <- function(mbnma) {
-  #betanames <- get.beta.names(mbnma)
 
   if (!is.null(mbnma$model.arg$arg.params)) {
     wrapper <- TRUE
@@ -55,10 +54,12 @@ print.treat.str <- function(mbnma) {
                                  mbnma$BUGSoutput$summary[,7]))
 
   treat.sect <- c()
-  # DR parameters for each agent (generate treat.str)
+
+  # For each dose-response parameter generate results
   for (i in seq_along(betas)) {
     if (!(betas[[i]]$betaname %in% names(mbnma$model.arg$class.effect))) {
 
+      # Create section heading
       if (wrapper) {
         headbeta <- betas[[i]]$betaname
       } else {
@@ -84,6 +85,7 @@ print.treat.str <- function(mbnma) {
           cat("Pooling: single parameter shared across the network\n\n")
         }
 
+        # Create table of results
         datai <- vector()
         datai <- append(datai,
                         which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
@@ -96,8 +98,6 @@ print.treat.str <- function(mbnma) {
         datatab$Parameter <- rownames(datatab)
         datatab <- datatab[datai,c(4,1,2,3)]
 
-        #print(agents[betas[[i]]$agents])
-        #print(betas[[i]]$agents)
 
         if (param=="d") {
           # Drop rows that aren't relevant for multi-fun models
@@ -107,17 +107,12 @@ print.treat.str <- function(mbnma) {
           rownames(datatab) <- ""
         }
 
+        # Print table of results
         print(datatab)
         cat("\n\n")
 
-        #data.tab <- get.timeparam.str(mbnma, beta=names(betas)[i], param = param)
-        #
-        # if (!is.null(data.tab)) {
-        #   data.str <- paste(data.head,
-        #                     data.tab,
-        #                     sep="")
-        # }
 
+        # Print between-study SD
         if (mbnma$model.arg[[names(betas)[i]]]=="random") {
 
           datai <- vector()
@@ -136,24 +131,7 @@ print.treat.str <- function(mbnma) {
 
         }
 
-        # Parameters on exponential scale
-        # if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
-        #   if (names(betanames)[i] %in% c("beta.2", "et50")) {
-        #     sect.head <- paste(sect.head,
-        #                        "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
-        #   }
-        # }
-
-        # # String for pooling
-        # if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
-        #   pool <- "relative effects"
-        # } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
-        #   pool <- "absolute single parameter"
-        # }
-        # pool.str <- paste("Pooling:", pool, "\n", sep=" ")
-        #
-        # treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
-
+        # Print result if parameter assigned a numeric value
       } else if (is.numeric(mbnma$model.arg[[names(betas)[i]]])) {
         data.str <- paste("Assigned a numeric value:",
                           mbnma$model.arg[[names(betas)[i]]],
@@ -161,18 +139,17 @@ print.treat.str <- function(mbnma) {
         cat(data.str)
         cat("\n\n")
 
-        # treat.str <- paste(sect.head, data.str)
       }
 
-      # treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
     }
   }
-  # return(treat.sect)
   invisible(mbnma)
 }
 
 
-
+#' Neatly prints a summary of the method used in the model
+#'
+#' @noRd
 print.method.sect <- function(mbnma) {
   # String for method
   data.head <- paste("Parameter", "Median (95%CrI)", sep="\t\t\t\t\t")
@@ -208,7 +185,7 @@ print.method.sect <- function(mbnma) {
 }
 
 
-
+#' Neatly prints class results
 print.class.str <- function(mbnma) {
 
   if (length(mbnma$model.arg$class.effect)>0) {
@@ -226,6 +203,7 @@ print.class.str <- function(mbnma) {
 
     head <- crayon::bold(crayon::underline("\nClass effects\n"))
 
+    # For each class
     for (i in seq_along(classes)) {
       if (wrapper) {
         for (k in seq_along(betas)) {
@@ -240,6 +218,7 @@ print.class.str <- function(mbnma) {
               param <- "BETA"
             }
 
+            # Generate table of class results
             datai <- vector()
             datai <- append(datai,
                             which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
@@ -252,9 +231,6 @@ print.class.str <- function(mbnma) {
             datatab$Parameter <- rownames(datatab)
             datatab <- datatab[datai,c(4,1,2,3)]
 
-            #print(agents[betas[[i]]$agents])
-            #print(betas[[i]]$agents)
-
             if (param=="D") {
               if (nrow(datatab)==length(mbnma$network$classes)) {
                 rownames(datatab) <- mbnma$network$classes
@@ -262,10 +238,13 @@ print.class.str <- function(mbnma) {
                 rownames(datatab) <- mbnma$network$classes[-1]
               }
             }
+
+            # Print table of class results
             print(datatab)
             cat("\n\n")
 
 
+            # Add between-agent SD
             if (classes[[i]]=="random") {
 
               cat(paste0("Within-class SD for ", names(classes)[i], "\n\n"))
@@ -292,7 +271,7 @@ print.class.str <- function(mbnma) {
 }
 
 
-
+#' Neatly prints model fit details
 print.modfit.str <- function(mbnma) {
   totresdev.str <- c()
 

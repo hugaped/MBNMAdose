@@ -24,7 +24,6 @@ get.model.vals <- function(mbnma) {
       temp$pool <- mbnma$model.arg[[beta]]
 
       if (is.null(mbnma$model.arg$arg.params)) {
-        #temp$name <- betaparams[[beta]]
         temp$name <- i
       } else {
         temp$name <- mbnma$model.arg$arg.params$wrap.params[
@@ -151,6 +150,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
     parameters.to.save <- append(parameters.to.save, "sd.mu")
   }
 
+  # Run synthesis
   jags.result <- suppressWarnings(
     mbnma.jags(data.ab, model=jagsmodel,
                parameters.to.save=parameters.to.save,
