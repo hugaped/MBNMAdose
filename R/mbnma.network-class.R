@@ -42,6 +42,7 @@ print.mbnma.network <- function(x,...) {
 #' @export
 summary.mbnma.network <- function(object,...) {
 
+  # Print basic network statistics to the console
   cat(crayon::underline(crayon::bold("Description:", object$description, "\n")))
   cat("Number of studies:", length(unique(object$data.ab$studyID)), "\n")
   cat("Number of treatments:", length(object$treatments), "\n")
@@ -176,11 +177,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
                                edge.scale=1, v.scale=NULL, label.distance=0,
                                legend=TRUE, legend.x="bottomleft", legend.y=NULL,
                                ...)
-  # Requires igraph
-  #S3method(plot, mbnma.network)
-
-  # x is an object of class mbnma.network
-
 {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
