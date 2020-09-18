@@ -19,7 +19,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @inheritParams rank.mbnma
 #'
 #' @return A series of histograms that show rankings for each treatment/agent/prediction, with a
-#' separate panel for each parameter
+#' separate panel for each parameter.
 #' The object returned is a list containing a separate element for each parameter in `params`
 #' which is an object of `class(c("gg", "ggplot"))`.
 #'
@@ -44,6 +44,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'             exact.doses=doses)
 #' rank <- rank(pred)
 #' plot(rank)
+#'
+#'
+#' # Trying to plot a parameter that has not been ranked will return an error
+#' #### ERROR ####
+#' # plot(ranks, params="d.lambda")
 #' }
 #' @export
 plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
@@ -67,6 +72,7 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
     }
   }
 
+  # Plot a separate set of histograms for each parameter in param
   for (param in seq_along(params)) {
 
     rank.mat <- x[[params[param]]]$rank.matrix
@@ -86,10 +92,10 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       }
       data$treat <- factor(data$treat, labels=treat.labs)
     } else {
-      #data$treat <- factor(as.numeric(as.character(data$treat)))
       data$treat <- factor(data$treat)
     }
 
+    # Plot histograms
     g <- ggplot2::ggplot(data, ggplot2::aes(x=ranks)) +
       ggplot2::geom_bar(...) +
       ggplot2::xlab("Rank (1 = best)") +
