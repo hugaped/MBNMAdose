@@ -16,11 +16,13 @@ classnodes <-
     #type = "lower",
     #style = "filled",
     #color = "aqua",
+    color = "black",
     fontname="Consolas",
-    shape = "none",
+    shape = "rectangle",
     fillcolor = "Honeydew",
     fontcolor = "black",
     fontalign="left",
+    height=0.7,
     width=2
     #data = c(3.5, 2.6, 9.4, 2.7)
     )
@@ -77,7 +79,7 @@ g <- g %>% #set_node_attrs(node_attr = width, values=2) %>%
 render_graph(g)
 
 render_graph(g) %>% export_svg %>% charToRaw %>%
-  rsvg_pdf("~/MBNMA/MBNMA R Package/Dose/MBNMAdose/man/figures/functionstructure.pdf")
+  rsvg_png("~/MBNMA/MBNMA R Package/Dose/MBNMAdose/man/figures/functionstructure.png")
 
 
 
