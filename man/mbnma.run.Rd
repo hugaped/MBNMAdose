@@ -19,13 +19,13 @@ mbnma.run(
   var.scale = NULL,
   user.fun = NULL,
   parameters.to.save = NULL,
-  pd = "pv",
+  pd = "pd.kl",
   parallel = FALSE,
   likelihood = NULL,
   link = NULL,
   priors = NULL,
   model.file = NULL,
-  n.iter = 10000,
+  n.iter = 20000,
   n.chains = 3,
   n.burnin = floor(n.iter/2),
   n.thin = max(1, floor((n.iter - n.burnin)/1000)),
@@ -97,8 +97,8 @@ to monitor in JAGS}
 method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
 \item \code{pd.kl} calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
-will require running the model for additional iterations but
-will always produce a positive result.
+will require running the model for additional iterations but is a more robust calculation for the effective
+number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
 of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 }}
@@ -123,7 +123,7 @@ replacement prior distribution values given as strings
 to overwrite the JAGS model that is automatically written based on the
 specified options.}
 
-\item{n.iter}{number of total iterations per chain (including burn in; default: 15000)}
+\item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
 \item{n.chains}{number of Markov chains (default: 3)}
 
@@ -156,29 +156,18 @@ results from the model. Can be summarized by \code{print()} and can check
 traceplots using \code{R2jags::traceplot()} or various functions from the package \code{mcmcplots}.
 
 Nodes that are automatically monitored (if present in the model) have the
-following interpretation. These will have an additional suffix that relates
-to the name/number of the dose-response parameter to which they correspond
-(e.g. \code{d.ed50} or \code{d.1}):
-\itemize{
-\item \code{d} The pooled effect for each agent for a given dose-response
-parameter. Will be estimated by the model if dose-response parameters (\code{beta.1},
-\code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"rel"}.
-\item \code{sd} (without a suffix) - the between-study SD (heterogeneity) for relative effects, reported if
-\code{method="random"}.
-\item \code{D} The class effect for each class for a given dose-response
-parameter. Will be estimated by the model if specified in \code{class.effect}.
-\item \code{sd.D} The within-class SD for different agents within the same class. Will
-be estimated by the model if any dose-response parameter in \code{class.effect} is
-set to \code{"random"}.
-\item \code{beta} The absolute value of a given dose-response parameter across the whole
-network (does not vary by agent/class). Will be estimated by the model if
-dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) are set to \code{"common"}
-or \code{"random"}.
-\item \code{sd} (with a suffix) - the between-study SD (heterogeneity) for absolute dose-response
-parameters, reported if \code{beta.1}, \code{beta.2}, \code{beta.3} or \code{beta.4} are set to \code{"random"}
-\item \code{totresdev} The residual deviance of the model
-\item \code{deviance} The deviance of the model
+following interpretation:\tabular{ll}{
+   \strong{Parameters(s)} \tab \strong{Interpretation} \cr
+   \code{d.1}, \code{d.2}, \code{d.3}, \code{d.4} \tab The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"rel"} (e.g.\code{mbnma.run(beta.1="rel")}) \cr
+   \code{sd} \tab The between-study SD (heterogeneity) for relative effects, reported if \code{method="random"} \cr
+   \code{D.1}, \code{D.2}, \code{D.3}, \code{D.4} \tab The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in \code{class.effects} for a given dose-response parameter. \cr
+   \code{sd.D.1}, \code{sd.D.2}, \code{sd.D.3}, \code{sd.D.4} \tab The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in \code{class.effect} is set to \code{"random"}. \cr
+   \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4} \tab The absolute value of a given dose-response parameter across the whole network (i.e. does not vary by agent/class). Will be estimated by the model for dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"common"} or \code{"random"}. \cr
+   \code{sd.1}, \code{sd.2}, \code{sd.3}, \code{sd.4} \tab Between-study SD (heterogeneity) for absolute dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"random"}. \cr
+   \code{totresdev} \tab The residual deviance of the model \cr
+   \code{deviance} \tab The deviance of the model \cr
 }
+
 
 If there are errors in the JAGS model code then the object will be a list
 consisting of two elements - an error message from JAGS that can help with
@@ -197,23 +186,15 @@ When relative effects are modelled on more than one dose-response parameter and
 \code{cor = TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled or
-if a model is fitted with multiple dose-response functions.
+\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled.
 }
-\section{Dose-response parameters}{
-
-\itemize{
-\item \code{"rel"} implies that relative effects should be pooled for this dose-response
-parameter separately for each agent in the network.
-\item \code{"common"} implies that all studies estimate the same true absolute effect
-(akin to a "fixed effects" meta-analysis) across the whole network
-\item \code{"random"} implies that all studies estimate a separate true absolute effect, but
-that each of these true effects vary randomly around a true mean effect. This
-approach allows for modelling of between-study heterogeneity.
-\item \code{numeric()} Assigned a numeric value. It indicates that
-this dose-response parameter should not be estimated from the data but should be
-assigned the numeric value determined by the user. This can be useful for fixing
-specific dose-response parameters (e.g. Hill parameters in Emax functions) to a value.
+\section{Dose-response parameter arguments}{
+\tabular{ll}{
+   \strong{Argument} \tab \strong{Model specification} \cr
+   \code{"rel"} \tab Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. \cr
+   \code{"common"} \tab Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network. \cr
+   \code{"random"} \tab Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect. This approach allows for modelling of between-study heterogeneity of absolute effects. \cr
+   \code{numeric()} \tab Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. \cr
 }
 }
 
@@ -244,12 +225,16 @@ different agents in the network by passing a character vector with multiple elem
 Each agent in \code{network} is assigned the dose-response function in the corresponding element in \code{fun}.
 \code{fun} must therefore be the same length as the number of agents in \code{network}. Dose-response parameters
 \code{beta.1}, \code{beta.2}, \code{beta.3} and \code{beta.4} refer to the corresponding dose-response parameters across
-the multiple functions in the following order: \code{user}, \code{linear}, \code{exponential}, \code{emax}, \code{emax.hill}.
+the multiple functions in the following order: \code{"user"}, \code{"linear"}, \code{"exponential"}, \code{"emax"}, \code{"emax.hill"}, \code{"rcs"}.
 
-This would mean that if \code{fun} included \code{linear}, \code{exponential} and \code{emax} within it then for the
-corresponding agents \code{beta.1}
-would refer to linear slope parameters, \code{beta.2} to exponential rate of growth/decay parameters,
-\code{beta.3} to Emax parameters, and \code{beta.4} to ED50 parameters.
+This would mean that if \code{fun} included \code{"linear"}, \code{"exponential"} and \code{"emax"} within it then for the
+corresponding agents:
+\itemize{
+\item \code{beta.1} would refer to linear slope parameters
+\item \code{beta.2} to exponential rate of growth/decay parameters
+\item \code{beta.3} to Emax parameters
+\item \code{beta.4} to ED50 parameters
+}
 }
 
 \examples{
@@ -294,18 +279,20 @@ multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
 
 ########## Class effects ##########
 
-# Generate a dataset with one class for active treatments and one for placebo
-class.df <- HF2PPITT
-class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-netclass <- mbnma.network(class.df)
+ # Using the osteoarthritis dataset
+ pain.df <- osteopain_2wkabs
 
-painnet <- mbnma.network(osteopain_2wkabs)
+ Set a shared class (NSAID) only for Naproxcinod and Naproxen
+ pain.df <- pain.df \%>\% mutate(
+                class = case_when(agent \%in\% c("Naproxcinod", "Naproxen") ~ "NSAID",
+                        !agent \%in\% c("Naproxcinod", "Naproxen") ~ agent
+                        )
+                )
 
-# Fit an Emax function with random relative effects on Emax and ED50 and
-#a common class effect on Emax
-result <- mbnma.run(painnet, fun="emax", method="random",
-              beta.1="rel", beta.2="rel",
-              class.effect=list(beta.1="common"))
+ # Run a restricted cubic spline MBNMA with a common class effect on beta.1
+ painnet <- mbnma.network(pain.df)
+ splines <- mbnma.run(painnet, fun = "rcs",
+                class.effect = list(beta.1 = "common"))
 
 
 ####### Priors #######
@@ -334,9 +321,9 @@ result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
               pd="plugin")
 
-# Calculate effective number of parameters via Kullback-Leibler method
+# Calculate effective number of parameters using penalized expected deviance
 result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-              pd="pd.kl")
+              pd="popt")
 
 
 ####### Examine MCMC diagnostics (using mcmcplots package) #######

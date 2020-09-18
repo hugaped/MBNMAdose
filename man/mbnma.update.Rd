@@ -54,7 +54,7 @@ arm of the study
 }
 }
 \description{
-Useful for obtaining deviance contributions or fitted values
+Useful for obtaining deviance contributions or fitted values. Same function used in MBNMAdose and MBNMAtime packages.
 }
 \examples{
 \donttest{

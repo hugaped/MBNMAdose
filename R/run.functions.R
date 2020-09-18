@@ -84,7 +84,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   use is automatically calculated.
 #' @param arg.params Contains a list of arguments sent to `mbnma.run()` by dose-response
 #' specific wrapper functions
-#' @param n.iter number of total iterations per chain (including burn in; default: 15000)
+#' @param n.iter number of total iterations per chain (including burn in; default: 20000)
 #' @param n.thin thinning rate. Must be a positive integer. Set `n.thin > 1`` to save memory
 #' and computation time if n.iter is large. Default is
 #' `max(1, floor(n.chains * (n.iter-n.burnin) / 1000))`` which will only thin if there are at least 2000
@@ -108,8 +108,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
 #' estimated using a vague Wishart prior. This prior can be made slightly more informative
 #' by specifying the relative scale of variances between the dose-response parameters using
-#' `var.scale`. `cor` will automatically be set to `FALSE` if class effects are modelled or
-#' if a model is fitted with multiple dose-response functions.
+#' `var.scale`. `cor` will automatically be set to `FALSE` if class effects are modelled.
 #'
 #' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
@@ -231,18 +230,20 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' ########## Class effects ##########
 #'
-#' # Generate a dataset with one class for active treatments and one for placebo
-#' class.df <- HF2PPITT
-#' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- mbnma.network(class.df)
+#'  # Using the osteoarthritis dataset
+#'  pain.df <- osteopain_2wkabs
 #'
-#' painnet <- mbnma.network(osteopain_2wkabs)
+#'  Set a shared class (NSAID) only for Naproxcinod and Naproxen
+#'  pain.df <- pain.df %>% mutate(
+#'                 class = case_when(agent %in% c("Naproxcinod", "Naproxen") ~ "NSAID",
+#'                         !agent %in% c("Naproxcinod", "Naproxen") ~ agent
+#'                         )
+#'                 )
 #'
-#' # Fit an Emax function with random relative effects on Emax and ED50 and
-#' #a common class effect on Emax
-#' result <- mbnma.run(painnet, fun="emax", method="random",
-#'               beta.1="rel", beta.2="rel",
-#'               class.effect=list(beta.1="common"))
+#'  # Run a restricted cubic spline MBNMA with a common class effect on beta.1
+#'  painnet <- mbnma.network(pain.df)
+#'  splines <- mbnma.run(painnet, fun = "rcs",
+#'                 class.effect = list(beta.1 = "common"))
 #'
 #'
 #' ####### Priors #######
@@ -271,9 +272,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 #'               pd="plugin")
 #'
-#' # Calculate effective number of parameters via Kullback-Leibler method
+#' # Calculate effective number of parameters using penalized expected deviance
 #' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
-#'               pd="pd.kl")
+#'               pd="popt")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -324,7 +325,7 @@ mbnma.run <- function(network,
                       likelihood=NULL, link=NULL,
                       priors=NULL,
                       model.file=NULL,
-                      n.iter=10000, n.chains=3,
+                      n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       autojags=FALSE, Rhat=1.1, n.update=10,
                       arg.params=NULL, ...
@@ -365,12 +366,10 @@ mbnma.run <- function(network,
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
-    # if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
-    #   stop("Placebo (or an agent with dose=0) must be included in the network to model a nonparametric dose-response relationship")
-    # }
   }
 
 
+  # Switch beta parameters for wrapper parameters
   assigned.class <- class.effect
   if (!is.null(arg.params)) {
     if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
@@ -392,6 +391,8 @@ mbnma.run <- function(network,
   }
 
   if (is.null(model.file)) {
+
+    # Write JAGS model code
     model <- mbnma.write(fun=fun, user.fun=user.fun,
                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
                          method=method, knots=knots,
@@ -419,8 +420,7 @@ mbnma.run <- function(network,
       model <- gsub("s\\.beta\\.[1-4]\\[1\\] <- 0", "", model)
     }
 
-    # Change beta.1 and beta.2 to emax and et50, etc. if necessary
-    # Change beta.1 and beta.2 to emax and et50, etc. if necessary
+    # Change beta.1 and beta.2 to wrapper parameters (e.g. emax, et50) if necessary
     if (!is.null(arg.params)) {
       code.params <- c("d", "beta", "sd", "tau", "D", "sd.D")
       for (i in seq_along(wrap.params)) {
@@ -438,6 +438,7 @@ mbnma.run <- function(network,
                                   is.character))
     }
 
+    # Add user-defined priors to the model
     if (!is.null(priors)) {
       model <- replace.prior(priors=priors, model=model)
     }
@@ -447,6 +448,7 @@ mbnma.run <- function(network,
     model <- model.file
   }
 
+  # Generate default parameters to monitor
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
@@ -465,18 +467,17 @@ mbnma.run <- function(network,
             paste(pluginvars, collapse=", "))
   }
 
-  if (length(class.effect)>0) {
-    class <- TRUE
-  } else {class <- FALSE}
+  # Set boolean for presence of class effects in model
+  class <- ifelse(length(class.effect)>0, TRUE, FALSE)
 
-  #### Run jags model ####
-
+  # Change doses to dose indices for non-parametric models
   if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
-    # Change doses to dose indices
     data.ab <- index.dose(network[["data.ab"]])[["data.ab"]]
   } else {
     data.ab <- network[["data.ab"]]
   }
+
+  #### Run jags model ####
 
   result.jags <- mbnma.jags(data.ab, model,
                             class=class,
@@ -508,7 +509,6 @@ mbnma.run <- function(network,
                     "beta.4"=beta.4,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
-                    #"class.effect"=class.effect,
                     "class.effect"=assigned.class,
                     "knots"=knots,
                     "cor"=cor,
@@ -542,7 +542,6 @@ mbnma.run <- function(network,
 
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
-                       #parameters.to.save=parameters.to.save,
                        likelihood=NULL, link=NULL, fun=NULL, knots=3,
                        nodesplit=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
@@ -555,10 +554,7 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  #checkmate::assertCharacter(parameters.to.save, any.missing=FALSE, unique=TRUE,
-  #                           null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(fun, any.missing=FALSE,
-                             null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(fun, any.missing=FALSE, null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
@@ -567,23 +563,22 @@ mbnma.jags <- function(data.ab, model,
 
   args <- list(...)
 
+  # Get data into JAGS list format
   if (is.null(likelihood) & is.null(link)) {
-    # For MBNMAtime
-    #jagsdata <- getjagsdata(data.ab, class=class, rho=rho, covstruct=covar) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
-    jagsdata <- getjagsdata(data.ab, class=class) # get data into jags correct format (list("fups", "NT", "NS", "narm", "y", "se", "treat", "time"))
+    # For MBNMAtime (function is equivalent in both packages)
+    jagsdata <- getjagsdata(data.ab, class=class)
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
                             likelihood=likelihood, link=link, fun=fun, knots=knots,
-                            nodesplit=nodesplit) # get data into jags correct format
+                            nodesplit=nodesplit)
   }
 
 
-  # Add variable for maxtime to jagsdata if required
+  # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
   if (grepl("maxtime", model)) {
     jagsdata[["maxtime"]] <- max(data.ab$time)
   } else if (grepl("maxdose", model)) {
-    #jagsdata[["maxdose"]] <- index.dose(network[["data.ab"]])[["maxdose"]]
     jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
 
     # Generate monotonically increasing/decreasing initial values
@@ -599,6 +594,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  # Add parameter to monitor for direct evidence in node-splitting
   if (!is.null(nodesplit)) {
     model <- add.nodesplit(model=model)
 
@@ -607,6 +603,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
+  # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
   if (length(fun)==1) {
     if (fun %in% c("rcs", "ns", "bs")) {
@@ -615,16 +612,15 @@ mbnma.jags <- function(data.ab, model,
   }
 
 
-
   # Remove studyID from jagsdata (not used in model)
   tempjags <- jagsdata
   tempjags[["studyID"]] <- NULL
 
   # Put data from jagsdata into separate R objects
   for (i in seq_along(tempjags)) {
-    ##first extract the object value
+    # extract the object value
     temp <- tempjags[[i]]
-    ##now create a new variable with the original name of the list item
+    # create a new variable with the original name of the list item
     eval(parse(text=paste(names(tempjags)[[i]],"<- temp")))
   }
 
@@ -656,8 +652,8 @@ mbnma.jags <- function(data.ab, model,
         stop("autojags=TRUE cannot be used with parallel=TRUE")
       }
 
+      # Run jags in parallel
       result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
-      #class(result) <- class(result)[c(2,1)]
     }
   },
   error=function(cond) {
@@ -673,7 +669,7 @@ mbnma.jags <- function(data.ab, model,
     }
   }
 
-  jagsdata[["dose"]] <- dosedat # important for if spline is used in data
+  jagsdata[["dose"]] <- dosedat # add dose back to jagsdata if spline models were used
 
   return(list("jagsoutput"=out, "jagsdata"=jagsdata, "model"=model))
 }
@@ -799,38 +795,38 @@ gen.parameters.to.save <- function(model.params, model) {
 
 #' Run an NMA model
 #'
-#' Used for calculating split NMA results, either when comparing models that do not
-#' account for dose-response relationship, or to estimate split results for `overlay.split`.
+#' Used for calculating treatment-level NMA results, either when comparing MBNMA models to models that
+#' make no assumptions regarding dose-response , or to estimate split results for `overlay.split`.
 #' Results can also be compared between consistency (`UME=FALSE`) and inconsistency
-#' (`UME=TRUE`) models to test the validity of the consistency assumption.
+#' (`UME=TRUE`) models to test the validity of the consistency assumption at the treatment-level.
 #'
 #' @inheritParams mbnma.run
 #' @param warn.rhat A boolean object to indicate whether to return a warning if Rhat values
 #' for any monitored parameter are >1.02 (suggestive of non-convergence).
 #' @param drop.discon A boolean object that indicates whether or not to drop disconnected
 #'   studies from the network.
-#' @param n.iter number of total iterations per chain (including burn in; default: 10000)
+#' @param n.iter number of total iterations per chain (including burn in; default: 20000)
 #'
 #' @examples
 #' \donttest{
 #' # Run random effects NMA on the alogliptin dataset
-#' network <- mbnma.network(alog_pcfb)
-#' nma <- nma.run(network, method="random")
+#' alognet <- mbnma.network(alog_pcfb)
+#' nma <- nma.run(alognet, method="random")
 #' print(nma)
 #' plot(nma)
 #'
 #' # Run common effects NMA keeping treatments that are disconnected in the NMA
-#' network <- mbnma.network(GoutSUA_2wkCFB)
-#' nma <- nma.run(network, method="common", drop.discon=FALSE)
+#' goutnet <- mbnma.network(GoutSUA_2wkCFB)
+#' nma <- nma.run(goutnet, method="common", drop.discon=FALSE)
 #'
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
-#' network <- mbnma.network(HF2PPITT)
-#' ume <- nma.run(network, method="random", UME=TRUE)
+#' tripnet <- mbnma.network(HF2PPITT)
+#' ume <- nma.run(tripnet, method="random", UME=TRUE)
 #' }
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
-                    warn.rhat=TRUE, n.iter=10000, drop.discon=TRUE, UME=FALSE, pd="pd.kl", ...) {
+                    warn.rhat=TRUE, n.iter=20000, drop.discon=TRUE, UME=FALSE, pd="pd.kl", ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -881,11 +877,6 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   data.ab <- network$data.ab
   trt.labs <- network$treatments
 
-  # data.ab$treatment <- paste(as.character(factor(data.ab$agent, labels=network$agents)),
-  #                            data.ab$dose,
-  #                            sep="_"
-  # )
-
   # Check treatments that are not connected and remove if not
   if (drop.discon==TRUE) {
     connect <- drop.disconnected(network)
@@ -899,9 +890,9 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   #### Run JAGS model ####
   # Put data from jagsdata into separate R objects
   for (i in seq_along(jagsdata)) {
-    ##first extract the object value
+    # extract the object value
     temp <- jagsdata[[i]]
-    ##now create a new variable with the original name of the list item
+    # create a new variable with the original name of the list item
     eval(parse(text=paste(names(jagsdata)[[i]],"<- temp")))
   }
 
@@ -1043,41 +1034,41 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a linear dose-response MBNMA with random treatment effects
-#' linear <- mbnma.linear(network, slope="rel", method="random")
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random")
 #'
 #' # Fit a linear dose-response MBNMA using a cloglog link function
-#' linear <- mbnma.linear(network, slope="rel", link="cloglog")
+#' linear <- mbnma.linear(tripnet, slope="rel", link="cloglog")
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from linear dose-response MBNMA
-#' linear <- mbnma.linear(network, slope="rel", method="random")
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random")
 #' print(linear$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
-#' linear <- mbnma.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random",
 #'               priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' linear <- mbnma.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random",
 #'               n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' linear <- mbnma.linear(network, slope="rel", method="random",
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random",
 #'               pd="plugin")
 #'
-#' # Calculate effective number of parameters via Kullback-Leibler method
-#' linear <- mbnma.linear(network, slope="rel", method="random",
-#'               pd="pd.kl")
+#' # Calculate effective number of parameters via penalized expected deviance
+#' linear <- mbnma.linear(tripnet, slope="rel", method="random",
+#'               pd="popt")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1116,6 +1107,7 @@ mbnma.linear <- function(network,
                          arg.params=NULL, ...)
 {
 
+  # Assign corresponding run and wrapper parameters
   arg.params <- list(
     wrap.params=c("slope"),
     run.params=c("beta.1")
@@ -1160,41 +1152,41 @@ mbnma.linear <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(HF2PPITT)
 #'
 #' # Fit a exponential dose-response MBNMA with random treatment effects
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random")
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random")
 #'
 #' # Fit a exponential dose-response MBNMA using a cloglog link function
-#' exponential <- mbnma.exponential(network, lambda="rel", link="cloglog")
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", link="cloglog")
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from exponential dose-response MBNMA
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random")
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random")
 #' print(exponential$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random",
 #'                    priors=newpriors)
 #'
 #'
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random",
 #'                    n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random",
 #'                    pd="plugin")
 #'
-#' # Calculate effective number of parameters via Kullback-Leibler method
-#' exponential <- mbnma.exponential(network, lambda="rel", method="random",
-#'                    pd="pd.kl")
+#' # Calculate effective number of parameters via penalized expected deviance
+#' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random",
+#'                    pd="popt")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1233,19 +1225,11 @@ mbnma.exponential <- function(network,
                          arg.params=NULL, ...)
 {
 
+  # Assign corresponding run and wrapper parameters
   arg.params <- list(
     wrap.params=c("lambda"),
     run.params=c("beta.1")
   )
-
-  # Increase precision of prior for beta.1 to prevent errors
-  # if (is.null(priors)) {
-  #   maxdose <- max(network$data.ab$dose)
-  #   lim <- 700/maxdose
-  #   prec <- 1/((lim/2)^2)
-  #   dist <- gsub("prec", signif(prec,5), "dnorm(0,prec)")
-  #   priors <- list("d.lambda"=dist)
-  # }
 
   result <- mbnma.run(network=network, parameters.to.save=parameters.to.save,
                       fun="exponential", user.fun=NULL,
@@ -1289,34 +1273,21 @@ mbnma.exponential <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(HF2PPITT)
 #'
 #' # Fit an Emax dose-response MBNMA with random treatment effects on Emax and ED50
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.emax(tripnet, emax="rel", ed50="rel", method="random")
 #'
 #' # Fit an Emax dose-response MBNMA with common treatment effects on Emax and
 #' #a single common parameter estimated for ED50
-#' emax <- mbnma.emax(network, emax="rel", ed50="common", method="common")
+#' emax <- mbnma.emax(tripnet, emax="rel", ed50="common", method="common")
 #'
-#'
-#' ########## Class effects ##########
-#'
-#' # Generate a dataset with one class for active treatments and one for placebo
-#' class.df <- HF2PPITT
-#' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- mbnma.network(class.df)
-#'
-#' # Fit an Emax function with common relative effects on Emax and ED50 and
-#' #a random class effect on ED50.
-#' emax <- mbnma.emax(netclass,
-#'             emax="rel", ed50="rel", method="common",
-#'             class.effect=list(ed50="random"))
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax function with random relative effects on Emax and ED50
-#' emax <- mbnma.emax(network,
+#' emax <- mbnma.emax(tripnet,
 #'             emax="rel", ed50="rel", method="random")
 #' print(emax$model.arg$priors)
 #'
@@ -1324,7 +1295,7 @@ mbnma.exponential <- function(network,
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
 #'                  inv.R = "dwish(Omega[,],100)")
 #'
-#' emax <- mbnma.emax(network,
+#' emax <- mbnma.emax(tripnet,
 #'             emax="rel", ed50="rel", method="random",
 #'             priors=newpriors)
 #'
@@ -1332,16 +1303,16 @@ mbnma.exponential <- function(network,
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
+#' emax <- mbnma.emax(tripnet, emax="rel", ed50="rel",
 #'             n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
+#' emax <- mbnma.emax(tripnet, emax="rel", ed50="rel",
 #'             pd="plugin")
 #'
-#' # Calculate effective number of parameters via Kullback-Leibler method
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel",
-#'             pd="pd.kl")
+#' # Calculate effective number of parameters via penalized expected deviance
+#' emax <- mbnma.emax(tripnet, emax="rel", ed50="rel",
+#'             pd="popt")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1381,6 +1352,7 @@ mbnma.emax <- function(network,
                          arg.params=NULL, ...)
 {
 
+  # Assign corresponding run and wrapper parameters
   arg.params <- list(
     wrap.params=c("emax", "ed50"),
     run.params=c("beta.1", "beta.2")
@@ -1431,49 +1403,36 @@ mbnma.emax <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(HF2PPITT)
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with random treatment
 #' #effects on Emax, ED50 and Hill
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill="rel",
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="rel", hill="rel",
 #'                  method="random")
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with common treatment
 #' #effects on Emax, a single random parameter estimated for ED50
 #' #and a single common parameter estimated for Hill
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="random", hill="common",
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="random", hill="common",
 #'                  method="common")
 #'
 #' # Assign a specific numerical value for Hill parameter
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=5)
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="rel", hill=5)
 #'
-#'
-#' ########## Class effects ##########
-#'
-#' # Generate a dataset with one class for active treatments and one for placebo
-#' class.df <- HF2PPITT
-#' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active")
-#' netclass <- mbnma.network(class.df)
-#'
-#' # Fit an Emax (with Hill parameter) function with common relative effects on
-#' #all parameters and common class effects on ED50 and Hill.
-#' emax.hill <- mbnma.emax.hill(netclass,
-#'                  emax="rel", ed50="rel", hill="rel", method="common",
-#'                  class.effect=list(ed50="common", hill="common"))
 #'
 #'
 #' ####### Priors #######
 #'
 #' # Obtain priors from an Emax (with Hill parameter) function with
 #' #relative effects on Emax and ED50 and a single common parameter for Hill
-#' emax.hill <- mbnma.emax.hill(network,
+#' emax.hill <- mbnma.emax.hill(tripnet,
 #'                  emax="rel", ed50="rel", hill="common", method="common")
 #' print(emax.hill$model.arg$priors)
 #'
 #' # Set new more informative prior distributions
 #' newpriors <- list(beta.hill = "dnorm(0,0.5) T(,0)")
 #'
-#' emax.hill <- mbnma.emax.hill(network,
+#' emax.hill <- mbnma.emax.hill(tripnet,
 #'                  emax="rel", ed50="rel", hill="common", method="common",
 #'                  priors=newpriors)
 #'
@@ -1481,16 +1440,16 @@ mbnma.emax <- function(network,
 #' ########## Sampler options ##########
 #'
 #' # Change the number of MCMC iterations, the number of chains, and the thin
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="rel", hill=2,
 #'                  n.iter=5000, n.thin=5, n.chains=4)
 #'
 #' # Calculate effective number of parameters via plugin method
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="rel", hill=2,
 #'                  pd="plugin")
 #'
-#' # Calculate effective number of parameters via Kullback-Leibler method
-#' emax.hill <- mbnma.emax.hill(network, emax="rel", ed50="rel", hill=2,
-#'                  pd="pd.kl")
+#' # Calculate effective number of parameters via penalized expected deviance
+#' emax.hill <- mbnma.emax.hill(tripnet, emax="rel", ed50="rel", hill=2,
+#'                  pd="popt")
 #'
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots package) #######
@@ -1531,6 +1490,7 @@ mbnma.emax.hill <- function(network,
                        arg.params=NULL, ...)
 {
 
+  # Assign corresponding run and wrapper parameters
   arg.params <- list(
     wrap.params=c("emax", "ed50", "hill"),
     run.params=c("beta.1", "beta.2", "beta.3", "beta.4")
@@ -1562,7 +1522,8 @@ mbnma.emax.hill <- function(network,
 #'
 #' Uses results from MBNMA JAGS models to calculate pD via the
 #' plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
-#' standard errors or covariance matrices (typically univariate likelihoods).
+#' standard errors or covariance matrices. Currently only functions with univariate likelihoods. Function
+#' is identical in MBNMAdose and MBNMAtime packages.
 #'
 #' @param obs1 A matrix (study x arm) or array (study x arm x time point) containing
 #'   observed data for `y` (normal likelihood) or `r` (binomial or poisson likelihood)
@@ -1638,11 +1599,6 @@ mbnma.emax.hill <- function(network,
 #' @export
 pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
                    likelihood="normal", type="time") {
-  # For univariate models only!!
-
-  # likelihood could in theory be c("normal", "multivar.normal", "binomial")
-  # theta.result = model$BUGSoutput$mean$theta
-  # resdev.result = model$BUGSoutput$mean$totresdev
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1657,6 +1613,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
   checkmate::assertChoice(type, choices=c("dose", "time"), null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # If function is run in MBNMAtime package
   if (type=="time") {
     if (is.null(fups)) {
       stop("`fups` cannot be NA in pDcalc for time-course MBNMA")
@@ -1672,9 +1629,10 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
   for (i in 1:NS) {
     for (k in 1:narm[i]) {
 
+      # For MBNMAtime
       if (type=="time") {
         for (m in 1:fups[i]) {
-          # Need to use formula for residual deviance as plugin
+          # Use formula for residual deviance as plugin
           if (likelihood=="normal") {
             dev.post[i,k,m] <- ((obs1[i,k,m] - theta.result[i,k,m])/obs2[i,k,m])^2
             pD[i,k,m] <- resdev.result[i,k,m] - dev.post[i,k,m]
@@ -1682,6 +1640,8 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
             stop("pD cannot be calculated via `plugin` method for time-course MBNMA models without data following a normal likelihood")
           }
         }
+
+        # For MBNMAdose
       } else if (type=="dose") {
         if (likelihood=="normal") {
           dev.post[i,k] <- ((obs1[i,k] - theta.result[i,k])/obs2[i,k])^2
@@ -1696,6 +1656,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
           dev.post[i,k] <- 2*((rhat[i,k]-obs1[i,k]) + (obs1[i,k] * (log(obs1[i,k]/rhat[i,k]))))
         }
 
+        # Calculate pd contribution for each data point
         pD[i,k] <- resdev.result[i,k] - dev.post[i,k]
 
       }
@@ -1703,6 +1664,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
     }
   }
 
+  # Sum individual pd contributions
   pD <- sum(pD, na.rm=TRUE)
 
   return(pD)
@@ -1715,7 +1677,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 
 #' Update MBNMA to monitor deviance nodes in the model
 #'
-#' Useful for obtaining deviance contributions or fitted values
+#' Useful for obtaining deviance contributions or fitted values. Same function used in MBNMAdose and MBNMAtime packages.
 #'
 #' @param mbnma An S3 object of class `"mbnma"` generated by running
 #'   a dose-response MBNMA model
@@ -1781,7 +1743,7 @@ mbnma.update <- function(mbnma, param="theta",
     stop(paste0(param, " does not vary by study and arm and so array will not be the correct size"))
   }
 
-
+  # Update JAGS model for additional iterations
   result <- rjags::jags.samples(mbnma$model, variable.names = param,
                                 n.iter=n.iter, n.thin=n.thin)
 
@@ -1851,7 +1813,6 @@ changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose"
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  #checkmate::assertClass(model, "rjags", add=argcheck)
   checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   checkmate::assertCharacter(likelihood, null.ok=TRUE, add=argcheck)
@@ -1860,6 +1821,7 @@ changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose"
 
   pdout <- model$BUGSoutput$pD
 
+  # pd by MCMC sampling methods (pd.kl or popt)
   if (pd == "pd.kl" | pd == "popt") {
     if (pd=="pd.kl") {
       temp <- rjags::dic.samples(model$model, n.iter=1000, type="pD")

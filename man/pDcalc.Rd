@@ -60,7 +60,8 @@ A single numeric value for pD calculated via the plugin method.
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
 plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
-standard errors or covariance matrices (typically univariate likelihoods).
+standard errors or covariance matrices. Currently only functions with univariate likelihoods. Function
+is identical in MBNMAdose and MBNMAtime packages.
 }
 \details{
 Method for calculating pD via the plugin method proposed by

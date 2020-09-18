@@ -95,8 +95,7 @@ When relative effects are modelled on more than one dose-response parameter and
 \code{cor = TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled or
-if a model is fitted with multiple dose-response functions.
+\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled.
 }
 \examples{
 # Write model code for a model with an exponential dose-response function,
