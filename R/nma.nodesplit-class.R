@@ -141,13 +141,11 @@ summary.nma.nodesplit <- function(object, ...) {
 #'
 #' @export
 plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
-  # ... are commands to be sent to geom_histogram
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "nma.nodesplit", add=argcheck)
   checkmate::assertChoice(plot.type, choices = c("density", "forest"), null.ok=TRUE, add=argcheck)
-  #checkmate::assertLogical(facet, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (is.null(plot.type)) {

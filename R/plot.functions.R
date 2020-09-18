@@ -81,12 +81,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   predict.data <- summary(predict)
   predict.data[["count"]] <- NA
   predict.data[["cum.count"]] <- NA
-  #predict.data <- predict.data[0,]
-
-  # Change predict.data factors to numeric - REMOVE LATER
-  #predict.data$agent <- as.numeric(as.character(predict.data$agent))
-  #predict.data$dose <- as.numeric(as.character(predict.data$dose))
-
 
   # Identify counts of doses in raw data
   for (i in 1:nrow(predict.data)) {
@@ -133,7 +127,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   }
 
   # Generate colours
-  #cols <- col.scale(n.cut=max(predict.data$count), col=col)
   cols <- alpha.scale(n.cut=n.cut, col=col)
 
   for (agent in seq_along(agents)) {
@@ -191,7 +184,6 @@ alpha.scale <- function(n.cut, col="blue") {
     hue <- col
   }
 
-  #min.rgb <- rgb.end
   cut <- (255-0)/(n.cut)
   alpha <- 0
   alpha.vec <- alpha
@@ -631,11 +623,11 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
                        ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
-    ggplot2::geom_line()
+    ggplot2::geom_line(...)
 
   # Overlay observed responses
   if (disp.obs==TRUE) {
-    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
+    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1, ...)
   }
 
   # Add facets
@@ -700,7 +692,6 @@ plot.invisible <- function(...){
 #' }
 #' @export
 cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
-  # ... are commands to be sent to geom_line
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -769,7 +760,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
 
 #' Returns a forest plot of nodesplit results
 #'
-#' @param ... Optional arguments to be passed to `forestplot::forestplot`
+#' @param ... Optional arguments to be passed to `forestplot::forestplot()`
 #' @inheritParams plot.nodesplit
 #' @noRd
 forest.splits <- function(x, ...) {
@@ -809,20 +800,11 @@ forest.splits <- function(x, ...) {
   }
   df <- temp
 
-  # Add summary dividing lines
-  # comprow <- which(!is.na(df$Comparison))
-  # if (length(comprow)>1) {
-  #   sumind <- rep(F, nrow(df))
-  #   sumind[which(!is.na(df$Comparison))-2] <- T
-  # } else {
-  #   sumind <- rep(F, nrow(df))
-  # }
-
-
+  # Plot forest plot
   forestplot::forestplot(labeltext=cbind(df$Comparison, df$Evidence, df$p.value),
                          mean=df$Median, lower=df$l95, upper=df$u95,
                          boxsize=0.2, graph.pos=3,
-                         xlab="Effect size (95% CrI)", hrzl_lines = TRUE, #is.summary=sumind#,
+                         xlab="Effect size (95% CrI)", hrzl_lines = TRUE,
                          ...)
 
 }
