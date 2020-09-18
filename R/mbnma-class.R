@@ -124,11 +124,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
   }
 
-  # plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-  # if (any(is.na(plotdata[["param"]]))) {
-  #   plotdata[["param"]] <- c(1:nrow(plotdata))
-  # }
-
   # Change param labels for agents
   agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
   if (!is.null(agent.labs)) {
@@ -267,7 +262,6 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
   checkmate::assertClass(x, classes="mbnma", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
-  #checkmate::assertNumeric(to.rank, lower = 2, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -306,6 +300,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
     to.rank <- as.numeric(factor(to.rank, levels=x$network[[levels]]))
   }
 
+  # Check if placebo included in rankings
   if (x$network$agents[1]=="Placebo") {
     to.rank <- to.rank-1
     if (any(to.rank==0)) {
@@ -317,13 +312,14 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
     agents <- x$network[[levels]][to.rank]
   }
 
-
+  # Set direction of ranking
   if (direction==-1) {
     decreasing <- FALSE
   } else if (direction==1) {
     decreasing <- TRUE
   } else {stop("`direction` must be either -1 or 1 for ranking")}
 
+  # Check parameters to rank
   if (is.null(params)) {
     for (i in seq_along(x$BUGSoutput$root.short)) {
       if (length(x$BUGSoutput$long.short[i][[1]])==length(codes.mod)) {
@@ -353,7 +349,6 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
         order(order(x, decreasing = decreasing), decreasing=FALSE)
       }))
-      #colnames(rank.mat) <- to.rank
       colnames(rank.mat) <- agents
 
       # Calculate ranking probabilities
@@ -365,7 +360,6 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 
       rank.result[[params[i]]] <-
         list("summary"=sumrank(rank.mat),
-             #"prob.matrix"=calcprob(rank.mat, treats=to.rank),
              "prob.matrix"=prob.mat,
              "rank.matrix"=rank.mat,
              "cum.matrix"=cum.mat,
@@ -404,8 +398,8 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 #'   Can only take positive values. If left as `NULL` (the default) results will be predicted based on the
 #'   maximum dose of each agent given in the data.
 #' @param n.doses A number indicating the number of doses at which to make predictions
-#'   within each agent. The default is `15`.
-#' @param exact.doses A list of numeric vectors. Each named element in the list correponds to an
+#'   within each agent. The default is `30`.
+#' @param exact.doses A list of numeric vectors. Each named element in the list corresponds to an
 #'   agent (either named similarly to agent names given in the data, or named
 #'   correspondingly to the codes for agents given in `mbnma`) and each number within the vector
 #'   for that element corresponds to a dose of the agent for which to predict responses.
@@ -413,7 +407,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 #' @param E0 An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 #'   placebo) in the prediction. This can take a number of different formats depending
 #'   on how it will be used/calculated. The default is `0` but this will typically lead
-#'   to non-sensical predictions.
+#'   to non-sensical predictions unless an identify link function has been used for the MBNMA model in `object`.
 #'   * `numeric()` A single numeric value representing the deterministic response at dose = 0,
 #'   given on the natural scale - so for binomial data, proportions should be given and
 #'   for Poisson data, a rate should be given.
@@ -535,7 +529,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 #' }
 #'
 #' @export
-predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
+predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
                           E0=0, synth="fixed",
                           ...) {
   ######## CHECKS ########
@@ -546,7 +540,6 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
   checkmate::assertList(max.doses, types="numeric", null.ok=TRUE, add=argcheck)
   checkmate::assertList(exact.doses, types="numeric", null.ok=TRUE, add=argcheck)
   checkmate::assertInt(n.doses, lower=1, add=argcheck)
-  #checkmate::assertDataFrame(E0.estimate, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -643,14 +636,12 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
     stop("`predict() does not work with non-parametric dose-response functions")
   }
   if (length(object$model.arg$fun)>1) {
-    #stop("`predict() currently does not work with models that use multiple dose-response functions")
 
     funs <- c(NA, 1,1,2,3, rep(object$model.arg$knots-1, 3))
     names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
     funs <- funs[names(funs) %in% object$model.arg$fun]
 
-    # Want to find the location of the agents within the vector of agent names in network
-    #funi <- which(names(doses) %in% object$network$agents)
+    # Find the location of the agents within the vector of agent names in network
     funi <- which(object$network$agents %in% names(doses))
     X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
   }
@@ -659,12 +650,14 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
   n <- object$BUGSoutput$n.keep * object$BUGSoutput$n.chains
 
+  # Write dose-response function used in the model
   DR <- suppressMessages(
     write.dose.fun(fun=object$model.arg$fun, user.fun=object$model.arg$user.fun,
                    effect="abs"
     )[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
 
+  # Get dose-response parameter estimates
   betaparams <- get.model.vals(object)
   betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
                       ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
@@ -703,6 +696,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
   predict.result <- list()
 
+  # Add spline basis matrix
   if ("rcs" %in% object$model.arg$fun) {
     splinedoses <- doses
     for (i in seq_along(doses)) {
@@ -712,12 +706,13 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
   }
 
+  # Replace segments of dose-response function string with values for prediction
   for (i in seq_along(doses)) {
     predict.result[[names(doses)[i]]] <- list()
     for (k in seq_along(doses[[i]])) {
       if (names(doses)[i] %in% c("1", "Placebo") | doses[[i]][k]==0) {
         # Ensures reference agent (placebo) takes E0
-        # THIS NEEDS TO BE CHANGED IF INTERCEPT IS RELAXED! sHOULD ONLY BE USED IF INTERCEPT=FALSE
+        # This should be changed if intercept is relaxed
         pred <- E0
 
       } else {
@@ -727,7 +722,6 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
 
         # For multiple DR functions
         tempDR <- gsub("X==", "X[i]==", tempDR)
-        #tempDR <- gsub("s\\.beta\\.", "beta\\.", tempDR)
 
         # Need to enclose ifelse() matrices in list() to allow ifelse to return something in matrix form
         if (length(object$model.arg$fun)>1) {
@@ -744,7 +738,6 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
         }
 
         for (param in seq_along(betaparams)) {
-          #print(param)
           if (is.vector(betaparams[[param]]$result)) {
             assign(paste0("s.", names(betaparams)[param]),
                    betaparams[[param]]$result)
@@ -761,6 +754,7 @@ predict.mbnma <- function(object, n.doses=15, max.doses=NULL, exact.doses=NULL,
           }
         }
 
+        # Evaluate dose-response string for prediction
         chunk <- eval(parse(text=tempDR))
         if (is.list(chunk)) {
           chunk <- chunk[[1]]
@@ -830,16 +824,10 @@ summary.mbnma <- function(object, ...) {
     cat("\nuser.fun:", as.character(object$model.arg$user.fun))
   }
 
-
-
-  #overall.sect <- paste(title, overall.sect, sep="\n")
-
   # Print method section
-  #method.sect <- print.method.sect(object)
   cat(print.method.sect(object))
 
   # Print treatment-level section
-  #treat.sect <- print.treat.str(object)
   print.treat.str(object)
 
   # Class-effect section
