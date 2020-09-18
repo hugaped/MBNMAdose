@@ -10,6 +10,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 #' Rank predicted doses of different agents
 #'
+#' Ranks predictions at different doses from best to worst.
+#'
 #' @inheritParams rank.mbnma
 #' @inheritParams predict.mbnma
 #' @param rank.doses A list of numeric vectors. Each named element corresponds to an
@@ -32,7 +34,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' # Rank predictions from a linear dose-response MBNMA
+#' # Rank all predictions from a linear dose-response MBNMA
 #' linear <- mbnma.run(network, fun="linear")
 #' pred <- predict(linear, E0 = 0.5)
 #' rank <- rank(pred)
@@ -61,7 +63,6 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, classes="mbnma.predict", add=argcheck)
   checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
-  #checkmate::assertList(rank.doses, types="numeric", null.ok = TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (direction==-1) {
@@ -115,6 +116,7 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
   }
 
 
+  # Generate matrix of rankings
   treats <- vector()
   rank.mat <- NULL
   for (i in seq_along(rank.doses)) {
@@ -272,8 +274,11 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
       stop("Agent labels in `network` differ from those in `pred`")
     }
 
-    g <- disp.obs(g=g, network=network, predict=x,
-                  col="green", max.col.scale=NULL)
+    gobs <- disp.obs(g=g, network=network, predict=x,
+                     col="green", max.col.scale=NULL)
+
+    g <- gobs[[1]]
+    cols <- gobs[[2]]
 
   }
   if (overlay.split==TRUE) {

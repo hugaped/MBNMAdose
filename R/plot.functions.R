@@ -153,7 +153,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
   }
 
-  return(g)
+  return(list(g, cols))
 }
 
 
