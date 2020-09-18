@@ -3,6 +3,7 @@ library(DiagrammeRsvg)
 library(rsvg)
 
 
+# Generate nodes for MBNMA classes
 classnodes <-
   create_node_df(
     n = 7,
@@ -13,9 +14,6 @@ classnodes <-
               "nma\\l - plot()\\l",
               "nodesplit\\l - plot()\\l - summary()\\l",
               "mbnma.rank\\l - plot()\\l - summary()\\l"),
-    #type = "lower",
-    #style = "filled",
-    #color = "aqua",
     color = "black",
     fontname="Consolas",
     shape = "rectangle",
@@ -24,23 +22,21 @@ classnodes <-
     fontalign="left",
     height=0.7,
     width=2
-    #data = c(3.5, 2.6, 9.4, 2.7)
     )
 
-classedges <-
-  create_edge_df(
-    from = c("1", "2", "2", "2", "3", "3"),
-    to =   c("2", "3", "5", "6", "4", "7"),
-    color="black",
-    #label=c("mbnma.network()", "mbnma.run()", "nma.run()", "mbnma.nodesplit()", "predict()", "rank()"),
-    rel = "a",
-    fontname="Consolas"
-    )
+# Generate edges between classes
+# classedges <-
+#   create_edge_df(
+#     from = c("1", "2", "2", "2", "3", "3"),
+#     to =   c("2", "3", "5", "6", "4", "7"),
+#     color="black",
+#     rel = "a",
+#     fontname="Consolas"
+#     )
 
-g <- create_graph(nodes_df = classnodes,
-                  #edges_df = classedges,
-                  attr_theme = "tb")
+g <- create_graph(nodes_df = classnodes, attr_theme = "tb")
 
+# Generate function nodes
 funnodes <-
   create_node_df(
     n=9,
@@ -57,27 +53,29 @@ funnodes <-
 g <- add_node_df(g, funnodes)
 
 
-
+# Generate edges between classes and functions
 funedges <-
   create_edge_df(
     from = c("1", "8", "2", "9", "2", "10", "2", "11", "3", "12", "3", "13", "4", "3", "3", "7"),
     to =   c("8", "2", "9", "3", "10", "5", "11", "6", "12", "4", "13", "7", "13", "14", "15", "16"),
     color="black",
-    #label=c("mbnma.network()", "mbnma.run()", "nma.run()", "mbnma.nodesplit()", "predict()", "rank()"),
     rel = "a",
     fontname="Consolas",
     arrowhead=c(rep(c("None", "normal"),6), rep("none",4))
   )
 g <- add_edge_df(g, funedges)
 
-g <- g %>% #set_node_attrs(node_attr = width, values=2) %>%
+
+# Set graph attributes
+g <- g %>%
   add_global_graph_attrs( attr = "splines",
                           value = "ortho",
                           attr_type = "graph")
 
-
+# Render graph
 render_graph(g)
 
+# Save graph
 render_graph(g) %>% export_svg %>% charToRaw %>%
   rsvg_png("~/MBNMA/MBNMA R Package/Dose/MBNMAdose/man/figures/functionstructure.png")
 
