@@ -65,6 +65,9 @@ At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regarding
 model fitting. Exported functions in the package are connected like so:
 
+*MBNMAdose package structure: Light green nodes represent classes and
+the generic functions that can be applied to them. Dashed boxes indicate
+functions that can be applied to objects of specific classes*
 ![Workflow](man/figures/functionstructure.png)
 
 ## References

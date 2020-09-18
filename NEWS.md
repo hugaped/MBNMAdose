@@ -8,6 +8,7 @@
 
 ## Additions/changes
 
+- Updated and simplified package structure plot in README file
 - `overlay.split()` uses full distribution of `E0` rather than summary statistics
 - `mbnma.predict` object now contains values assigned/estimated for `E0` to be used in `overlay.split()`
 - In `plot.nodesplit()`, `plot.type="forest"` plots a single forest plot with results for each node-split comparison, rather than presenting results in panels.
