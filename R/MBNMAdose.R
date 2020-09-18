@@ -10,8 +10,12 @@
 #'
 #' Whilst making use of all the available evidence in a statistically robust and biologically plausible framework,
 #' this also can help connect networks at the agent level that may otherwise be disconnected at the dose/treatment
-#' level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard
-#' Network Meta-Analysis (NMA). All models and analyses are implemented
+#' level, and help improve precision of estimates. The modelling framework is based on synthesising relative effects
+#' which avoids the necessity to adjust for baseline predictors, thereby making fewer assumptions than in typical
+#' Model-Based Meta-Analysis.
+#'
+#' By modelling the dose-response, MBNMA avoids heterogeneity and inconsistency that can arise from "lumping" different
+#' doses together (a technique sometimes done in NNetwork Meta-Analysis). All models and analyses are implemented
 #' in a Bayesian framework, following an extension of the standard NMA methodology presented by
 #' \insertCite{lu2004}{MBNMAdose} and are run in \insertCite{jags;textual}{MBNMAdose}. For full details of
 #' dose-response MBNMA methodology see \insertCite{mawdsley2016;textual}{MBNMAdose}. Within this package we
@@ -22,7 +26,7 @@
 #'
 #' 1. Load your data into the correct format using `mbnma.network()`
 #' 2. Analyse your data using `mbnma.run()`, or any of the available wrapper dose-response functions
-#' 3. Test for consistency at the treatment-level using functions like `nma.nodesplit()` and `nma.run()`
+#' 3. Check model fit and test for consistency using functions like `mbnma.nodesplit()`
 #' 4. Examine model results using forest plots and treatment rankings
 #' 5. Use your model to predict responses using `predict()`
 #'
