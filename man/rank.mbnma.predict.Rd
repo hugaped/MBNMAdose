@@ -26,7 +26,7 @@ frame, a matrix of rankings for each MCMC iteration, and a matrix of probabiliti
 that each agent has a particular rank, for each parameter that has been ranked.
 }
 \description{
-Rank predicted doses of different agents
+Ranks predictions at different doses from best to worst.
 }
 \details{
 If \code{predict} contains multiple predictions at dose=0, then only the first of these
@@ -37,7 +37,7 @@ will be included, to avoid duplicating rankings.
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
-# Rank predictions from a linear dose-response MBNMA
+# Rank all predictions from a linear dose-response MBNMA
 linear <- mbnma.run(network, fun="linear")
 pred <- predict(linear, E0 = 0.5)
 rank <- rank(pred)

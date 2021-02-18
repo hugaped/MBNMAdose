@@ -54,7 +54,7 @@ level (for NMA)}
 dose-response. Options are given in \code{details}.}
 
 \item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
-an MBNMA nodesplit.}
+an MBNMA nodesplit (see \code\link{mbnma.nodesplit}).}
 
 \item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
 If a single number is given it indicates the number of knots (they will
@@ -101,21 +101,16 @@ Converts MBNMA data frame to a list for use in JAGS model
 \examples{
 # Using the triptans headache dataset
 network <- mbnma.network(HF2PPITT)
-
 jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 
 
 # Get JAGS data with class
-df <- HF2PPITT
-df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-netclass <- mbnma.network(df)
-
+netclass <- mbnma.network(osteopain_2wkabs)
 jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 
-# Get JAGS data at the treatment level for Network Meta-Analysis
+# Get JAGS data at the treatment level for split Network Meta-Analysis
 network <- mbnma.network(HF2PPITT)
-
 jagsdat <- getjagsdata(network$data.ab, level="treatment")
 
 }

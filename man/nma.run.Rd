@@ -18,6 +18,7 @@ nma.run(
   drop.discon = TRUE,
   UME = FALSE,
   pd = "pd.kl",
+  parameters.to.save = NULL,
   ...
 )
 }
@@ -75,6 +76,9 @@ number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
 of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
 }}
+
+\item{parameters.to.save}{A character vector containing names of parameters
+to monitor in JAGS}
 }
 \description{
 Used for calculating treatment-level NMA results, either when comparing MBNMA models to models that

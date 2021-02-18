@@ -7,7 +7,7 @@ dose-response models}
 \usage{
 \method{predict}{mbnma}(
   object,
-  n.doses = 15,
+  n.doses = 30,
   max.doses = NULL,
   exact.doses = NULL,
   E0 = 0,
@@ -20,7 +20,7 @@ dose-response models}
 a dose-response MBNMA model}
 
 \item{n.doses}{A number indicating the number of doses at which to make predictions
-within each agent. The default is \code{15}.}
+within each agent. The default is \code{30}.}
 
 \item{max.doses}{A list of numbers. Each named element in the list corresponds to an
 agent (either named similarly to agent names given in the data, or named
@@ -30,7 +30,7 @@ predictions will be calculated at different doses (the number of these is determ
 Can only take positive values. If left as \code{NULL} (the default) results will be predicted based on the
 maximum dose of each agent given in the data.}
 
-\item{exact.doses}{A list of numeric vectors. Each named element in the list correponds to an
+\item{exact.doses}{A list of numeric vectors. Each named element in the list corresponds to an
 agent (either named similarly to agent names given in the data, or named
 correspondingly to the codes for agents given in \code{mbnma}) and each number within the vector
 for that element corresponds to a dose of the agent for which to predict responses.
@@ -39,7 +39,7 @@ Doses can only take positive values.}
 \item{E0}{An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 placebo) in the prediction. This can take a number of different formats depending
 on how it will be used/calculated. The default is \code{0} but this will typically lead
-to non-sensical predictions.
+to non-sensical predictions unless an identify link function has been used for the MBNMA model in \code{object}.
 \itemize{
 \item \code{numeric()} A single numeric value representing the deterministic response at dose = 0,
 given on the natural scale - so for binomial data, proportions should be given and

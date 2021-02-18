@@ -20,7 +20,7 @@ Easiest to use treatment labels stored by \code{mbnma.network()}}
 }
 \value{
 A series of histograms that show rankings for each treatment/agent/prediction, with a
-separate panel for each parameter
+separate panel for each parameter.
 The object returned is a list containing a separate element for each parameter in \code{params}
 which is an object of \code{class(c("gg", "ggplot"))}.
 }
@@ -48,5 +48,10 @@ pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
             exact.doses=doses)
 rank <- rank(pred)
 plot(rank)
+
+
+# Trying to plot a parameter that has not been ranked will return an error
+#### ERROR ####
+# plot(ranks, params="d.lambda")
 }
 }

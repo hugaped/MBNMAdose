@@ -164,9 +164,9 @@ plot(net.noplac)
 print(HF2PPITT)
 
 # Define network
-network <- mbnma.network(HF2PPITT, description="Example")
+network <- mbnma.network(HF2PPITT, description="Example network")
 
-# Plot network
+summary(network)
 plot(network)
 
 }

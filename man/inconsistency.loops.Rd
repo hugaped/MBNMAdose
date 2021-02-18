@@ -2,7 +2,7 @@
 % Please edit documentation in R/inconsistency.functions.R
 \name{inconsistency.loops}
 \alias{inconsistency.loops}
-\title{Identify comparisons in loops that fulfil criteria for node-splitting}
+\title{Identify comparisons in loops that fulfill criteria for node-splitting}
 \usage{
 inconsistency.loops(df, checkindirect = TRUE, incldr = FALSE)
 }
@@ -36,8 +36,8 @@ dose-response function for the treatments in \code{t1} and \code{t2} respectivel
 }
 \description{
 Identify comparisons informed by both direct and indirect evidence from
-independent sources, which therefore fulfil the criteria for testing for
-inconsistency via node-splitting. Follows the method of \insertCite{vanvalkenhoef2016;textual}{MBNMAdose}.
+independent sources, which therefore fulfill the criteria for testing for
+inconsistency via node-splitting.
 }
 \details{
 Similar to \code{gemtc::mtc.nodesplit.comparisons()} but uses a fixed

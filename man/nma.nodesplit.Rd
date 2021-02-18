@@ -4,7 +4,7 @@
 \name{nma.nodesplit}
 \alias{nma.nodesplit}
 \alias{plot.nma.nodesplit}
-\title{Node-splitting model for testing consistency at the treatment level}
+\title{Node-splitting model for testing consistency at the treatment-level}
 \usage{
 nma.nodesplit(
   network,
@@ -59,7 +59,7 @@ Plots the desired graph(s) and returns an object (or list of object if
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
 indirect evidence. A discrepancy between the two suggests that the consistency
-assumption required for NMA and MBNMA may violated.
+assumption required for NMA (and subsequently MBNMA) may violated.
 }
 \details{
 The S3 method \code{plot()} on an \code{nma.nodesplit} object generates either
