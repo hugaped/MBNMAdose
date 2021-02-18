@@ -347,6 +347,11 @@ mbnma.run <- function(network,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
+  if (n.iter==n.burnin) {
+    n.burnin <- n.burnin - 1
+  }
+
   # Ensure pd.kl or popt not run with parallel
   if (parallel==TRUE & pd %in% c("pd.kl", "popt")) {
     warning("pd cannot be calculated using Kullback-Leibler divergence (pd=`pk.kl` or pd=`popt`) for\nmodels run in parallel. Defaulting to pd=`pv`")
@@ -824,7 +829,8 @@ gen.parameters.to.save <- function(model.params, model) {
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
-                    warn.rhat=TRUE, n.iter=20000, drop.discon=TRUE, UME=FALSE, pd="pd.kl", ...) {
+                    warn.rhat=TRUE, n.iter=20000, drop.discon=TRUE, UME=FALSE, pd="pd.kl",
+                    parameters.to.save=NULL, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -836,6 +842,7 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   checkmate::assertLogical(UME, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(parameters.to.save, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
@@ -854,10 +861,13 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   }
 
   #### Parameters ####
-  parameters.to.save <- c("d", "totresdev")
-  if (method=="random") {
-    parameters.to.save <- append(parameters.to.save, "sd")
+  if (is.null(parameters.to.save)){
+    parameters.to.save <- c("d", "totresdev")
+    if (method=="random") {
+      parameters.to.save <- append(parameters.to.save, "sd")
+    }
   }
+
 
   # Add nodes to monitor to calculate plugin pd
   if (pd=="plugin") {
