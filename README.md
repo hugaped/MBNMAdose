@@ -29,6 +29,9 @@ full details of dose-response MBNMA methodology see Mawdsley et
 al. (2016). Throughout this package we refer to a **treatment** as a
 specific **dose** or a specific **agent**.
 
+A short introductory YouTube video from the ESMAR Conference 2021 can be
+found [here](https://doi.org/10.6084/m9.figshare.13637936.v1)
+
 ## Installation
 
 On CRAN you can easily install the current release version of

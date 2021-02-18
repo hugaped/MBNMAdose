@@ -26,6 +26,8 @@ of different agents in a way that can account for the dose-response relationship
 
 Whilst making use of all the available evidence in a statistically robust and biologically plausible framework, this also can help connect networks at the agent level that may otherwise be disconnected at the dose/treatment level, and help improve precision of estimates. It avoids "lumping" of doses that is often done in standard Network Meta-Analysis (NMA). All models and analyses are implemented in a Bayesian framework, following an extension of the standard NMA methodology presented by [@lu2004] and are run in JAGS (Just Another Gibbs Sampler). For full details of dose-response MBNMA methodology see Mawdsley et al. [-@mawdsley2016]. Throughout this package we refer to a **treatment** as a specific **dose** or a specific **agent**.
 
+A short introductory YouTube video from the ESMAR Conference 2021 can be found [here](https://doi.org/10.6084/m9.figshare.13637936.v1)
+
 
 ## Installation
 
