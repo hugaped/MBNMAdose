@@ -311,9 +311,9 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   }
 
   # Plot netgraph
-  layout <- igraph::layout_(g, layout)
+  g$layout <- igraph::layout_(g, layout)
   igraph::plot.igraph(g,
-                      layout = layout,
+                      #layout = layout,
                       ...
   )
 
