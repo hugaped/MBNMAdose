@@ -263,6 +263,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
 
 
   igraph::E(g)$curved <- FALSE # ensure edges are straight
+  igraph::E(g)$color <- "grey20"
 
   if (!is.null(doselink)) {
     igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),

@@ -83,7 +83,7 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
       ggplot2::ylab("Effect size on link scale") +
-      ggplot2::theme_bw()
+      theme_mbnma()
 
   } else if (bydose==FALSE) {
     # Plot conventional forest plot
@@ -95,7 +95,7 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
       ggplot2::xlab("Treatment") +
-      ggplot2::theme_bw()
+      theme_mbnma()
   }
 
   graphics::plot(g)

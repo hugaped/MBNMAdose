@@ -313,7 +313,7 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=c("Posterior Median"="solid",
                                                    "95% CrI"="dashed")) +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   return(g)
 }

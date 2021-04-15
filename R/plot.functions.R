@@ -420,7 +420,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab("Posterior mean") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   if (facet==TRUE) {
     g <- g + ggplot2::facet_wrap(~facet, scales = facetscale) +
@@ -636,7 +636,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab) +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   suppressWarnings(graphics::plot(g))
 
@@ -731,7 +731,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
     ggplot2::xlab("Rank (1 = best)") +
     ggplot2::ylab("Cumulative probability") +
     ggplot2::labs(linetype="Parameter", colour="Parameter") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   graphics::plot(g)
 
@@ -807,4 +807,30 @@ forest.splits <- function(x, ...) {
                          xlab="Effect size (95% CrI)", hrzl_lines = TRUE,
                          ...)
 
+}
+
+
+
+
+
+
+#' MBNMA ggplot2 theme style
+#' @noRd
+theme_mbnma <- function(...) {
+  ggplot2::theme_bw(...) +
+    ggplot2::theme(
+      # change stuff here
+      panel.background  = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill="white", colour=NA),
+      legend.background = ggplot2::element_rect(fill="transparent", colour=NA),
+      legend.key = ggplot2::element_rect(fill="transparent", colour=NA),
+
+      # From multinma
+      #panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
+      panel.grid.major = ggplot2::element_line(colour = "grey95"),
+      panel.grid.minor = ggplot2::element_line(colour = "grey95"),
+      strip.background = ggplot2::element_rect(colour = "black",
+                                               fill = "lightsteelblue1"),
+      strip.text = ggplot2::element_text(colour = "black")
+    )
 }

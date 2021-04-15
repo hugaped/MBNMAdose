@@ -186,7 +186,7 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
       ggplot2::facet_wrap(~factor(comp)) +
-      ggplot2::theme_bw() +
+      theme_mbnma() +
       ggplot2::labs(linetype="Evidence", fill="Evidence")
 
     # Check for size of y-axis and allow scale=free if large difference (e.g. 50x)

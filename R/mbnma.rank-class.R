@@ -102,7 +102,7 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
       ggplot2::ggtitle(params[param]) +
-      ggplot2::theme_bw()
+      theme_mbnma()
 
     graphics::plot(g)
 

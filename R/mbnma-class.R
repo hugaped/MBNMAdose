@@ -182,7 +182,7 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   # Axis labels
   g <- g + ggplot2::xlab("Agent / Class") +
     ggplot2::ylab("Effect size") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   return(g)
 }

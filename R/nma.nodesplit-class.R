@@ -182,7 +182,7 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
                      title=ggplot2::element_text(size=18)) +
       ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
       ggplot2::facet_wrap(~factor(comp)) +
-      ggplot2::theme_bw()
+      theme_mbnma()
   }
   if ("density" %in% plot.type) {
 
@@ -195,7 +195,7 @@ plot.nma.nodesplit <- function(x, plot.type=NULL, ...) {
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
       ggplot2::facet_wrap(~factor(comp)) +
-      ggplot2::theme_bw() +
+      theme_mbnma() +
       ggplot2::labs(linetype="Evidence", fill="Evidence")
   }
 
