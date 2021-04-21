@@ -342,7 +342,7 @@ mbnma.run <- function(network,
   checkmate::reportAssertions(argcheck)
 
   # Check fun and convert to list
-  fun <- check.fun(fun=fun, network=network)
+  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)

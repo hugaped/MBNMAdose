@@ -1053,77 +1053,46 @@ cutjags <- function(jagsresult) {
 
   fun <- jagsresult$model.arg$fun
 
-  if (length(fun)>1) {
+  if (length(fun$name)>1) {
 
-    funs <- c(NA, 1,1,2,3)
-    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill")
-    funs <- funs[names(funs) %in% fun]
-
-    if ("user" %in% names(funs)) {
-      count <- 0
-      for (i in 1:4) {
-        if (grepl(paste0("beta.", i)) %in% as.character(jagsresult$model.arg$user.fun[2])) {
-          count <- count+1
-        }
-      }
-      funs[names(funs)=="user"] <- count
+    # Drop first element in posvec if placebo is included
+    posvec <- fun$posvec
+    if (jagsresult$network$agents[1]=="Placebo") {
+      posvec <- posvec[-1]
     }
 
-    # Identify indices of parameters to drop
-    dropindex <- vector()
-    droplist <- list()
-    count <- 1
-    for (i in seq_along(funs)) { # i is the function index
+    apool <- fun$paramlist
 
-      for (k in count:cumsum(funs)[i]) { # k is beta parameter index
-        dropagent <- which(!fun %in% names(funs)[i])
-        droplist[[length(droplist)+1]] <- dropagent
+    univec <- unique(posvec)
+    for (i in seq_along(univec)) {
+      index <- which(posvec==univec[i])
 
-        for (m in seq_along(dropagent)) { # m is agent index to drop
-          temp <- which(grepl(paste0("d\\.",k, "\\[", dropagent[m], "\\]"),
-                              rownames(jagsresult$BUGSoutput$summary)))
+      for (k in seq_along(apool[[i]])) {
+        tag <- gsub("\\.", "\\\\.", names(apool[[i]])[k])
 
-          dropindex <- append(dropindex, temp)
+        # Cut sims.array
+        dropi <- grep(paste0(tag, "\\["), dimnames(jagsresult$BUGSoutput$sims.array)[[3]])
+        dropi <- dropi[-index]
+        jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropi]
 
-          temp <- which(grepl(paste0("beta\\.",k, "\\[", dropagent[m], "\\]"),
-                              rownames(jagsresult$BUGSoutput$summary)))
+        # Cut sims.list
+        jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]] <-
+          jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]][,index]
 
-          dropindex <- append(dropindex, temp)
+        # Cut sims.matrix
+        dropi <- grep(paste0(tag, "\\["), colnames(jagsresult$BUGSoutput$sims.matrix))
+        dropi <- dropi[-index]
+        jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropi]
 
-        }
-      }
-      count <- count + funs[i]
+        # Cut summary
+        dropi <- grep(paste0(tag, "\\["), rownames(jagsresult$BUGSoutput$summary))
+        dropi <- dropi[-index]
+        jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropi,]
 
-    }
-    dropindex <- dropindex[dropindex!=0]
-
-    # Remove from all BUGSoutputs
-    jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropindex]
-    jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropindex]
-    jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropindex,]
-
-    trtef <- c("d.", "beta.")
-    for (param in seq_along(droplist)) {
-      for (p in seq_along(trtef) ) {
-        if (paste0(trtef[p], param) %in% names(jagsresult$BUGSoutput$sims.list)) {
-
-          jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]] <-
-            jagsresult$BUGSoutput$sims.list[[paste0(trtef[p], param)]][,-droplist[[param]]]
-
-          jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]] <-
-            jagsresult$BUGSoutput$mean[[paste0(trtef[p], param)]][-droplist[[param]]]
-
-          jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]] <-
-            jagsresult$BUGSoutput$sd[[paste0(trtef[p], param)]][-droplist[[param]]]
-
-          jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]] <-
-            jagsresult$BUGSoutput$median[[paste0(trtef[p], param)]][-droplist[[param]]]
-
-          for (i in 1:length(jagsresult$BUGSoutput$last.values)) {
-            jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]] <-
-              jagsresult$BUGSoutput$last.values[[i]][[paste0(trtef[p], param)]][-droplist[[param]]]
-          }
-        }
+        # Cut mean, SD and median
+        jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]][index]
+        jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]][index]
+        jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]][index]
       }
     }
 
