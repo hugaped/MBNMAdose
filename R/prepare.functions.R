@@ -1227,34 +1227,54 @@ check.network <- function(g, reference=1) {
 
 #' Generates spline basis matrices for fitting to dose-response function
 #'
-#' @param x A numeric vector indicating all doses of an agent available in the dataset (including placebo)
-#' @param spline Indicates the type of spline function. Can be either natural cubic spline (`"ns"`), restricted cubic
-#'   spline (`"rcs"`) or B-spline (`"bs"`).
-#' @param ord a positive integer giving the order of the spline function. This is the number of coefficients in each
-#'   piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.
-#' @param max.dose A number indicating the maximum dose between which to calculate knot points.
-#' @inheritParams mbnma.run
+#' @param x A numeric vector indicating all time points available in the dataset
+#' @param spline Indicates the type of spline function. Can be either a piecewise linear spline (`"ls"`),
+#' natural cubic spline (`"ns"`), restricted cubic spline (`"rcs"`) or B-spline (`"bs"`).
+#' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
+#'  (e.g. `degree=3` represents a cubic spline).
+#' @param max.dose A number indicating the maximum dose between which to calculate the spline function.
+#' @param knots The number/location of knots. If a single integer is given it indicates the number of knots (they will
+#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the quantiles of the knots as
+#'   a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
+#'   is 100mg/d, `knots=c(0.1,0.5)` would indicate knots should be fitted at 10mg/d and 50mg/d.
 #'
+#' @return A spline basis matrix with number of rows equal to `length(x)` and the number of columns equal to the number
+#' of coefficients in the spline.
 #'
-genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
+#' @examples
+#' x <- 0:100
+#'
+#' genspline(x)
+#'
+#' # Generate a quadratic B-spline with 1 equally spaced internal knot
+#' genspline(x, spline="bs", knots=2, degree=2)
+#'
+#' # Generate a restricted cubic spline with 3 knots at selected quantiles
+#' genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+#'
+#' # Generate a piecewise linear spline with 3 equally spaced knots
+#' genspline(x, spline="ls", knots=3)
+#'
+#' @export
+genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(knots, add=argcheck)
-  checkmate::assertNumeric(ord, add=argcheck)
+  checkmate::assertIntegerish(degree, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check knot specification
-  if (length(knots)==1) {
-    if (knots<3) {
-      stop("Minimum number of knots is 3")
-    }
-  } else if (length(knots)>1) {
-    if (length(knots)<3){
-      stop("Minimum number of knots is 3")
-    }
-  }
+  # if (length(knots)==1) {
+  #   if (knots<3) {
+  #     stop("Minimum number of knots is 3")
+  #   }
+  # } else if (length(knots)>1) {
+  #   if (length(knots)<3){
+  #     stop("Minimum number of knots is 3")
+  #   }
+  # }
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
@@ -1284,29 +1304,37 @@ genspline <- function(x, spline="rcs", knots=3, ord=4, max.dose=max(x)){
 
     # Generate spline basis matrix
     if (spline=="bs") {
-      splinedesign <- splines::splineDesign(knots, x0, ord=ord, outer=TRUE)
+      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
     } else if (spline=="rcs") {
       splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
-      splinedesign <- splines::ns(x0, knots=knots)
-      splinedesign <- cbind(x0, splinedesign)
+      splinedesign <- splines::ns(x=x0, knots=knots)
+
+      # splinedesign <- splines::ns(x0, knots=knots)
+      # splinedesign <- cbind(x0, splinedesign)
+    } else if (spline=="ls") {
+      splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
     }
+    rownames(splinedesign) <- x0
 
     # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
-    if (length(x0)>1) {
-      splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
-    } else {
-      splinedesign <- matrix(0, ncol=length(splinedesign))
-    }
+    splinedesign <- splinedesign[rownames(splinedesign) %in% x,]
+    # if (length(x0)>1) {
+    #   splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
+    # } else {
+    #   splinedesign <- matrix(0, ncol=length(splinedesign))
+    # }
 
     if (!is.matrix(splinedesign)) {
       splinedesign <- matrix(splinedesign, nrow=1)
+    }
+
+    if (ncol(splinedesign)>4) {
+      stop("splines of this complexity cannot currently be modelled using 'tspline()'...\nand your data is unlikely to be able to support it!")
     }
 
 
     return(splinedesign)
 
   }
-
-
 }

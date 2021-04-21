@@ -311,14 +311,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' @export
 mbnma.run <- function(network,
-                      fun="linear",
-                      beta.1="rel",
-                      beta.2="rel", beta.3="rel", beta.4="rel",
+                      fun=dloglin(rate="rel"),
                       method="common",
                       class.effect=list(), UME=FALSE,
-                      knots=3,
                       cor=TRUE,
-                      var.scale=NULL,
+                      omega=NULL,
                       user.fun=NULL,
                       parameters.to.save=NULL,
                       pd="pd.kl", parallel=FALSE,
@@ -328,6 +325,8 @@ mbnma.run <- function(network,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       autojags=FALSE, Rhat=1.1, n.update=10,
+                      beta.1="rel",
+                      beta.2="rel", beta.3="rel", beta.4="rel", knots=3,
                       arg.params=NULL, ...
 ) {
 
@@ -341,6 +340,9 @@ mbnma.run <- function(network,
   checkmate::assertList(arg.params, unique=TRUE, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Check fun and convert to list
+  fun <- check.fun(fun=fun, network=network)
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
@@ -359,7 +361,8 @@ mbnma.run <- function(network,
   }
 
   # Ensure cor set to FALSE if multiple dose-response functions are modelled
-  if (cor==TRUE & length(fun)>1) {cor <- FALSE}
+  # if (cor==TRUE & length(fun)>1) {cor <- FALSE}
+  if (cor==TRUE & class(fun)=="list") {cor <- FALSE}
 
   # Ensure rjags parameters make sense
   if (n.iter<=n.burnin) {
@@ -375,73 +378,72 @@ mbnma.run <- function(network,
 
 
   # Switch beta parameters for wrapper parameters
-  assigned.class <- class.effect
-  if (!is.null(arg.params)) {
-    if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
-      stop("arg.params has been incorrectly specified")
-    }
-    wrap.params <- arg.params$wrap.params
-    run.params <- arg.params$run.params
-
-    fun.params <- names(class.effect)
-    for (k in seq_along(fun.params)) {
-      fun.params[k] <- run.params[which(fun.params[k]==wrap.params)]
-    }
-    names(class.effect) <- fun.params
-
-  } else if (is.null(arg.params)) {
-    wrap.params <- list(beta.1, beta.2, beta.3, beta.4)
-    wrap.params <- which(sapply(wrap.params,
-                                is.character))
-  }
+  # assigned.class <- class.effect
+  # if (!is.null(arg.params)) {
+  #   if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
+  #     stop("arg.params has been incorrectly specified")
+  #   }
+  #   wrap.params <- arg.params$wrap.params
+  #   run.params <- arg.params$run.params
+  #
+  #   fun.params <- names(class.effect)
+  #   for (k in seq_along(fun.params)) {
+  #     fun.params[k] <- run.params[which(fun.params[k]==wrap.params)]
+  #   }
+  #   names(class.effect) <- fun.params
+  #
+  # } else if (is.null(arg.params)) {
+  #   wrap.params <- list(beta.1, beta.2, beta.3, beta.4)
+  #   wrap.params <- which(sapply(wrap.params,
+  #                               is.character))
+  # }
 
   if (is.null(model.file)) {
 
     # Write JAGS model code
-    model <- mbnma.write(fun=fun, user.fun=user.fun,
-                         beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
+    model <- mbnma.write(fun=fun,
                          method=method, knots=knots,
                          class.effect=class.effect, UME=UME,
                          cor=cor, var.scale=var.scale,
                          likelihood=likelihood, link=link
     )
 
-    # Edit beta parameters if they aren't in dose-response function
-    for (i in 1:4) {
-      if (!(grepl(paste0("beta\\.", i), model) | grepl(paste0("d\\.", i), model))) {
-        assign(paste0("beta.", i), NULL)
-      }
-    }
+    # # Edit beta parameters if they aren't in dose-response function
+    # for (i in 1:4) {
+    #   if (!(grepl(paste0("beta\\.", i), model) | grepl(paste0("d\\.", i), model))) {
+    #     assign(paste0("beta.", i), NULL)
+    #   }
+    # }
 
     # Change code for if plac not included in network
     if (plac.incl==FALSE) {
-      model <- gsub("\\\nfor \\(k in 2:Nagent\\)\\{ # Priors on relative treatment effects\\\n",
-                    "for (k in 1:Nagent){ # Priors on relative treatment effects\n",
+      model <- gsub("for \\(k in 2:Nagent\\)\\{ # Priors on relative treatment effects",
+                    "for (k in 1:Nagent){ # Priors on relative treatment effects",
                     model)
-      model <- gsub("\\\nfor \\(k in 2:Nclass\\)\\{ # Priors on relative class effects\\\n",
-                    "for (k in 1:Nclass){ # Priors on relative class effects\n",
+      model <- gsub("for \\(k in 2:Nclass\\)\\{ # Priors on relative class effects",
+                    "for (k in 1:Nclass){ # Priors on relative class effects",
                     model)
 
-      model <- gsub("s\\.beta\\.[1-4]\\[1\\] <- 0", "", model)
+      model <- gsub("s\\.beta\\.[1-9]\\[1\\] <- 0", "", model)
     }
 
-    # Change beta.1 and beta.2 to wrapper parameters (e.g. emax, et50) if necessary
-    if (!is.null(arg.params)) {
-      code.params <- c("d", "beta", "sd", "tau", "D", "sd.D")
-      for (i in seq_along(wrap.params)) {
-        for (k in seq_along(code.params)) {
-          model <- gsub(paste(code.params[k], strsplit(run.params[i], split="[.]")[[1]][2], sep="."),
-                        paste(code.params[k], wrap.params[i], sep="."), model)
-        }
-      }
-
-      wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3, beta.4),
-                                              is.character))]
-
-    } else {
-      wrap.params <- which(sapply(list(beta.1, beta.2, beta.3, beta.4),
-                                  is.character))
-    }
+    # # Change beta.1 and beta.2 to wrapper parameters (e.g. emax, et50) if necessary
+    # if (!is.null(arg.params)) {
+    #   code.params <- c("d", "beta", "sd", "tau", "D", "sd.D")
+    #   for (i in seq_along(wrap.params)) {
+    #     for (k in seq_along(code.params)) {
+    #       model <- gsub(paste(code.params[k], strsplit(run.params[i], split="[.]")[[1]][2], sep="."),
+    #                     paste(code.params[k], wrap.params[i], sep="."), model)
+    #     }
+    #   }
+    #
+    #   wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3, beta.4),
+    #                                           is.character))]
+    #
+    # } else {
+    #   wrap.params <- which(sapply(list(beta.1, beta.2, beta.3, beta.4),
+    #                               is.character))
+    # }
 
     # Add user-defined priors to the model
     if (!is.null(priors)) {
@@ -457,7 +459,7 @@ mbnma.run <- function(network,
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
-      gen.parameters.to.save(model.params=wrap.params, model=model)
+      gen.parameters.to.save(fun=fun, model=model)
   }
 
   # Add nodes to monitor to calculate plugin pd
@@ -476,18 +478,19 @@ mbnma.run <- function(network,
   class <- ifelse(length(class.effect)>0, TRUE, FALSE)
 
   # Change doses to dose indices for non-parametric models
-  if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+  if (any(sapply(fun, FUN=function(x) (x[["name"]])) %in% c("nonparam.up", "nonparam.down"))) {
     data.ab <- index.dose(network[["data.ab"]])[["data.ab"]]
   } else {
     data.ab <- network[["data.ab"]]
   }
+
 
   #### Run jags model ####
 
   result.jags <- mbnma.jags(data.ab, model,
                             class=class,
                             parameters.to.save=parameters.to.save,
-                            likelihood=likelihood, link=link, fun=fun, knots=knots,
+                            likelihood=likelihood, link=link, fun=fun,
                             n.iter=n.iter,
                             n.thin=n.thin,
                             n.chains=n.chains,
@@ -506,20 +509,16 @@ mbnma.run <- function(network,
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
-                    "fun"=fun, "user.fun"=user.fun,
+                    "fun"=fun,
                     "jagscode"=result.jags$model,
                     "jagsdata"=jagsdata,
-                    "beta.1"=beta.1, "beta.2"=beta.2,
-                    "beta.3"=beta.3,
-                    "beta.4"=beta.4,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
-                    "class.effect"=assigned.class,
-                    "knots"=knots,
+                    "class.effect"=class.effect,
                     "cor"=cor,
-                    "var.scale"=var.scale,
+                    "omega"=omega,
                     "parallel"=parallel, "pd"=pd,
-                    "priors"=get.prior(model), "arg.params"=arg.params)
+                    "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
@@ -547,7 +546,7 @@ mbnma.run <- function(network,
 
 mbnma.jags <- function(data.ab, model,
                        class=FALSE,
-                       likelihood=NULL, link=NULL, fun=NULL, knots=3,
+                       likelihood=NULL, link=NULL, fun=NULL,
                        nodesplit=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
                        autojags=FALSE, Rhat=1.1, n.update=10,
@@ -559,7 +558,7 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertCharacter(fun, any.missing=FALSE, null.ok=TRUE, add=argcheck)
+  checkmate::assertList(fun, null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
@@ -575,25 +574,23 @@ mbnma.jags <- function(data.ab, model,
   } else {
     # For MBNMAdose
     jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link, fun=fun, knots=knots,
+                            likelihood=likelihood, link=link, fun=fun,
                             nodesplit=nodesplit)
   }
 
 
   # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
-  if (grepl("maxtime", model)) {
-    jagsdata[["maxtime"]] <- max(data.ab$time)
-  } else if (grepl("maxdose", model)) {
+  if (grepl("maxdose", model)) {
     jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
 
     # Generate monotonically increasing/decreasing initial values
     # Check for user-defined initial values
     if (!("inits" %in% names(args))) {
-      if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
-        fun="nonparam.up"
-      } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
-        fun=="nonparam.down"
-      }
+      # if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
+      #   fun="nonparam.up"
+      # } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
+      #   fun=="nonparam.down"
+      # }
 
       args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
     }
@@ -610,10 +607,8 @@ mbnma.jags <- function(data.ab, model,
 
   # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
-  if (length(fun)==1) {
-    if (fun %in% c("rcs", "ns", "bs")) {
-      jagsdata[["dose"]] <- NULL
-    }
+  if (all(sapply(fun, FUN=function(x) x[["name"]]) %in% c("rcs", "ns", "bs"))) {
+    jagsdata[["dose"]] <- NULL
   }
 
 
@@ -701,13 +696,13 @@ gen.inits <- function(jagsdata, fun, n.chains) {
 
 
 gen.init <- function(jagsdata, fun) {
-  sapply(jagsdata$maxdose, FUN=function(x, direction=fun) {
+  sapply(jagsdata$maxdose, FUN=function(x, direction=fun[[1]]$name) {
    val <- x-1
 
-   if (direction=="nonparam.up") {
+   if (direction=="increasing") {
      start <- stats::runif(1,0,3)
      c(NA, seq(start, start+stats::runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
-   } else if (direction=="nonparam.down") {
+   } else if (direction=="decreasing") {
      start <- stats::runif(1,-3,0)
      c(NA, seq(start, start-stats::runif(1,0,3), length.out=val), rep(NA, max(jagsdata$maxdose)-(val+1)))
    }
@@ -719,77 +714,73 @@ gen.init <- function(jagsdata, fun) {
 
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
-#' Identical to `gen.parameters.to.save()` in `MBNMAtime`
-#'
-#' @param model.params A character or numeric vector containing the names of the
-#' dose-response parameters in the model
+#' @inheritParams mb.run
 #' @param model A JAGS model written as a character object
-gen.parameters.to.save <- function(model.params, model) {
+gen.parameters.to.save <- function(fun, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
   # model is a JAGS model written as a character object
 
-  checkmate::assertCharacter(model, len=1)
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertCharacter(model, min.len = 10, add=argcheck)
+  checkmate::assertClass(fun, "list", add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
-  model.params <- as.character(model.params)
 
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
-  for (i in seq_along(model.params)) {
-    if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] ~"), model)==TRUE |
-        grepl(paste0("\\\nd\\.", model.params[i], "\\[k(,c)?\\] <- mult\\["), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("d.", model.params[i]))
-    } else if (grepl(paste0("\\\nd\\.", model.params[i], "\\[k\\] ~"), model)==FALSE) {
-      if (grepl(paste0("\\\nbeta\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("beta.", model.params[i]))
+
+  for (funi in fun) {
+    for (i in seq_along(fun[[funi]]$params)) {
+
+      # For unnamed parameters
+      if (any(grepl(paste0("^d\\.", i), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("d.", i))
+      }
+      if (any(grepl(paste0("^D\\.", i), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("D.", i))
+      }
+      if (any(grepl(paste0("^sd\\.", i), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("sd.", i))
+      }
+      if (any(grepl(paste0("^sd\\.D\\.", i), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("sd.D.", i))
+      }
+
+      # For named parameters
+      if (any(grepl(fun[[funi]]$params[i], model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, fun[[funi]]$params[i])
+      }
+      if (any(grepl(toupper(fun[[funi]]$params[i]), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, toupper(fun[[funi]]$params[i]))
+      }
+      if (any(grepl(paste0("^sd\\.", fun[[funi]]$params[i]), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("sd.", fun[[funi]]$params[i]))
+      }
+      if (any(grepl(paste0("^sd\\.", toupper(fun[[funi]]$params[i])), model))==TRUE) {
+        parameters.to.save <- append(parameters.to.save, paste0("sd.", toupper(fun[[funi]]$params[i])))
+      }
+
+      # Remove beta if both d and beta are in for any parameter
+      if (paste0("d.",i) %in% parameters.to.save & paste0("beta.",i) %in% parameters.to.save) {
+        parameters.to.save <- parameters.to.save[!parameters.to.save %in% paste0("beta.",i)]
       }
     }
-    if (grepl(paste0("\\\nsd\\.", model.params[i], " ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.beta.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.beta.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nD\\.", model.params[i], "(\\[k\\])? ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("D.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.D\\.", model.params[i], " ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.D.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nBETA\\.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("BETA.", model.params[i]))
-    }
-    if (grepl(paste0("\\\nsd\\.BETA\\.", model.params[i]), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.BETA.", model.params[i]))
-    }
   }
 
-  for (i in 1:4) {
-    if (grepl(paste0("\\\nd\\.", i, " ~"), model)==TRUE) {
-      parameters.to.save <- append(parameters.to.save, paste0("d.", i))
-    }
-  }
 
   # For MBNMAtime
-  if (grepl("rho", model)==TRUE) {
+  if (any(grepl("rho", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, "rho")
-  } else {
+  }
+  if (any(grepl("totresdev", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
   }
 
-  # For MBNMAdose
-  if (grepl("\\\nsd ~", model)==TRUE) {
-    parameters.to.save <- append(parameters.to.save, "sd")
-  }
-
-  # For non-monotonic DR functions
-  if (grepl(paste0("\\\nd\\.1\\[c,k\\] ~"), model)==TRUE) {
-    parameters.to.save <- append(parameters.to.save, "d.1")
-  }
-
   return(unique(parameters.to.save))
-
 }
+
 
 
 
@@ -1006,6 +997,53 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
   }
 
   return(list("likelihood"=likelihood, "link"=link))
+}
+
+
+
+
+
+#' Check dose-response functions
+#'
+#' Checks correct specification of dose-response function and and converts from previous version's syntax.
+#' Can be deprecated eventually
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams mbnma.network
+#'
+#' @noRd
+check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.str) {
+
+  checkmate::assertClass(network, "mbnma.network")
+
+  if (class(fun)=="character") {
+    if (length(fun)>1) {
+      stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
+    }
+    if (fun=="linear") {
+      fun <- dpoly(degree=1, beta.1=beta.1)
+    } else if (fun=="exponential") {
+      fun <- dexp(rate=beta.1)
+    } else if (fun=="emax") {
+      fun <- demax(emax=beta.1, ed50=beta.2)
+    } else if (fun=="emax.hill") {
+      fun <- demax(emax=beta.1, ed50=beta.2, hill=beta.3)
+    } else if (fun=="user") {
+      fun <- duser(fun=user.str, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
+    } else {
+      stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
+    }
+  } else if (class(fun)=="dosefun") {
+    if (length(fun[["name"]])>1) {
+      if (length(fun[["posvec"]])!=length(network$agents)) {
+        stop("Number of agent-specific dose-response functions in dmulti() must be equal to the number of agents in network$agents")
+      }
+    }
+    fun <- fun
+  } else {
+    stop("'fun' has been incorrectly specified")
+  }
+  return(fun)
 }
 
 
@@ -1352,7 +1390,7 @@ mbnma.emax <- function(network,
                          method="common",
                          class.effect=list(), UME=FALSE,
                          cor=TRUE,
-                         var.scale=NULL,
+                         omega=NULL,
                          parameters.to.save=NULL,
                          pd="pd.kl", parallel=FALSE,
                          likelihood=NULL, link=NULL,
@@ -1373,7 +1411,7 @@ mbnma.emax <- function(network,
                       beta.2=ed50,
                       method=method,
                       class.effect=class.effect, UME=UME,
-                      cor=cor, var.scale=var.scale,
+                      cor=cor, omega=omega,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,
@@ -1490,7 +1528,7 @@ mbnma.emax.hill <- function(network,
                        method="common",
                        class.effect=list(), UME=FALSE,
                        cor=TRUE,
-                       var.scale=NULL,
+                       omega=NULL,
                        parameters.to.save=NULL,
                        pd="pd.kl", parallel=FALSE,
                        likelihood=NULL, link=NULL,
@@ -1512,7 +1550,7 @@ mbnma.emax.hill <- function(network,
                       beta.3=hill,
                       method=method,
                       class.effect=class.effect, UME=UME,
-                      cor=cor, var.scale=var.scale,
+                      cor=cor, omega=omega,
                       pd=pd, parallel=parallel,
                       likelihood=likelihood, link=link,
                       priors=priors,

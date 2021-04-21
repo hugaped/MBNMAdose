@@ -1,0 +1,767 @@
+# Functions for writing MBNMA models in JAGS
+# Author: Hugo Pedder
+# Date created: 2021-04-20
+
+## quiets concerns of R CMD check re: the .'s that appear in pipelines
+if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
+                                                        "Parameter", "fupdose", "groupvar", "y",
+                                                        "network", "a", "param", "med", "l95", "u95", "value",
+                                                        "Estimate", "2.5%", "50%", "97.5%", "treatment"))
+
+
+
+#' Write MBNMA dose-response model JAGS code
+#'
+#' Writes JAGS code for a Bayesian time-course model for model-based network
+#' meta-analysis (MBNMA).
+#'
+#' @inheritParams mbnma.run
+#' @param cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
+#' between relative effects. Must be kept as `"wishart"`
+#'
+#' @return A single long character string containing the JAGS model generated
+#'   based on the arguments passed to the function.
+#'
+#' @inherit mbnma.run details
+#'
+#' @examples
+#' # Write model code for a model with an exponential dose-response function,
+#' # relative effects modelled on the rate of growth/decay (beta.1) with a random
+#' # effects model
+#' model <- mbnma.write(fun="exponential",
+#'              beta.1="rel",
+#'              method="random",
+#'              likelihood="binomial",
+#'              link="logit"
+#'              )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) with a random effects model,
+#' # a single parameter estimated for ED50 (beta.2) with a common effects model
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="common",
+#'              likelihood="normal",
+#'              link="identity"
+#'              )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2).
+#' # Class effects modelled on ED50 with common effects
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              likelihood="normal",
+#'              link="identity",
+#'              class.effect=list("beta.2"="common")
+#'              )
+#' cat(model)
+#'
+#' # Write model code for a model with an Emax dose-response function,
+#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2) with a
+#' # random effects model that automatically models a correlation between
+#' # both parameters.
+#' model <- mbnma.write(fun="emax",
+#'              beta.1="rel",
+#'              beta.2="rel",
+#'              method="random",
+#'              likelihood="normal",
+#'              link="identity",
+#'              )
+#' cat(model)
+#' @export
+mbnma.write <- function(fun=dloglin(),
+                        method="common",
+                        cor=TRUE, cor.prior="wishart",
+                        omega=NULL,
+                        class.effect=list(), UME=FALSE,
+                        likelihood="binomial", link=NULL
+) {
+
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertList(class.effect, unique=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+
+  ####### VECTORS #######
+
+  # parameters <- c("beta.1", "beta.2", "beta.3", "beta.4")
+
+  write.check(fun=fun,
+              method=method, cor.prior=cor.prior,
+              omega=omega,
+              class.effect=class.effect, UME=UME)
+
+  model <- write.model(class.effect=class.effect, UME=UME)
+
+  # Add dose-response function
+  dosefun <- write.dose.fun(fun=fun, UME=UME)
+  model <- model.insert(model, pos=which(names(model)=="arm"), x=dosefun[[1]])
+  # model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
+
+  if (length(dosefun)==2) {  # For models with multiple DR functions
+    model <- model.insert(model, pos=which(names(model)=="study"), x=dosefun[[2]])
+    # model <- gsub(inserts[["insert.study"]], paste0("\\1\n", dosefun[[2]], "\n\\2"), model)
+  }
+
+  # # Edit beta parameters if they aren't in dose-response function
+  # for (i in 1:4) {
+  #   if (!grepl(paste0("beta\\.", i), dosefun[[1]])) {
+  #     assign(paste0("beta.", i), NULL)
+  #   }
+  # }
+
+
+  # Add likelihood
+  model <- write.likelihood(model, likelihood=likelihood, link=link)
+
+  # Add treatment delta effects
+  model <- write.delta(model, method=method)
+
+  # Add treatment beta effects
+  model <- write.beta(model, fun=fun, method=method, class.effect=class.effect, UME=UME)
+
+  # Add correlation between dose-response parameters
+  model <- write.cor(model, fun=fun, method=method, cor=cor, cor.prior=cor.prior, omega=omega,
+                     class.effect=class.effect, UME=UME)
+
+
+  return(model)
+}
+
+
+
+
+
+
+
+#' Checks validity of arguments for mbnma.write
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams nma.run
+#' @inheritParams mbnma.write
+#'
+#' @return Returns an error if any conditions are not met. Otherwise returns `NULL`.
+#' @noRd
+#' @details Used to check if the arguments given to mbnma.write are valid. The
+#'   function will return informative errors if arguments are misspecified.
+#'
+write.check <- function(fun=dloglin(),
+                        method="common",
+                        UME=FALSE,
+                        cor.prior="wishart",
+                        omega=NULL,
+                        user.fun=NULL,
+                        class.effect=list()) {
+
+
+  # Run argument checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(fun, "dosefun", null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
+  if (method=="random") {
+    checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
+  }
+  checkmate::assertMatrix(omega, null.ok = TRUE)
+  checkmate::reportAssertions(argcheck)
+
+  # Checks for class effects
+  if (length(class.effect)>0) {
+    # Cannot model class effects with UME
+    if (UME==TRUE) {
+      stop("Class effects cannot be modelled with UME")
+    }
+
+    # Cannot model class effects with nonparam functions
+    if (any(fun$name=="nonparam")) {
+      stop("Class effects cannot be used with non-parametric dose-response functions")
+    }
+
+    # Cannot model class effects with multiple dose-response functions
+    if (length(fun$name)>1) {
+      stop("Class effects can only be modelled when using a single dose-response function")
+    }
+
+    if (any(c("rcs", "ns", "bs") %in% fun$name)) {
+      warning("Class effects applied to spline function parameters may produce\n#
+              non-interpretable results since knot locations will differ between agents")
+    }
+
+
+    if (!all(names(class.effect) %in% fun$params)) {
+      stop("`class.effect` must be a list with element names corresponding to beta parameters")
+    }
+    if (!all(fun$apool[which(fun$params %in% names(class.effect))] == "rel")) {
+      stop("Class effects can only be specified for dose-response parameters in 'fun' that have been modelled using relative effects ('rel')")
+    }
+
+    if (!all(class.effect %in% c("common", "random"))) {
+      stop("`class.effect` elements must be either `common` or `random`")
+    }
+  }
+
+  if (!is.null(omega)) {
+    if (length(class.effect)>0) {
+      warning("Class effects cannot be modelled with correlation between time-course relative effects - 'omega' will be ignored")
+    }
+
+    err <- FALSE
+    nrel <- sum(fun$apool %in% "rel")
+    if (!all(dim(omega)==nrel)) {
+      err <- TRUE
+    }
+    if (!isSymmetric(omega)) {
+      err <- TRUE
+    }
+    if (any(eigen(omega)$values <= 0)) {
+      err <- TRUE
+    }
+    if (err==TRUE) {
+      stop("omega must be a symmetric positive definite matrix with dimensions equal to the number of\ndose-course parameters modelled using relative effects ('rel')")
+    }
+  }
+
+}
+
+
+
+
+
+
+#' Write the basic JAGS model code for MBNMA to which other lines of model
+#' code can be added
+#'
+#' @return A character object of JAGS model code
+#' @noRd
+#' @examples
+#' model <- write.model()
+#' cat(model)
+write.model <- function(UME=FALSE, class.effect=list()) {
+  model <- c(
+    start= "model{ 			# Begin Model Code",
+    study="for(i in 1:NS){ # Run through all NS trials",
+    "mu[i] ~ dnorm(0,0.001)",
+    arm="for (k in 1:narm[i]){ # Run through all arms within a study",
+    "}",
+    "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
+    te="for(k in 2:narm[i]){ # Treatment effects",
+    "}",
+    "}",
+    trt.prior="for (k in 2:Nagent){ # Priors on relative treatment effects",
+    "}",
+    ifelse(length(class.effect)>1, c(class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
+                                     "}"),
+           ""),
+    ifelse(UME==TRUE, c(ume.prior.ref="for (k in 1:Nagent){ # UME prior ref",
+                        "}",
+                        "for (c in 1:(Nagent-1)) {",
+                        ume.prior="for (k in (c+1):Nagent) { # UME priors",
+                        "}",
+                        "}"),
+           ""),
+    "totresdev <- sum(resstudydev[])",
+    end="",
+    "# Model ends",
+    "}"
+  )
+
+return(model)
+}
+
+
+
+
+
+
+
+
+#' Write dose-response function component of JAGS code for MBNMA dose-response
+#' models
+#'
+#' Writes a single line of JAGS code representing the dose-response function
+#' component of an MBNMA dose-response model, returned as a single character
+#' string.
+#'
+#' @inheritParams mbnma.run
+#' @param effect Can take either `"rel"` for relative effects or `"abs"` for absolute (arm-pooled) effects
+#'
+#' @return A single character string containing JAGS model representing the
+#'   dose-response function component of an MBNMA dose-response model, generated
+#'   based on the arguments passed to the function.
+#' @noRd
+#'
+#' @examples
+#' # Write a quadratic dose-response function
+#' write.dose.fun(fun=dpoly(degree=2, beta.1="rel", beta.2="rel"))
+#'
+#' # Write an Emax dose-response function without a Hill parameter
+#' write.dose.fun(fun=demax(hill=NULL))
+#'
+#' # Write an Emax dose-response function with a commonHill parameter
+#' write.dose.fun(fun=demax(hill="common"))
+#'
+#' # Write a user-defined dose-response function
+#' doseresp <- ~ beta.1 + (dose ^ beta.2)
+#' write.dose.fun(fun=duser(fun=doseresp, beta.1="rel", beta.2="rel"))
+write.dose.fun <- function(fun=dloglin(), effect="rel", UME=FALSE) {
+
+  funnames <- sapply(fun, FUN=function(x) {x[["name"]]})
+
+  if (length(fun)==1) {
+    DR.1 <- fun[[1]]$jags
+  } else {
+
+    # CURRENTLY NOT FUNCTIONAL
+
+    paramcount <- 0
+
+    DR.1 <- character()
+
+    if ("user" %in% fun) {
+      user.str <- as.character(user.fun[2])
+      drtemp <- user.str
+      drtemp <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", drtemp)
+      drtemp <- gsub("(dose)", "\\1[i,k]", drtemp)
+      DR.1 <- append(DR.1, drtemp)
+
+      for (i in 1:4) {
+        if (grepl(paste0("beta.",i), user.str)) {
+          paramcount <- paramcount + 1
+        }
+      }
+    }
+
+    if ("linear" %in% fun) {
+      drtemp <- paste0("(beta.", paramcount + 1, "[agent[i,k]] * dose[i,k])")
+
+      DR.1 <- append(DR.1, drtemp)
+      paramcount <- paramcount + 1
+    }
+
+    if ("exponential" %in% fun) {
+      drtemp <- paste0("beta.", paramcount + 1, "[agent[i,k]] * (1 - exp(- dose[i,k]))")
+
+      DR.1 <- append(DR.1, drtemp)
+      paramcount <- paramcount + 1
+    }
+
+    if ("emax" %in% fun) {
+      drtemp <- paste0("(beta.", paramcount + 1,
+                       "[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.", paramcount + 2,
+                       "[agent[i,k]])))")
+
+      DR.1 <- append(DR.1, drtemp)
+      paramcount <- paramcount + 2
+    }
+
+    if ("emax.hill" %in% fun) {
+      drtemp <- paste0("(beta.", paramcount+1,
+                       "[agent[i,k]] * (dose[i,k]^exp(beta.", paramcount+3,
+                       "[agent[i,k]]))) / ((dose[i,k]^exp(beta.", paramcount+3,
+                       "[agent[i,k]])) + exp(beta.", paramcount+2,
+                       "[agent[i,k]])^exp(beta.", paramcount+3,
+                       "[agent[i,k]]))")
+
+      DR.1 <- append(DR.1, drtemp)
+      paramcount <- paramcount + 3
+    }
+    if (any(c("rcs", "ns", "bs") %in% fun)) {
+      knotnum <- ifelse(length(knots)>1, length(knots), knots)
+      drtemp <- ""
+      for (knot in 1:(knotnum-1)) {
+        drtemp <- paste0(drtemp, "(beta.", paramcount+1, "[agent[i,k]] * spline[i,k,", knot, "])")
+        if (knot<knotnum-1) {
+          drtemp <- paste0(drtemp, " + ")
+        }
+        paramcount <- paramcount + 1
+      }
+      DR.1 <- append(DR.1, drtemp)
+    }
+
+    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
+      DR.1 <- "d.1[dose[i,k], agent[i,k]]"
+      message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3`, `beta.4` will be ignored")
+    }
+
+    # Add ifelse statement for multiple DR functions
+    if (length(DR.1)>1) {
+      drmult <- paste0("ifelse(X[i,k]==1, ", DR.1[1], ", insert)")
+      for (i in 2:length(DR.1)) {
+        drtemp <- paste0("ifelse(X[i,k]==", i, ", ", DR.1[i], ", insert)")
+        if (i==length(DR.1)) {
+          drmult <- gsub("insert", DR.1[i], drmult)
+        } else if (i<length(DR.1)) {
+          drmult <- gsub("insert", drtemp, drmult)
+        }
+      }
+      DR.1 <- drmult
+    }
+
+  }
+
+  # Add "s." to indicate within-study betas
+  for (i in seq_along(fun[[1]]$apool)) {
+    if (fun[[1]]$apool[i] %in% "random") {
+      DR.1 <- gsub("(beta\\.[1-4])", "s.\\1", DR.1)
+    }
+  }
+  DR.2 <- gsub("k", "1", DR.1)
+
+  if (UME==FALSE) {
+    DR <- paste0("(", DR.1, ") - (", DR.2, ")")
+  } else if (UME==TRUE) {
+    DR <- DR.1
+    DR <- gsub("(agent\\[i\\,k\\])", "\\1, agent[i,1]", DR)
+  }
+
+  # Return final DR function depending on number of DR functions and UME
+  if (length(fun)==1 | UME==TRUE) {
+    if (effect=="rel") {
+      return(list(paste0("DR[i,k] <- ", DR)))
+    } else if (effect=="abs") {
+      return(list(paste0("DR[i,k] <- ", DR.1)))
+    }
+  } else if (length(fun)>1) {
+    drmult <- list(paste0("DR[i,k,agent[i,k]] <- DR1[i,k,agent[i,k]] - DR2[i,1,agent[i,k]]"))
+
+    drmult <- list(paste0("DR[i,k] <- DR1[i,k] - DR2[i]\nDR1[i,k] <- ", DR.1))
+
+    DR.2 <- gsub(",k", ",1", DR.1)
+    drmult[[2]] <- paste0("DR2[i] <- ", DR.2)
+    return(drmult)
+  }
+}
+
+
+
+
+
+
+#' Insert element into model vector at desired location
+#'
+#' @noRd
+model.insert <- function(a, pos, x){
+
+  if (pos>length(a)) {
+    stop("'pos' cannot be greater than length(a)")
+  }
+  start <- a[1:pos]
+  end <- a[(pos+1):length(a)]
+  return(c(start, x, end))
+}
+
+
+
+
+
+#' Adds sections of JAGS code for an MBNMA model that correspond to the
+#' likelihood
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams write.beta
+#' @noRd
+#' @return A character object of JAGS MBNMA model code that includes likelihood
+#'   components of the model
+#'
+write.likelihood <- function(model, likelihood="binomial", link=NULL) {
+
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (likelihood=="binomial") {
+    like <- "r[i,k] ~ dbin(psi[i,k], N[i,k])"
+    if (is.null(link)) {link <- "logit"}
+  } else if (likelihood=="normal") {
+    like <- c("y[i,k] ~ dnorm(psi[i,k], prec[i,k])",
+              "prec[i,k] <- pow(se[i,k], -2)")
+    if (is.null(link)) {link <- "identity"}
+  } else if (likelihood=="poisson") {
+    like <- c("r[i,k] ~ dpois(lambda[i,k])",
+              "lambda[i,k] <- psi[i,k] * E[i,k]")
+    if (is.null(link)) {link <- "log"}
+  }
+
+  transfer <- "psi[i,k] <- theta[i,k]"
+
+  glm <- c("psi[i,k] <- theta[i,k]",
+           "theta[i,k] <- mu[i] + delta[i,k]")
+  if (link!="identity") {
+    glm <- gsub("(psi\\[i,k\\])(.+)", paste0(link, "(\\1)\\2"), glm)
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="arm"), x=c(like, glm))
+  # model <- gsub(inserts[["insert.arm"]], paste0("\\1", paste(like, glm, sep="\n"), "\\2"), model)
+
+
+  # Add deviance contributions
+  if (likelihood=="binomial") {
+    resdevs <- c(
+      "rhat[i,k] <- psi[i,k] * N[i,k]",
+      "resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (N[i,k] - r[i,k]) * (log(N[i,k] - r[i,k]) - log(N[i,k] - rhat[i,k])))"
+    )
+  } else if (likelihood=="normal") {
+    resdevs <- c(
+      "resdev[i,k] <- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood"
+    )
+  } else if (likelihood=="poisson") {
+    resdevs <- c(
+      "resdev[i,k] <- 2*((lambda[i,k]-r[i,k]) + r[i,k]*log(r[i,k]/lambda[i,k]))"
+    )
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="arm"), x=resdevs)
+
+  return(model)
+}
+
+
+
+
+
+
+#' Adds sections of JAGS code for an MBNMA model that correspond to delta
+#' parameters
+#'
+#' @param model A character vector of JAGS MBNMA model code
+#'
+#' @inheritParams mbnma.run
+#' @noRd
+#'
+#' @return A character object of JAGS MBNMA model code that includes delta
+#'   parameter components of the model
+#'
+write.delta <- function(model, method="common") {
+
+  # Add to model
+  # Add deltas and everything
+  if (method %in% c("common", "random")) {
+    model <- model.insert(model, pos=which(names(model)=="study"), x="delta[i,1] <- 0")
+    if (method=="common") {
+      model <- model.insert(model, pos=which(names(model)=="te"), x="delta[i,k] <- DR[i,k]")
+    } else if (method=="random") {
+      model <- model.insert(model, pos=which(names(model)=="te"), x=c(
+        "delta[i,k] ~ dnorm(md[i,k], taud[i,k])",
+        "md[i,k] <- DR[i,k] + sw[i,k]",
+        "taud[i,k] <- tau * 2*(k-1)/k",
+        "w[i,k] <- delta[i,k] - DR[i,k]",
+        "sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)"
+      ))
+      model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
+      model <- model.insert(model, pos=which(names(model)=="end"), x=c(
+        "sd ~ dnorm(0,0.0025) T(0,)",
+        "tau <- pow(sd, -2)"
+      ))
+    } else {
+      stop("`method` must take either `common` or `random`")
+    }
+  }
+
+  return(model)
+}
+
+
+
+
+
+#' Adds sections of JAGS code for an MBNMA model that correspond to beta
+#' parameters
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams get.prior
+#' @noRd
+#'
+#' @return A character vector of JAGS MBNMA model code that includes beta
+#'   parameter components of the model
+#'
+write.beta <- function(model, fun=dloglin(), method="common",
+                       class.effect=list(), UME=FALSE
+) {
+
+  if ("nonparam" %in% fun$name) {
+    model <- model.insert(model, pos=which(names(model)=="start"), x="d.1[1,1] <- 0")
+
+    if ("increasing" %in% fun$direction) {
+      insert <- c("d.1[1,k] <- 0",
+                  "for (c in 2:maxdose[k]) {",
+                  "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(d.1[c-1,k],)",
+                  "}")
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+    } else if ("decreasing" %in% fun$direction) {
+      insert <- c("d.1[1,k] <- 0",
+                  "for (c in 2:maxdose[k]) {",
+                  "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])",
+                  "}")
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+    } else {
+      stop("direction must be specified as either 'increasing' or 'decreasing' in dnonparam()")
+    }
+
+  } else {
+    for (i in seq_along(fun$apool)) {
+      # if (UME==FALSE) {
+      #   insert <- vars[[paste("s.beta", i, "ref", sep=".")]]
+      #   model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+      # }
+      pname <- names(fun$apool[i])
+
+      if (fun$apool[i] %in% "rel") {
+        # Convert s.beta to d.
+        if (UME==FALSE) {
+          insert <- paste0("s.beta.", i, "[k] <- ", pname, "[k]")
+          model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+        }
+
+        # If class effects are modelled for this parameter
+        if (pname %in% names(class.effect)) {
+          insert <- paste0(toupper(pname), "[k] ~ dnorm(0,0.001)")
+          model <- model.insert(model, pos=which(names(model)=="class.prior"), x=insert)
+
+          if (class.effect[[pname]]=="common") {
+            insert <- paste0(pname, "[k]  <- ", toupper(pname), "[class[k]]")
+            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+          } else if (class.effect[[pname]]=="random") {
+            insert <- paste0(pname, "[k]  ~ dnorm(", toupper(pname), "[class[k]], tau.", toupper(pname), ")")
+            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+            insert <- c(paste0("sd.", toupper(pname), " ~ dnorm(0,0.0025) T(0,)"),
+                        paste0("tau.", toupper(pname), " <- pow(sd.", toupper(pname), ", -2)"))
+            model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+          }
+        } else {
+          if (UME==FALSE) {
+            insert <- paste0(pname, "[k] ~ dnorm(0,0.001)", "\n")
+            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+          } else if (UME==TRUE) {
+            insert <- c(paste0("s.beta.", i, "[k,c] <- ", pname, "[k,c]"),
+                        paste0(pname, "[k,c] ~ dnorm(0,0.001)"))
+            model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
+
+            insert <- c(paste0("s.beta.", i, "[k,k] <- 0"),
+                        paste0(pname, "[k,k] <- 0"))
+            model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+          }
+        }
+      } else if (fun$apool[i] %in% c("common", "random")) {
+        insert <- paste0(pname, " ~ dnorm(0,0.001)")
+        model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
+        if (fun$apool[i] %in% "random") {
+          insert <- paste0("\ns.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
+          model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+          insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
+                      paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
+          model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+        }
+      } else if (is.numeric(fun$apool[i])) {
+        insert <- paste0(pname, " <- ", fun[[1]]$apool[i])
+        model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+      } else {
+        stop(paste0(pname, " must take either `rel`, `common`, `random` or a numeric value"))
+      }
+    }
+  }
+
+  return(model)
+}
+
+
+
+
+
+
+#' Adds correlation between dose-response relative effects
+#'
+#' This uses a Wishart prior as default for modelling the correlation
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams write.beta
+#' @inheritParams mbnma.write
+#' @noRd
+write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL,
+                      method="random", class.effect=list(), UME=FALSE) {
+
+  if (length(class.effect)>0 & cor==TRUE) {
+    warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+  } else {
+
+    # Prepare covariance matrix if cor=TRUE
+    if (cor==TRUE) {
+      corparams <- names(fun$apool)[fun$apool %in% "rel"]
+      mat.size <- length(corparams)
+
+    } else {
+      mat.size <- 0
+    }
+
+    if (mat.size>=2) {
+      # Write covariance matrix in JAGS code
+      model <- write.cov.mat(model, sufparams=corparams, omega=omega, UME=UME)
+    }
+  }
+
+  return(model)
+
+}
+
+
+
+
+
+#' Function for adding covariance matrix for correlation between relative effects
+#'
+#' @param sufparams A numeric vector of dose-response/time-course parameter suffixes. It
+#'  should be the same length as the number of relative effects (i.e. the covariance
+#'  matrix size).
+#' @inheritParams mbnma.write
+#' @inheritParams get.prior
+#' @noRd
+write.cov.mat <- function(model, sufparams,
+                          omega=NULL, UME=FALSE) {
+
+
+  jagswish <- c("for (r in 1:mat.size) {",
+                "d.prior[r] <- 0",
+                "}",
+                "",
+                paste0("inv.R ~ dwish(Omega[,], ", length(sufparams), ")")
+                )
+
+
+  if (UME==FALSE) {
+    priorloc <- "trt.prior"
+    index <- "k"
+  } else if (UME==TRUE) {
+    priorloc <- "ume.prior"
+    index <- "k\\,c"
+  }
+
+  mat.size <- length(sufparams)
+  for (i in seq_along(sufparams)) {
+    model <- gsub(paste0(sufparams[i], "\\[", index, "\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\"),
+                  paste0(sufparams[i], "[", index, "] <- mult[", i, ",", index, "]"),
+                  model
+                  )
+  }
+
+  insert <- paste0("mult[1:", mat.size, ",k] ~ dmnorm(d.prior[], inv.R[1:", mat.size, ", 1:", mat.size, "])")
+  model <- model.insert(model, pos=which(names(model)==priorloc), x=insert)
+
+  if (UME==TRUE) {
+    model <- gsub("(mult\\[1\\:[0-9],k)(\\] ~)", "\\1,c\\2", model)
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="end"), x=jagswish)
+
+  return(model)
+}

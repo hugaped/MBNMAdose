@@ -72,12 +72,9 @@ dexp <- function(rate="rel") {
   bname <- paste0("beta.", 1:nparam)
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name="exp", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
 
   class(out) <- "dosefun"
 
@@ -156,12 +153,9 @@ dloglin <- function(rate="rel") {
   bname <- paste0("beta.", 1:nparam)
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name="loglin", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
 
   class(out) <- "dosefun"
 
@@ -177,7 +171,7 @@ dloglin <- function(rate="rel") {
 #'
 #' @param emax Pooling for Emax  parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
-#' @param ed50 Pooling for ET50 parameter. Can take `"rel"`, `"common"`, `"random"` or be
+#' @param ed50 Pooling for ED50 parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
 #' @param hill Pooling for Hill parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
@@ -273,7 +267,7 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
   paramnames <- c("emax", "ed50")
   nparam <- 2
 
-  apool <- c(emax, et50)
+  apool <- c(emax, ed50)
 
   if (!is.null(hill)) {
     paramnames <- append(paramnames, "hill")
@@ -285,12 +279,9 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
   names(apool) <- paramnames
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name="emax", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
   class(out) <- "dosefun"
 
   message("'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale")
@@ -360,15 +351,15 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
 #'
 #' @examples
 #' # Linear model with random effects
-#' dpoly(pool.1="rel")
+#' dpoly(beta.1="rel")
 #'
 #' # Quadratic model dose-response function
 #' # with an exchangeable (random) absolute parameter estimated for the 2nd coefficient
-#' dpoly(pool.1="rel", pool.2="random")
+#' dpoly(beta.1="rel", beta.2="random")
 #'
 #' @export
-dpoly <- function(degree=1, pool.1="rel", pool.2="rel",
-                  pool.3="rel", pool.4="rel") {
+dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
+                  beta.3="rel", beta.4="rel") {
 
   # Run checks
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
@@ -415,18 +406,15 @@ dpoly <- function(degree=1, pool.1="rel", pool.2="rel",
 
   apool <- vector()
   for (i in 1:nparam) {
-    apool <- append(apool, get(paste0("pool.",i)))
+    apool <- append(apool, get(paste0("beta.",i)))
   }
   bname <- paste0("beta.", 1:nparam)
 
   names(apool) <- paramnames
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name="poly", fun=fun, params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
   class(out) <- "dosefun"
 
   return(out)
@@ -611,7 +599,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 
   apool <- vector()
   for (i in 1:degree) {
-    apool <- append(apool, get(paste0("pool.",i)))
+    apool <- append(apool, get(paste0("beta.",i)))
   }
   for (i in 1:degree) {
     apool <- append(apool, get(paste0("power.",i)))
@@ -621,12 +609,9 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   names(apool) <- paramnames
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames[1:nparam]
-
   out <- list(name="fpoly", fun=fun,
                params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
   class(out) <- "dosefun"
 
   return(out)
@@ -737,9 +722,6 @@ dspline <- function(type="bs", knots=1, degree=1,
     for (i in 2:(nparam)) {
       temp <- gsub("1", i, base)
       jags <- paste(jags, "+", temp)
-
-      temptex <- gsub("1", i, basetex)
-      latex <- paste(latex, "+", temptex)
     }
   }
   fun <- stats::as.formula(paste("~", jags))
@@ -760,25 +742,79 @@ dspline <- function(type="bs", knots=1, degree=1,
 
   apool <- vector()
   for (i in 1:nparam) {
-    apool <- append(apool, get(paste0("pool.",i)))
+    apool <- append(apool, get(paste0("beta.",i)))
   }
   bname <- paste0("beta.", 1:nparam)
 
   names(apool) <- paramnames
   names(bname) <- paramnames
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name=type, fun=fun, params=paramnames,
               nparam=nparam, knots=knots, degree=degree, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
   class(out) <- "dosefun"
 
   return(out)
 
 }
 
+
+
+
+
+#' Non-parameteric dose-response functions
+#'
+#' Used to fit monotonically increasing non-parametric dose-response relationship following
+#'   the method of \insertCite{owen2015;textual}{MBNMAdose})
+#'
+#' @param direction Can take either `"increasing"` or `"decreasing"` to indicate the monotonic direction
+#'   of the dose-response relationship
+#'
+#' @return An object of `class("dosefun")`
+#'
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # Monotonically increasing dose-response
+#' dnonparam(direction="increasing")
+#'
+#' # Monotonically decreasing dose-response
+#' dnonparam(direction="decreasing")
+#'
+#' @export
+dnonparam <- function(direction="increasing") {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(direction, choices=c("increasing", "decreasing"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+
+  # Define function TO EDIT!!!
+  base <- "d.1"
+  jags <- base
+  if (nparam>1) {
+    for (i in 2:(nparam)) {
+      temp <- gsub("1", i, base)
+      jags <- paste(jags, "+", temp)
+
+      temptex <- gsub("1", i, basetex)
+      latex <- paste(latex, "+", temptex)
+    }
+  }
+  fun <- stats::as.formula(paste("~", jags))
+  jags <- gsub("(spline)\\.([0-9])", "\\1[i,k,\\2]", jags)
+
+
+  # Generate output values
+  out <- list(name="nonparam", direction=direction, apool=NA, bname=NA)
+  class(out) <- "dosefun"
+
+  return(out)
+
+}
 
 
 
@@ -885,19 +921,150 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
 
   apool <- vector()
   for (i in 1:nparam) {
-    apool <- append(apool, get(paste0("pool.",i)))
+    apool <- append(apool, get(paste0("beta.",i)))
   }
   bname <- paste0("beta.", 1:nparam)
 
   names(apool) <- paramnames
   names(bname) <- names(bname)
 
-  bpool <- paste0("pool.", 1:nparam)
-  names(bpool) <- paramnames
-
   out <- list(name="user", fun=fun, params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, bpool=bpool)
+              apool=apool, bname=bname)
   class(out) <- "dosefun"
 
   return(out)
+}
+
+
+
+
+#' Agent-specific dose-response function
+#'
+#' Function combines different dose-response functions together to create an object containing
+#' parameters for multiple dose-response functions.
+#'
+#' @param funs A list of objects of `class("dosefun")`, each element of which corresponds to
+#'   an agent in the dataset to be modelled. The list length must be equal to the number of
+#'   agents in `network$agents` used in `mbnma.run()`, and the order of the dose-response
+#'   functions in the list is assumed to correspond to the same order of agents in `network$agents`.
+#'
+#' @return An object of `class("dosefun")`
+#'
+#' @examples
+#'
+#' funs <- c(rep(list(demax()),3),
+#'           rep(list(dloglin()),2),
+#'           rep(list(demax(ed50="common")),3),
+#'           list(demax()),
+#'           rep(list(dexp()),2))
+#'
+#' @export
+dmulti <- function(funs=list()) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertList(fun, add=argcheck)
+  for (i in seq_along(funs)) {
+    checkmate::assertClass(funs[[i]], "dosefun", add=argcheck)
+  }
+  checkmate::reportAssertions(argcheck)
+
+  if (any(sapply(funs, FUN=function(x) {x[["name"]]})=="nonparam")) {
+    stop("dmulti() cannot be used with non-parametric dose-response functions")
+  }
+
+
+
+  # Identify which functions are unique (check name, degree, apool, knots)
+  pos <- 0 # a vector of unique codes
+  posvec <- rep(NA, length(funs))
+  for (i in seq_along(funs)) {
+    if (is.na(posvec[i])) {
+      if (pos==0) {
+        pos <- 1
+      } else {
+        pos <- max(posvec, na.rm = TRUE) +1
+      }
+      posvec[i] <- pos
+
+      # Search for matches and make them pos
+      if (i!=length(funs)) {
+        for (k in (i+1):length(funs)) {
+          if (isTRUE(all.equal(funs[[i]], funs[[k]]))) {
+            posvec[k] <- pos
+          }
+        }
+      }
+    }
+  }
+  univec <- unique(posvec)
+
+  # Then, starting from lowest...concatenate dose-response parameters...if they are unnamed then add index
+  name <- vector()
+  params <- vector()
+  paramlist <- list()
+  nparam <- 0
+  jags <- vector()
+  apool <- vector()
+  apoollist <- list()
+  bname <- vector()
+  knots <- vector()
+  degree <- vector()
+  for (i in seq_along(univec)) {
+    fun <- funs[[which(posvec==univec[i])[1]]]
+    name <- append(name, fun[["name"]])
+    j <- fun[["jags"]]
+
+    if ("degree" %in% names(fun)) {
+      degree <- append(degree, fun[["degree"]])
+    } else {
+      degree <- append(degree, NA)
+    }
+
+    for (k in seq_along(fun[["params"]])){
+      j <- gsub(fun[["bname"]][k], paste0("beta.",length(bname)+1), j)
+      bname <- append(bname, paste0("beta.",length(bname)+1))
+
+      if (fun[["params"]][k] %in% params & grepl("beta", fun[["params"]][k])) {
+        p <- paste0("beta.", length(params)+1)
+      } else if (fun[["params"]][k] %in% params) {
+        p <- paste0(fun[["params"]][k], ".", length(params)+1)
+      } else {
+        p <- fun[["params"]][k]
+      }
+      params <- append(params, p)
+    }
+    jags <- append(jags, j)
+    apool <- append(apool, fun[["apool"]])
+
+    pooltemp <- fun[["apool"]]
+    names(pooltemp) <- params[(length(params)-length(fun[["params"]]) +1) : length(params)]
+    apoollist <- c(apoollist, list(pooltemp))
+  }
+  names(apool) <- params
+  names(bname) <- params
+
+
+  # Check for consistency of knots - I think this is essential tbh
+  knots <- sapply(funs, FUN=function(x) {x[["knots"]]})
+  names(knots) <- seq_along(knots)
+  knots[sapply(knots, is.null)] <- NULL
+  if (dplyr::n_distinct(knots)>1) {
+    stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
+  }
+  knots <- unlist(knots)
+
+  # Check for consistency of spline functions
+  check <- c("rcs", "bs", "ls", "ns") %in% name
+  if (sum(check)>1) {
+    stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
+  }
+
+  # Add check to mbnma.run that length(fun$name) == length(network$treatments)
+
+  out <- list(name=name, params=params, nparam=length(params), jags=jags,
+              apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, degree=degree)
+  class(out) <- "dosefun"
+  return(out)
+
 }

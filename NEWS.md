@@ -1,3 +1,13 @@
+# MBNMAdose 0.4.0
+
+## Additions/changes
+
+- Dose-response functions provided to `mbnma.run()` are now given as `class("dosefun")` and dose-response parameters are specified within these functions. NOTE: Previous syntax of specifying a function name as a character (e.g. `fun="linear"`) along with beta parameters (e.g. `mbnma.run(beta.1="rel")`) will be removed in subsequent versions, along with wrapper functions.
+- Added log linear dose-response function (`dloglin()`)
+- Added spline functions (piecewise linear splines, B-splines, restricted cubic splines, natural splines)
+
+
+
 # MBNMAdose 0.3.1
 
 ## Bug fixes
