@@ -523,15 +523,14 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
-                        level="agent", fun=NULL, nodesplit=NULL, knots=3) {
+                        level="agent", fun=NULL, nodesplit=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
-  checkmate::assertCharacter(fun, any.missing=FALSE,
-                             null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(fun, "dosefun", null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -603,31 +602,33 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
                                   )
     datalist[["dose"]] <- datalist[["agent"]]
 
+
+    # Generate empty dmult matrix
+    if (length(fun$name)>1) {
+      datalist[["f"]] <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
+                                nrow = max(as.numeric(df$studyID)), ncol = max(df$arm)
+      )
+    }
+
     # Generate empty spline matrix
-    if (!is.null(fun)) {
-      if (any(c("rcs", "ns", "bs") %in% fun)) {
-        splinefun <- unique(fun[which(fun %in% c("rcs", "bs", "ns"))])
-        if (length(splinefun)>1) {
-          stop("Only a single spline type (either 'rcs', 'bs' OR 'ns') can be used in a single model")
-        }
+    if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
+      knots <- fun$knots
+      degree <-
 
         doses <- df[, colnames(df) %in% c("agent", "dose")]
-        doses <- unique(dplyr::arrange(doses, agent, dose))
+      doses <- unique(dplyr::arrange(doses, agent, dose))
 
-        # Generate spline basis matrix
-        dosespline <- doses %>% dplyr::group_by(agent) %>%
-          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots))
+      # Generate spline basis matrix
+      dosespline <- doses %>% dplyr::group_by(agent) %>%
+        dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots))
 
-        df <- suppressMessages(dplyr::left_join(df, dosespline))
+      df <- suppressMessages(dplyr::left_join(df, dosespline))
 
-        knotnum <- ifelse(length(knots)>1, length(knots), knots)
+      knotnum <- ifelse(length(knots)>1, length(knots), knots)
 
-        datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
-                                            ncol(datalist[["dose"]]),
-                                            knotnum-1))
-
-
-      }
+      datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
+                                          ncol(datalist[["dose"]]),
+                                          knotnum-1))
     }
 
   } else if (level=="treatment") {
@@ -673,7 +674,13 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         datalist[["dose"]][i,k] <- max(df$dose[as.numeric(df$studyID)==i &
                                                  df$arm==k])
 
-        if (any(c("rcs", "ns", "bs") %in% fun)) {
+        # Add agent-specific index matrix f
+        if (length(fun$name)>1) {
+          datalist[["f"]][i,k] <- mult$posvec[datalist[["agent"]][i,k]]
+        }
+
+        # Add spline matrix
+        if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
                                              df$arm==k,
                                            grepl("spline", colnames(df))]
@@ -699,18 +706,23 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   }
 
   # Add design matrix for multiple dose-response functions
-  if (!is.null(fun)) {
-    if (length(fun)>1) {
-      if (length(fun)!=datalist[["Nagent"]]) {
-        stop("`fun` must take the same length as the total number of agents in the dataset")
-      }
+  # if (!is.null(fun)) {
+  #   if (length(fun)>1) {
+  #     if (length(fun)!=datalist[["Nagent"]]) {
+  #       stop("`fun` must take the same length as the total number of agents in the dataset")
+  #     }
+  #
+  #     funlist <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
+  #     funvec <- sapply(fun, function(x) which(funlist==x))
+  #     funvec <- funvec - (min(funvec)-1)
+  #     datalist[["X"]] <- datalist[["agent"]]
+  #     datalist[["X"]][] <- funvec[datalist[["agent"]]]
+  #   }
+  # }
 
-      funlist <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
-      funvec <- sapply(fun, function(x) which(funlist==x))
-      funvec <- funvec - (min(funvec)-1)
-      datalist[["X"]] <- datalist[["agent"]]
-      datalist[["X"]][] <- funvec[datalist[["agent"]]]
-    }
+  # Add maxdose for nonparametric dose-response functions
+  if ("nonparam" %in% fun$name) {
+    datalist[["maxdose"]] <- max(data.ab$dose, na.rm=TRUE)
   }
 
   return(datalist)

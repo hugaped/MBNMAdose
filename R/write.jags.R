@@ -101,18 +101,9 @@ mbnma.write <- function(fun=dloglin(),
   # Add dose-response function
   dosefun <- write.dose.fun(fun=fun, UME=UME)
   model <- model.insert(model, pos=which(names(model)=="arm"), x=dosefun[[1]])
-  # model <- gsub(inserts[["insert.te"]], paste0("\\1\n", dosefun[[1]], "\n\\2"), model)
 
-  if (length(dosefun)==2) {  # For models with multiple DR functions
-    model <- model.insert(model, pos=which(names(model)=="study"), x=dosefun[[2]])
-    # model <- gsub(inserts[["insert.study"]], paste0("\\1\n", dosefun[[2]], "\n\\2"), model)
-  }
-
-  # # Edit beta parameters if they aren't in dose-response function
-  # for (i in 1:4) {
-  #   if (!grepl(paste0("beta\\.", i), dosefun[[1]])) {
-  #     assign(paste0("beta.", i), NULL)
-  #   }
+  # if (length(dosefun)==2) {  # For models with multiple DR functions
+  #   model <- model.insert(model, pos=which(names(model)=="study"), x=dosefun[[2]])
   # }
 
 
@@ -126,9 +117,11 @@ mbnma.write <- function(fun=dloglin(),
   model <- write.beta(model, fun=fun, method=method, class.effect=class.effect, UME=UME)
 
   # Add correlation between dose-response parameters
-  model <- write.cor(model, fun=fun, method=method, cor=cor, cor.prior=cor.prior, omega=omega,
+  model <- write.cor(model, fun=fun, method=method, cor=cor, omega=omega,
                      class.effect=class.effect, UME=UME)
 
+  # Drop empty loops
+  model <- remove.loops(model)
 
   return(model)
 }
@@ -242,6 +235,7 @@ write.check <- function(fun=dloglin(),
 #' model <- write.model()
 #' cat(model)
 write.model <- function(UME=FALSE, class.effect=list()) {
+
   model <- c(
     start= "model{ 			# Begin Model Code",
     study="for(i in 1:NS){ # Run through all NS trials",
@@ -253,21 +247,27 @@ write.model <- function(UME=FALSE, class.effect=list()) {
     "}",
     "}",
     trt.prior="for (k in 2:Nagent){ # Priors on relative treatment effects",
-    "}",
-    ifelse(length(class.effect)>1, c(class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
-                                     "}"),
-           ""),
-    ifelse(UME==TRUE, c(ume.prior.ref="for (k in 1:Nagent){ # UME prior ref",
-                        "}",
-                        "for (c in 1:(Nagent-1)) {",
-                        ume.prior="for (k in (c+1):Nagent) { # UME priors",
-                        "}",
-                        "}"),
-           ""),
-    "totresdev <- sum(resstudydev[])",
-    end="",
-    "# Model ends",
     "}"
+    )
+
+  if (length(class.effect)>1) {
+    model <- append(model,  c(class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
+                              "}"))
+  }
+  if (UME==TRUE) {
+    model <- append(model, c(ume.prior.ref="for (k in 1:Nagent){ # UME prior ref",
+                             "}",
+                             "for (c in 1:(Nagent-1)) {",
+                             ume.prior="for (k in (c+1):Nagent) { # UME priors",
+                             "}",
+                             "}"))
+  }
+
+  model <- append(model, c("totresdev <- sum(resstudydev[])",
+                           end="",
+                           "# Model ends",
+                           "}"
+                           )
   )
 
 return(model)
@@ -310,106 +310,8 @@ return(model)
 #' write.dose.fun(fun=duser(fun=doseresp, beta.1="rel", beta.2="rel"))
 write.dose.fun <- function(fun=dloglin(), effect="rel", UME=FALSE) {
 
-  funnames <- sapply(fun, FUN=function(x) {x[["name"]]})
+  DR.1 <- fun$jags
 
-  if (length(fun)==1) {
-    DR.1 <- fun[[1]]$jags
-  } else {
-
-    # CURRENTLY NOT FUNCTIONAL
-
-    paramcount <- 0
-
-    DR.1 <- character()
-
-    if ("user" %in% fun) {
-      user.str <- as.character(user.fun[2])
-      drtemp <- user.str
-      drtemp <- gsub("(beta\\.[1-3])", "\\1[agent[i,k]]", drtemp)
-      drtemp <- gsub("(dose)", "\\1[i,k]", drtemp)
-      DR.1 <- append(DR.1, drtemp)
-
-      for (i in 1:4) {
-        if (grepl(paste0("beta.",i), user.str)) {
-          paramcount <- paramcount + 1
-        }
-      }
-    }
-
-    if ("linear" %in% fun) {
-      drtemp <- paste0("(beta.", paramcount + 1, "[agent[i,k]] * dose[i,k])")
-
-      DR.1 <- append(DR.1, drtemp)
-      paramcount <- paramcount + 1
-    }
-
-    if ("exponential" %in% fun) {
-      drtemp <- paste0("beta.", paramcount + 1, "[agent[i,k]] * (1 - exp(- dose[i,k]))")
-
-      DR.1 <- append(DR.1, drtemp)
-      paramcount <- paramcount + 1
-    }
-
-    if ("emax" %in% fun) {
-      drtemp <- paste0("(beta.", paramcount + 1,
-                       "[agent[i,k]] * dose[i,k] / (dose[i,k] + exp(beta.", paramcount + 2,
-                       "[agent[i,k]])))")
-
-      DR.1 <- append(DR.1, drtemp)
-      paramcount <- paramcount + 2
-    }
-
-    if ("emax.hill" %in% fun) {
-      drtemp <- paste0("(beta.", paramcount+1,
-                       "[agent[i,k]] * (dose[i,k]^exp(beta.", paramcount+3,
-                       "[agent[i,k]]))) / ((dose[i,k]^exp(beta.", paramcount+3,
-                       "[agent[i,k]])) + exp(beta.", paramcount+2,
-                       "[agent[i,k]])^exp(beta.", paramcount+3,
-                       "[agent[i,k]]))")
-
-      DR.1 <- append(DR.1, drtemp)
-      paramcount <- paramcount + 3
-    }
-    if (any(c("rcs", "ns", "bs") %in% fun)) {
-      knotnum <- ifelse(length(knots)>1, length(knots), knots)
-      drtemp <- ""
-      for (knot in 1:(knotnum-1)) {
-        drtemp <- paste0(drtemp, "(beta.", paramcount+1, "[agent[i,k]] * spline[i,k,", knot, "])")
-        if (knot<knotnum-1) {
-          drtemp <- paste0(drtemp, " + ")
-        }
-        paramcount <- paramcount + 1
-      }
-      DR.1 <- append(DR.1, drtemp)
-    }
-
-    if (any(c("nonparam.up", "nonparam.down") %in% fun)) {
-      DR.1 <- "d.1[dose[i,k], agent[i,k]]"
-      message("Modelling non-parametric dose-response - arguments for dose-response parameters:\n`beta.1`, `beta.2`, `beta.3`, `beta.4` will be ignored")
-    }
-
-    # Add ifelse statement for multiple DR functions
-    if (length(DR.1)>1) {
-      drmult <- paste0("ifelse(X[i,k]==1, ", DR.1[1], ", insert)")
-      for (i in 2:length(DR.1)) {
-        drtemp <- paste0("ifelse(X[i,k]==", i, ", ", DR.1[i], ", insert)")
-        if (i==length(DR.1)) {
-          drmult <- gsub("insert", DR.1[i], drmult)
-        } else if (i<length(DR.1)) {
-          drmult <- gsub("insert", drtemp, drmult)
-        }
-      }
-      DR.1 <- drmult
-    }
-
-  }
-
-  # Add "s." to indicate within-study betas
-  for (i in seq_along(fun[[1]]$apool)) {
-    if (fun[[1]]$apool[i] %in% "random") {
-      DR.1 <- gsub("(beta\\.[1-4])", "s.\\1", DR.1)
-    }
-  }
   DR.2 <- gsub("k", "1", DR.1)
 
   if (UME==FALSE) {
@@ -420,19 +322,20 @@ write.dose.fun <- function(fun=dloglin(), effect="rel", UME=FALSE) {
   }
 
   # Return final DR function depending on number of DR functions and UME
-  if (length(fun)==1 | UME==TRUE) {
+  if (length(DR.1)==1 | UME==TRUE) {
     if (effect=="rel") {
       return(list(paste0("DR[i,k] <- ", DR)))
     } else if (effect=="abs") {
       return(list(paste0("DR[i,k] <- ", DR.1)))
     }
-  } else if (length(fun)>1) {
-    drmult <- list(paste0("DR[i,k,agent[i,k]] <- DR1[i,k,agent[i,k]] - DR2[i,1,agent[i,k]]"))
-
-    drmult <- list(paste0("DR[i,k] <- DR1[i,k] - DR2[i]\nDR1[i,k] <- ", DR.1))
-
-    DR.2 <- gsub(",k", ",1", DR.1)
-    drmult[[2]] <- paste0("DR2[i] <- ", DR.2)
+  } else if (length(fun$jags)>1) {
+    drmult <- "DR[i,k] <- DRmult[i,k,f[i,k]]"
+    for (i in seq_along(fun$jags)) {
+      drmult <- append(drmult, paste0("DRmult[i,k,", i, "] <- ", DR.1[i], " - ", DR.2[i]))
+    }
+    drmult <- list(drmult,
+                   paste0("DR2[i] <- ", DR.2)
+                   )
     return(drmult)
   }
 }
@@ -606,15 +509,15 @@ write.beta <- function(model, fun=dloglin(), method="common",
 
   } else {
     for (i in seq_along(fun$apool)) {
-      # if (UME==FALSE) {
-      #   insert <- vars[[paste("s.beta", i, "ref", sep=".")]]
-      #   model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
-      # }
       pname <- names(fun$apool[i])
+      isnum <- suppressWarnings(!is.na(as.numeric(fun$apool[i])))
 
       if (fun$apool[i] %in% "rel") {
         # Convert s.beta to d.
         if (UME==FALSE) {
+          insert <- paste0("s.beta.", i, "[1] <- 0")
+          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
           insert <- paste0("s.beta.", i, "[k] <- ", pname, "[k]")
           model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
         }
@@ -638,7 +541,7 @@ write.beta <- function(model, fun=dloglin(), method="common",
           }
         } else {
           if (UME==FALSE) {
-            insert <- paste0(pname, "[k] ~ dnorm(0,0.001)", "\n")
+            insert <- paste0(pname, "[k] ~ dnorm(0,0.001)")
             model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
           } else if (UME==TRUE) {
@@ -655,17 +558,64 @@ write.beta <- function(model, fun=dloglin(), method="common",
         insert <- paste0(pname, " ~ dnorm(0,0.001)")
         model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
-        if (fun$apool[i] %in% "random") {
-          insert <- paste0("\ns.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
+        if (UME==FALSE) {
+          insert <- paste0("s.beta.", i, "[1] <- 0")
+          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
+          if (fun$apool[i] %in% "random") {
+
+            insert <- paste0("s.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
+            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+
+            insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
+                        paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
+            model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
+          } else if (fun$apool[i] %in% "common") {
+            insert <- paste0("s.beta.", i, "[k] <- ", pname)
+            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+          }
+
+        } else if (UME==TRUE) {
+          insert <- c(paste0("s.beta.", i, "[k,k] <- 0"))
+          model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+
+          if (fun$apool[i] %in% "random") {
+
+            insert <- paste0("s.beta.", i, "[k,c] ~ dnorm(", pname, ", tau.", pname, ")")
+            model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
+
+            insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
+                        paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
+            model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
+          } else if (fun$apool[i] %in% "common") {
+            insert <- paste0("s.beta.", i, "[k,c] <- ", pname)
+            model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
+          }
+        }
+
+
+      } else if (isnum) {
+        insert <- paste0(pname, " <- ", fun$apool[i])
+        model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
+        if (UME==FALSE) {
+          insert <- paste0("s.beta.", i, "[1] <- 0")
+          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
+          insert <- paste0("s.beta.", i, "[k] <- ", pname)
           model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
-          insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
-                      paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
-          model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+        } else if (UME==TRUE) {
+          insert <- paste0("s.beta.", i, "[k,k] <- 0")
+          model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+
+          insert <- paste0("s.beta.", i, "[k,c] <- ", pname)
+          model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
+
         }
-      } else if (is.numeric(fun$apool[i])) {
-        insert <- paste0(pname, " <- ", fun[[1]]$apool[i])
-        model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
       } else {
         stop(paste0(pname, " must take either `rel`, `common`, `random` or a numeric value"))
       }
@@ -729,15 +679,6 @@ write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL,
 write.cov.mat <- function(model, sufparams,
                           omega=NULL, UME=FALSE) {
 
-
-  jagswish <- c("for (r in 1:mat.size) {",
-                "d.prior[r] <- 0",
-                "}",
-                "",
-                paste0("inv.R ~ dwish(Omega[,], ", length(sufparams), ")")
-                )
-
-
   if (UME==FALSE) {
     priorloc <- "trt.prior"
     index <- "k"
@@ -748,7 +689,7 @@ write.cov.mat <- function(model, sufparams,
 
   mat.size <- length(sufparams)
   for (i in seq_along(sufparams)) {
-    model <- gsub(paste0(sufparams[i], "\\[", index, "\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)\\"),
+    model <- gsub(paste0(sufparams[i], "\\[", index, "\\] ~ [a-z]+\\([0-9]+(\\.[0-9]+)?,[0-9]+(\\.?[0-9]+)?\\)"),
                   paste0(sufparams[i], "[", index, "] <- mult[", i, ",", index, "]"),
                   model
                   )
@@ -761,7 +702,64 @@ write.cov.mat <- function(model, sufparams,
     model <- gsub("(mult\\[1\\:[0-9],k)(\\] ~)", "\\1,c\\2", model)
   }
 
+  jagswish <- c(paste0("for (r in 1:", mat.size, ") {"),
+                "d.prior[r] <- 0",
+                "}",
+                "",
+                paste0("inv.R ~ dwish(omega[,], ", length(sufparams), ")")
+  )
   model <- model.insert(model, pos=which(names(model)=="end"), x=jagswish)
 
+  return(model)
+}
+
+
+
+
+
+
+
+#' Write JAGS code for mbnma.nodesplit
+#'
+#' @inheritParams nma.run
+#' @noRd
+add.nodesplit <- function(model) {
+
+  # If method=="common"
+  if (any(grepl("delta\\[i\\,k\\] <-", model))) {
+
+    match <- grep("^delta\\[i\\,k\\] <- DR", model)
+    model[match] <- "delta[i,k] <- md[i,k]"
+    model <- model.insert(model, pos=match, x="md[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])")
+
+    # Else if method=="random
+  } else if (grepl("delta\\[i\\,k\\] ~", model)) {
+
+    match <- grep("^md\\[i\\,k\\] <- DR", model)
+    model[match] <- "md[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k] + sw[i,k])"
+  }
+
+  # Add prior for direct
+  model <- model.insert(model, pos=which(names(model)=="end"), "direct ~ dnorm(0,0.0001)")
+
+  return(model)
+}
+
+
+
+
+#' Removes empty loops from JAGS code
+#'
+#' @noRd
+remove.loops <- function(model) {
+
+  segs <- c("trt.prior")
+
+  for (i in seq_along(segs)) {
+    pos <- which(names(model)==segs[i])
+    if (model[pos+1] == "}") {
+      model <- model[c(1:(pos-1), (pos+2):length(model))]
+    }
+  }
   return(model)
 }

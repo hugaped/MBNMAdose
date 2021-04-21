@@ -311,7 +311,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' @export
 mbnma.run <- function(network,
-                      fun=dloglin(rate="rel"),
+                      fun=dloglin(),
                       method="common",
                       class.effect=list(), UME=FALSE,
                       cor=TRUE,
@@ -362,7 +362,15 @@ mbnma.run <- function(network,
 
   # Ensure cor set to FALSE if multiple dose-response functions are modelled
   # if (cor==TRUE & length(fun)>1) {cor <- FALSE}
-  if (cor==TRUE & class(fun)=="list") {cor <- FALSE}
+  if (cor==TRUE & length(fun$name)>1) {cor <- FALSE}
+
+  # If multiple dose-response parameters are relative effects then add omega default
+  if (cor==TRUE & is.null(omega)) {
+    relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
+    if (sum(relparam)>1) {
+      omega <- diag(rep(1,sum(relparam)))
+    }
+  }
 
   # Ensure rjags parameters make sense
   if (n.iter<=n.burnin) {
@@ -402,9 +410,9 @@ mbnma.run <- function(network,
 
     # Write JAGS model code
     model <- mbnma.write(fun=fun,
-                         method=method, knots=knots,
+                         method=method,
                          class.effect=class.effect, UME=UME,
-                         cor=cor, var.scale=var.scale,
+                         cor=cor, omega=omega,
                          likelihood=likelihood, link=link
     )
 
@@ -424,7 +432,7 @@ mbnma.run <- function(network,
                     "for (k in 1:Nclass){ # Priors on relative class effects",
                     model)
 
-      model <- gsub("s\\.beta\\.[1-9]\\[1\\] <- 0", "", model)
+      model <- gsub("s\\.beta\\.[(0-9)+]\\[1\\] <- 0", "", model)
     }
 
     # # Change beta.1 and beta.2 to wrapper parameters (e.g. emax, et50) if necessary
@@ -478,7 +486,7 @@ mbnma.run <- function(network,
   class <- ifelse(length(class.effect)>0, TRUE, FALSE)
 
   # Change doses to dose indices for non-parametric models
-  if (any(sapply(fun, FUN=function(x) (x[["name"]])) %in% c("nonparam.up", "nonparam.down"))) {
+  if ("nonparam" %in% fun$name) {
     data.ab <- index.dose(network[["data.ab"]])[["data.ab"]]
   } else {
     data.ab <- network[["data.ab"]]
@@ -488,7 +496,7 @@ mbnma.run <- function(network,
   #### Run jags model ####
 
   result.jags <- mbnma.jags(data.ab, model,
-                            class=class,
+                            class=class, omega=omega,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link, fun=fun,
                             n.iter=n.iter,
@@ -503,9 +511,11 @@ mbnma.run <- function(network,
 
 
   # Calculate model fit statistics (using differnt pD as specified)
-  fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
-  result$BUGSoutput$pD <- fitstats$pd
-  result$BUGSoutput$DIC <- fitstats$dic
+  if (!"error" %in% names(result)) {
+    fitstats <- changepd(model=result, jagsdata=jagsdata, pd=pd, likelihood=likelihood, type="dose")
+    result$BUGSoutput$pD <- fitstats$pd
+    result$BUGSoutput$DIC <- fitstats$dic
+  }
 
   # Add variables for other key model characteristics (for predict and plot functions)
   model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
@@ -527,12 +537,12 @@ mbnma.run <- function(network,
     result[["classes"]] <- network[["classes"]]
   }
 
-  # Remove dose-response parameters for agents if multi dr functions are used
-  if (!is.list(result)) {
-    result <- cutjags(result)
-  }
-
   if (!("error" %in% names(result))) {
+    # Remove dose-response parameters for agents if multi dr functions are used
+    if (!is.list(result)) {
+      result <- cutjags(result)
+    }
+
     class(result) <- c("mbnma", class(result))
   }
 
@@ -545,7 +555,7 @@ mbnma.run <- function(network,
 
 
 mbnma.jags <- function(data.ab, model,
-                       class=FALSE,
+                       class=FALSE, omega=NULL,
                        likelihood=NULL, link=NULL, fun=NULL,
                        nodesplit=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
@@ -555,10 +565,10 @@ mbnma.jags <- function(data.ab, model,
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
-  checkmate::assertCharacter(model, any.missing=FALSE, len=1, add=argcheck)
+  checkmate::assertCharacter(model, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
-  checkmate::assertList(fun, null.ok=TRUE, add=argcheck)
+  checkmate::assertClass(fun, "dosefun", null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
   checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
@@ -567,21 +577,17 @@ mbnma.jags <- function(data.ab, model,
 
   args <- list(...)
 
-  # Get data into JAGS list format
-  if (is.null(likelihood) & is.null(link)) {
-    # For MBNMAtime (function is equivalent in both packages)
-    jagsdata <- getjagsdata(data.ab, class=class)
-  } else {
-    # For MBNMAdose
-    jagsdata <- getjagsdata(data.ab, class=class,
-                            likelihood=likelihood, link=link, fun=fun,
-                            nodesplit=nodesplit)
+  # For MBNMAdose
+  jagsdata <- getjagsdata(data.ab, class=class,
+                          likelihood=likelihood, link=link, fun=fun,
+                          nodesplit=nodesplit)
+
+  if (!is.null(omega)) {
+    jagsdata[["omega"]] <- omega
   }
 
-
   # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
-  if (grepl("maxdose", model)) {
-    jagsdata[["maxdose"]] <- index.dose(data.ab)[["maxdose"]]
+  if ("nonparam" %in% fun$name) {
 
     # Generate monotonically increasing/decreasing initial values
     # Check for user-defined initial values
@@ -607,7 +613,7 @@ mbnma.jags <- function(data.ab, model,
 
   # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
-  if (all(sapply(fun, FUN=function(x) x[["name"]]) %in% c("rcs", "ns", "bs"))) {
+  if (all(fun$name %in% c("rcs", "ns", "bs", "ls"))) {
     jagsdata[["dose"]] <- NULL
   }
 
@@ -633,7 +639,11 @@ mbnma.jags <- function(data.ab, model,
   # Create a temporary model file
   tmpf=tempfile()
   tmps=file(tmpf,"w")
-  cat(model,file=tmps)
+  if (length(model)==1) {
+    cat(model,file=tmps)
+  } else if (length(model)>1) {
+    cat(paste(model, collapse="\n"),file=tmps)
+  }
   close(tmps)
 
   out <- tryCatch({
@@ -670,6 +680,7 @@ mbnma.jags <- function(data.ab, model,
   }
 
   jagsdata[["dose"]] <- dosedat # add dose back to jagsdata if spline models were used
+  names(model) <- NULL
 
   return(list("jagsoutput"=out, "jagsdata"=jagsdata, "model"=model))
 }
@@ -724,56 +735,48 @@ gen.parameters.to.save <- function(fun, model) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(model, min.len = 10, add=argcheck)
-  checkmate::assertClass(fun, "list", add=argcheck)
+  checkmate::assertClass(fun, "dosefun", add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
   # Set some automatic parameters based on the model code
   parameters.to.save <- vector()
 
-  for (funi in fun) {
-    for (i in seq_along(fun[[funi]]$params)) {
+  for (i in seq_along(fun$params)) {
+    # For unnamed parameters
+    if (any(grepl(paste0("^d\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("d.", i))
+    }
+    if (any(grepl(paste0("^D\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("D.", i))
+    }
+    if (any(grepl(paste0("^sd\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", i))
+    }
+    if (any(grepl(paste0("^sd\\.D\\.", i), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.D.", i))
+    }
 
-      # For unnamed parameters
-      if (any(grepl(paste0("^d\\.", i), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("d.", i))
-      }
-      if (any(grepl(paste0("^D\\.", i), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("D.", i))
-      }
-      if (any(grepl(paste0("^sd\\.", i), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("sd.", i))
-      }
-      if (any(grepl(paste0("^sd\\.D\\.", i), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("sd.D.", i))
-      }
+    # For named parameters
+    if (any(grepl(fun$params[i], model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, fun$params[i])
+    }
+    if (any(grepl(toupper(fun$params[i]), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, toupper(fun$params[i]))
+    }
+    if (any(grepl(paste0("^sd\\.", fun$params[i]), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", fun$params[i]))
+    }
+    if (any(grepl(paste0("^sd\\.", toupper(fun$params[i])), model))==TRUE) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.", toupper(fun$params[i])))
+    }
 
-      # For named parameters
-      if (any(grepl(fun[[funi]]$params[i], model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, fun[[funi]]$params[i])
-      }
-      if (any(grepl(toupper(fun[[funi]]$params[i]), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, toupper(fun[[funi]]$params[i]))
-      }
-      if (any(grepl(paste0("^sd\\.", fun[[funi]]$params[i]), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("sd.", fun[[funi]]$params[i]))
-      }
-      if (any(grepl(paste0("^sd\\.", toupper(fun[[funi]]$params[i])), model))==TRUE) {
-        parameters.to.save <- append(parameters.to.save, paste0("sd.", toupper(fun[[funi]]$params[i])))
-      }
-
-      # Remove beta if both d and beta are in for any parameter
-      if (paste0("d.",i) %in% parameters.to.save & paste0("beta.",i) %in% parameters.to.save) {
-        parameters.to.save <- parameters.to.save[!parameters.to.save %in% paste0("beta.",i)]
-      }
+    # Remove beta if both d and beta are in for any parameter
+    if (paste0("d.",i) %in% parameters.to.save & paste0("beta.",i) %in% parameters.to.save) {
+      parameters.to.save <- parameters.to.save[!parameters.to.save %in% paste0("beta.",i)]
     }
   }
 
-
-  # For MBNMAtime
-  if (any(grepl("rho", model))==TRUE) {
-    parameters.to.save <- append(parameters.to.save, "rho")
-  }
   if (any(grepl("totresdev", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
   }

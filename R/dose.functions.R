@@ -5,10 +5,9 @@
 
 #' Exponential dose-response function
 #'
-#' \eqn{rate\times{(1-exp(-x))}}
+#' Modelled assuming relative effects (`"rel"`)
 #'
-#' @param rate Pooling for exponential rate parameter. Can take `"rel"`, `"common"`, `"random"` or be
-#'   assigned a numeric value (see details).
+#' \eqn{rate\times{(1-exp(-x))}}
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -28,35 +27,15 @@
 #'   \insertAllCited
 #'
 #' @examples
-#' dexp(rate="rel")
-#' dexp(rate="random")
+#' dexp()
 #'
 #' @export
-dexp <- function(rate="rel") {
-
-  # Run checks
-  err <- TRUE
-
-  if (length(rate)==1) {
-    if (any(c("rel", "common", "random") %in% rate)) {
-      err <- FALSE
-    } else if (is.numeric(rate)) {
-      err <- FALSE
-    }
-  }
-  if (err) {
-    stop("'rate' must take either 'rel', 'common', 'random' or be assigned a numeric value")
-  }
+dexp <- function() {
+  rate <- "rel"
 
   # Define function
   fun <- ~ rate * (1 - exp(-dose))
-  jags <- "beta.1 * (1 - exp(- dose[i,k]))"
-
-  if ("rel" %in% rate) {
-    jags <- gsub("beta\\.1", "beta.1[agent[i,k]]", jags)
-  } else if ("random" %in% rate) {
-    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
-  }
+  jags <- "s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))"
 
   f <- function(dose, beta.1) {
     y <- beta.1 * (1-exp(-dose))
@@ -88,9 +67,9 @@ dexp <- function(rate="rel") {
 
 #' Log-linear (exponential) dose-response function
 #'
-#' \eqn{rate\times{log(x + 1)}}
+#' Modelled assuming relative effects (`"rel"`)
 #'
-#' @inheritParams dexp
+#' \eqn{rate\times{log(x + 1)}}
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -110,34 +89,16 @@ dexp <- function(rate="rel") {
 #'   \insertAllCited
 #'
 #' @examples
-#' dloglin(rate="rel")
-#' dloglin(rate="abs")
+#' dloglin()
 #'
 #' @export
-dloglin <- function(rate="rel") {
-
-  # Run checks
-  err <- TRUE
-  if (length(rate)==1) {
-    if (any(c("rel", "common", "random") %in% rate)) {
-      err <- FALSE
-    } else if (is.numeric(rate)) {
-      err <- FALSE
-    }
-  }
-  if (err) {
-    stop("'rate' must take either 'rel', 'common', 'random' or be assigned a numeric value")
-  }
+dloglin <- function() {
+  rate <- "rel"
 
   # Define function
   fun <- ~ rate * log(dose + 1)
-  jags <- paste0("beta.1 * log(dose[i,k] + 1)")
+  jags <- paste0("s.beta.1[agent[i,k]] * log(dose[i,k] + 1)")
 
-  if ("rel" %in% rate) {
-    jags <- gsub("beta\\.1", "beta.1[agent[i,k]]", jags)
-  } else if ("random" %in% rate) {
-    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
-  }
 
   f <- function(dose, beta.1) {
     y <- beta.1 * log(dose + 1)
@@ -242,18 +203,14 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
 
   if (!is.null(hill)) {
     fun <- ~ (emax * (dose ^ hill)) / ((exp(ed50) ^ hill) + (dose ^ hill))
-    jags <- "(beta.1 * (dose[i,k] ^ exp(beta.3))) / ((exp(beta.2) ^ exp(beta.3)) + (dose[i,k] ^ exp(beta.3)))"
+    jags <- "(s.beta.1 * (dose[i,k] ^ exp(s.beta.3))) / ((exp(s.beta.2) ^ exp(s.beta.3)) + (dose[i,k] ^ exp(s.beta.3)))"
   } else if (is.null(hill)) {
     fun <- ~ (emax * dose) / (exp(ed50) + dose)
-    jags <- "(beta.1 * dose[i,k]) / (exp(beta.2) + dose[i,k])"
+    jags <- "(s.beta.1 * dose[i,k]) / (exp(s.beta.2) + dose[i,k])"
   }
 
   for (i in seq_along(params)) {
-    if ("rel" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[agent[i,k]]"), jags)
-    } else if ("random" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[i,k]"), jags)
-    }
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
 
@@ -392,11 +349,7 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 
 
   for (i in seq_along(params)) {
-    if ("rel" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[agent[i,k]]"), jags)
-    } else if ("random" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[i,k]"), jags)
-    }
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
 
@@ -529,13 +482,8 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   }
 
   # Set parameters
-  params <- c(paramscoef, paramspower)
   for (i in seq_along(params)) {
-    if ("rel" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[agent[i,k]]"), jags)
-    } else if ("random" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[i,k]"), jags)
-    }
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
   # Write function
@@ -730,11 +678,7 @@ dspline <- function(type="bs", knots=1, degree=1,
 
   # Define parameters
   for (i in seq_along(params)) {
-    if ("rel" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[agent[i,k]]"), jags)
-    } else if ("random" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[i,k]"), jags)
-    }
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
   # Generate output values
@@ -909,11 +853,7 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
 
   # Define parameters
   for (i in seq_along(params)) {
-    if ("rel" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[agent[i,k]]"), jags)
-    } else if ("random" %in% params[[i]]) {
-      jags <- gsub(paste0("beta\\.", i), paste0("beta.",i,"[i,k]"), jags)
-    }
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
   # Generate output values
@@ -955,9 +895,9 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
 #' funs <- c(rep(list(demax()),3),
 #'           rep(list(dloglin()),2),
 #'           rep(list(demax(ed50="common")),3),
-#'           list(demax()),
 #'           rep(list(dexp()),2))
 #'
+#' dmulti(funs)
 #' @export
 dmulti <- function(funs=list()) {
 
