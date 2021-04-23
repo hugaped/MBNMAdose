@@ -16,36 +16,27 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @noRd
 get.model.vals <- function(mbnma) {
 
+  fun <- mbnma$model.arg$fun
+
   betaparams <- list()
-  for (i in 1:4) {
-    beta <- paste0("beta.",i)
-    if (!is.null(mbnma$model.arg[[beta]])) {
-      temp <- list()
-      temp$pool <- mbnma$model.arg[[beta]]
+  for (i in seq_along(fun$apool)) {
+    temp <- vector()
+    res.mat <- mbnma$BUGSoutput$sims.list
+    if (fun$apool[i] %in% c("rel", "common")) {
+      temp <- as.matrix(res.mat[[names(fun$apool)[i]]], ncol=1)
+    } else if (fun$apool[i] %in% "random") {
 
-      if (is.null(mbnma$model.arg$arg.params)) {
-        temp$name <- i
-      } else {
-        temp$name <- mbnma$model.arg$arg.params$wrap.params[
-          mbnma$model.arg$arg.params$run.params==beta
-          ]
-      }
+      mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
+      mat[,1] <- res.mat[[names(fun$apool)[i]]]
+      mat[,2] <- res.mat[[paste0("sd.", names(fun$apool)[i])]]
+      mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
-      res.mat <- mbnma$BUGSoutput$sims.matrix
-      if (temp$pool=="rel") {
-        temp$result <- res.mat[,grepl(paste0("^d\\.", temp$name), colnames(res.mat))]
-      } else if (temp$pool=="common") {
-        temp$result <- res.mat[,grepl(paste0("^beta\\.", temp$name), colnames(res.mat))]
-      } else if (temp$pool=="random") {
-            temp$result <- stats::dnorm(res.mat[,grepl(paste0("^d.", temp$name), colnames(res.mat))],
-                             res.mat[,grepl(paste0("^sd\\.", temp$name), colnames(res.mat))]
-        )
-      } else if (is.numeric(temp$pool)) {
-        temp$result <- rep(temp$pool, mbnma$BUGSoutput$n.sims)
-      }
-
-      betaparams[[beta]] <- temp
+      temp <- mat
+    } else if (is.numeric(fun$apool)[i]) {
+      temp <- rep(fun$apool[i], mbnma$BUGSoutput$n.sims)
     }
+
+    betaparams[[fun$bname[i]]] <- temp
   }
 
   return(betaparams)

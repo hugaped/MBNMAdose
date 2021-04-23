@@ -331,7 +331,11 @@ write.dose.fun <- function(fun=dloglin(), effect="rel", UME=FALSE) {
   } else if (length(fun$jags)>1) {
     drmult <- "DR[i,k] <- DRmult[i,k,f[i,k]]"
     for (i in seq_along(fun$jags)) {
-      drmult <- append(drmult, paste0("DRmult[i,k,", i, "] <- ", DR.1[i], " - ", DR.2[i]))
+      if (effect=="rel") {
+        drmult <- append(drmult, paste0("DRmult[i,k,", i, "] <- ", DR.1[i], " - ", DR.2[i]))
+      } else if (effect=="abs") {
+        drmult <- append(drmult, paste0("DRmult[i,k,", i, "] <- ", DR.1[i]))
+      }
     }
     drmult <- list(drmult,
                    paste0("DR2[i] <- ", DR.2)

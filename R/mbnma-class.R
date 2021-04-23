@@ -596,18 +596,20 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
   if (length(object$model.arg$class.effect)>0) {
     stop("`predict() currently does not work with models that use class effects")
   }
-  if (object$model.arg$fun[1] %in% c("nonparam.up", "nonparam.down")) {
+  if ("nonparam" %in% object$model.arg$fun$name) {
     stop("`predict() does not work with non-parametric dose-response functions")
   }
-  if (length(object$model.arg$fun)>1) {
+  if (length(object$model.arg$fun$name)>1) {
 
-    funs <- c(NA, 1,1,2,3, rep(object$model.arg$knots-1, 3))
-    names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
-    funs <- funs[names(funs) %in% object$model.arg$fun]
+    # Add posvec here?
 
-    # Find the location of the agents within the vector of agent names in network
-    funi <- which(object$network$agents %in% names(doses))
-    X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
+    # funs <- c(NA, 1,1,2,3, rep(object$model.arg$knots-1, 3))
+    # names(funs) <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
+    # funs <- funs[names(funs) %in% object$model.arg$fun]
+    #
+    # # Find the location of the agents within the vector of agent names in network
+    # funi <- which(object$network$agents %in% names(doses))
+    # X <- sapply(object$model.arg$fun[funi], function(x) which(x==names(funs)))
   }
 
   link <- object$model.arg$link
@@ -616,15 +618,20 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
 
   # Write dose-response function used in the model
   DR <- suppressMessages(
-    write.dose.fun(fun=object$model.arg$fun, user.fun=object$model.arg$user.fun,
+    write.dose.fun(fun=object$model.arg$fun,
                    effect="abs"
     )[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
 
+  if (length(object$model.arg$fun$name)>1) {
+    DR <- DR[-1]
+  }
+
   # Get dose-response parameter estimates
   betaparams <- get.model.vals(object)
-  betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
-                      ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
+
+  # betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
+  #                     ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
 
 
   # Identify E0
@@ -661,13 +668,12 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
   predict.result <- list()
 
   # Add spline basis matrix
-  if ("rcs" %in% object$model.arg$fun) {
+  if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
     splinedoses <- doses
     for (i in seq_along(doses)) {
-      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$knots,
-                              max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
+      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots,
+                                      max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
     }
-
   }
 
   # Replace segments of dose-response function string with values for prediction
@@ -680,41 +686,63 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
         pred <- E0
 
       } else {
-        tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", DR)
+        if (length(object$model.arg$fun$name)>1) {
+          pos <- object$model.arg$fun$posvec[which(object$network$agents==names(doses)[i])]
+          tempDR <- DR[pos]
+        } else {
+          tempDR <- DR
+        }
+
+        tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", tempDR)
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
         tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
 
-        # For multiple DR functions
-        tempDR <- gsub("X==", "X[i]==", tempDR)
-
-        # Need to enclose ifelse() matrices in list() to allow ifelse to return something in matrix form
-        if (length(object$model.arg$fun)>1) {
-          tempDR <- gsub("(ifelse)(.*?,)(.*?,)", "\\1\\2list(\\3!!!),", tempDR)
-          tempDR <- gsub(",\\!\\!\\!", "", tempDR)
-          tempDR <- gsub("(.+,)(.*?)$", "\\1list(\\2)", tempDR)
-        }
-
-
-
         dose <- doses[[i]][k]
-        if ("rcs" %in% object$model.arg$fun) {
+        if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
         }
 
         for (param in seq_along(betaparams)) {
-          if (is.vector(betaparams[[param]]$result)) {
+          if (is.vector(betaparams[[param]])) {
             assign(paste0("s.", names(betaparams)[param]),
-                   betaparams[[param]]$result)
-          } else if (is.matrix(betaparams[[param]]$result)) {
+                   betaparams[[param]])
+          } else if (is.matrix(betaparams[[param]])) {
+            if (ncol(betaparams[[param]])>1) {
+              # Look for correct column index for each beta param
+              if (length(object$model.arg$fun$name)>1) {
+                vec <- object$model.arg$fun$posvec[1:which(object$network$agents==names(doses)[i])]
+                vec <- table(vec)[names(table(vec))==pos]
+                colnum <- vec
 
-            # Look for correct column index for each beta param
-            colnum <- which(grepl(paste0("\\[", agent.num[i], "\\]"),
-                                  colnames(betaparams[[param]]$result)
-            ))
+                if (names(vec)=="1") {
+                  # Check if placebo in dataset
+                  if (object$network$agents[1]=="Placebo") {
+                    colnum <- colnum - 1
+                  }
+                }
 
-            assign(paste0("s.", names(betaparams)[param]),
-                   betaparams[[param]]$result[,colnum]
-            )
+              } else {
+                colnum <- which(object$network$agents==names(doses)[i])
+
+                # Check if placebo in dataset
+                if (object$network$agents[1]=="Placebo") {
+                  colnum <- colnum - 1
+                }
+              }
+
+            } else {
+              colnum <- 1
+            }
+
+            # Check for if param assignment is valid
+            if (colnum<=ncol(betaparams[[param]])) {
+              assign(paste0("s.", names(betaparams)[param]),
+                     betaparams[[param]][,colnum]
+              )
+            } else {
+              assign(paste0("s.", names(betaparams)[param]), NULL)
+            }
+
           }
         }
 
