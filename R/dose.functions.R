@@ -962,7 +962,7 @@ dmulti <- function(funs=list()) {
     }
 
     for (k in seq_along(fun[["params"]])){
-      j <- gsub(fun[["bname"]][k], paste0("beta.",length(bname)+1), j)
+      j <- gsub(fun[["bname"]][k], paste0("betaswap.",length(bname)+1), j)
       bname <- append(bname, paste0("beta.",length(bname)+1))
 
       if (fun[["params"]][k] %in% params & grepl("beta", fun[["params"]][k])) {
@@ -974,6 +974,7 @@ dmulti <- function(funs=list()) {
       }
       params <- append(params, p)
     }
+    j <- gsub("swap", "", j)
     jags <- append(jags, j)
     apool <- append(apool, fun[["apool"]])
 
