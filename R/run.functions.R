@@ -1780,61 +1780,36 @@ mbnma.update <- function(mbnma, param="theta",
   checkmate::reportAssertions(argcheck)
 
   modelcode <- mbnma$model.arg$jagscode
+
   # Ensure param is in model code
-  if (grepl(paste0("\\\n", param), mbnma$model.arg$jagscode)==FALSE &
-      grepl(paste0("\\(", param), mbnma$model.arg$jagscode)==FALSE) {
-    stop(paste0(param, " not in model code"))
+  if (all(grepl(paste0("^", param, "\\[i\\,k\\]"), modelcode)==FALSE)) {
+    stop(paste0(param, " not in model code or does not vary by arm"))
   }
 
-  # Ensure param varies by study and arm (could add by observation for MBNMAtime)
-  str <- sub("(.+)(Run through all arms within a study.+?[}])(.+)", "\\2", modelcode)
-  paramstr <- paste0(param, "\\[i,k\\]")
-  if (grepl(paramstr, str)==FALSE) {
-    stop(paste0(param, " does not vary by study and arm and so array will not be the correct size"))
-  }
 
   # Update JAGS model for additional iterations
   result <- rjags::jags.samples(mbnma$model, variable.names = param,
                                 n.iter=n.iter, n.thin=n.thin)
 
   # Take means of posteriors and convert to data.frame with indices
-  if (mbnma$type=="time") {
-    update.mat <- apply(result[[param]], c(1,2,3), function(x) mean(x, na.rm=TRUE))
-    update.df <- reshape2::melt(update.mat)
-    names(update.df) <- c("study", "arm", "fupdose", "mean")
+  update.mat <- apply(result[[param]], c(1,2), function(x) mean(x, na.rm=TRUE))
+  update.df <- reshape2::melt(update.mat)
+  names(update.df) <- c("study", "arm", "mean")
 
-    # Remove missing values
-    update.df <- update.df[stats::complete.cases(update.df),]
+  # Remove missing values
+  update.df <- update.df[stats::complete.cases(update.df),]
 
-    # Treatment as facet
-    temp <- replicate(max(update.df$fupdose), mbnma$model$data()$treatment)
-    update.df$facet <- as.vector(temp)[
-      stats::complete.cases(as.vector(temp))
-      ]
+  # Agent as facet
+  update.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+    stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
+  ]
 
-    # Studyarm as group
-    update.df$groupvar <- paste(as.numeric(update.df$study), as.numeric(update.df$arm), sep="_")
+  update.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+    stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
+  ]
 
-  } else if (mbnma$type=="dose") {
-    update.mat <- apply(result[[param]], c(1,2), function(x) mean(x, na.rm=TRUE))
-    update.df <- reshape2::melt(update.mat)
-    names(update.df) <- c("study", "arm", "mean")
-
-    # Remove missing values
-    update.df <- update.df[stats::complete.cases(update.df),]
-
-    # Agent as facet
-    update.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
-      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
-      ]
-
-    update.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
-      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
-      ]
-
-    # Study as group
-    update.df$groupvar <- as.numeric(update.df$study)
-  }
+  # Study as group
+  update.df$groupvar <- as.numeric(update.df$study)
 
   return(update.df)
 }

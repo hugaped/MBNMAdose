@@ -18,13 +18,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' Parameters must be given the same name as monitored nodes in `mbnma` and must be
 #' modelled as relative effects (`"rel"`). Can be set to
 #' `NULL` to include all available dose-response parameters estimated by `mbnma`.
-#' @param agent.labs A character vector of agent labels (including `"Placebo"` if it
-#' has been included in the original network). If left as `NULL` (the default) then
-#' labels will be used as defined in the data.
-#' @param class.labs A character vector of class labels if `mbnma` was modelled using class effects
-#' (including `"Placebo"` if it
-#' has been included in the original network). If left as `NULL`
-#' (the default) then labels will be used as defined in the data.
 #' @param ... Arguments to be passed to methods, such as graphical parameters
 #'
 #' @return A forest plot of class `c("gg", "ggplot")` that has separate panels for
@@ -53,23 +46,15 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
 #'             class.effect=list("ed50"="common"))
 #'
-#' # Plot forest plot with different labels for classes
-#' plot(emax, class.labs=c("Placebo", "Other Active", "Eletriptan"))
-#'
-#' # Since "Placebo" is included in the network, it must be included in labels
-#' # Failure to do so will cause an error
-#' ## ERROR ## plot(emax, class.labs=c("Other Active", "Eletriptan"))
 #' }
 #'
 #' @export
-plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
+plot.mbnma <- function(x, params=NULL, ...) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "mbnma", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(agent.labs, null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Declare global variables
@@ -150,59 +135,6 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     stop("Cannot identify labels for agents/classes in 'x'")
   }
 
-
-  # Change param labels for agents
-  # agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
-  # if (!is.null(agent.labs)) {
-  #   agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
-  #   if (length(agent.labs)!=max(agentcodes)) {
-  #     stop("`agent.labs` length does not equal number of agents within the model")
-  #   } else {
-  #     a.labs <- agent.labs[sort(unique(agentcodes))]
-  #   }
-  # } else if ("agents" %in% names(x$network)) {
-  #   if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
-  #     a.labs <- x$network[["treatments"]]
-  #   } else {
-  #     a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
-  #   }
-  # } else {
-  #   a.labs <- sort(unique(agentdat$param))
-  # }
-  #
-  # # Change param labels for classes
-  # classdat <- plotdata[grepl("^D\\.", rownames(plotdata)),]
-  # c.labs <- vector()
-  # if (nrow(classdat)!=0) {
-  #   if (!is.null(class.labs)) {
-  #     classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
-  #     c.labs <- class.labs[classcodes]
-  #   } else if ("classes" %in% names(x)) {
-  #     c.labs <- x[["classes"]][x[["classes"]]!="Placebo"]
-  #   } else {
-  #     c.labs <- sort(unique(classdat$param))
-  #   }
-  # }
-  #
-  # # Increase param number for classes
-  # nagent <- ifelse(nrow(agentdat)>0, max(agentdat$param), 0)
-  # plotdata$param[grepl("^D\\.", rownames(plotdata))] <-
-  #   plotdata$param[grepl("^D\\.", rownames(plotdata))] + nagent
-  #
-  # # Attach labels
-  # if (nrow(agentdat)>0) {
-  #   all.labs <- c(a.labs, c.labs)
-  # } else {all.labs <- c.labs}
-  # plotdata$param <- factor(plotdata$param, labels=all.labs)
-  #
-  # if (any(is.na(levels(plotdata$param)))) {
-  #   stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
-  # }
-
-  # g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
-  #   ggplot2::geom_point(...) +
-  #   ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), ...) +
-  #   ggplot2::coord_flip()
 
   g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=labs)) +
     ggplot2::geom_point(...) +

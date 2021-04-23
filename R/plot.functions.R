@@ -304,7 +304,7 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 #'   a dose-response MBNMA model
 #' @param dev.type *STILL IN DEVELOPMENT FOR MBNMAdose!* Deviances to plot - can be either residual
 #' deviances (`"resdev"`, the default) or deviances (`"dev"`)
-#' @param plot.type Deviances can be plotted either as scatter points (`"scatter"` - the default)
+#' @param plot.type Deviances can be plotted either as scatter points (`"scatter"`)
 #' or as boxplots (`"box"`)
 #' @param facet A boolean object that indicates whether or not to facet (by agent for `MBNMAdose`
 #' and by treatment for `MBNMAtime`)
@@ -339,8 +339,8 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 #' # Plot deviances using boxplots
 #' devplot(emax, plot.type="box")
 #'
-#' # Plot deviances on a single plot (not facetted by agent)
-#' devplot(emax, facet=FALSE, plot.type="box")
+#' # Plot deviances on a single scatter plot (not facetted by agent)
+#' devplot(emax, facet=FALSE, plot.type="scatter")
 #'
 #' # A data frame of deviance contributions can be obtained from the object
 #' #returned by `devplot`
@@ -353,8 +353,8 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 #' }
 #'
 #' @export
-devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
-                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin,
+devplot <- function(mbnma, plot.type="box", facet=TRUE, dev.type="resdev",
+                    n.iter=mbnma$BUGSoutput$n.iter/2, n.thin=mbnma$BUGSoutput$n.thin,
                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -387,21 +387,16 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   dev.df <- dplyr::arrange(dev.df, dev.df$study, dev.df$arm)
 
   # Plots the residual deviances
-  if (mbnma$type=="time") {
-    xlab <- "Follow-up count"
-    facetscale <- "fixed"
-  } else if (mbnma$type=="dose") {
-    agents <- mbnma$network$agents
+  agents <- mbnma$network$agents
 
-    # Remove placebo results if they are present
-    if (mbnma$network$agents[1]=="Placebo") {
-      dev.df <- dev.df[dev.df$facet!=1,]
-      agents <- agents[-1]
-    }
-
-    xlab <- "Dose"
-    facetscale <- "free_x"
+  # Remove placebo results if they are present
+  if (mbnma$network$agents[1]=="Placebo") {
+    dev.df <- dev.df[dev.df$facet!=1,]
+    agents <- agents[-1]
   }
+
+  xlab <- "Dose"
+  facetscale <- "free_x"
 
   if ("agents" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=agents)
@@ -600,13 +595,8 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
 
   # Axis labels
-  if (mbnma$type=="time") {
-    xlab <- "Follow-up count"
-    facetscale <- "fixed"
-  } else if (mbnma$type=="dose") {
-    xlab <- "Dose"
-    facetscale <- "free_x"
-  }
+  xlab <- "Dose"
+  facetscale <- "free_x"
   ylab <- "Response on link scale"
 
   # Add facet labels
