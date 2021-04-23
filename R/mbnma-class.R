@@ -72,6 +72,11 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   checkmate::assertCharacter(class.labs, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Declare global variables
+  labs <- NULL
+
+  fun <- x$model.arg$fun
+
   # Check that specified params are monitored in model
   if (!all(params %in% x[["parameters.to.save"]])) {
     stop(paste0("Variable 'params': Must contain elements of set {", paste(x[["parameters.to.save"]], collapse = ", "), "}"))
@@ -79,8 +84,8 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
 
   # Check that specified params are modelled using relative effects
   for (i in seq_along(params)) {
-    if (!(grepl("d\\.", params[i]) | grepl("D\\.", params[i]))) {
-      stop(paste0(params[i], " has not been modelled using relative effects and does not vary by agent or class"))
+    if (!length(grep(paste0("^", params[i], "\\["), rownames(x$BUGSoutput$summary))>1)) {
+      stop(paste0(params[i], " does not vary by agent or class"))
     }
   }
 
@@ -88,15 +93,19 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   if (is.null(params)) {
     params <- vector()
 
+    relparams <- names(x$model.arg$fun$apool)[which(fun$apool=="rel")]
+
     # Add d
     params <- append(params,
-                     x[["parameters.to.save"]][grep("^d\\.", x[["parameters.to.save"]])]
-    )
+                     x[["parameters.to.save"]][x[["parameters.to.save"]] %in% relparams])
 
     # Add D
     params <- append(params,
-                     x[["parameters.to.save"]][grep("^D\\.", x[["parameters.to.save"]])]
-    )
+                     x[["parameters.to.save"]][x[["parameters.to.save"]] %in% toupper(relparams)])
+
+    # Add non-parametric
+    params <- append(params,
+                     x[["parameters.to.save"]][x[["parameters.to.save"]] %in% "d.1"])
 
     if (length(params)==0) {
       stop("No dose-response relative effects can be identified from the model")
@@ -108,12 +117,12 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
   mbnma.sum <- as.data.frame(x[["BUGSoutput"]][["summary"]])
   plotdata <- mbnma.sum[0,]
   for (i in seq_along(params)) {
-    paramdata <- mbnma.sum[grepl(paste0("^", params[i]),rownames(mbnma.sum)),]
+    paramdata <- mbnma.sum[grepl(paste0("^", params[i], "\\["),rownames(mbnma.sum)),]
     paramdata[["doseparam"]] <- rep(params[i], nrow(paramdata))
     plotdata <- rbind(plotdata, paramdata)
   }
 
-  if (all(grepl("^d\\.1\\[[0-9]+,[0-9]+\\]", rownames(plotdata)))) { # if nonparam function used
+  if ("nonparam" %in% fun$name) {
     # Remove dose=0 from all agents except placebo
     row <- plotdata[grepl("^d\\.1\\[1,1\\]", rownames(plotdata)),]
     plotdata <- plotdata[!grepl("^d\\.1\\[1,[0-9]+\\]", rownames(plotdata)),]
@@ -124,55 +133,78 @@ plot.mbnma <- function(x, params=NULL, agent.labs=NULL, class.labs=NULL, ...) {
     plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
   }
 
+  plotdata$level <- "agent"
+  plotdata$level[grepl("A-Z", rownames(plotdata))] <- "class"
+
+  plotdata <- plotdata %>%
+    subset(level=="agent") %>%
+    dplyr::mutate(labs=x$network$agents[param])
+
+  if ("class" %in% plotdata$level) {
+    plotdata <- plotdata %>%
+      subset(level=="class") %>%
+      dplyr::mutate(labs=x$network$classes[param])
+  }
+
+  if (any(is.na(plotdata$labs))) {
+    stop("Cannot identify labels for agents/classes in 'x'")
+  }
+
+
   # Change param labels for agents
-  agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
-  if (!is.null(agent.labs)) {
-    agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
-    if (length(agent.labs)!=max(agentcodes)) {
-      stop("`agent.labs` length does not equal number of agents within the model")
-    } else {
-      a.labs <- agent.labs[sort(unique(agentcodes))]
-    }
-  } else if ("agents" %in% names(x$network)) {
-    if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
-      a.labs <- x$network[["treatments"]]
-    } else {
-      a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
-    }
-  } else {
-    a.labs <- sort(unique(agentdat$param))
-  }
+  # agentdat <- plotdata[grepl("^d\\.", rownames(plotdata)),]
+  # if (!is.null(agent.labs)) {
+  #   agentcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(agentdat)))
+  #   if (length(agent.labs)!=max(agentcodes)) {
+  #     stop("`agent.labs` length does not equal number of agents within the model")
+  #   } else {
+  #     a.labs <- agent.labs[sort(unique(agentcodes))]
+  #   }
+  # } else if ("agents" %in% names(x$network)) {
+  #   if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
+  #     a.labs <- x$network[["treatments"]]
+  #   } else {
+  #     a.labs <- x$network[["agents"]][x$network[["agents"]]!="Placebo"]
+  #   }
+  # } else {
+  #   a.labs <- sort(unique(agentdat$param))
+  # }
+  #
+  # # Change param labels for classes
+  # classdat <- plotdata[grepl("^D\\.", rownames(plotdata)),]
+  # c.labs <- vector()
+  # if (nrow(classdat)!=0) {
+  #   if (!is.null(class.labs)) {
+  #     classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
+  #     c.labs <- class.labs[classcodes]
+  #   } else if ("classes" %in% names(x)) {
+  #     c.labs <- x[["classes"]][x[["classes"]]!="Placebo"]
+  #   } else {
+  #     c.labs <- sort(unique(classdat$param))
+  #   }
+  # }
+  #
+  # # Increase param number for classes
+  # nagent <- ifelse(nrow(agentdat)>0, max(agentdat$param), 0)
+  # plotdata$param[grepl("^D\\.", rownames(plotdata))] <-
+  #   plotdata$param[grepl("^D\\.", rownames(plotdata))] + nagent
+  #
+  # # Attach labels
+  # if (nrow(agentdat)>0) {
+  #   all.labs <- c(a.labs, c.labs)
+  # } else {all.labs <- c.labs}
+  # plotdata$param <- factor(plotdata$param, labels=all.labs)
+  #
+  # if (any(is.na(levels(plotdata$param)))) {
+  #   stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
+  # }
 
-  # Change param labels for classes
-  classdat <- plotdata[grepl("^D\\.", rownames(plotdata)),]
-  c.labs <- vector()
-  if (nrow(classdat)!=0) {
-    if (!is.null(class.labs)) {
-      classcodes <- as.numeric(gsub("(^.+\\[)([0-9]+)(\\])", "\\2", rownames(classdat)))
-      c.labs <- class.labs[classcodes]
-    } else if ("classes" %in% names(x)) {
-      c.labs <- x[["classes"]][x[["classes"]]!="Placebo"]
-    } else {
-      c.labs <- sort(unique(classdat$param))
-    }
-  }
+  # g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
+  #   ggplot2::geom_point(...) +
+  #   ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), ...) +
+  #   ggplot2::coord_flip()
 
-  # Increase param number for classes
-  nagent <- ifelse(nrow(agentdat)>0, max(agentdat$param), 0)
-  plotdata$param[grepl("^D\\.", rownames(plotdata))] <-
-    plotdata$param[grepl("^D\\.", rownames(plotdata))] + nagent
-
-  # Attach labels
-  if (nrow(agentdat)>0) {
-    all.labs <- c(a.labs, c.labs)
-  } else {all.labs <- c.labs}
-  plotdata$param <- factor(plotdata$param, labels=all.labs)
-
-  if (any(is.na(levels(plotdata$param)))) {
-    stop("`agent.labs` or `class.labs` have not been specified correctly. Perhaps include `Placebo` in labels")
-  }
-
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=param)) +
+  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=labs)) +
     ggplot2::geom_point(...) +
     ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), ...) +
     ggplot2::coord_flip()

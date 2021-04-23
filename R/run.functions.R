@@ -539,9 +539,10 @@ mbnma.run <- function(network,
 
   if (!("error" %in% names(result))) {
     # Remove dose-response parameters for agents if multi dr functions are used
-    if (!is.list(result)) {
-      result <- cutjags(result)
-    }
+    # if (!is.list(result)) {
+    #
+    # }
+    result <- cutjags(result)
 
     class(result) <- c("mbnma", class(result))
   }
