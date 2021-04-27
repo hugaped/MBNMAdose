@@ -722,7 +722,11 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   # Add maxdose for nonparametric dose-response functions
   if ("nonparam" %in% fun$name) {
-    datalist[["maxdose"]] <- max(data.ab$dose, na.rm=TRUE)
+    data.ab <- data.ab %>% dplyr::group_by(agent) %>%
+      dplyr::mutate(maxdose=max(dose, na.rm=TRUE)) %>%
+      dplyr::slice_head(temp)
+
+    datalist[["maxdose"]] <- data.ab$maxdose
   }
 
   return(datalist)
