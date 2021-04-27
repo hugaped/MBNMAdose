@@ -694,7 +694,7 @@ mbnma.jags <- function(data.ab, model,
 #' Ensures model runs properly
 #'
 gen.inits <- function(jagsdata, fun, n.chains) {
-  if ("maxdose" %in% names(jagsdata)) {
+  if ("nonparam" %in% fun$name) {
     inits <- list()
     for (i in 1:n.chains) {
       inits[[length(inits)+1]] <- list("d.1"=gen.init(jagsdata, fun))
@@ -708,7 +708,9 @@ gen.inits <- function(jagsdata, fun, n.chains) {
 
 
 gen.init <- function(jagsdata, fun) {
-  sapply(jagsdata$maxdose, FUN=function(x, direction=fun[[1]]$name) {
+  checkmate::assert_set_equal(fun$name, "nonparam")
+
+  sapply(jagsdata$maxdose, FUN=function(x, direction=fun$direction) {
    val <- x-1
 
    if (direction=="increasing") {
@@ -778,6 +780,10 @@ gen.parameters.to.save <- function(fun, model) {
     }
   }
 
+  # Include nonparametric
+  if ("nonparam" %in% fun$name) {
+    parameters.to.save <- append(parameters.to.save, "d.1")
+  }
   if (any(grepl("totresdev", model))==TRUE) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
   }
@@ -910,7 +916,11 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   # Create a temporary model file
   tmpf=tempfile()
   tmps=file(tmpf,"w")
-  cat(model,file=tmps)
+  if (length(model)==1) {
+    cat(model,file=tmps)
+  } else if (length(model)>1) {
+    cat(paste(model, collapse="\n"),file=tmps)
+  }
   close(tmps)
 
   out <- tryCatch({
@@ -1034,6 +1044,10 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.str) {
       fun <- demax(emax=beta.1, ed50=beta.2, hill=beta.3)
     } else if (fun=="user") {
       fun <- duser(fun=user.str, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
+    } else if (fun=="nonparam.up") {
+      fun <- dnonparam(direction="increasing")
+    } else if (fun=="nonparam.down") {
+      fun <- dnonparam(direction="decreasing")
     } else {
       stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
     }
