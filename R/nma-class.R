@@ -79,7 +79,7 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
     # Generate forest plot
     g <- ggplot2::ggplot(split.df, ggplot2::aes(x=dose, y=`50%`), ...) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, width=.05)) +
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
       ggplot2::ylab("Effect size on link scale") +
@@ -91,7 +91,7 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
 
     g <- ggplot2::ggplot(split.df, ggplot2::aes(y=`50%`, x=treatment), ...) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), width=.2) +
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
       ggplot2::xlab("Treatment") +
