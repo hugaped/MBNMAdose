@@ -98,57 +98,123 @@ plot.mbnma <- function(x, params=NULL, ...) {
   }
 
 
-  # Compile parameter data into one data frame
-  mbnma.sum <- as.data.frame(x[["BUGSoutput"]][["summary"]])
-  plotdata <- mbnma.sum[0,]
-  for (i in seq_along(params)) {
-    paramdata <- mbnma.sum[grepl(paste0("^", params[i], "\\["),rownames(mbnma.sum)),]
-    paramdata[["doseparam"]] <- rep(params[i], nrow(paramdata))
-    plotdata <- rbind(plotdata, paramdata)
-  }
-
   if ("nonparam" %in% fun$name) {
-    # Remove dose=0 from all agents except placebo
-    row <- plotdata[grepl("^d\\.1\\[1,1\\]", rownames(plotdata)),]
-    plotdata <- plotdata[!grepl("^d\\.1\\[1,[0-9]+\\]", rownames(plotdata)),]
-    plotdata <- rbind(row, plotdata)
 
-    plotdata[["param"]] <- c(1:nrow(plotdata))
+    np.df <- as.data.frame(x$BUGSoutput$summary[grepl("d\\.1", rownames(x$BUGSoutput$summary)), c(3,5,7)])
+
+    np.df$agent <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\3", rownames(np.df)))
+    np.df$dose <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\2", rownames(np.df)))
+
+    np.df$agent <- x$network$agents[np.df$agent]
+    np.df <- subset(np.df, !(agent!="Placebo" & dose==1))
+    np.df$treatment <- x$network$treatments
+
+    np.df$dose <-
+      sapply(np.df$treatment, FUN = function(x) {as.numeric(strsplit(x, split="_", fixed = TRUE)[[1]][2])})
+
+    if (np.df$`50%`[1]!=0 & np.df$`2.5%`[1]!=0) {
+      row <- np.df[0,]
+      row[,1:3] <- 0
+      row$treatment <- "Placebo_0"
+      row$agent <- "Placebo"
+      row$dose <- 1
+      np.df <- rbind(row, np.df)
+    }
+
+    # Plot faceted by agent as dose-response splitplot
+    # Add intercept for all agents
+    agents <- unique(np.df$agent)
+    agents <- agents[agents!="Placebo"]
+    for (i in seq_along(agents)) {
+      row <- np.df[np.df$agent=="Placebo",]
+      row$agent <- agents[i]
+      np.df <- rbind(row, np.df)
+    }
+    np.df <- np.df[np.df$agent!="Placebo",]
+
+
+    # Generate forest plot
+    g <- ggplot2::ggplot(np.df, ggplot2::aes(x=dose, y=`50%`))+#, ...) +
+      ggplot2::geom_point() +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, width=.05)) +
+      ggplot2::facet_wrap(~factor(agent), scales = "free_x") +
+      ggplot2::xlab("Dose") +
+      ggplot2::ylab("Effect size on link scale") +
+      ggplot2::labs(caption = paste0(x$model.arg$fun$direction, " monotonic dose-response function")) +
+      theme_mbnma()
+
+    #########################################################
+    #### FOR STANDARD MBNMA PLOT ######
+    #########################################################
+
+    # Compile parameter data into one data frame
+    # mcmc <- x$BUGSoutput$sims.matrix[,grepl("d\\.1", colnames(x$BUGSoutput$sims.matrix))]
+    #
+    # plotdata <- reshape2::melt(mcmc)
+    # names(plotdata) <- c("Var1", "param", "value")
+    # plotdata$dose <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\2", plotdata$param))
+    # plotdata$agent <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\3", plotdata$param))
+    #
+    # plotdata$doseparam <- "d.1"
+    #
+    # plotdata$labs <- x$network$agents[plotdata$agent]
+    #
+    # # Remove dose=1
+    # plotdata <- plotdata %>% dplyr::group_by(agent,dose) %>%
+    #   dplyr::mutate(n=dplyr::n_distinct(value))
+    #
+    # plotdata <- subset(plotdata, n!=1)
+
   } else {
-    plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
-  }
 
-  plotdata$level <- "agent"
-  plotdata$level[grepl("A-Z", rownames(plotdata))] <- "class"
+    # Compile parameter data into one data frame
+    mcmc <- x$BUGSoutput$sims.list
+    plotdata <- data.frame(Var2=NA, value=NA, doseparam=NA)
+    for (i in seq_along(params)) {
+      paramdata <- reshape2::melt(mcmc[[params[i]]])[,2:3]
+      paramdata$doseparam <- rep(params[i], nrow(paramdata))
+      plotdata <- rbind(plotdata, paramdata)
+    }
+    plotdata <- plotdata[-1,]
 
-  plotdata <- plotdata %>%
-    subset(level=="agent") %>%
-    dplyr::mutate(labs=x$network$agents[param])
+    if ("Placebo" %in% network$agents) {
+      plotdata[["param"]] <- plotdata[["Var2"]] + 1
+    } else {
+      plotdata[["param"]] <- plotdata[["Var2"]]
+    }
+    # plotdata[["param"]] <- as.numeric(gsub("(.+\\[)([0-9]+)(\\])", "\\2", rownames(plotdata)))
 
-  if ("class" %in% plotdata$level) {
+    plotdata$level <- "agent"
+    plotdata$level[grepl("A-Z", plotdata[["doseparam"]])] <- "class"
+    # plotdata$level[grepl("A-Z", rownames(plotdata))] <- "class"
+
     plotdata <- plotdata %>%
-      subset(level=="class") %>%
-      dplyr::mutate(labs=x$network$classes[param])
+      subset(level=="agent") %>%
+      dplyr::mutate(labs=x$network$agents[param])
+
+    if ("class" %in% plotdata$level) {
+      plotdata <- plotdata %>%
+        subset(level=="class") %>%
+        dplyr::mutate(labs=x$network$classes[param])
+    }
+
+    if (any(is.na(plotdata$labs))) {
+      stop("Cannot identify labels for agents/classes in 'x'")
+    }
+
+    g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=value, x=labs)) +
+      ggdist::stat_halfeye() +
+      ggplot2::facet_wrap(~doseparam, scales="free") +
+      ggplot2::coord_flip()
+
+    # Axis labels
+    g <- g + ggplot2::xlab("Agent / Class") +
+      ggplot2::ylab("Effect size") +
+      theme_mbnma()
   }
 
-  if (any(is.na(plotdata$labs))) {
-    stop("Cannot identify labels for agents/classes in 'x'")
-  }
-
-
-  g <- ggplot2::ggplot(plotdata, ggplot2::aes(y=`50%`, x=labs)) +
-    ggplot2::geom_point(...) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), ...) +
-    ggplot2::coord_flip()
-
-  g <- g + ggplot2::facet_wrap(~doseparam, scales="free")
-
-  # Axis labels
-  g <- g + ggplot2::xlab("Agent / Class") +
-    ggplot2::ylab("Effect size") +
-    theme_mbnma()
-
-  return(g)
+  graphics::plot(g)
+  return(invisible(g))
 }
 
 
