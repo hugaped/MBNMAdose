@@ -767,3 +767,93 @@ remove.loops <- function(model) {
   }
   return(model)
 }
+
+
+
+
+
+
+#' Write JAGS code for split NMA
+#'
+#' @inheritParams nma.run
+#' @noRd
+write.nma <- function(method="common", likelihood="binomial", link="logit",
+                      UME=FALSE) {
+  model <- c(start="model{ 			# Begin Model Code",
+             study="for(i in 1:NS){ # Run through all NS trials",
+             "mu[i] ~ dnorm(0,0.001)",
+             "delta[i,1] <- 0",
+             arm="for (k in 1:narm[i]){ # Run through all arms within a study",
+             "}",
+             "",
+             "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
+             te="for(k in 2:narm[i]){ # Treatment effects",
+             "}",
+             "}",
+             "",
+             "totresdev <- sum(resstudydev[])",
+             end="",
+             "# Model ends",
+             "}"
+  )
+
+  # Add likelihood
+  model <- write.likelihood(model, likelihood = likelihood, link=link)
+
+
+  # Add d[1] <- 0
+  if (UME==FALSE) {
+    model <- model.insert(model, pos=which(names(model)=="start"), x="d[1] <- 0")
+  }
+
+
+  # Add treatment effects
+  if (method=="common") {
+    teinsert <- c("delta[i,k] <- md[i,k]",
+                  "md[i,k] <- d[treatment[i,k]] - d[treatment[i,1]]"
+    )
+
+  } else if (method=="random") {
+
+    model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
+
+    insert <- c("tau <- pow(sd,-2)",
+                "sd ~ dnorm(0,0.0025) T(0,)")
+    model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+
+
+    teinsert <- c("delta[i,k] ~ dnorm(md[i,k], taud[i,k])",
+                  "md[i,k] <- d[treatment[i,k]] - d[treatment[i,1]] + sw[i,k]",
+                  "taud[i,k] <- tau *2*(k-1)/k",
+                  "w[i,k] <- (delta[i,k] - d[treatment[i,k]] + d[treatment[i,1]])",
+                  "sw[i,k] <- sum(w[i,1:(k-1)])/(k-1)")
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="te"), x=teinsert)
+
+
+  # Add treatment effect priors and make UME changes
+  if (UME==FALSE) {
+    te.prior <- c("for (k in 2:NT){ # Priors on relative treatment effects",
+                  "d[k] ~ dnorm(0,0.0001)",
+                  "}")
+
+  } else if (UME==TRUE) {
+
+    model <- gsub("d\\[treatment\\[i,k\\]\\] (\\+|-) d\\[treatment\\[i,1\\]\\]",
+                  "d[treatment[i,k],treatment[i,1]]",
+                  model
+    )
+
+    te.prior <- c("for (k in 1:NT) { d[k,k] <- 0 }",
+                  "for (c in 1:(NT-1)) {",
+                  "for (k in (c+1):NT) {",
+                  "d[k,c] ~ dnorm(0,0.0001)",
+                  "}",
+                  "}")
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="end"), x=te.prior)
+
+return(model)
+}
