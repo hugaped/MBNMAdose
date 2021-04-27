@@ -736,24 +736,13 @@ dnonparam <- function(direction="increasing") {
   checkmate::reportAssertions(argcheck)
 
 
-  # Define function TO EDIT!!!
-  base <- "d.1"
-  jags <- base
-  if (nparam>1) {
-    for (i in 2:(nparam)) {
-      temp <- gsub("1", i, base)
-      jags <- paste(jags, "+", temp)
-
-      temptex <- gsub("1", i, basetex)
-      latex <- paste(latex, "+", temptex)
-    }
-  }
-  fun <- stats::as.formula(paste("~", jags))
-  jags <- gsub("(spline)\\.([0-9])", "\\1[i,k,\\2]", jags)
+  # Define function
+  fun <- stats::as.formula("~d.1")
+  jags <- "d.1[dose[i,k], agent[i,k]]"
 
 
   # Generate output values
-  out <- list(name="nonparam", direction=direction, apool=NA, bname=NA)
+  out <- list(name="nonparam", direction=direction, fun=fun, jags=jags, apool=NA, bname=NA)
   class(out) <- "dosefun"
 
   return(out)
