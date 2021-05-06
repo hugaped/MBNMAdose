@@ -18,33 +18,31 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 print.nodesplit <- function(x, ...) {
   checkmate::assertClass(x, "nodesplit")
 
-  width <- "\t\t"
-  output <- crayon::bold("========================================\nNode-splitting analysis of inconsistency\n========================================\n")
+  cat(crayon::bold("========================================\nNode-splitting analysis of inconsistency\n========================================\n"))
+  sum.df <- summary.nodesplit(x)
+  comps <- unique(sum.df$Comparison)
 
-  comparisons <- names(x)
-  colnam <- "comparison\tp.value\t\t\tMedian (95% CrI)\n"
-  paramsect <- colnam
-  for (i in seq_along(comparisons)) {
-    pval <- signif(x[[i]]$p.values,
-                   max(3L, getOption("digits") - 3L))
-    tab <- x[[i]]$quantiles
+  out.df <- sum.df[1,]
+  for (i in seq_along(comps)) {
 
-    heading <- paste(crayon::bold(names(x)[i]), pval, sep=width)
-    direct <- paste("-> direct", "", neatCrI(tab$direct), sep=width)
-    indirect <- paste("-> indirect", "", neatCrI(tab$indirect), sep=width)
+    head <- sum.df[sum.df$Comparison==comps[i],][1,]
+    head$Evidence <- NA
+    head$Median <- NA
+    head$`2.5%` <- NA
+    head$`97.5%` <- NA
 
-    if ("mbnma" %in% names(x[[i]]$quantiles)) {
-      nma <- paste("-> MBNMA", "", neatCrI(tab$mbnma), sep=width)
-    } else if ("nma" %in% names(x[[i]]$quantiles)) {
-      nma <- paste("-> NMA", "\t", neatCrI(tab$nma), sep=width)
-    }
+    tail <- sum.df[sum.df$Comparison==comps[i],]
+    tail$Comparison <- c("-> direct", "-> indirect", "-> MBNMA")
+    tail$p.value <- rep(NA,3)
 
-    out <- paste(heading, direct, indirect, nma, "", sep="\n")
+    tail <- rbind(tail, rep(NA, ncol(tail)))
 
-    paramsect <- paste(paramsect, out, sep="\n")
+    out.df <- rbind(out.df, rbind(head,tail))
   }
-  output <- append(output, paramsect)
-  cat(output, ...)
+  out.df <- out.df[-1,c(1,6,3:5)]
+  out <- knitr::kable(out.df, row.names = FALSE,
+                      col.names = c("Comparison", "p-value", "Median", "2.5%", "97.5%"), ...)
+  cat(gsub('\\bNA\\b', '  ', out), sep='\n')
 }
 
 
@@ -92,7 +90,8 @@ summary.nodesplit <- function(object, ...) {
       }
 
       pvals <- c(pvals, rep(object[[i]]$p.values, 3))
-      comp <- c(comp, rep(names(object)[i], 3))
+      comp <- c(comp, rep(paste(object[[i]]$comparison[1],
+                                object[[i]]$comparison[2], sep=" vs "), 3))
     } else if (type=="time") {
       for (k in seq_along(object[[i]])) {
         post <- object[[i]][[k]]$quantiles
