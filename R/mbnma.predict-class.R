@@ -57,19 +57,13 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' }
 #'
 #' @export
-rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
+rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, classes="mbnma.predict", add=argcheck)
-  checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
+  checkmate::assertLogical(lower_better, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
-  if (direction==-1) {
-    decreasing <- FALSE
-  } else if (direction==1) {
-    decreasing <- TRUE
-  } else {stop("`direction` must be either -1 or 1 for ranking")}
 
   # If rank doses is null, get values from predict
   if (is.null(rank.doses)) {
@@ -137,14 +131,14 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 
   # Assign ranks
   rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(x) {
-    order(order(x, decreasing = decreasing), decreasing=FALSE)
+    order(order(x, decreasing = lower_better), decreasing=FALSE)
   }))
   colnames(rank.mat) <- treats
 
   result <- list("summary"=sumrank(rank.mat),
                  "prob.matrix"=calcprob(rank.mat, treats=treats),
                  "rank.matrix"=rank.mat,
-                 "direction"=direction)
+                 "lower_better"=lower_better)
   result <- list("Predictions"=result)
 
   class(result) <- "mbnma.rank"
