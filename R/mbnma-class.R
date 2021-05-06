@@ -294,13 +294,9 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if ("nonparam" %in% x$model.arg$fun$name) {
+  fun <- x$model.arg$fun
+  if ("nonparam" %in% fun$name) {
     stop("Ranking cannot currently be performed for non-parametric models")
-  }
-  if (length(x$model.arg$fun$name)>1) {
-    stop("Ranking cannot currently be performed for models with multiple dose-response functions")
-
-    # Should be perfectly possible...just that ranking is only for treatments within each parameter
   }
 
   # Change agent/class to agents/classes
@@ -364,22 +360,41 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
   rank.result <- list()
   for (i in seq_along(params)) {
     if (params[i] %in% x[["parameters.to.save"]]) {
+
+      if (length(fun$name)==1) {
+        # subcodes <- codes.mod
+        subrank <- to.rank
+        subagents <- agents
+      } else {
+        ind <- which(fun$params %in% params[i])
+        listlen <- lengths(fun$paramlist)
+        count <- 0
+        k <- 0
+        while (count<ind) {
+          count <- count + listlen[k+1]
+          k <- k+1
+        }
+        #subcodes <- 1:length(which(fun$posvec[-1]==k))
+        subrank <- 1:length(which(fun$posvec[-1]==k))
+        subagents <- agents[which(fun$posvec[-1]==k)]
+      }
+
       param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
 
       # Check that selected parameter is different over multiple treatments
-      if (!is.matrix(param.mod) | ncol(param.mod)!=length(codes.mod)) {
+      if (!is.matrix(param.mod) | ncol(param.mod)!=length(subrank)) {
         msg <- paste0(params[i], " does not vary by ", level, " and therefore cannot be ranked")
         stop(msg)
       }
 
-      param.mod <- param.mod[,to.rank]
+      param.mod <- param.mod[,subrank]
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
         order(order(x, decreasing = lower_better), decreasing=FALSE)
       }))
-      colnames(rank.mat) <- agents
+      colnames(rank.mat) <- subagents
 
       # Calculate ranking probabilities
-      prob.mat <- calcprob(rank.mat, treats=agents)
+      prob.mat <- calcprob(rank.mat, treats=subagents)
 
       # Calculate cumulative ranking probabilities
       cum.mat <- apply(prob.mat, MARGIN=2,
