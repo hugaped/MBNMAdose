@@ -225,8 +225,7 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #'
 #' Only parameters that vary by agent/class can be ranked.
 #'
-#' @param direction Indicates whether negative responses are better (taking the
-#'   value `-1`) or positive responses are better (taking the value `1`)
+#' @param lower_better Indicates whether negative responses are better (`TRUE`) or positive responses are better (`FALSE`)
 #' @param to.rank A numeric vector containing the codes for the agents/classes you wish to rank.
 #' If left `NULL` then all agents/classes (depending on the value assigned to `level`) in
 #' the model will be ranked. Included codes must be greater than
@@ -272,8 +271,8 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
 #'             class.effect=list("ed50"="common"))
 #'
-#' # Rank by class, with negative responses being "better"
-#' ranks <- rank(emax, level="class", direction=-1)
+#' # Rank by class, with negative responses being worse
+#' ranks <- rank(emax, level="class", lower_better=FALSE)
 #' print(ranks)
 #'
 #' # Print and generate summary data frame for `mbnma.rank` object
@@ -285,21 +284,23 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #' }
 #'
 #' @export
-rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL, ...) {
+rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank=NULL, ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, classes="mbnma", add=argcheck)
   checkmate::assertCharacter(params, null.ok=TRUE, add=argcheck)
-  checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
+  checkmate::assertLogical(lower_better, add=argcheck)
   checkmate::assertChoice(level, choices = c("agent","class"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  if (any(x$model.arg$fun %in% c("nonparam.up", "nonparam.down"))) {
+  if ("nonparam" %in% x$model.arg$fun$name) {
     stop("Ranking cannot currently be performed for non-parametric models")
   }
-  if (length(x$model.arg$fun)>1) {
+  if (length(x$model.arg$fun$name)>1) {
     stop("Ranking cannot currently be performed for models with multiple dose-response functions")
+
+    # Should be perfectly possible...just that ranking is only for treatments within each parameter
   }
 
   # Change agent/class to agents/classes
@@ -342,18 +343,14 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
     agents <- x$network[[levels]][to.rank]
   }
 
-  # Set direction of ranking
-  if (direction==-1) {
-    decreasing <- FALSE
-  } else if (direction==1) {
-    decreasing <- TRUE
-  } else {stop("`direction` must be either -1 or 1 for ranking")}
-
   # Check parameters to rank
   if (is.null(params)) {
-    for (i in seq_along(x$BUGSoutput$root.short)) {
-      if (length(x$BUGSoutput$long.short[i][[1]])==length(codes.mod)) {
-        params <- append(params, x$BUGSoutput$root.short[i])
+    for (i in seq_along(x$model.arg$fun$params)) {
+      if (x$model.arg$fun$params[i] %in% x$parameters.to.save) {
+        params <- append(params, x$model.arg$fun$params[i])
+      }
+      if (toupper(x$model.arg$fun$params[i]) %in% x$parameters.to.save) {
+        params <- append(params, toupper(x$model.arg$fun$params[i]))
       }
     }
   } else {
@@ -377,7 +374,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
 
       param.mod <- param.mod[,to.rank]
       rank.mat <- t(apply(param.mod, MARGIN=1, FUN=function(x) {
-        order(order(x, decreasing = decreasing), decreasing=FALSE)
+        order(order(x, decreasing = lower_better), decreasing=FALSE)
       }))
       colnames(rank.mat) <- agents
 
@@ -393,7 +390,7 @@ rank.mbnma <- function(x, params=NULL, direction=1, level="agent", to.rank=NULL,
              "prob.matrix"=prob.mat,
              "rank.matrix"=rank.mat,
              "cum.matrix"=cum.mat,
-             "direction"=direction)
+             "lower_better"=lower_better)
 
     }
   }
