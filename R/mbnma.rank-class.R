@@ -151,31 +151,57 @@ print.mbnma.rank <- function(x, ...) {
   intro <- c()
   if ("Predictions" %in% names(x)) {
     intro <- c(intro, "Includes ranking of predictions from dose-response MBNMA")
-  }
-  if (any(grepl("^d\\.", names(x)))) {
-    add <- "Includes ranking of relative effects from dose-response MBNMA:"
-    add <- paste(add,
-                 crayon::bold(paste(names(x)[grepl("^d\\.", names(x))], collapse="\t")),
-                 sep="\n")
-    intro <- c(intro, add)
-  }
-  if (any(grepl("^D\\.", names(x)))) {
-    add <- "Includes ranking of class effects from dose-response MBNMA:"
-    add <- paste(add,
-                 paste(names(x)[grepl("^D\\.", names(x))], collapse="\t"),
-                 sep="\n")
-    intro <- c(intro, add)
+  } else {
+    relef <- vector()
+    classef <- vector()
+    for (i in seq_along(names(x))) {
+      if (grepl("[A-Z]", names(x)[i])) {
+        classef <- append(classef, names(x)[i])
+      } else {
+        relef <- append(relef, names(x)[i])
+      }
+    }
+    if (length(relef)>1) {
+      add <- "Includes ranking of relative effects from dose-response MBNMA:"
+      add <- paste(add,
+                   crayon::bold(paste(relef, collapse="\t")),
+                   sep="\n")
+      intro <- c(intro, add)
+    }
+    if (length(classef)>1) {
+      add <- "Includes ranking of class effects from dose-response MBNMA:"
+      add <- paste(add,
+                   crayon::bold(paste(classef, collapse="\t")),
+                   sep="\n")
+      intro <- c(intro, add)
+    }
   }
 
-  rankinfo <- paste(nrow(x[[1]]$summary), "parameters ranked", sep=" ")
-  if (x[[1]]$direction==1) {
+
+  rankinfo <- paste(nrow(x[[1]]$summary), "agents/classes/predictions ranked", sep=" ")
+  if (x[[1]]$lower_better==FALSE) {
     rankinfo <- paste(rankinfo, "with positive responses being", crayon::green(crayon::bold("`better`")), sep=" ")
-  } else if (x[[1]]$direction==-1) {
+  } else if (x[[1]]$lower_better==TRUE) {
     rankinfo <- paste(rankinfo, "with negative responses being", crayon::red(crayon::bold("`worse`")), sep=" ")
   }
 
   intro <- paste(intro, collapse="\n")
   out <- paste(head, intro, rankinfo, sep="\n\n")
+  cat(paste0(out, "\n\n"))
 
-  return(cat(out, ...))
+  # Add summary table
+  for (param in seq_along(names(x))) {
+
+    head <- paste0(crayon::bold(crayon::underline(paste0(names(x)[param], " ranking"))), " (from best to worst)")
+
+    sumtab <- x[[names(x)[param]]]$summary
+    sumtab <- dplyr::arrange(sumtab, mean)
+    sumtab <- sumtab[,c(1,2,6,4,8)]
+
+    cat(head)
+
+    print(knitr::kable(sumtab, col.names = c("Treatment", "Mean", "Median", "2.5%", "97.5%"), digits = 2))
+    cat("\n\n")
+  }
+
 }
