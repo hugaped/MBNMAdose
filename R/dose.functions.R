@@ -587,7 +587,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), `"rcs"` (restricted cubic spline)
 #'   or `"ls"` (piecewise linear spline)
 #' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
-#'   be equally spaced across the range of time points). If a numeric vector is given it indicates the location of the knots.
+#'   be equally spaced across the range of doses *for each agent*). If a numeric vector is given it indicates the location of the knots.
 #' @param degree The degree of the piecewise B-spline polynomial - e.g. `degree=1` for linear, `degree=2` for quadratic, `degree=3` for cubic.
 #' @param beta.1 Pooling for the 1st coefficient. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
@@ -892,7 +892,7 @@ dmulti <- function(funs=list()) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertList(fun, add=argcheck)
+  checkmate::assertList(funs, add=argcheck)
   for (i in seq_along(funs)) {
     checkmate::assertClass(funs[[i]], "dosefun", add=argcheck)
   }
