@@ -357,8 +357,8 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
     }
   }
   jags <- gsub("dose", "dose[i,k]", fun)
+  jags <- gsub("beta", "s.beta", jags)
   fun <- stats::as.formula(paste0("~", fun))
-
 
   for (i in seq_along(params)) {
     jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
@@ -491,10 +491,10 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   # Define dose-response function
   if (degree==1) {
     fun <- ~ beta.1 * ifelse(dose>0, ifelse(power.1==0, log(dose), dose^power.1), 0)
-    jags <- "beta.1 * ifelse(dose[i,k]>0, ifelse(beta.2==0, log(dose[i,k]), dose[i,k]^beta.2), 0)"
+    jags <- "s.beta.1 * ifelse(dose[i,k]>0, ifelse(s.beta.2==0, log(dose[i,k]), dose[i,k]^s.beta.2), 0)"
   } else if (degree==2) {
     fun <- ~ beta.1 * ifelse(dose>0, ifelse(beta.3==0, log(dose), dose^beta.3), 0) + (beta.2 * ifelse(beta.4==beta.3, ifelse(dose>0, ifelse(beta.4==0, log(dose)^2, (dose^beta.4) * log(dose)), 0), ifelse(dose>0, ifelse(beta.4==0, log(dose), dose^beta.4), 0)))
-    jags <- "beta.1 * ifelse(dose[i,k]>0, ifelse(beta.3==0, log(dose[i,k]), dose[i,k]^beta.3), 0) + (beta.2 * ifelse(beta.4==beta.3, ifelse(dose[i,k]>0, ifelse(beta.4==0, log(dose[i,k])^2, (dose[i,k]^beta.4) * log(dose[i,k])), 0), ifelse(dose[i,k]>0, ifelse(beta.4==0, log(dose[i,k]), dose[i,k]^beta.4), 0)))"
+    jags <- "s.beta.1 * ifelse(dose[i,k]>0, ifelse(s.beta.3==0, log(dose[i,k]), dose[i,k]^s.beta.3), 0) + (s.beta.2 * ifelse(s.beta.4==s.beta.3, ifelse(dose[i,k]>0, ifelse(s.beta.4==0, log(dose[i,k])^2, (dose[i,k]^s.beta.4) * log(dose[i,k])), 0), ifelse(dose[i,k]>0, ifelse(s.beta.4==0, log(dose[i,k]), dose[i,k]^s.beta.4), 0)))"
   }
 
   # Set parameters
@@ -694,6 +694,7 @@ dspline <- function(type="bs", knots=1, degree=1,
   }
   fun <- stats::as.formula(paste("~", jags))
   jags <- gsub("(spline)\\.([0-9])", "\\1[i,k,\\2]", jags)
+  jags <- gsub("s.beta", "beta", jags)
 
 
   # Define parameters
@@ -852,6 +853,7 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
     stop("'fun' must be a function of beta parameters and dose")
   }
   jags <- gsub("dose", "dose[i,k]", user.str)
+  jags <- gsub("s.beta", "beta", jags)
 
 
   # Get number of parameters
