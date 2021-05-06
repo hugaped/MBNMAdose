@@ -765,9 +765,11 @@ forest.splits <- function(x, ...) {
 
   df$Evidence[df$Evidence %in% c("MBNMA", "NMA")] <- "Overall"
 
-  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs\n")})
+  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs \n")})
 
-  df$Comparison <- unlist(comps)[match(df$Comparison, names(comps))]
+  match <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs ")})
+
+  df$Comparison <- unlist(comps)[match(df$Comparison, match)]
 
   df <- dplyr::arrange(df, Comparison, Evidence)
 

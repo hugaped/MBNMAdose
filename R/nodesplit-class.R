@@ -164,19 +164,22 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
     forest <- forest.splits(x, ...)
 
   } else if (plot.type == "density") {
-    densitydata <- x[[1]]$density.plot$data[0,]
-    densityfacet <- vector()
+
+    plot.df <- data.frame(Estimate=NA, value=NA, Comparison=NA)
     for (i in seq_along(x)) {
-      comp <- paste(x[[i]]$comparison, collapse=" vs ")
 
-      temp <- x[[i]]$density.plot$data
-      densityfacet <- append(densityfacet, rep(comp, nrow(temp)))
-      densitydata <- rbind(densitydata, temp)
+      molten <- data.frame(x[[i]]$indirect, x[[i]]$direct)
+      molten <- suppressMessages(reshape2::melt(molten))
+      names(molten) <- c("Estimate", "value")
+      linetypes <- c("solid", "dash")
+      levels(molten$Estimate) <- c("Indirect", "Direct")
+      molten$Comparison <- paste(x[[i]]$comparison, collapse=" vs ")
+
+      plot.df <- rbind(plot.df, molten)
     }
-    densitydata$comp <- densityfacet
+    plot.df <- plot.df[-1,]
 
-    # Density plot
-    density <- ggplot2::ggplot(densitydata, ggplot2::aes(x=value,
+    density <- ggplot2::ggplot(plot.df, ggplot2::aes(x=value,
                                                          linetype=Estimate, fill=Estimate), ...) +
       ggplot2::geom_density(alpha=0.2) +
       ggplot2::xlab("Treatment effect (95% CrI)") +
@@ -184,7 +187,7 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
       ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
       ggplot2::theme(axis.text = ggplot2::element_text(size=12),
                      axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::facet_wrap(~factor(comp)) +
+      ggplot2::facet_wrap(~factor(Comparison)) +
       theme_mbnma() +
       ggplot2::labs(linetype="Evidence", fill="Evidence")
 
@@ -201,5 +204,4 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
     graphics::plot(density)
     return(invisible(density))
   }
-
 }

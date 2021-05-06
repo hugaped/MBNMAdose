@@ -639,6 +639,7 @@ check.indirect.drops <- function(df, comp) {
 #' either be character (corresponding to the treatment names given in `network`) or
 #' numeric (corresponding to treatment codes within the `network` - note that these
 #' may change if `drop.discon = TRUE`).
+#' @param ... Arguments to be sent to `mbnma.run()`
 #' @inheritParams mbnma.run
 #' @inheritParams inconsistency.loops
 #'
@@ -668,19 +669,19 @@ check.indirect.drops <- function(df, comp) {
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities
-#' plot(split, plot.type="forest") # Plot forest plots of direct and indirect evidence
+#' plot(split, txt_gp=forestplot::fpTxtGp(cex=0.5)) # Plot forest plots (with smaller label size)
 #'
 #' # Print and summarise results
 #' print(split)
 #' summary(split) # Generate a data frame of summary results
 #' }
 #' @export
-mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
-                            beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
+mbnma.nodesplit <- function(network, fun=dloglin(),
                             method="common",
-                            knots=3,
                             comparisons=NULL,
                             incldr=TRUE,
+                            beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
+                            user.fun=NULL,
                             ...) {
 
   # Run checks
@@ -689,11 +690,12 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
   checkmate::assertChoice(method, choices=c("common", "random"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Check if multiple DR functions used
-  if (length(fun)>1) {
-    stop("mbnma.nodesplit cannot be used with agent-specific dose-response functions.\n
-         Suggest checking for inconsistency in treatment-level network using nma.nodesplit().\n
-         Inconsistency in such a network would also imply inconsistency in MBNMA")
+  # Check fun
+  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
+                   user.fun=user.fun)
+  if ("nonparam" %in% fun$name) {
+    stop("Node-splitting cannot currently be performed for non-parametric models")
+    # But this could be added
   }
 
   # Load data
@@ -708,11 +710,20 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
     comparisons <- check.nodesplit.comparisons(data.ab, network, comparisons, trt.labs)
   }
 
+  # Set default for pd="pv" unless otherwise specified for faster running
+  args <- list(...)
+  if (!"pd" %in% names(args)) {
+    args[["pd"]] <- "pv"
+  }
+
 
   ##### Run MBNMA #####
-  mbnma.jags <- mbnma.run(network, method=method, fun=fun, knots=knots, user.fun=user.fun,
-                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                          warn.rhat=FALSE, ...)
+  mbnma.jags <- do.call(mbnma.run, c(args, list(network=network,
+                                                method = method,
+                                                fun = fun,
+                                                warn.rhat=FALSE))
+  )
+  # mbnma.jags <- mbnma.run(network, method=method, fun=fun, warn.rhat=FALSE, pd=pd, ...)
 
 
   # Get comparison treatment names (in format for get.relative)
@@ -754,9 +765,16 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
     ####### Estimate Indirect and Direct in same model #########
 
     ind.net <- suppressMessages(change.netref(mbnma.jags$network, ref=comp[1]))
-    ind.jags <- mbnma.run(ind.net, method=method, fun=fun, knots=knots, user.fun=user.fun,
-                          beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                          warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
+
+    ind.jags <- do.call(mbnma.run, c(args, list(network=ind.net,
+                                                method = method,
+                                                fun = fun,
+                                                warn.rhat=FALSE,
+                                                nodesplit=c(1, comp[2])))
+    )
+
+    # ind.jags <- mbnma.run(ind.net, method=method, fun=fun,
+    #                       warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
 
     # Get indirect
     ind.res <- get.relative(ind.jags, treatments = comp.list)[compnames[2],
@@ -785,50 +803,50 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
 
 
     # GGplots
-    source <- c("MBNMA", "Direct", "Indirect")
-    l95 <- c(quantile_mbnma[1], quantile_dir[1], quantile_ind[1])
-    med <- c(quantile_mbnma[2], quantile_dir[2], quantile_ind[2])
-    u95 <- c(quantile_mbnma[3], quantile_dir[3], quantile_ind[3])
-    plotdata <- data.frame(source, l95, med, u95)
-
-    title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
-
-    gg <-
-      ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
-      ggplot2::geom_pointrange() +
-      ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
-      ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
-      ggplot2::theme(axis.text = ggplot2::element_text(size=15),
-                     axis.title = ggplot2::element_text(size=18),
-                     title=ggplot2::element_text(size=18)) +
-      ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-      ggplot2::theme_bw()
-
-    # Density plots (with shaded area of overlap)
-    molten <- data.frame(ind.res, dir.res)
-    molten <- suppressMessages(reshape2::melt(molten))
-    names(molten) <- c("Estimate", "value")
-    linetypes <- c("solid", "dash")
-    levels(molten$Estimate) <- c("Indirect", "Direct")
-
-    dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
-      ggplot2::geom_density(alpha=0.2) +
-      ggplot2::xlab(title) +
-      ggplot2::ylab("Posterior density") +
-      ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-      ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-                     axis.title = ggplot2::element_text(size=14)) +
-      ggplot2::theme_bw()
+    # source <- c("MBNMA", "Direct", "Indirect")
+    # l95 <- c(quantile_mbnma[1], quantile_dir[1], quantile_ind[1])
+    # med <- c(quantile_mbnma[2], quantile_dir[2], quantile_ind[2])
+    # u95 <- c(quantile_mbnma[3], quantile_dir[3], quantile_ind[3])
+    # plotdata <- data.frame(source, l95, med, u95)
+    #
+    # title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
+    #
+    # gg <-
+    #   ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
+    #   ggplot2::geom_pointrange() +
+    #   ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
+    #   ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
+    #   ggplot2::theme(axis.text = ggplot2::element_text(size=15),
+    #                  axis.title = ggplot2::element_text(size=18),
+    #                  title=ggplot2::element_text(size=18)) +
+    #   ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
+    #   ggplot2::theme_bw()
+    #
+    # # Density plots (with shaded area of overlap)
+    # molten <- data.frame(ind.res, dir.res)
+    # molten <- suppressMessages(reshape2::melt(molten))
+    # names(molten) <- c("Estimate", "value")
+    # linetypes <- c("solid", "dash")
+    # levels(molten$Estimate) <- c("Indirect", "Direct")
+    #
+    # dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
+    #   ggplot2::geom_density(alpha=0.2) +
+    #   ggplot2::xlab(title) +
+    #   ggplot2::ylab("Posterior density") +
+    #   ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
+    #   ggplot2::theme(axis.text = ggplot2::element_text(size=12),
+    #                  axis.title = ggplot2::element_text(size=14)) +
+    #   ggplot2::theme_bw()
 
     nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
                       "direct"=dir.res, "indirect"=ind.res, "mbnma"=mbnma.res,
                       "overlap matrix"=overlap.mat,
                       "p.values"=p.values, "quantiles"=quantiles,
-                      "forest.plot"=gg, "density.plot"=dens,
+                      #"forest.plot"=gg, "density.plot"=dens,
                       "split.model"=ind.jags,
                       "mbnma.model"=mbnma.jags)
 
-    nodesplit.result[[paste0(comp[2], "v", comp[1])]] <-
+    nodesplit.result[[paste0(trt.labs[comp[2]], "v", trt.labs[comp[1]])]] <-
       nodesplit
   }
 
@@ -873,9 +891,9 @@ mbnma.nodesplit <- function(network, fun="linear", user.fun=NULL,
 get.relative <- function(mbnma, treatments=list()) {
 
   # Check that treatments list is what it should be
-  if (length(mbnma$model.arg$fun)>1) {
-    stop("length(mbnma$model.arg$fun)>1: get.relative cannot be used\non MBNMA models with multiple dose-response functions")
-  }
+  # if (length(mbnma$model.arg$fun)>1) {
+  #   stop("length(mbnma$model.arg$fun)>1: get.relative cannot be used\non MBNMA models with multiple dose-response functions")
+  # }
 
   if (length(treatments)<2) {
     if (length(treatments[[1]])<2) {
@@ -895,23 +913,25 @@ get.relative <- function(mbnma, treatments=list()) {
 
   # Identify dose-response function used in mbnma
   DR <- suppressMessages(
-    write.dose.fun(fun=mbnma$model.arg$fun, user.fun=mbnma$model.arg$user.fun, knots=mbnma$model.arg$knots,
-                   effect="abs"
-    )[[1]])
+    write.dose.fun(fun=mbnma$model.arg$fun, effect="abs")[[1]])
   DR <- gsub("(^.+<-)(.+)", "\\2", DR)
-  DR <- gsub("s\\.", "", DR)
+  DR <- gsub("s\\.", "", DR) # Could remove if needed
+  if (length(mbnma$model.arg$fun$name)>1) {
+    DR <- DR[-1]
+  }
+
 
   # Get dose-response parameter values
   betaparams <- get.model.vals(mbnma)
-  betas <- assignfuns(mbnma$model.arg$fun, mbnma$network$agents, mbnma$model.arg$user.fun,
-                      wrapper = ifelse(is.null(mbnma$model.arg$arg.fun), FALSE, TRUE))
+  # betas <- assignfuns(mbnma$model.arg$fun, mbnma$network$agents, mbnma$model.arg$user.fun,
+  #                     wrapper = ifelse(is.null(mbnma$model.arg$arg.fun), FALSE, TRUE))
 
   trtnew <- treatments
 
   # Generate spline basis matrix if required
-  if (any(c("rcs", "bs", "ns") %in% mbnma$model.arg$fun)) {
+  if (any(c("rcs", "bs", "ns", "ls") %in% mbnma$model.arg$fun$name)) {
     for (i in seq_along(trtnew)) {
-      trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$knots,
+      trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
                                       max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
                                                                                 which(names(trtnew)[i] == network$agents)
                                                                                 ]))
@@ -946,12 +966,26 @@ get.relative <- function(mbnma, treatments=list()) {
         agnum.i <- agnum.i+1
         agnum.k <- agnum.k+1
       }
+      agnum <- c(agnum.i, agnum.k)
 
+      # For agent-specific dose-response functions
+      if (length(mbnma$model.arg$fun$name)>1) {
+        posi <- mbnma$model.arg$fun$posvec[agnum.i]
+        tempDR1 <- DR[posi]
 
-      DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), DR)
+        posk <- mbnma$model.arg$fun$posvec[agnum.k]
+        tempDR2 <- DR[posk]
+
+        pos <- c(posi, posk)
+      } else {
+        tempDR1 <- DR
+        tempDR2 <- DR
+      }
+
+      DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), tempDR1)
       DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]][1], DR1)
 
-      DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), DR)
+      DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), tempDR2)
       DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]][1], DR2)
 
       # Replace spline
@@ -961,13 +995,39 @@ get.relative <- function(mbnma, treatments=list()) {
       }
 
       for (beta in seq_along(betaparams)) {
-        # If beta is modelled as absolute across all agents
-        if (betaparams[[beta]]$pool %in% c("common", "random")) {
-          DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
-          DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
-        }
+        assign(names(betaparams)[beta], betaparams[[beta]])
 
-        assign(names(betaparams)[beta], betaparams[[beta]]$result)
+        if (length(mbnma$model.arg$fun$name)==1) {
+          if (!is.matrix(betaparams[[beta]])) {
+            DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
+            DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+          }
+        } else {
+
+          if (is.matrix(betaparams[[beta]])) {
+
+            DRcomb <- c(DR1, DR2)
+            for (m in 1:2) {
+              # Look for correct column index for each beta param
+              veci <- mbnma$model.arg$fun$posvec[1:agnum[m]]
+              veci <- table(veci)[names(table(veci))==pos[m]]
+
+              if (names(veci)=="1") {
+                # Check if placebo in dataset
+                if (mbnma$network$agents[1]=="Placebo") {
+                  veci <- veci - 1
+                }
+              }
+
+              # Swap index in DR1 for veci
+              DRcomb[m] <- gsub(paste0("(", names(betaparams)[beta], "\\[,)([0-9]+\\])"),
+                          paste0("\\1", veci, "]"), DRcomb[m])
+            }
+            DR1 <- DRcomb[1]
+            DR2 <- DRcomb[2]
+
+          }
+        }
       }
 
       chunk <- eval(parse(text=paste0(DR1, " - ", DR2)))
