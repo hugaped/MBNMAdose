@@ -51,6 +51,10 @@ dexp <- function() {
   bname <- paste0("beta.", 1:nparam)
   names(bname) <- paramnames
 
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
+
   out <- list(name="exp", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
@@ -113,6 +117,10 @@ dloglin <- function() {
   names(apool) <- paramnames
   bname <- paste0("beta.", 1:nparam)
   names(bname) <- paramnames
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
 
   out <- list(name="loglin", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
@@ -235,6 +243,10 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
 
   names(apool) <- paramnames
   names(bname) <- paramnames
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
 
   out <- list(name="emax", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
@@ -365,6 +377,10 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 
   names(apool) <- paramnames
   names(bname) <- paramnames
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
 
   out <- list(name="poly", fun=fun, params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
@@ -557,6 +573,10 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   names(apool) <- paramnames
   names(bname) <- paramnames
 
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
+
   out <- list(name="fpoly", fun=fun,
                params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
@@ -692,6 +712,10 @@ dspline <- function(type="bs", knots=1, degree=1,
 
   names(apool) <- paramnames
   names(bname) <- paramnames
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
 
   out <- list(name=type, fun=fun, params=paramnames,
               nparam=nparam, knots=knots, degree=degree, jags=jags,
@@ -856,6 +880,10 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
 
   names(apool) <- paramnames
   names(bname) <- names(bname)
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
 
   out <- list(name="user", fun=fun, params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
