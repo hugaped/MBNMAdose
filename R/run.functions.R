@@ -316,7 +316,6 @@ mbnma.run <- function(network,
                       class.effect=list(), UME=FALSE,
                       cor=TRUE,
                       omega=NULL,
-                      user.fun=NULL,
                       parameters.to.save=NULL,
                       pd="pd.kl", parallel=FALSE,
                       likelihood=NULL, link=NULL,
@@ -326,7 +325,7 @@ mbnma.run <- function(network,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       autojags=FALSE, Rhat=1.1, n.update=10,
                       beta.1="rel",
-                      beta.2="rel", beta.3="rel", beta.4="rel", knots=3,
+                      beta.2="rel", beta.3="rel", beta.4="rel", user.fun=NULL,
                       arg.params=NULL, ...
 ) {
 
@@ -341,8 +340,9 @@ mbnma.run <- function(network,
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  # Check fun and convert to list
-  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
+  # Check fun
+  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
+                   user.fun=user.fun)
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
@@ -1026,7 +1026,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 #' @inheritParams mbnma.network
 #'
 #' @noRd
-check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.str) {
+check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 
   checkmate::assertClass(network, "mbnma.network")
 
@@ -1048,6 +1048,8 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.str) {
       fun <- dnonparam(direction="increasing")
     } else if (fun=="nonparam.down") {
       fun <- dnonparam(direction="decreasing")
+    } else if (fun=="user") {
+      fun <- duser(fun=user.fun, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
     } else {
       stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
     }
