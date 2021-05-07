@@ -91,11 +91,11 @@ get.prior <- function(model) {
   checkmate::assertCharacter(model)
 
   #model <- strsplit(mbnma$model.arg$jagscode, split="\n")[[1]]
-  model <- strsplit(model, split="\n")[[1]]
+  # model <- strsplit(model, split="\n")[[1]]
   #priors <- model[grep(".+~ [A-z]+\\([-?0-9]", model)]
 
   priorcode <- model[c(grep("^.+~ [A-z]+\\([-?0-9]", model),
-                       grep("^.+~ [A-z]+\\(Omega", model))]
+                       grep("^.+~ [A-z]+\\(omega", model))]
 
   priorlist <- strsplit(priorcode, split=" +?~ +?")
   priors <- list()
@@ -136,7 +136,7 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
-  checkmate::assertCharacter(model, len=1, null.ok=TRUE, add=argcheck)
+  checkmate::assertCharacter(model, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -145,9 +145,9 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   }
 
   if (!is.null(mbnma)) {
-    model <- strsplit(mbnma$model.arg$jagscode, split="\n")[[1]]
+    # model <- strsplit(mbnma$model.arg$jagscode, split="\n")[[1]]
+    model <- mbnma$model.arg$jagscode
   } else if (!is.null(model)) {
-    model <- strsplit(model, split="\n")[[1]]
   } else {
     stop("Must provide EITHER an existing MBNMA model (using `mbnma`) OR MBNMA JAGS code (using `model`)")
   }
@@ -167,7 +167,8 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
   start <- grep("^model\\{", model)
   end <- grep("# Model ends", model) + 1
 
-  model <- paste(model[start:end], collapse="\n")
+  # model <- paste(model[start:end], collapse="\n")
+  model <- model[start:end]
 
   return(model)
 }
