@@ -694,7 +694,7 @@ dspline <- function(type="bs", knots=1, degree=1,
   }
   fun <- stats::as.formula(paste("~", jags))
   jags <- gsub("(spline)\\.([0-9])", "\\1[i,k,\\2]", jags)
-  jags <- gsub("s.beta", "beta", jags)
+  jags <- gsub("beta", "s.beta", jags)
 
 
   # Define parameters
