@@ -646,11 +646,12 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
     }
   } else {
     # Automatically generate doses list for treatments included in data
-    if ("rcs" %in% object$model.arg$fun) {
-      dose <- as.vector(object$model$data()$spline[,,1])
-    } else {
-      dose <- as.vector(object$model$data()$dose)
-    }
+    # if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun)) {
+    #   dose <- as.vector(object$model$data()$spline[,,1])
+    # } else {
+    #
+    # }
+    dose <- as.vector(object$model.arg$jagsdata$dose)
 
     agent <- as.vector(agents)
 
