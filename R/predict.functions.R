@@ -32,8 +32,8 @@ get.model.vals <- function(mbnma) {
       mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
       temp <- mat
-    } else if (is.numeric(fun$apool)[i]) {
-      temp <- rep(fun$apool[i], mbnma$BUGSoutput$n.sims)
+    } else if (suppressWarnings(!is.na(as.numeric(fun$apool[i])))) {
+      temp <- rep(as.numeric(fun$apool[i]), mbnma$BUGSoutput$n.sims)
     }
 
     betaparams[[fun$bname[i]]] <- temp
