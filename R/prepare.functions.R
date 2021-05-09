@@ -611,24 +611,33 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     }
 
     # Generate empty spline matrix
-    if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
-      knots <- fun$knots
-      degree <-
+    splineopt <- c("rcs", "ns", "bs", "ls")
+    if (any(splineopt %in% fun$name)) {
 
-        doses <- df[, colnames(df) %in% c("agent", "dose")]
+      doses <- df[, colnames(df) %in% c("agent", "dose")]
       doses <- unique(dplyr::arrange(doses, agent, dose))
+
+      splinefun <- unique(splineopt[which(splineopt %in% fun$name)])
+      degree <- fun$degree
+      knots <- fun$knots
 
       # Generate spline basis matrix
       dosespline <- doses %>% dplyr::group_by(agent) %>%
-        dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots))
+        dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
 
       df <- suppressMessages(dplyr::left_join(df, dosespline))
 
-      knotnum <- ifelse(length(knots)>1, length(knots), knots)
+      if (length(knots)>1) {
+        knotnum <- length(knots)
+      } else if (knots>=1) {
+        knotnum <- knots
+      } else {
+        knotnum <-1
+      }
 
       datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
                                           ncol(datalist[["dose"]]),
-                                          knotnum-1))
+                                          knotnum+1))
     }
 
   } else if (level=="treatment") {
@@ -1264,8 +1273,12 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
 
-    if (length(knots)==1 & knots[1]>=1) {
-      return(matrix(rep(0,knots-1), nrow=1))
+    if (length(knots)==1) {
+      if (knots[1]>1) {
+        return(matrix(rep(0,knots-1), nrow=1))
+      } else {
+        return(matrix(rep(0,1), nrow=1))
+      }
     } else if (length(knots)>1 | knots[1]<1) {
       return(matrix(rep(0,length(knots)-1), nrow=1))
     }
