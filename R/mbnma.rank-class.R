@@ -168,7 +168,7 @@ print.mbnma.rank <- function(x, ...) {
                    sep="\n")
       intro <- c(intro, add)
     }
-    if (length(classef)>1) {
+    if (length(classef)>0) {
       add <- "Includes ranking of class effects from dose-response MBNMA:"
       add <- paste(add,
                    crayon::bold(paste(classef, collapse="\t")),
