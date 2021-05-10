@@ -242,7 +242,7 @@ write.model <- function(UME=FALSE, class.effect=list()) {
     "}"
     )
 
-  if (length(class.effect)>1) {
+  if (length(class.effect)>0) {
     model <- append(model,  c(class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
                               "}"))
   }
