@@ -518,6 +518,7 @@ mbnma.run <- function(network,
                     "class.effect"=class.effect,
                     "cor"=cor,
                     "omega"=omega,
+                    "UME"=UME,
                     #"parallel"=parallel,
                     "pd"=pd,
                     "priors"=get.prior(model))
@@ -776,8 +777,11 @@ gen.parameters.to.save <- function(fun, model) {
   if ("nonparam" %in% fun$name) {
     parameters.to.save <- append(parameters.to.save, "d.1")
   }
-  if (any(grepl("totresdev", model))==TRUE) {
+  if (any(grepl("totresdev", model))) {
     parameters.to.save <- append(parameters.to.save, c("totresdev"))
+  }
+  if (any(grepl("^sd ", model))) {
+    parameters.to.save <- append(parameters.to.save, c("sd"))
   }
 
   return(unique(parameters.to.save))
