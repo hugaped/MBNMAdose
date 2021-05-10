@@ -1247,15 +1247,19 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
   checkmate::reportAssertions(argcheck)
 
   # Check knot specification
-  # if (length(knots)==1) {
-  #   if (knots<3) {
-  #     stop("Minimum number of knots is 3")
-  #   }
-  # } else if (length(knots)>1) {
-  #   if (length(knots)<3){
-  #     stop("Minimum number of knots is 3")
-  #   }
-  # }
+  if (spline=="rcs") {
+    err <- "Minimum number of knots for 'rcs' is 3"
+    if (length(knots)==1) {
+      if (knots<3) {
+        stop(err)
+      }
+    } else if (length(knots)>1) {
+      if (length(knots)<3){
+        stop(err)
+      }
+    }
+  }
+
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
@@ -1315,7 +1319,7 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
     }
 
     if (ncol(splinedesign)>4) {
-      stop("splines of this complexity cannot currently be modelled using 'tspline()'...\nand your data is unlikely to be able to support it!")
+      stop("splines of this complexity cannot currently be modelled using 'dspline()'...\nand your data is unlikely to be able to support it!")
     }
 
 
