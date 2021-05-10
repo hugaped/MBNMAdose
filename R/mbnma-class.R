@@ -62,6 +62,11 @@ plot.mbnma <- function(x, params=NULL, ...) {
 
   fun <- x$model.arg$fun
 
+  # Cannot plot ume model results
+  if (x$model.arg$UME==TRUE) {
+    stop("UME model results cannot be plotted")
+  }
+
   # Check that specified params are monitored in model
   if (!all(params %in% x[["parameters.to.save"]])) {
     setparam <- x$parameters.to.save[x$parameters.to.save %in% c(x$model.arg$fun$params, toupper(x$model.arg$fun$params))]
@@ -282,6 +287,11 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
     stop("Ranking cannot currently be performed for non-parametric models")
   }
 
+  # Cannot plot ume model results
+  if (x$model.arg$UME==TRUE) {
+    stop("rank() does not work for UME models")
+  }
+
   # Change agent/class to agents/classes
   levels <- ifelse(level=="agent", "agents", "classes")
 
@@ -325,10 +335,10 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
   # Check parameters to rank
   if (is.null(params)) {
     for (i in seq_along(x$model.arg$fun$params)) {
-      if (x$model.arg$fun$params[i] %in% x$parameters.to.save) {
+      if (level=="agent" & x$model.arg$fun$params[i] %in% x$parameters.to.save) {
         params <- append(params, x$model.arg$fun$params[i])
       }
-      if (toupper(x$model.arg$fun$params[i]) %in% x$parameters.to.save) {
+      if (level=="class" & toupper(x$model.arg$fun$params[i]) %in% x$parameters.to.save) {
         params <- append(params, toupper(x$model.arg$fun$params[i]))
       }
     }
@@ -656,10 +666,13 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
 
   # Set model arguments
   if (length(object$model.arg$class.effect)>0) {
-    stop("`predict() currently does not work with models that use class effects")
+    stop("predict() currently does not work with models that use class effects")
   }
   if ("nonparam" %in% object$model.arg$fun$name) {
-    stop("`predict() does not work with non-parametric dose-response functions")
+    stop("predict() does not work with non-parametric dose-response functions")
+  }
+  if (object$model.arg$UME==TRUE) {
+    stop("predict() does not work with UME models")
   }
   if (length(object$model.arg$fun$name)>1) {
 
