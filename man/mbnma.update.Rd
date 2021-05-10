@@ -62,7 +62,7 @@ Useful for obtaining deviance contributions or fitted values. Same function used
 network <- mbnma.network(HF2PPITT)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
   parameters.to.save=c("psi", "resdev"))
 
 mbnma.update(result, param="theta") # monitor theta

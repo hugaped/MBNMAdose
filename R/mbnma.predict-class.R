@@ -34,14 +34,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' # Rank all predictions from a linear dose-response MBNMA
-#' linear <- mbnma.run(network, fun="linear")
+#' # Rank all predictions from a log-linear dose-response MBNMA
+#' loglin <- mbnma.run(network, fun=dloglin())
 #' pred <- predict(linear, E0 = 0.5)
 #' rank <- rank(pred)
 #' summary(rank)
 #'
 #' # Rank selected predictions from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
 #'             exact.doses=doses)
@@ -191,7 +191,7 @@ rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'

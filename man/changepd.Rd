@@ -21,7 +21,7 @@ non-sensical values, due to skewed deviances that can arise with non-linear mode
 will require running the model for additional iterations but is a more robust calculation for the effective
 number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
 }}
 
 \item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},

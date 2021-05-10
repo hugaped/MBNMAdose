@@ -11,8 +11,7 @@ getjagsdata(
   link = "logit",
   level = "agent",
   fun = NULL,
-  nodesplit = NULL,
-  knots = 3
+  nodesplit = NULL
 )
 }
 \arguments{
@@ -50,16 +49,11 @@ on the likelihood.}
 level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatment-
 level (for NMA)}
 
-\item{fun}{A character vector specifying a functional form to be assigned to the
-dose-response. Options are given in \code{details}.}
+\item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
+dose-response. See Details.}
 
 \item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
 an MBNMA nodesplit (see \code\link{mbnma.nodesplit}).}
-
-\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

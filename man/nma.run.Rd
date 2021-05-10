@@ -50,7 +50,7 @@ on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see examples).}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
 
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
 for any monitored parameter are >1.02 (suggestive of non-convergence).}
@@ -74,7 +74,7 @@ non-sensical values, due to skewed deviances that can arise with non-linear mode
 will require running the model for additional iterations but is a more robust calculation for the effective
 number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
 }}
 
 \item{parameters.to.save}{A character vector containing names of parameters

@@ -26,10 +26,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' @examples
 #' # Write model code for a model with an exponential dose-response function,
-#' # relative effects modelled on the rate of growth/decay (beta.1) with a random
-#' # effects model
-#' model <- mbnma.write(fun="exponential",
-#'              beta.1="rel",
+#' # with random treatment effects
+#' model <- mbnma.write(fun=dexp(),
 #'              method="random",
 #'              likelihood="binomial",
 #'              link="logit"
@@ -37,35 +35,29 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
-#' # relative effects modelled on Emax (beta.1) with a random effects model,
-#' # a single parameter estimated for ED50 (beta.2) with a common effects model
-#' model <- mbnma.write(fun="emax",
-#'              beta.1="rel",
-#'              beta.2="common",
+#' # relative effects modelled on Emax with a random effects model,
+#' # a single parameter estimated for ED50 with a common effects model
+#' model <- mbnma.write(fun=demax(emax="rel", ed50="common"),
 #'              likelihood="normal",
 #'              link="identity"
 #'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
-#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2).
+#' # relative effects modelled on Emax and ED50.
 #' # Class effects modelled on ED50 with common effects
-#' model <- mbnma.write(fun="emax",
-#'              beta.1="rel",
-#'              beta.2="rel",
+#' model <- mbnma.write(fun=demax(),
 #'              likelihood="normal",
 #'              link="identity",
-#'              class.effect=list("beta.2"="common")
+#'              class.effect=list("ed50"="common")
 #'              )
 #' cat(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
-#' # relative effects modelled on Emax (beta.1) and ED50 (beta.2) with a
+#' # relative effects modelled on Emax and ED50 with a
 #' # random effects model that automatically models a correlation between
 #' # both parameters.
-#' model <- mbnma.write(fun="emax",
-#'              beta.1="rel",
-#'              beta.2="rel",
+#' model <- mbnma.write(fun=demax(),
 #'              method="random",
 #'              likelihood="normal",
 #'              link="identity",
@@ -302,7 +294,7 @@ return(model)
 #' # Write an Emax dose-response function without a Hill parameter
 #' write.dose.fun(fun=demax(hill=NULL))
 #'
-#' # Write an Emax dose-response function with a commonHill parameter
+#' # Write an Emax dose-response function with a common Hill parameter
 #' write.dose.fun(fun=demax(hill="common"))
 #'
 #' # Write a user-defined dose-response function

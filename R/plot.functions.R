@@ -331,7 +331,7 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Plot deviances
 #' devplot(emax)
@@ -525,7 +525,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Plot fitted values and observed values
 #' fitplot(emax)
@@ -673,7 +673,7 @@ plot.invisible <- function(...){
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' ranks <- rank(emax)
 #'
 #' # Plot cumulative rankings for both dose-response parameters simultaneously

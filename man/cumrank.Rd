@@ -34,7 +34,7 @@ Plot cumulative ranking curves from MBNMA models
 network <- mbnma.network(HF2PPITT)
 
 # Estimate rankings  from an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 ranks <- rank(emax)
 
 # Plot cumulative rankings for both dose-response parameters simultaneously

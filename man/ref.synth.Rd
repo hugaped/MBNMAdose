@@ -84,7 +84,7 @@ Defaults for \code{n.iter}, \code{n.burnin}, \code{n.thin} and \code{n.chains} a
 network <- mbnma.network(HF2PPITT)
 
 # Run an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 
 # Data frame for synthesis can be taken from placebo arms
 ref.df <- HF2PPITT[HF2PPITT$agent=="placebo",]

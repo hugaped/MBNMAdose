@@ -110,7 +110,7 @@ that correspond to the new class codes.
 }
 }
 \description{
-Creates an object of class \code{mbnma.network}. Various MBNMA functions can subsequently be applied
+Creates an object of \code{class("mbnma.network")}. Various MBNMA functions can subsequently be applied
 to this object.
 }
 \details{

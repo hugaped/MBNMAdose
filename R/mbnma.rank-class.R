@@ -29,14 +29,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' ranks <- rank(emax)
 #'
 #' # Plot rankings for both dose-response parameters (in two separate plots)
 #' plot(ranks)
 #'
 #' # Plot rankings just for ED50
-#' plot(ranks, params="d.ed50")
+#' plot(ranks, params="ed50")
 #'
 #' # Plot rankings from prediction
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
@@ -48,7 +48,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' # Trying to plot a parameter that has not been ranked will return an error
 #' #### ERROR ####
-#' # plot(ranks, params="d.lambda")
+#' # plot(ranks, params="not.a.parameter")
 #' }
 #' @export
 plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {

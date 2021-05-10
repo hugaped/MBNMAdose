@@ -80,7 +80,7 @@ pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}
 network <- mbnma.network(HF2PPITT)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
               parameters.to.save=c("psi", "resdev"))
 
 

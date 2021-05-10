@@ -4,14 +4,14 @@
 \alias{gen.parameters.to.save}
 \title{Automatically generate parameters to save for a dose-response MBNMA model}
 \usage{
-gen.parameters.to.save(model.params, model)
+gen.parameters.to.save(fun, model)
 }
 \arguments{
-\item{model.params}{A character or numeric vector containing the names of the
-dose-response parameters in the model}
+\item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
+dose-response. See Details.}
 
 \item{model}{A JAGS model written as a character object}
 }
 \description{
-Identical to \code{gen.parameters.to.save()} in \code{MBNMAtime}
+Automatically generate parameters to save for a dose-response MBNMA model
 }

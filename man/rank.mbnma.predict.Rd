@@ -4,13 +4,12 @@
 \alias{rank.mbnma.predict}
 \title{Rank predicted doses of different agents}
 \usage{
-\method{rank}{mbnma.predict}(x, direction = 1, rank.doses = NULL, ...)
+\method{rank}{mbnma.predict}(x, lower_better = TRUE, rank.doses = NULL, ...)
 }
 \arguments{
 \item{x}{An object on which to apply the rank method}
 
-\item{direction}{Indicates whether negative responses are better (taking the
-value \code{-1}) or positive responses are better (taking the value \code{1})}
+\item{lower_better}{Indicates whether negative responses are better (\code{TRUE}) or positive responses are better (\code{FALSE})}
 
 \item{rank.doses}{A list of numeric vectors. Each named element corresponds to an
 agent (as named/coded in \code{predict}), and each number within the vector for that element corresponds to the dose
@@ -37,14 +36,14 @@ will be included, to avoid duplicating rankings.
 # Using the triptans data
 network <- mbnma.network(HF2PPITT)
 
-# Rank all predictions from a linear dose-response MBNMA
-linear <- mbnma.run(network, fun="linear")
+# Rank all predictions from a log-linear dose-response MBNMA
+loglin <- mbnma.run(network, fun=dloglin())
 pred <- predict(linear, E0 = 0.5)
 rank <- rank(pred)
 summary(rank)
 
 # Rank selected predictions from an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
             exact.doses=doses)

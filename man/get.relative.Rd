@@ -29,7 +29,7 @@ Calculates relative effects between treatments in an MBNMA model
 # Using the osteoarthritis data
 network <- mbnma.network(osteopain_2wkabs)
 
-expon <- mbnma.exponential(network, method="random")
+expon <- mbnma.run(network, fun=dexp(), method="random")
 
 # Calculate relative effects between:
 # Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d

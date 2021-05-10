@@ -29,12 +29,12 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an exponential dose-response MBNMA and generate the forest plot
-#' exponential <- mbnma.run(network, fun="exponential")
+#' exponential <- mbnma.run(network, fun=dexp())
 #' plot(exponential)
 #'
 #' # Plot only Emax parameters from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
-#' plot(emax, params=c("d.emax"))
+#' emax <- mbnma.run(network, fun=demax(), method="random")
+#' plot(emax, params=c("emax"))
 #'
 #'
 #' #### Forest plots including class effects ####
@@ -43,7 +43,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 #' netclass <- mbnma.network(class.df)
-#' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
+#' emax <- mbnma.run(netclass, fun=demax(), method="random",
 #'             class.effect=list("ed50"="common"))
 #'
 #' }
@@ -143,27 +143,6 @@ plot.mbnma <- function(x, params=NULL, ...) {
       ggplot2::labs(caption = paste0(x$model.arg$fun$direction, " monotonic dose-response function")) +
       theme_mbnma()
 
-    #########################################################
-    #### FOR STANDARD MBNMA PLOT ######
-    #########################################################
-
-    # Compile parameter data into one data frame
-    # mcmc <- x$BUGSoutput$sims.matrix[,grepl("d\\.1", colnames(x$BUGSoutput$sims.matrix))]
-    #
-    # plotdata <- reshape2::melt(mcmc)
-    # names(plotdata) <- c("Var1", "param", "value")
-    # plotdata$dose <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\2", plotdata$param))
-    # plotdata$agent <- as.numeric(gsub("(d\\.1\\[)([0-9]+)\\,([0-9]+)\\]", "\\3", plotdata$param))
-    #
-    # plotdata$doseparam <- "d.1"
-    #
-    # plotdata$labs <- x$network$agents[plotdata$agent]
-    #
-    # # Remove dose=1
-    # plotdata <- plotdata %>% dplyr::group_by(agent,dose) %>%
-    #   dplyr::mutate(n=dplyr::n_distinct(value))
-    #
-    # plotdata <- subset(plotdata, n!=1)
 
   } else {
 
@@ -251,14 +230,14 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' # Rank selected agents from a linear dose-response MBNMA
-#' linear <- mbnma.run(network, fun="linear")
-#' ranks <- rank(linear, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
+#' # Rank selected agents from a log-linear dose-response MBNMA
+#' loglin <- mbnma.run(network, fun=dloglin())
+#' ranks <- rank(loglin, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
 #' summary(ranks)
 #'
 #' # Rank only ED50 parameters from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
-#' ranks <- rank(emax, params="d.ed50")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
+#' ranks <- rank(emax, params="ed50")
 #' summary(ranks)
 #'
 #'
@@ -268,7 +247,7 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 #' netclass <- mbnma.network(class.df)
-#' emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
+#' emax <- mbnma.run(netclass, fun=demax(), method="random",
 #'             class.effect=list("ed50"="common"))
 #'
 #' # Rank by class, with negative responses being worse
@@ -508,7 +487,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #'
 #' ###########################

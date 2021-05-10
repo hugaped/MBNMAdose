@@ -74,13 +74,13 @@ write.inserts <- function() {
 #' network <- mbnma.network(HF2PPITT)
 #'
 #' # Run an Emax dose-response MBNMA
-#' result <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' result <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Obtain model prior values
 #' print(result$model.arg$priors)
 #'
 #' # Priors when using mbnma.run with an exponential function
-#' result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
+#' result <- mbnma.run(network, fun=dexp(), method="random")
 #' print(result$model.arg$priors)
 #' }
 #'

@@ -49,7 +49,7 @@ then additional iterations will have to be run to get results for these.
 network <- mbnma.network(HF2PPITT)
 
 # Run an Emax dose-response MBNMA and predict responses
-emax <- mbnma.emax(network, method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 
 # Plot fitted values and observed values
 fitplot(emax)

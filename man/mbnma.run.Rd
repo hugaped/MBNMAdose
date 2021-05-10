@@ -6,21 +6,14 @@
 \usage{
 mbnma.run(
   network,
-  fun = "linear",
-  beta.1 = "rel",
-  beta.2 = "rel",
-  beta.3 = "rel",
-  beta.4 = "rel",
+  fun = dloglin(),
   method = "common",
   class.effect = list(),
   UME = FALSE,
-  knots = 3,
   cor = TRUE,
-  var.scale = NULL,
-  user.fun = NULL,
+  omega = NULL,
   parameters.to.save = NULL,
   pd = "pd.kl",
-  parallel = FALSE,
   likelihood = NULL,
   link = NULL,
   priors = NULL,
@@ -30,8 +23,13 @@ mbnma.run(
   n.burnin = floor(n.iter/2),
   n.thin = max(1, floor((n.iter - n.burnin)/1000)),
   autojags = FALSE,
-  Rhat = 1.1,
+  Rhat = 1.05,
   n.update = 10,
+  beta.1 = "rel",
+  beta.2 = "rel",
+  beta.3 = "rel",
+  beta.4 = "rel",
+  user.fun = NULL,
   arg.params = NULL,
   ...
 )
@@ -39,53 +37,32 @@ mbnma.run(
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
 
-\item{fun}{A character vector specifying a functional form to be assigned to the
-dose-response. Options are given in \code{details}.}
-
-\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.4}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+\item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
+dose-response. See Details.}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
 
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
-(\code{"common"} or \code{"random"}). Element names should match dose-response parameter names (which will therefore
-depend on whether or not a wrapper function has been used for \code{mbnma.run()}).
-For example: \code{list("beta.2"="fixed", "beta.3"="random")} when using
-\code{mbnma.run()} or \code{list("ed50"="fixed", "hill"="random")} when using \code{mbnma.emax.hill()}.}
+(\code{"common"} or \code{"random"}). Element names should match dose-response parameter names.
+Note that assuming class effects on some dose-response parameters may be unreasonable if
+the range of doses differ substantially across agents within a class.}
 
 \item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
 
-\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
-
 \item{cor}{A boolean object that indicates whether correlation should be modelled
-between relative effect dose-response parameters (\code{TRUE}) or not (\code{FALSE}). This is
+between relative effect dose-response parameters. This is
 automatically set to \code{FALSE} if class effects are modelled or if multiple dose-response
 functions are fitted.}
 
-\item{var.scale}{A numeric vector indicating the relative scale of variances between
-correlated dose-response parameters when relative effects are modelled on more than
-one dose-response parameter and \code{cor=TRUE} (see details). Each element of
-the vector refers to the relative scale of each of the dose-response parameters that is
-modelled using relative effects.}
-
-\item{user.fun}{A formula specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+\item{omega}{A scale matrix for the inverse-Wishart prior for the covariance matrix used
+to model the correlation between dose-response parameters (see Details for dose-response functions). \code{omega} must
+be a symmetric positive definite matrix with dimensions equal to the number of dose-response parameters modelled using
+relative effects (\code{"rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
+is used.}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
@@ -100,12 +77,8 @@ non-sensical values, due to skewed deviances that can arise with non-linear mode
 will require running the model for additional iterations but is a more robust calculation for the effective
 number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
 }}
-
-\item{parallel}{A boolean value that indicates whether JAGS should be run in
-parallel (\code{TRUE}) or not (\code{FALSE}). If \code{TRUE} then the number of cores to
-use is automatically calculated.}
 
 \item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
@@ -117,11 +90,11 @@ on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see examples).}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
 
 \item{model.file}{A JAGS model written as a character object that can be used
 to overwrite the JAGS model that is automatically written based on the
-specified options.}
+specified options.#'}
 
 \item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
@@ -139,16 +112,33 @@ it has converged below a specific cutoff of \code{Rhat}}
 
 \item{Rhat}{A cutoff value for the Gelman-Rubin convergence diagnostic\insertCite{gelmanrubin}{MBNMAdose}.
 Unless all parameters have Rhat values lower than this the model will continue to sequentially update up
-to a maximum of \code{n.update}. Default is \code{1.1}}
+to a maximum of \code{n.update}. Default is \code{1.05}.}
 
 \item{n.update}{The maximum number of updates. Each update is run for 1000 iterations, after which the
 Rhat values of all parameters are checked against \code{Rhat}. Default maximum updates
 is \code{10} (i.e. 10,000 additional iterations in total).}
 
-\item{arg.params}{Contains a list of arguments sent to \code{mbnma.run()} by dose-response
-specific wrapper functions}
+\item{beta.1}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.2}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.3}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.4}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{user.fun}{\strong{Deprecated from version 0.4.0 onwards.} A formula specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
 \item{...}{Arguments to be sent to R2jags.}
+
+\item{knots}{\strong{Deprecated from version 0.4.0 onwards.} The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
+If a single number is given it indicates the number of knots (they will
+be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
+Minimum number of knots is 3.}
 }
 \value{
 An object of S3 \code{class(c("mbnma", "rjags"))} containing parameter
@@ -157,13 +147,12 @@ traceplots using \code{R2jags::traceplot()} or various functions from the packag
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation:\tabular{ll}{
-   \strong{Parameters(s)} \tab \strong{Interpretation} \cr
-   \code{d.1}, \code{d.2}, \code{d.3}, \code{d.4} \tab The pooled effect for each agent for a given dose-response parameter. These will be estimated by the model for dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"rel"} (e.g.\code{mbnma.run(beta.1="rel")}) \cr
+   \strong{Parameters(s)/Parameter Prefix} \tab \strong{Interpretation} \cr
+   \verb{<named dose-response parameter>} (e.g. \code{emax}) \tab The pooled effect for each dose-response parameter, as defined in dose-response functions. Will vary by agent if pooling is specified as \code{"rel"} in the dose-response function. \cr
    \code{sd} \tab The between-study SD (heterogeneity) for relative effects, reported if \code{method="random"} \cr
-   \code{D.1}, \code{D.2}, \code{D.3}, \code{D.4} \tab The class effect for each class for a given dose-response parameter. These will be estimated by the model if specified in \code{class.effects} for a given dose-response parameter. \cr
-   \code{sd.D.1}, \code{sd.D.2}, \code{sd.D.3}, \code{sd.D.4} \tab The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in \code{class.effect} is set to \code{"random"}. \cr
-   \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4} \tab The absolute value of a given dose-response parameter across the whole network (i.e. does not vary by agent/class). Will be estimated by the model for dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"common"} or \code{"random"}. \cr
-   \code{sd.1}, \code{sd.2}, \code{sd.3}, \code{sd.4} \tab Between-study SD (heterogeneity) for absolute dose-response parameters (\code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}) specified as \code{"random"}. \cr
+   \verb{sd.<named dose-response parameter>} (e.g. \code{sd.emax}) \tab Between-study SD (heterogeneity) for absolute dose-response parameters specified as \code{"random"}. \cr
+   \verb{<named capitalized dose-response parameter>} (e.g. \code{EMAX}) \tab The class effect within each class for a given dose-response parameter. These will be estimated by the model if specified in \code{class.effects} for a given dose-response parameter. \cr
+   \verb{sd.<named capitalized dose-response parameter>} (e.g. \code{sd.EMAX}) \tab The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in \code{class.effect} is set to \code{"random"}. \cr
    \code{totresdev} \tab The residual deviance of the model \cr
    \code{deviance} \tab The deviance of the model \cr
 }
@@ -186,7 +175,7 @@ When relative effects are modelled on more than one dose-response parameter and
 \code{cor = TRUE}, correlation between the dose-response parameters is automatically
 estimated using a vague Wishart prior. This prior can be made slightly more informative
 by specifying the relative scale of variances between the dose-response parameters using
-\code{var.scale}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled.
+\code{omega}. \code{cor} will automatically be set to \code{FALSE} if class effects are modelled.
 }
 \section{Dose-response parameter arguments}{
 \tabular{ll}{
@@ -203,37 +192,23 @@ by specifying the relative scale of variances between the dose-response paramete
 Several general dose-response functions are provided, but a
 user-defined dose-response relationship can instead be used.
 
+As of version 0.4.0 dose-response functions are specified as an object of \code{class("dosefun")}. See
+help details for each of the functions below for the interpretation of specific dose-response parameters.
+
 Built-in dose-response functions are:
 \itemize{
-\item \code{"linear"}: \code{beta.1} refers to the gradient
-\item \code{"exponential"}: \code{beta.1} refers to the rate of gain/decay
-\item \code{"emax"} (emax without a Hill parameter): \code{beta.1} refers to
-Emax parameter, \code{beta.2} refers to ET50 parameter
-\item \code{"emax.hill"} (emax with a Hill parameter): \code{beta.1} refers to Emax parameter, \code{beta.2} refers
-to ET50 parameter, \code{beta.3} refers to Hill parameter
-\item \code{"rcs"} restricted cubic splines with knot number/location defined by \code{knot}.\code{beta.1} refers to the
-first spline coeffficient, \code{beta.2} to the second coefficient, etc. Follows the method of \insertCite{hamza2020;textual}{MBNMAdose}
-\item \code{"nonparam.up"} (monotonically increasing non-parametric dose-response relationship following
-the method of \insertCite{owen2015;textual}{MBNMAdose})
-\item \code{"nonparam.down"} (monotonically decreasing non-parametric dose-response relationship following
-the method of \insertCite{owen2015;textual}{MBNMAdose})
-\item \code{"user"} (user-defined function: \code{user.fun} must be specified in arguments)
-}
-
-As of version 0.2.5, separate dose-response functions can be specified for
-different agents in the network by passing a character vector with multiple elements to \code{fun}.
-Each agent in \code{network} is assigned the dose-response function in the corresponding element in \code{fun}.
-\code{fun} must therefore be the same length as the number of agents in \code{network}. Dose-response parameters
-\code{beta.1}, \code{beta.2}, \code{beta.3} and \code{beta.4} refer to the corresponding dose-response parameters across
-the multiple functions in the following order: \code{"user"}, \code{"linear"}, \code{"exponential"}, \code{"emax"}, \code{"emax.hill"}, \code{"rcs"}.
-
-This would mean that if \code{fun} included \code{"linear"}, \code{"exponential"} and \code{"emax"} within it then for the
-corresponding agents:
-\itemize{
-\item \code{beta.1} would refer to linear slope parameters
-\item \code{beta.2} to exponential rate of growth/decay parameters
-\item \code{beta.3} to Emax parameters
-\item \code{beta.4} to ED50 parameters
+\item \code{dpoly()}: polynomial (e.g. for a linear model - \code{dpoly(degree=1)})
+\item \code{dloglin()}: log-linear
+\item \code{dexp()}: exponential
+\item \code{demax()}: (emax with/without a Hill parameter)
+\item \code{dspline()}: splines (can fit B-splines (\code{type="bs"}), restricted cubic splines (\code{type="rcs"}), natural splines (\code{type="ns"}), or
+piecewise linear splines (\code{type="ls"}))
+\item \code{dfpoly()}: fractional polynomials
+\item \code{dnonparam()}: Non-parametric monotonic function (\code{direction} can be either \code{"increasing"} or \code{"decreasing"}) following the method
+of \insertCite{owen2015;textual}{MBNMAdose}
+\item \code{duser()}: user-defined function
+\item \code{dmulti()}: allows agent-specific dose-response functions to be fitted. A separate function must be provided for each agent
+in the network.
 }
 }
 
@@ -245,36 +220,50 @@ network <- mbnma.network(HF2PPITT)
 
 ######## Dose-response functions ########
 
-# Fit a dose-response MBNMA with a linear function and common treatment effects
-result <- mbnma.run(network, fun="linear", beta.1="rel", method="common")
+# Fit a dose-response MBNMA with a linear function
+# with common treatment effects
+result <- mbnma.run(network, fun=dpoly(degree=1), method="common")
 
-# Fit a dose-response MBNMA with an exponential function and random treatment effects
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random")
+# Fit a dose-response MBNMA with a log-linear function
+# with random treatment effects
+result <- mbnma.run(network, fun=dloglin(), method="random")
+
+# Fit a dose-response MBNMA with a fractional polynomial function
+# with random treatment effects
+# with a probit link function
+result <- mbnma.run(network, fun=dfpoly(), method="random", link="probit")
 
 # Fit a user-defined function (quadratic)
 fun.def <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
-result <- mbnma.run(network, fun="user", user.fun=fun.def,
-              beta.1="rel", beta.2="rel", method="common")
+result <- mbnma.run(network, fun=duser(fun=fun.def), method="common")
 
-# Fit an Emax function with a single random (exchangeable) parameter estimated
-#for ED50 and common treatment effects on relative Emax effects
-result <- mbnma.run(network, fun="emax",
-              beta.1="rel", beta.2="random", method="common")
+# Fit an Emax function
+# with a single random (exchangeable) parameter for ED50
+# with common treatment effects
+result <- mbnma.run(network, fun=demax(emax="rel", ed50="random"),
+              method="common")
 
-# Fit an Emax function with a Hill parameter, with a fixed value for the Hill parameter
-#provided to the model and random relative effects on Emax and ED50 (which will
-#therefore be modelled with a correlation between them).
-result <- mbnma.run(network, fun="emax.hill",
-              beta.1="rel", beta.2="rel", beta.3=5, method="random")
+# Fit an Emax function with a Hill parameter
+# with a fixed value of 5 for the Hill parameter
+# with random relative effects
+result <- mbnma.run(network, fun=demax(hill=5), method="random")
 
-# Fit a model with restricted cubic splines and 3 knots
-#at 10\% 30\% and 60\% quartiles of dose ranges
+# Fit a model with restricted cubic splines
+# with 3 knots at 10\% 30\% and 60\% quartiles of dose ranges
 depnet <- mbnma.network(ssri) # Using the sSRI depression dataset
-result <- mbnma.run(depnet, fun="rcs", knots=c(0.1,0.3,0.6))
+result <- mbnma.run(depnet, fun=dspline(type="rcs", knots=c(0.1,0.3,0.6)))
 
 # Fit a model with different dose-response functions for each agent
-multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
-                 "emax", "emax", "exponential", "emax"))
+multifun <- dmulti(list(dloglin(), # for placebo (can be any function)
+                       demax(), # for eletriptan
+                       demax(), # for sumatriptan
+                       dloglin(), # for frovatriptan
+                       demax(), # for almotriptan
+                       demax(), # for zolmitriptan
+                       dloglin(), # for naratriptan
+                       demax())) # for rizatriptan
+
+multidose <- mbnma.run(network, fun=multifun)
 
 
 ########## Class effects ##########
@@ -282,47 +271,45 @@ multidose <- mbnma.run(network, fun=c("emax", "emax", "emax", "exponential",
  # Using the osteoarthritis dataset
  pain.df <- osteopain_2wkabs
 
- Set a shared class (NSAID) only for Naproxcinod and Naproxen
+ # Set a shared class (NSAID) only for Naproxcinod and Naproxen
  pain.df <- pain.df \%>\% mutate(
                 class = case_when(agent \%in\% c("Naproxcinod", "Naproxen") ~ "NSAID",
                         !agent \%in\% c("Naproxcinod", "Naproxen") ~ agent
                         )
                 )
 
- # Run a restricted cubic spline MBNMA with a common class effect on beta.1
+ # Run an Emax MBNMA with a common class effect on emax
  painnet <- mbnma.network(pain.df)
- splines <- mbnma.run(painnet, fun = "rcs",
-                class.effect = list(beta.1 = "common"))
+ result <- mbnma.run(painnet, fun = demax(),
+                class.effect = list(emax = "common"))
 
 
 ####### Priors #######
 
-# Obtain priors from an Emax function with random relative effects on Emax and ED50
-result <- mbnma.run(network, fun="emax",
-              beta.1="rel", beta.2="rel", method="random")
+# Obtain priors from a fractional polynomial function
+result <- mbnma.run(network, fun=dfpoly(degree=1))
 print(result$model.arg$priors)
 
-# Set new more informative prior distributions
-newpriors <- list(sd = "dnorm(0,0.5) T(0,)",
-                 inv.R = "dwish(Omega[,],100)")
+# Change the prior distribution for the power
+newpriors <- list(power.1 = "dnorm(0,0.001) T(0,)")
+newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 
-result <- mbnma.run(network, fun="emax",
-              beta.1="rel", beta.2="rel", method="random",
+result <- mbnma.run(network, fun=dfpoly(degree=1),
               priors=newpriors)
 
 
 ########## Sampler options ##########
 
 # Change the number of MCMC iterations, the number of chains, and the thin
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
               n.iter=5000, n.thin=5, n.chains=4)
 
 # Calculate effective number of parameters via plugin method
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
               pd="plugin")
 
 # Calculate effective number of parameters using penalized expected deviance
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
               pd="popt")
 
 
@@ -335,15 +322,15 @@ mcmcplots::denplot(result)
 mcmcplots::traplot(result)
 
 # Caterpillar plots
-mcmcplots::caterplot(result, "d.1")
+mcmcplots::caterplot(result, "rate")
 
 
 ####### Automatically run jags until convergence is reached #########
 
 # Rhat of 1.08 is set as the criteria for convergence
 #on all monitored parameters
-conv.res <- mbnma.run(network, fun="emax",
-              beta.1="rel", beta.2="rel", method="random",
+conv.res <- mbnma.run(network, fun=demax(),
+              method="random",
               n.iter=10000, n.burnin=9000,
               autojags=TRUE, Rhat=1.08, n.update=8)
 

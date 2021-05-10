@@ -194,7 +194,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # Fit an Emax function
 #' # with a single random (exchangeable) parameter for ED50
 #' # with common treatment effects
-#' result <- mbnma.run(network, fun=demax(emax="rel, ed50="random"),
+#' result <- mbnma.run(network, fun=demax(emax="rel", ed50="random"),
 #'               method="common")
 #'
 #' # Fit an Emax function with a Hill parameter
@@ -284,7 +284,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # Rhat of 1.08 is set as the criteria for convergence
 #' #on all monitored parameters
 #' conv.res <- mbnma.run(network, fun=demax(),
-#'               beta.1="rel", beta.2="rel", method="random",
+#'               method="random",
 #'               n.iter=10000, n.burnin=9000,
 #'               autojags=TRUE, Rhat=1.08, n.update=8)
 #'
@@ -720,7 +720,7 @@ gen.init <- function(jagsdata, fun) {
 
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
-#' @inheritParams mb.run
+#' @inheritParams mbnma.run
 #' @param model A JAGS model written as a character object
 gen.parameters.to.save <- function(fun, model) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model

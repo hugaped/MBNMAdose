@@ -104,7 +104,7 @@ agent. This may be more useful when ranking different predicted responses using
 network <- mbnma.network(HF2PPITT)
 
 # Run an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 
 
 ###########################

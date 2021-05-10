@@ -10,7 +10,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 #' Create an mbnma.network object
 #'
-#' Creates an object of class `mbnma.network`. Various MBNMA functions can subsequently be applied
+#' Creates an object of `class("mbnma.network")`. Various MBNMA functions can subsequently be applied
 #' to this object.
 #'
 #' @param data.ab A data frame of arm-level data in "long" format containing the columns:
@@ -714,21 +714,6 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     datalist[["narm"]] <- append(datalist[["narm"]], max(df$arm[as.numeric(df$studyID)==i]))
   }
 
-  # Add design matrix for multiple dose-response functions
-  # if (!is.null(fun)) {
-  #   if (length(fun)>1) {
-  #     if (length(fun)!=datalist[["Nagent"]]) {
-  #       stop("`fun` must take the same length as the total number of agents in the dataset")
-  #     }
-  #
-  #     funlist <- c("user", "linear", "exponential", "emax", "emax.hill", "rcs", "bs", "ns")
-  #     funvec <- sapply(fun, function(x) which(funlist==x))
-  #     funvec <- funvec - (min(funvec)-1)
-  #     datalist[["X"]] <- datalist[["agent"]]
-  #     datalist[["X"]][] <- funvec[datalist[["agent"]]]
-  #   }
-  # }
-
   # Add maxdose for nonparametric dose-response functions
   if ("nonparam" %in% fun$name) {
     data.ab <- data.ab %>% dplyr::group_by(agent) %>%
@@ -1122,6 +1107,8 @@ cutjags <- function(jagsresult) {
 
 
 #' Assigns different parameters for agent-specific (multiple) dose-response functions in a model
+#'
+#' FUNCTION IS NOW DEPRACATED
 #'
 #' For a given  function (or set of functions), it indicates which parameter corresponds
 #' to which function (including a parameter name) and which agents are modelled by that parameter

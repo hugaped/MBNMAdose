@@ -648,7 +648,7 @@ check.indirect.drops <- function(df, comp) {
 #' # Using the triptans data
 #' network <- mbnma.network(HF2PPITT)
 #'
-#' split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
+#' split <- mbnma.nodesplit(network, fun=demax(), likelihood = "binomial", link="logit",
 #'   method="common")
 #'
 #'
@@ -659,11 +659,11 @@ check.indirect.drops <- function(df, comp) {
 #' loops <- inconsistency.loops(network$data.ab, incldr=TRUE)
 #'
 #' # This...
-#' single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
+#' single.split <- mbnma.nodesplit(network, fun=dexp(), likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
 #'
 #' #...is the same as...
-#' single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
+#' single.split <- mbnma.nodesplit(network, fun=dexp(), likelihood = "binomial", link="logit",
 #'              method="random", comparisons=rbind(c(6, 12)))
 #'
 #'
@@ -802,42 +802,6 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
                       "direct"=quantile_dir, "indirect"=quantile_ind)
 
 
-    # GGplots
-    # source <- c("MBNMA", "Direct", "Indirect")
-    # l95 <- c(quantile_mbnma[1], quantile_dir[1], quantile_ind[1])
-    # med <- c(quantile_mbnma[2], quantile_dir[2], quantile_ind[2])
-    # u95 <- c(quantile_mbnma[3], quantile_dir[3], quantile_ind[3])
-    # plotdata <- data.frame(source, l95, med, u95)
-    #
-    # title <- paste0(trt.labs[comp[2]], " vs ", trt.labs[comp[1]])
-    #
-    # gg <-
-    #   ggplot2::ggplot(data=plotdata, ggplot2::aes(x=plotdata$source, y=plotdata$med, ymin=plotdata$l95, ymax=plotdata$u95)) +
-    #   ggplot2::geom_pointrange() +
-    #   ggplot2::coord_flip() +  # flip coordinates (puts labels on y axis)
-    #   ggplot2::xlab("") + ggplot2::ylab("Treatment effect (95% CrI)") + ggplot2::ggtitle(title) +
-    #   ggplot2::theme(axis.text = ggplot2::element_text(size=15),
-    #                  axis.title = ggplot2::element_text(size=18),
-    #                  title=ggplot2::element_text(size=18)) +
-    #   ggplot2::theme(plot.margin=ggplot2::unit(c(1,1,1,1),"cm")) +
-    #   ggplot2::theme_bw()
-    #
-    # # Density plots (with shaded area of overlap)
-    # molten <- data.frame(ind.res, dir.res)
-    # molten <- suppressMessages(reshape2::melt(molten))
-    # names(molten) <- c("Estimate", "value")
-    # linetypes <- c("solid", "dash")
-    # levels(molten$Estimate) <- c("Indirect", "Direct")
-    #
-    # dens <- ggplot2::ggplot(molten, ggplot2::aes(x=molten$value, linetype=molten$Estimate, fill=molten$Estimate)) +
-    #   ggplot2::geom_density(alpha=0.2) +
-    #   ggplot2::xlab(title) +
-    #   ggplot2::ylab("Posterior density") +
-    #   ggplot2::theme(strip.text.x = ggplot2::element_text(size=12)) +
-    #   ggplot2::theme(axis.text = ggplot2::element_text(size=12),
-    #                  axis.title = ggplot2::element_text(size=14)) +
-    #   ggplot2::theme_bw()
-
     nodesplit <- list("comparison"= c(trt.labs[comp[2]], trt.labs[comp[1]]),
                       "direct"=dir.res, "indirect"=ind.res, "mbnma"=mbnma.res,
                       "overlap matrix"=overlap.mat,
@@ -881,7 +845,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' # Using the osteoarthritis data
 #' network <- mbnma.network(osteopain_2wkabs)
 #'
-#' expon <- mbnma.exponential(network, method="random")
+#' expon <- mbnma.run(network, fun=dexp(), method="random")
 #'
 #' # Calculate relative effects between:
 #' # Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d
