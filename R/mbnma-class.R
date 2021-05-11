@@ -156,13 +156,32 @@ plot.mbnma <- function(x, params=NULL, ...) {
     mcmc <- x$BUGSoutput$sims.list
     plotdata <- data.frame(Var2=NA, value=NA, doseparam=NA)
     for (i in seq_along(params)) {
-      paramdata <- reshape2::melt(mcmc[[params[i]]])[,2:3]
+      paramdata <- reshape2::melt(mcmc[[params[i]]])
+
+      # For agent-specific DR functions
+      if (length(fun$name)>1) {
+
+        subcodes <- mult2agent(fun, params[i])
+        if ("Placebo" %in% x$network$agents) {
+          subcodes <- subcodes[!subcodes==1]
+          subcodes <- subcodes-1
+        }
+
+        if (ncol(paramdata)>1) {
+          paramdata <- paramdata[,2:3]
+          paramdata$Var2 <- subcodes[paramdata$Var2]
+        } else {
+          paramdata <- cbind(rep(subcodes, nrow(paramdata)), paramdata)
+          colnames(paramdata) <- c("Var2", "value")
+        }
+      }
+
       paramdata$doseparam <- rep(params[i], nrow(paramdata))
       plotdata <- rbind(plotdata, paramdata)
     }
     plotdata <- plotdata[-1,]
 
-    if ("Placebo" %in% network$agents) {
+    if ("Placebo" %in% x$network$agents) {
       plotdata[["param"]] <- plotdata[["Var2"]] + 1
     } else {
       plotdata[["param"]] <- plotdata[["Var2"]]
@@ -334,12 +353,26 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 
   # Check parameters to rank
   if (is.null(params)) {
-    for (i in seq_along(x$model.arg$fun$params)) {
-      if (level=="agent" & x$model.arg$fun$params[i] %in% x$parameters.to.save) {
-        params <- append(params, x$model.arg$fun$params[i])
+    for (i in seq_along(fun$params)) {
+      mcmc <- x$BUGSoutput$sims.list[[names(fun$apool)[i]]]
+      pass <- TRUE
+      if (is.vector(mcmc)) {
+        pass <- FALSE
       }
-      if (level=="class" & toupper(x$model.arg$fun$params[i]) %in% x$parameters.to.save) {
-        params <- append(params, toupper(x$model.arg$fun$params[i]))
+      if (is.matrix(mcmc)) {
+        if (ncol(mcmc)<=1) {
+          pass <- FALSE
+        }
+      }
+
+      if (pass==TRUE) {
+
+        if (level=="agent" & fun$params[i] %in% x$parameters.to.save) {
+          params <- append(params, fun$params[i])
+        }
+        if (level=="class" & toupper(fun$params[i]) %in% x$parameters.to.save) {
+          params <- append(params, toupper(fun$params[i]))
+        }
       }
     }
   } else {
@@ -359,17 +392,13 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
         subrank <- to.rank
         subagents <- agents
       } else {
-        ind <- which(fun$params %in% params[i])
-        listlen <- lengths(fun$paramlist)
-        count <- 0
-        k <- 0
-        while (count<ind) {
-          count <- count + listlen[k+1]
-          k <- k+1
+        subcodes <- mult2agent(fun, params[i])
+
+        if ("Placebo" %in% x$network$agents) {
+          subcodes <- subcodes-1
         }
-        #subcodes <- 1:length(which(fun$posvec[-1]==k))
-        subrank <- 1:length(which(fun$posvec[-1]==k))
-        subagents <- agents[which(fun$posvec[-1]==k)]
+        subrank <- 1:length(subcodes)
+        subagents <- agents[subcodes]
       }
 
       param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
