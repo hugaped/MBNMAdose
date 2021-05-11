@@ -174,6 +174,8 @@ plot.mbnma <- function(x, params=NULL, ...) {
           paramdata <- cbind(rep(subcodes, nrow(paramdata)), paramdata)
           colnames(paramdata) <- c("Var2", "value")
         }
+      } else {
+        paramdata <- paramdata[,2:3]
       }
 
       paramdata$doseparam <- rep(params[i], nrow(paramdata))
