@@ -179,7 +179,7 @@ write.check <- function(fun=dloglin(),
 
 
     if (!all(names(class.effect) %in% fun$params)) {
-      stop("`class.effect` must be a list with element names corresponding to beta parameters")
+      stop("`class.effect` must be a list with element names corresponding to dose-response parameters")
     }
     if (!all(fun$apool[which(fun$params %in% names(class.effect))] == "rel")) {
       stop("Class effects can only be specified for dose-response parameters in 'fun' that have been modelled using relative effects ('rel')")
@@ -371,7 +371,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log"), add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log", "smd"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (likelihood=="binomial") {
@@ -391,12 +391,32 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
   glm <- c("psi[i,k] <- theta[i,k]",
            "theta[i,k] <- mu[i] + delta[i,k]")
-  if (link!="identity") {
+  if (!link %in% c("identity", "smd")) {
     glm <- gsub("(psi\\[i,k\\])(.+)", paste0(link, "(\\1)\\2"), glm)
   }
 
+  if (link=="smd") {
+    if (likelihood!="normal") {
+      stop("link='smd' can only be used with likelihood='normal'")
+    }
+    glm[1] <- paste0(glm[1], " * pool.sd[i]")
+
+    # Add SMD components
+    smd.sub <- c(
+      "sd[i,k] <- se[i,k] * pow(N[i,k],0.5)",
+      "nvar[i,k] <- (N[i,k]-1) * pow(sd[i,k],2)"
+    )
+    model <- model.insert(model, pos=which(names(model)=="arm"), x=smd.sub)
+
+    pool.sd <- c(
+      "df[i] <- sum(N[i,1:narm[i]]) - narm[i]",
+      "pool.var[i] <- sum(nvar[i,1:narm[i]])/df[i]",
+      "pool.sd[i] <- pow(pool.var[i], 0.5)"
+    )
+    model <- model.insert(model, pos=which(names(model)=="study"), x=pool.sd)
+  }
+
   model <- model.insert(model, pos=which(names(model)=="arm"), x=c(like, glm))
-  # model <- gsub(inserts[["insert.arm"]], paste0("\\1", paste(like, glm, sep="\n"), "\\2"), model)
 
 
   # Add deviance contributions

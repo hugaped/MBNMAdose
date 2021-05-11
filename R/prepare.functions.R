@@ -24,7 +24,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' * `r` Numeric data indicating the number of responders within a study arm. Required for
 #' binomial or poisson data.
 #' * `N` Numeric data indicating the total number of participants within a study arm. Required for
-#' binomial data
+#' binomial data or when modelling Standardised Mean Differences
 #' * `E` Numeric data indicating the total exposure time for participants within a study arm. Required
 #' for poisson data.
 #' * `class` An optional column indicating a particular class code. Agents with the same identifier
@@ -564,6 +564,9 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   } else {
     stop("`likelihood` can be either `binomial`, `poisson`, or `normal`")
   }
+  if (link=="smd") {
+    datavars <- append(datavars, "N")
+  }
   varnames <- append(varnames, datavars)
 
   # Check required variables are in df
@@ -591,9 +594,15 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   NS <- max(as.numeric(df$studyID))
 
   # Generate list in which to store individual data variables
-  datalist <- list(get(datavars[1]), get(datavars[2]),
-                   narm=narm, NS=NS, studyID=vector())
-  names(datalist)[1:2] <- datavars
+  datalist <- list(narm=narm, NS=NS, studyID=vector())
+  for (i in seq_along(datavars)) {
+    datalist[[datavars[i]]] <- get(datavars[i])
+  }
+  print(datalist)
+
+  # datalist <- list(get(datavars[1]), get(datavars[2]),
+  #                  narm=narm, NS=NS, studyID=vector())
+  # names(datalist)[1:2] <- datavars
 
   if (level=="agent") {
     datalist[["Nagent"]] <- max(df$agent)
@@ -682,7 +691,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
                                                        df$arm==k])
       for (m in seq_along(datavars)) {
-        datalist[[m]][i,k] <- df[[datavars[m]]][as.numeric(df$studyID)==i &
+        datalist[[datavars[m]]][i,k] <- df[[datavars[m]]][as.numeric(df$studyID)==i &
                               df$arm==k]
       }
 

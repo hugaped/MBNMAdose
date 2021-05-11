@@ -36,8 +36,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @param likelihood A string indicating the likelihood to use in the model. Can take either `"binomial"`,
 #'   `"normal"` or `"poisson"`. If left as `NULL` the likelihood will be inferred from the data.
 #' @param link A string indicating the link function to use in the model. Can take any link function
-#'   defined within JAGS (e.g. `"logit"`, `"log"`, `"probit"`, `"cloglog"`) or be assigned the value `"identity"` for
-#'   and identity link function. If left as `NULL` the link function will be automatically assigned based
+#'   defined within JAGS (e.g. `"logit"`, `"log"`, `"probit"`, `"cloglog"`), be assigned the value `"identity"` for
+#'   an identity link function, or be assigned the value `"smd"` for modelling Standardised Mean Differences using an
+#'   identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters. This is
@@ -968,7 +969,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=TRUE, add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log"), null.ok=TRUE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log", "smd"), null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
@@ -1004,6 +1005,11 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
     stop("Poisson likelihood - columns `E` and `N` must be included in `data.ab`")
   } else if (likelihood=="normal" & !all(c("y", "se") %in% names(data.ab))) {
     stop("Normal likelihood - columns `y` and `se` must be included in `data.ab`")
+  }
+
+  # Check valid data available for SMD
+  if (link=="smd" & !all("N" %in% names(data.ab))) {
+    stop("Treatment effects modelled as Standardised Mean Differences (SMD)\n columns 'n' must be included in data.ab")
   }
 
   return(list("likelihood"=likelihood, "link"=link))

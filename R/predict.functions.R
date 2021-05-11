@@ -246,7 +246,7 @@ rescale.link <- function(x, direction="link", link="logit") {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(x, add=argcheck)
   checkmate::assertChoice(direction, choices=c("natural", "link"), null.ok = FALSE, add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "log", "probit", "cloglog"), null.ok = FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "log", "probit", "cloglog", "smd"), null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (direction=="link") {
