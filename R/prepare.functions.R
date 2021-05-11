@@ -1347,3 +1347,21 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
 
   }
 }
+
+
+
+
+
+
+mult2agent <- function(fun, param) {
+  ind <- which(fun$params %in% param)
+  listlen <- lengths(fun$paramlist)
+  count <- 0
+  k <- 0
+  while (count<ind) {
+    count <- count + listlen[k+1]
+    k <- k+1
+  }
+  subcodes <- which(fun$posvec==k)
+  return(subcodes)
+}
