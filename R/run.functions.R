@@ -374,6 +374,10 @@ mbnma.run <- function(network,
     plac.incl <- TRUE
   } else {
     plac.incl <- FALSE
+
+    if ("nonparam" %in% fun$name) {
+      stop("Non-parametric dose-response models must currently include placebo - due to be updated in subsequent versions")
+    }
   }
 
 
@@ -532,10 +536,7 @@ mbnma.run <- function(network,
   }
 
   if (!("error" %in% names(result))) {
-    # Remove dose-response parameters for agents if multi dr functions are used
-    # if (!is.list(result)) {
-    #
-    # }
+
     result <- cutjags(result)
 
     class(result) <- c("mbnma", class(result))
