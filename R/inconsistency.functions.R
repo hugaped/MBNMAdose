@@ -893,9 +893,11 @@ get.relative <- function(mbnma, treatments=list()) {
   trtnew <- treatments
 
   # Generate spline basis matrix if required
-  if (any(c("rcs", "bs", "ns", "ls") %in% mbnma$model.arg$fun$name)) {
+  splineopt <- c("rcs", "bs", "ns", "ls")
+  if (any(splineopt %in% mbnma$model.arg$fun$name)) {
     for (i in seq_along(trtnew)) {
       trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
+                               spline=splineopt[which(splineopt %in% mbnma$model.arg$fun$name)],
                                       max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
                                                                                 which(names(trtnew)[i] == network$agents)
                                                                                 ]))

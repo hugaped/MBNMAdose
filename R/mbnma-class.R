@@ -743,10 +743,12 @@ predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
   predict.result <- list()
 
   # Add spline basis matrix
-  if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
+  splineopt <- c("rcs", "bs", "ns", "ls")
+  if (any(splineopt %in% object$model.arg$fun$name)) {
     splinedoses <- doses
+    splinefun <- splineopt[which(splineopt %in% object$model.arg$fun$name)]
     for (i in seq_along(doses)) {
-      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots,
+      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots, spline=splinefun,
                                       max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
     }
   }
