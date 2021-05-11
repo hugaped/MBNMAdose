@@ -441,7 +441,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #'   Doses can only take positive values.
 #' @param E0 An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 #'   placebo) in the prediction. This can take a number of different formats depending
-#'   on how it will be used/calculated. The default is `0` but this will typically lead
+#'   on how it will be used/calculated. The default is `0.2` since a default of `0` will typically lead
 #'   to non-sensical predictions unless an identify link function has been used for the MBNMA model in `object`.
 #'   * `numeric()` A single numeric value representing the deterministic response at dose = 0,
 #'   given on the natural scale - so for binomial data, proportions should be given and
@@ -565,7 +565,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #'
 #' @export
 predict.mbnma <- function(object, n.doses=30, max.doses=NULL, exact.doses=NULL,
-                          E0=0, synth="fixed",
+                          E0=0.2, synth="fixed",
                           ...) {
   ######## CHECKS ########
 
