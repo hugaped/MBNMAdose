@@ -622,22 +622,31 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       knots <- fun$knots
 
       # Generate spline basis matrix
-      dosespline <- doses %>% dplyr::group_by(agent) %>%
-        dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
+      # Run for placebo separately to avoid matrix dimension problems
+      if (0 %in% doses$dose[doses$agent==1] & length(doses$dose[doses$agent==1])==1) {
+
+        dosespline <- doses[doses$agent!=1,] %>% dplyr::group_by(agent) %>%
+          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
+
+        matsize <- ncol(dosespline$spline)
+
+        pldose <- doses[doses$agent==1,] %>% dplyr::mutate(spline=matrix(rep(0,matsize), ncol=matsize))
+        dosespline <- rbind(dosespline, pldose)
+
+      } else {
+        dosespline <- doses %>% dplyr::group_by(agent) %>%
+          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
+
+        matsize <- ncol(dosespline$spline)
+      }
 
       df <- suppressMessages(dplyr::left_join(df, dosespline))
 
-      if (length(knots)>1) {
-        knotnum <- length(knots)
-      } else if (knots>=1) {
-        knotnum <- knots
-      } else {
-        knotnum <-1
-      }
+      matsize <- ncol(dosespline$spline)
 
       datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
                                           ncol(datalist[["dose"]]),
-                                          knotnum+1))
+                                          matsize))
     }
 
   } else if (level=="treatment") {
@@ -1259,7 +1268,6 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
       }
     }
   }
-
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
