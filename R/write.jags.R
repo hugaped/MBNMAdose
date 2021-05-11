@@ -603,7 +603,7 @@ write.beta <- function(model, fun=dloglin(), method="common",
 
             insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
-            model <- model.insert(model, pos=which(nahmes(model)=="end"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
           } else if (fun$apool[i] %in% "common") {
             insert <- paste0("s.beta.", i, "[k,c] <- ", pname)
