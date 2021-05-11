@@ -598,7 +598,6 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
   for (i in seq_along(datavars)) {
     datalist[[datavars[i]]] <- get(datavars[i])
   }
-  print(datalist)
 
   # datalist <- list(get(datavars[1]), get(datavars[2]),
   #                  narm=narm, NS=NS, studyID=vector())
@@ -1084,31 +1083,35 @@ cutjags <- function(jagsresult) {
       index <- which(posvec==univec[i])
 
       for (k in seq_along(apool[[i]])) {
-        tag <- gsub("\\.", "\\\\.", names(apool[[i]])[k])
+        if ("rel" %in% apool[[i]][k]) {
 
-        # Cut sims.array
-        dropi <- grep(paste0(tag, "\\["), dimnames(jagsresult$BUGSoutput$sims.array)[[3]])
-        dropi <- dropi[-index]
-        jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropi]
+          tag <- gsub("\\.", "\\\\.", names(apool[[i]])[k])
 
-        # Cut sims.list
-        jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]] <-
-          jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]][,index]
+          # Cut sims.array
+          dropi <- grep(paste0(tag, "\\["), dimnames(jagsresult$BUGSoutput$sims.array)[[3]])
+          dropi <- dropi[-index]
+          jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropi]
 
-        # Cut sims.matrix
-        dropi <- grep(paste0(tag, "\\["), colnames(jagsresult$BUGSoutput$sims.matrix))
-        dropi <- dropi[-index]
-        jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropi]
+          # Cut sims.list
+          jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]] <-
+            jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]][,index]
 
-        # Cut summary
-        dropi <- grep(paste0(tag, "\\["), rownames(jagsresult$BUGSoutput$summary))
-        dropi <- dropi[-index]
-        jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropi,]
+          # Cut sims.matrix
+          dropi <- grep(paste0(tag, "\\["), colnames(jagsresult$BUGSoutput$sims.matrix))
+          dropi <- dropi[-index]
+          jagsresult$BUGSoutput$sims.matrix <- jagsresult$BUGSoutput$sims.matrix[,-dropi]
 
-        # Cut mean, SD and median
-        jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]][index]
-        jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]][index]
-        jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]][index]
+          # Cut summary
+          dropi <- grep(paste0(tag, "\\["), rownames(jagsresult$BUGSoutput$summary))
+          dropi <- dropi[-index]
+          jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropi,]
+
+          # Cut mean, SD and median
+          jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]][index]
+          jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]][index]
+          jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]][index]
+
+        }
       }
     }
 
