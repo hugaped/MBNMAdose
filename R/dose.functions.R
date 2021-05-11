@@ -498,9 +498,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   }
 
   # Set parameters
-  for (i in seq_along(params)) {
-    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
-  }
+  jags <- gsub("(s\\.beta\\.[1-4])", "\\1[agent[i,k]]", jags)
 
   # Write function
   f1 <- function(dose, beta.1, beta.2) {
