@@ -1095,7 +1095,7 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 #' @inheritParams mbnma.run
 #' @inherit mbnma.run return references
 #' @param slope Refers to the slope parameter of the linear dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #'
 #' @inheritSection mbnma.run Dose-response parameter arguments
 #'
@@ -1164,7 +1164,7 @@ mbnma.linear <- function(network,
 #' @inheritParams mbnma.run
 #' @inherit mbnma.run return references
 #' @param lambda Refers to the rate of growth/decay of the exponential dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #'
 #' @inheritSection mbnma.run Dose-response parameter arguments
 #'
@@ -1234,9 +1234,9 @@ mbnma.exponential <- function(network,
 #' @inheritParams mbnma.run
 #' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #'
 #' @inheritSection mbnma.run Dose-response parameter arguments
 #'
@@ -1312,11 +1312,11 @@ mbnma.emax <- function(network,
 #' @inheritParams mbnma.run
 #' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #' @param ed50 Refers to the ED50 parameter of the Emax dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #' @param hill Refers to the Hill parameter of the Emax dose-response function.
-#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
 #'
 #' @inheritSection mbnma.run Dose-response parameter arguments
 #'
