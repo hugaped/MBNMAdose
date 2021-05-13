@@ -152,7 +152,8 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
                ...)[["jagsoutput"]]
   )
 
-  result <- list("m.mu"=jags.result$BUGSoutput$sims.list[["m.mu"]])
+  result <- list(jagsmod=jags.result,
+                 m.mu=jags.result$BUGSoutput$sims.list[["m.mu"]])
   if (synth=="random") {
     result[["sd.mu"]] <- jags.result$BUGSoutput$sims.list[["sd.mu"]]
   }
