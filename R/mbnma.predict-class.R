@@ -334,7 +334,7 @@ summary.mbnma.predict <- function(object, ...) {
   output <- data.frame()
   for (i in seq_along(predict)) {
     for (k in seq_along(predict[[i]])) {
-      quant <- stats::quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975))
+      quant <- stats::quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975), na.rm=TRUE)
       df <- data.frame("agent"=names(predict)[i],
                        "dose"=as.numeric(as.character(names(predict[[i]])[k])),
                        "mean"=mean(predict[[i]][[k]]),
