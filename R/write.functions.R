@@ -180,53 +180,6 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
 
 
-#' Write E0 synthesis JAGS model
-#'
-#' @inheritParams predict.mbnma
-#' @noRd
-write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
-  model <-
-"
-model{ 			# Begin Model Code
-
-for(i in 1:NS){ # Run through all NS trials
-
-for (k in 1:narm[i]){ # Run through all arms within a study
-
-}
-
-resstudydev[i] <- sum(resdev[i, 1:narm[i]])
-
-}
-
-totresdev <- sum(resstudydev[])
-
-m.mu ~ dnorm(0,0.0001)
-
-# Model ends
-}
-"
-
-  # Add likelihood
-  model <- write.likelihood(model, likelihood = likelihood, link=link)
-
-  if (synth=="fixed") {
-    mucode <- "mu[i] <- m.mu\n"
-
-    model <- gsub("(.+Run through all NS trials\n)(.+)", paste0("\\1", mucode, "\\2"), model)
-  } else if (synth=="random") {
-    mucode <- "mu[i] ~ dnorm(m.mu, tau.mu)\n"
-    musdcode <- "tau.mu <- pow(sd.mu, -2)\nsd.mu ~ dnorm(0,0.0025) T(0,)\n"
-
-    model <- gsub("(.+Run through all NS trials\n)(.+)", paste0("\\1", mucode, "\\2"), model)
-    model <- gsub("(.+\n)(# Model ends)", paste0("\\1", musdcode, "\\2"), model)
-  }
-
-  # Remove delta
-  model <- gsub("(.+<- mu\\[i\\])( \\+ delta\\[i,k\\])", "\\1", model)
-
-  return(model)
-}
 
 
 

@@ -869,3 +869,51 @@ write.nma <- function(method="common", likelihood="binomial", link="logit",
 
 return(model)
 }
+
+
+
+
+
+
+
+#' Write E0 synthesis JAGS model
+#'
+#' @inheritParams predict.mbnma
+#' @noRd
+write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
+  model <- c(
+    start="model{ 			# Begin Model Code",
+    study="for(i in 1:NS){ # Run through all NS trials",
+    arm="for (k in 1:narm[i]){ # Run through all arms within a study",
+    "}",
+    "",
+    "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
+    "}",
+    "totresdev <- sum(resstudydev[])",
+    end="m.mu ~ dnorm(0,0.0001)",
+    "# Model ends",
+    "}"
+  )
+
+
+  # Add likelihood
+  model <- write.likelihood(model, likelihood = likelihood, link=link)
+
+  if (synth=="fixed") {
+    mucode <- "mu[i] <- m.mu"
+    model <- model.insert(model, pos=which(names(model)=="study"), x=mucode)
+
+  } else if (synth=="random") {
+    mucode <- "mu[i] ~ dnorm(m.mu, tau.mu)"
+    musdcode <- c("tau.mu <- pow(sd.mu, -2)",
+                  "sd.mu ~ dnorm(0,0.0025) T(0,)")
+
+    model <- model.insert(model, pos=which(names(model)=="study"), x=mucode)
+    model <- model.insert(model, pos=which(names(model)=="end"), x=musdcode)
+  }
+
+  # Remove delta
+  model <- gsub("(.+<- mu\\[i\\])( \\+ delta\\[i,k\\])", "\\1", model)
+
+  return(model)
+}
