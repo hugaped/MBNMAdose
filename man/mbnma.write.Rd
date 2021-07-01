@@ -10,6 +10,7 @@ mbnma.write(
   cor = TRUE,
   cor.prior = "wishart",
   omega = NULL,
+  om = list(rel = 5, abs = 10),
   class.effect = list(),
   UME = FALSE,
   likelihood = "binomial",
@@ -37,6 +38,9 @@ be a symmetric positive definite matrix with dimensions equal to the number of d
 relative effects (\code{"rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
 is used.}
 
+\item{om}{a list with two elements that report the maximum relative (\code{"rel"}) and maximum absolute (\code{"abs"}) efficacies
+on the link scale.}
+
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
 (\code{"common"} or \code{"random"}). Element names should match dose-response parameter names.
@@ -51,8 +55,9 @@ assumption is valid.}
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
-and identity link function. If left as \code{NULL} the link function will be automatically assigned based
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}), be assigned the value \code{"identity"} for
+an identity link function, or be assigned the value \code{"smd"} for modelling Standardised Mean Differences using an
+identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }
 \value{

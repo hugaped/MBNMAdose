@@ -1370,8 +1370,28 @@ mult2agent <- function(fun, param) {
 
 
 
+#' Guesses the upper limit for absolute and relative effects on the link scale
+#'
+#' Used to identify an upper bound for SD priors
+#'
+#' @inheritParams getjagsdata
+#' @param buffer a scaling factor by which the the limits should be multiplied by - e.g. 1.2 (the default)
+#' indicates that 20% should be added to the limit values to ensure that the limits do not constrain the posterior
+#' distribution
+#'
+#' @return a list containing two numeric elements. `"rel"` contains the maximum limit on the relative scale, `"abs"` contains the
+#' maximum limit on the absolute scale.
+#'
+#' @noRd
+calcom <- function(data.ab, link, likelihood, buffer=1.2) {
 
-calcom <- function(data.ab, link, likelihood, buffer=0.2) {
+  # Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertDataFrame(data.ab, add=argcheck)
+  checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log", "smd"), null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(buffer, lower=0, upper=1, null.ok=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
   df <- data.ab
 
@@ -1395,8 +1415,8 @@ calcom <- function(data.ab, link, likelihood, buffer=0.2) {
   abs <- max(df$xlink)
 
   # Add 20% of value to ensure prior is not restrictive
-  rel <- rel + (rel*buffer)
-  abs <- abs + (abs*buffer)
+  rel <- rel*buffer
+  abs <- abs*buffer
 
   return(list(rel=round(rel, 3), abs=round(abs,3)))
 }

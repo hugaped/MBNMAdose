@@ -8,9 +8,8 @@ dose-response models}
 \method{predict}{mbnma}(
   object,
   n.doses = 30,
-  max.doses = NULL,
   exact.doses = NULL,
-  E0 = 0,
+  E0 = 0.2,
   synth = "fixed",
   ...
 )
@@ -22,23 +21,16 @@ a dose-response MBNMA model}
 \item{n.doses}{A number indicating the number of doses at which to make predictions
 within each agent. The default is \code{30}.}
 
-\item{max.doses}{A list of numbers. Each named element in the list corresponds to an
-agent (either named similarly to agent names given in the data, or named
-correspondingly to the codes for agents given in \code{mbnma})
-and each number for that element corresponds to the maximum dose of the given agent, below which several
-predictions will be calculated at different doses (the number of these is determined by \code{n.doses}).
-Can only take positive values. If left as \code{NULL} (the default) results will be predicted based on the
-maximum dose of each agent given in the data.}
-
 \item{exact.doses}{A list of numeric vectors. Each named element in the list corresponds to an
 agent (either named similarly to agent names given in the data, or named
 correspondingly to the codes for agents given in \code{mbnma}) and each number within the vector
 for that element corresponds to a dose of the agent for which to predict responses.
-Doses can only take positive values.}
+Doses can only take positive values. For models fitted using \code{dspline()} making predictions at only a very small
+number of doses for each agent may throw an error since it can make the spline difficult to identify.}
 
 \item{E0}{An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 placebo) in the prediction. This can take a number of different formats depending
-on how it will be used/calculated. The default is \code{0} but this will typically lead
+on how it will be used/calculated. The default is \code{0.2} since a default of \code{0} will typically lead
 to non-sensical predictions unless an identify link function has been used for the MBNMA model in \code{object}.
 \itemize{
 \item \code{numeric()} A single numeric value representing the deterministic response at dose = 0,
@@ -146,12 +138,6 @@ pred <- predict(emax, E0 = ref.df, synth="random")
 # Change the number of predictions for each agent
 pred <- predict(emax, E0 = 0.2, n.doses=20)
 pred <- predict(emax, E0 = 0.2, n.doses=3)
-
-# Change the range of predicted doses to be the same for all agents
-# But only predict responses for a subset of agents
-pred <- predict(emax, E0 = 0.2,
-            max.doses=list("Placebo"=0, "eletriptan"=5, "sumatriptan"=5))
-plot(pred) # Plot predictions
 
 # Specify several exact combinations of doses and agents to predict
 pred <- predict(emax, E0 = 0.2,

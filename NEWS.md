@@ -8,6 +8,7 @@
 - Added fractional polynomial function (`dfpoly()`)
 - Agent-specific dose-response functions work with all other functions (e.g. ranking, nodesplit, prediction)
 - Added `link="smd"` to allow for analysis using Standardised Mean Differences
+- Uses `calcom()` to guess outcome measure scale for more careful specification of default priors for SD
 
 
 # MBNMAdose 0.3.1

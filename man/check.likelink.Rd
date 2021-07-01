@@ -19,7 +19,7 @@ continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
 \item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
-binomial data
+binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
@@ -30,8 +30,9 @@ must also have the same class code.
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
-and identity link function. If left as \code{NULL} the link function will be automatically assigned based
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}), be assigned the value \code{"identity"} for
+an identity link function, or be assigned the value \code{"smd"} for modelling Standardised Mean Differences using an
+identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 }
 \description{

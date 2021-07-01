@@ -4,7 +4,7 @@
 \alias{print.class.str}
 \title{Neatly prints class results}
 \usage{
-\method{print}{class.str}(mbnma)
+\method{print}{class.str}(mbnma, digits = 4, ...)
 }
 \description{
 Neatly prints class results
