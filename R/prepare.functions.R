@@ -1365,3 +1365,38 @@ mult2agent <- function(fun, param) {
   subcodes <- which(fun$posvec==k)
   return(subcodes)
 }
+
+
+
+
+
+
+calcom <- function(data.ab, link, likelihood, buffer=0.2) {
+
+  df <- data.ab
+
+  if (likelihood=="binomial") {
+    df$x <- df$r / df$N
+    df$x[df$x==1 | df$x==0] <- (df$r[df$x==1 | df$x==0]+0.5) / (df$N[df$x==1 | df$x==0]+1)
+  } else if (likelihood=="normal") {
+    df$x <- df$y
+  } else if (likelihood=="poisson") {
+    df$x <- df$r / df$E
+    df$x[df$x==0] <- (df$r[df$x==0]+0.5) / df$E[df$x==0]
+  }
+
+  df$xlink <- rescale.link(df$x, direction="link", link=link)
+
+  if (link=="smd") {
+    df$xlink <- df$y / (df$se * (df$N^0.5))
+  }
+
+  rel <- max(df$xlink) - min(df$xlink)
+  abs <- max(df$xlink)
+
+  # Add 20% of value to ensure prior is not restrictive
+  rel <- rel + (rel*buffer)
+  abs <- abs + (abs*buffer)
+
+  return(list(rel=round(rel, 3), abs=round(abs,3)))
+}
