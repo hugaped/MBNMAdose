@@ -131,9 +131,13 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
   #to study model
   # Do all the mbnma.write bits but without the consistency bits
 
+  # Calculate outcome measure scale
+  om <- calcom(data.ab=data.ab, likelihood=likelihood, link=mbnma$model.arg$link)
+
   jagsmodel <- write.E0.synth(synth=synth,
                               likelihood=mbnma$model.arg$likelihood,
-                              link=mbnma$model.arg$link
+                              link=mbnma$model.arg$link,
+                              om=om
   )
 
   parameters.to.save <- c("m.mu", "resdev", "totresdev")

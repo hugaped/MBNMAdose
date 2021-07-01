@@ -409,6 +409,7 @@ mbnma.run <- function(network,
                          method=method,
                          class.effect=class.effect, UME=UME,
                          cor=cor, omega=omega,
+                         om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood),
                          likelihood=likelihood, link=link
     )
 
@@ -852,7 +853,8 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   link <- likelink[["link"]]
 
   #### Write model for NMA ####
-  model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME)
+  model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME,
+                     om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood))
 
   #### Add priors ####
   if (!is.null(priors)) {

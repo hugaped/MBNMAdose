@@ -18,6 +18,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @inheritParams mbnma.run
 #' @param cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
 #' between relative effects. Must be kept as `"wishart"`
+#' @param om a list with two elements that report the maximum relative (`"rel"`) and maximum absolute (`"abs"`) efficacies
+#' on the link scale.
 #'
 #' @return A single long character string containing the JAGS model generated
 #'   based on the arguments passed to the function.
@@ -67,7 +69,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 mbnma.write <- function(fun=dloglin(),
                         method="common",
                         cor=TRUE, cor.prior="wishart",
-                        omega=NULL,
+                        omega=NULL, om=list("rel"=5, "abs"=10),
                         class.effect=list(), UME=FALSE,
                         likelihood="binomial", link=NULL
 ) {
@@ -85,7 +87,7 @@ mbnma.write <- function(fun=dloglin(),
 
   write.check(fun=fun,
               method=method, cor.prior=cor.prior,
-              omega=omega,
+              omega=omega, om=om,
               class.effect=class.effect, UME=UME)
 
   model <- write.model(class.effect=class.effect, UME=UME)
@@ -103,10 +105,10 @@ mbnma.write <- function(fun=dloglin(),
   model <- write.likelihood(model, likelihood=likelihood, link=link)
 
   # Add treatment delta effects
-  model <- write.delta(model, method=method)
+  model <- write.delta(model, method=method, om=om)
 
   # Add treatment beta effects
-  model <- write.beta(model, fun=fun, method=method, class.effect=class.effect, UME=UME)
+  model <- write.beta(model, fun=fun, method=method, class.effect=class.effect, UME=UME, om=om)
 
   # Add correlation between dose-response parameters
   model <- write.cor(model, fun=fun, method=method, cor=cor, omega=omega,
@@ -139,7 +141,7 @@ write.check <- function(fun=dloglin(),
                         method="common",
                         UME=FALSE,
                         cor.prior="wishart",
-                        omega=NULL,
+                        omega=NULL, om=list("rel"=5, "abs"=10),
                         user.fun=NULL,
                         class.effect=list()) {
 
@@ -152,6 +154,7 @@ write.check <- function(fun=dloglin(),
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
   }
+  checkmate::assertList(om, len=2, null.ok=FALSE, add=argcheck)
   checkmate::assertMatrix(omega, null.ok = TRUE)
   checkmate::reportAssertions(argcheck)
 
@@ -456,7 +459,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 #' @return A character object of JAGS MBNMA model code that includes delta
 #'   parameter components of the model
 #'
-write.delta <- function(model, method="common") {
+write.delta <- function(model, method="common", om) {
 
   # Add to model
   # Add deltas and everything
@@ -474,7 +477,8 @@ write.delta <- function(model, method="common") {
       ))
       model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
       model <- model.insert(model, pos=which(names(model)=="end"), x=c(
-        "sd ~ dnorm(0,0.0025) T(0,)",
+        #"sd ~ dnorm(0,0.0025) T(0,)",
+        paste0("sd ~ dunif(0, ", om$rel, ")"),
         "tau <- pow(sd, -2)"
       ))
     } else {
@@ -499,7 +503,7 @@ write.delta <- function(model, method="common") {
 #' @return A character vector of JAGS MBNMA model code that includes beta
 #'   parameter components of the model
 #'
-write.beta <- function(model, fun=dloglin(), method="common",
+write.beta <- function(model, fun=dloglin(), method="common", om,
                        class.effect=list(), UME=FALSE
 ) {
 
@@ -551,7 +555,7 @@ write.beta <- function(model, fun=dloglin(), method="common",
             insert <- paste0(pname, "[k]  ~ dnorm(", toupper(pname), "[class[k]], tau.", toupper(pname), ")")
             model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
-            insert <- c(paste0("sd.", toupper(pname), " ~ dnorm(0,0.0025) T(0,)"),
+            insert <- c(paste0("sd.", toupper(pname), " ~ dunif(0,", om$rel, ")"),
                         paste0("tau.", toupper(pname), " <- pow(sd.", toupper(pname), ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
           }
@@ -583,7 +587,7 @@ write.beta <- function(model, fun=dloglin(), method="common",
             insert <- paste0("s.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
-            insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
+            insert <- c(paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -601,7 +605,7 @@ write.beta <- function(model, fun=dloglin(), method="common",
             insert <- paste0("s.beta.", i, "[k,c] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
 
-            insert <- c(paste0("sd.", pname, " ~ dnorm(0,0.0025) T(0,)"),
+            insert <- c(paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -650,11 +654,13 @@ write.beta <- function(model, fun=dloglin(), method="common",
 #'
 #' This uses a Wishart prior as default for modelling the correlation
 #'
+#' @param corprior Can be either `"wishart"` or `"spherical"` (for spherical decomposition)
+#'
 #' @inheritParams mbnma.run
 #' @inheritParams write.beta
 #' @inheritParams mbnma.write
 #' @noRd
-write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL,
+write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL, corprior="wishart",
                       method="random", class.effect=list(), UME=FALSE) {
 
   if (length(class.effect)>0 & cor==TRUE) {
@@ -672,7 +678,7 @@ write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL,
 
     if (mat.size>=2) {
       # Write covariance matrix in JAGS code
-      model <- write.cov.mat(model, sufparams=corparams, omega=omega, UME=UME)
+      model <- write.cov.mat(model, sufparams=corparams, omega=omega, UME=UME, corprior=corprior)
     }
   }
 
@@ -691,8 +697,9 @@ write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL,
 #'  matrix size).
 #' @inheritParams mbnma.write
 #' @inheritParams get.prior
+#' @inheritParams write.cor
 #' @noRd
-write.cov.mat <- function(model, sufparams,
+write.cov.mat <- function(model, sufparams, corprior="wishart",
                           omega=NULL, UME=FALSE) {
 
   if (UME==FALSE) {
@@ -718,13 +725,58 @@ write.cov.mat <- function(model, sufparams,
     model <- gsub("(mult\\[1\\:[0-9],k)(\\] ~)", "\\1,c\\2", model)
   }
 
-  jagswish <- c(paste0("for (r in 1:", mat.size, ") {"),
-                "d.prior[r] <- 0",
+  if (corprior=="wishart") {
+    # Wishart prior
+    jagswish <- c(paste0("for (p in 1:", mat.size, ") {"),
+                  "d.prior[p] <- 0",
+                  "}",
+                  "",
+                  paste0("inv.R ~ dwish(omega[,], ", length(sufparams), ")")
+    )
+    inv.R.prior <- jagswish
+
+  } else if (corprior=="spherical") {
+    # Spherical decomposition prior
+    sphere <- c(paste0("for (p in 1:", mat.size, ") {"),
+                "d.prior[p] <- 0",
+                "inv.R[p,p] <- 1000",
                 "}",
-                "",
-                paste0("inv.R ~ dwish(omega[,], ", length(sufparams), ")")
-  )
-  model <- model.insert(model, pos=which(names(model)=="end"), x=jagswish)
+                paste0("for (p in 1:", mat.size-1, ") {"),
+                paste0("for (q in (p+1):", mat.size, ") {"),
+                "inv.R[p,q] <- (rho[p,q] * 1000)",
+                "inv.R[q,p] <- inv.R[p,q]",
+                "rho[p,q] <- inprod(g[,p], g[,q])",
+                "g[q,p] <- 0",
+                "a[p,q] ~ dunif(0, 3.1415)",
+                "}",
+                "}"
+    )
+
+    g <- matrix(ncol=mat.size, nrow=mat.size)
+    g[1,1] <- "1"
+    for (i in 2:mat.size) {
+      g[i,i] <- paste(paste0("sin(a[", 1:(i-1), ",", i, "])"), collapse="*")
+      for (k in 1:(i-1)) {
+        g[k,i] <- paste0("cos(a[", k, ",", i, "])")
+
+        if (k>1) {
+          g[k,i] <- paste(g[k,i], paste0("sin(a[", 1:(k-1), ",", i, "])", collapse="*"), sep="*")
+        }
+      }
+    }
+    for (i in 1:mat.size) {
+      sphere <- append(sphere, paste0("g[", i, ",", i, "] <- ", g[i,i]))
+    }
+    for (i in 1:(mat.size-1)) {
+      for (k in (i+1):mat.size) {
+        sphere <- append(sphere, paste0("g[", i, ",", k, "] <- ", g[i,k]))
+      }
+    }
+
+    inv.R.prior <- sphere
+  }
+
+  model <- model.insert(model, pos=which(names(model)=="end"), x=inv.R.prior)
 
   return(model)
 }
@@ -789,7 +841,7 @@ remove.loops <- function(model) {
 #'
 #' @inheritParams nma.run
 #' @noRd
-write.nma <- function(method="common", likelihood="binomial", link="logit",
+write.nma <- function(method="common", likelihood="binomial", link="logit", om,
                       UME=FALSE) {
   model <- c(start="model{ 			# Begin Model Code",
              study="for(i in 1:NS){ # Run through all NS trials",
@@ -830,7 +882,7 @@ write.nma <- function(method="common", likelihood="binomial", link="logit",
     model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
 
     insert <- c("tau <- pow(sd,-2)",
-                "sd ~ dnorm(0,0.0025) T(0,)")
+                paste0("sd ~ dunif(0,", om$rel, ")"))
     model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
 
@@ -880,7 +932,7 @@ return(model)
 #'
 #' @inheritParams predict.mbnma
 #' @noRd
-write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
+write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
   model <- c(
     start="model{ 			# Begin Model Code",
     study="for(i in 1:NS){ # Run through all NS trials",
@@ -906,7 +958,7 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL) {
   } else if (synth=="random") {
     mucode <- "mu[i] ~ dnorm(m.mu, tau.mu)"
     musdcode <- c("tau.mu <- pow(sd.mu, -2)",
-                  "sd.mu ~ dnorm(0,0.0025) T(0,)")
+                  paste0("sd.mu ~ dunif(0,", om$abs, ")"))
 
     model <- model.insert(model, pos=which(names(model)=="study"), x=mucode)
     model <- model.insert(model, pos=which(names(model)=="end"), x=musdcode)
