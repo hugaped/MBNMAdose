@@ -406,8 +406,8 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
     # Add SMD components
     smd.sub <- c(
-      "sd[i,k] <- se[i,k] * pow(N[i,k],0.5)",
-      "nvar[i,k] <- (N[i,k]-1) * pow(sd[i,k],2)"
+      "sd.study[i,k] <- se[i,k] * pow(N[i,k],0.5)",
+      "nvar[i,k] <- (N[i,k]-1) * pow(sd.study[i,k],2)"
     )
     model <- model.insert(model, pos=which(names(model)=="arm"), x=smd.sub)
 
