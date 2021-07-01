@@ -1390,7 +1390,7 @@ calcom <- function(data.ab, link, likelihood, buffer=1.2) {
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log", "smd"), null.ok=FALSE, add=argcheck)
-  checkmate::assertNumeric(buffer, lower=0, upper=1, null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(buffer, lower=0, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   df <- data.ab
