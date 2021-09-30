@@ -138,8 +138,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #'
