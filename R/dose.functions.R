@@ -7,7 +7,9 @@
 #'
 #' Modelled assuming relative effects (`"rel"`)
 #'
-#' \eqn{rate\times{(1-exp(-x))}}
+#' \eqn{emax\times{(1-exp(-x))}}
+#'
+#' where emax is the maximum efficacy of an agent.
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -31,10 +33,10 @@
 #'
 #' @export
 dexp <- function() {
-  rate <- "rel"
+  emax <- "rel"
 
   # Define function
-  fun <- ~ rate * (1 - exp(-dose))
+  fun <- ~ emax * (1 - exp(-dose))
   jags <- "s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))"
 
   f <- function(dose, beta.1) {
@@ -43,10 +45,10 @@ dexp <- function() {
   }
 
   # Generate output values
-  paramnames <- "rate"
+  paramnames <- "emax"
   nparam <- 1
 
-  apool <- rate
+  apool <- emax
   names(apool) <- paramnames
   bname <- paste0("beta.", 1:nparam)
   names(bname) <- paramnames
