@@ -20,9 +20,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'   to monitor in JAGS
 #' @param fun An object of `class("dosefun")` that specifies a functional form to be assigned to the
 #'   dose-response. See Details.
-#' @param model.file A JAGS model written as a character object that can be used
-#'   to overwrite the JAGS model that is automatically written based on the
-#'   specified options.#'
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
 #'   should be modelled with between-study heterogeneity or not (see details).
 #' @param class.effect A list of named strings that determines which dose-response
@@ -80,6 +77,15 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @param n.update The maximum number of updates. Each update is run for 1000 iterations, after which the
 #' Rhat values of all parameters are checked against `Rhat`. Default maximum updates
 #' is `10` (i.e. 10,000 additional iterations in total).
+#'
+#' @param model.file The file path to a JAGS model (.jags file) that can be used
+#'   to overwrite the JAGS model that is automatically written based on the
+#'   specified options in `MBNMAdose`. Useful for adding further model flexibility.
+#' @param jagsdata A named list of the data objects to be used in the JAGS model. Only
+#'   required if users are defining their own JAGS model using `model.file`. Format
+#'   should match that of standard models fitted in `MBNMAdose`
+#'   (see `mbnma$model.arg$jagsdata`)
+#'
 #' @param ... Arguments to be sent to R2jags.
 #'
 #' @param user.fun **Deprecated from version 0.4.0 onwards.** A formula specifying any relationship including `dose` and
@@ -311,12 +317,12 @@ mbnma.run <- function(network,
                       pd="pd.kl",
                       likelihood=NULL, link=NULL,
                       priors=NULL,
-                      model.file=NULL,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       autojags=FALSE, Rhat=1.05, n.update=10,
                       beta.1="rel",
                       beta.2="rel", beta.3="rel", beta.4="rel", user.fun=NULL,
+                      model.file=NULL, jagsdata=NULL,
                       arg.params=NULL, ...
 ) {
 
@@ -457,7 +463,7 @@ mbnma.run <- function(network,
 
   } else {
     warning("All parameter specifications (dose-response parameters, class effects, priors, etc.) are being overwritten by `model.file`")
-    model <- model.file
+    model <- readLines(model.file)
   }
 
   # Generate default parameters to monitor
@@ -496,6 +502,7 @@ mbnma.run <- function(network,
                             class=class, omega=omega,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link, fun=fun,
+                            jagsdata=jagsdata,
                             n.iter=n.iter,
                             n.thin=n.thin,
                             n.chains=n.chains,
@@ -554,7 +561,7 @@ mbnma.run <- function(network,
 mbnma.jags <- function(data.ab, model,
                        class=FALSE, omega=NULL,
                        likelihood=NULL, link=NULL, fun=NULL,
-                       nodesplit=NULL,
+                       nodesplit=NULL, jagsdata=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
                        autojags=FALSE, Rhat=1.1, n.update=10,
                        ...) {
@@ -570,41 +577,44 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertLogical(autojags, null.ok=FALSE, add=argcheck)
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
   checkmate::assertNumeric(n.update, lower=1, add=argcheck)
+  checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
 
   # For MBNMAdose
-  jagsdata <- getjagsdata(data.ab, class=class,
-                          likelihood=likelihood, link=link, fun=fun,
-                          nodesplit=nodesplit)
+  if (is.null(jagsdata)) {
+    jagsdata <- getjagsdata(data.ab, class=class,
+                            likelihood=likelihood, link=link, fun=fun,
+                            nodesplit=nodesplit)
 
-  if (!is.null(omega)) {
-    jagsdata[["omega"]] <- omega
-  }
-
-  # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
-  if ("nonparam" %in% fun$name) {
-
-    # Generate monotonically increasing/decreasing initial values
-    # Check for user-defined initial values
-    if (!("inits" %in% names(args))) {
-      # if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
-      #   fun="nonparam.up"
-      # } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
-      #   fun=="nonparam.down"
-      # }
-
-      args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
+    if (!is.null(omega)) {
+      jagsdata[["omega"]] <- omega
     }
-  }
 
-  # Add parameter to monitor for direct evidence in node-splitting
-  if (!is.null(nodesplit)) {
-    model <- add.nodesplit(model=model)
+    # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
+    if ("nonparam" %in% fun$name) {
 
-    if ("parameters.to.save" %in% names(args)) {
-      args[["parameters.to.save"]] <- append(args[["parameters.to.save"]], "direct")
+      # Generate monotonically increasing/decreasing initial values
+      # Check for user-defined initial values
+      if (!("inits" %in% names(args))) {
+        # if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
+        #   fun="nonparam.up"
+        # } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
+        #   fun=="nonparam.down"
+        # }
+
+        args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
+      }
+    }
+
+    # Add parameter to monitor for direct evidence in node-splitting
+    if (!is.null(nodesplit)) {
+      model <- add.nodesplit(model=model)
+
+      if ("parameters.to.save" %in% names(args)) {
+        args[["parameters.to.save"]] <- append(args[["parameters.to.save"]], "direct")
+      }
     }
   }
 
@@ -1129,6 +1139,9 @@ mbnma.linear <- function(network,
                          arg.params=NULL, ...)
 {
 
+  # Add warning that this will be depracated in future versions
+  warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
+
   # Assign corresponding run and wrapper parameters
   arg.params <- list(
     wrap.params=c("slope"),
@@ -1197,6 +1210,9 @@ mbnma.exponential <- function(network,
                          priors=NULL,
                          arg.params=NULL, ...)
 {
+
+  # Add warning that this will be depracated in future versions
+  warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
   arg.params <- list(
@@ -1274,6 +1290,9 @@ mbnma.emax <- function(network,
                          priors=NULL,
                          arg.params=NULL, ...)
 {
+
+  # Add warning that this will be depracated in future versions
+  warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
   arg.params <- list(
@@ -1363,6 +1382,9 @@ mbnma.emax.hill <- function(network,
                        priors=NULL,
                        arg.params=NULL, ...)
 {
+
+  # Add warning that this will be depracated in future versions
+  warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
   arg.params <- list(
