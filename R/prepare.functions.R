@@ -39,6 +39,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' * `description` A short description of the network
 #' * `data.ab` A data frame containing the arm-level network data (treatment identifiers will have
 #' been recoded to a sequential numeric code)
+#' * `studyID` A character vector with the IDs of included studies
 #' * `agents` A character vector indicating the agent identifiers that correspond to the
 #' new agent codes.
 #' * `treatments` A character vector indicating the treatment identifiers that correspond
@@ -348,7 +349,10 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
   olddat <- data.ab[,!(names(data.ab) %in% c("studyID", ord))]
   newdat <- cbind(newdat, olddat)
 
-  output <- list("data.ab"=newdat)
+  newdat <- dplyr::arrange(newdat, dplyr::desc(newdat$narm), newdat$studyID, newdat$arm)
+
+  output <- list("data.ab"=newdat,
+                 "studyID"=as.character(unique(newdat$studyID)))
 
   if ("agent" %in% names(data.ab)) {
     output[["agents"]] <- agents
