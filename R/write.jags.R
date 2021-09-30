@@ -801,7 +801,7 @@ add.nodesplit <- function(model) {
     model <- model.insert(model, pos=match, x="md[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k])")
 
     # Else if method=="random
-  } else if (grepl("delta\\[i\\,k\\] ~", model)) {
+  } else if (any(grepl("delta\\[i\\,k\\] ~", model))) {
 
     match <- grep("^md\\[i\\,k\\] <- DR", model)
     model[match] <- "md[i,k] <- ifelse(split.ind[i,k]==1, direct, DR[i,k] + sw[i,k])"
