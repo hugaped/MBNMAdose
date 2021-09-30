@@ -403,9 +403,9 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'   assigned a numeric value (see details).
 #' @param beta.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
-#' @param power.1 Pooling for the 1st fractional polynomial power. Can take `"common"`, `"random"` or be
+#' @param power.1 Pooling for the 1st fractional polynomial power (\eqn{\gamma_1}). Can take `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
-#' @param power.2 Pooling for the 2nd fractional polynomial power. Can take `"common"`, `"random"` or be
+#' @param power.2 Pooling for the 2nd fractional polynomial power (\eqn{\gamma_2}). Can take `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
 #'
 #' @return An object of `class("dosefun")`
@@ -413,17 +413,17 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' @details
 #' * \eqn{\beta_1} represents the 1st coefficient.
 #' * \eqn{\beta_2} represents the 2nd coefficient.
-#' * \eqn{p_1} represents the 1st power
-#' * \eqn{p_2} represents the 2nd power
+#' * \eqn{\gamma_1} represents the 1st fractional polynomial power
+#' * \eqn{\gamma_2} represents the 2nd fractional polynomial power
 #'
 #' For a polynomial of `degree=1`:
-#' \deqn{{\beta_1}x^{p_1}}
+#' \deqn{{\beta_1}x^{\gamma_1}}
 #'
 #' For a polynomial of `degree=2`:
-#' \deqn{{\beta_1}x^{p_1}+{\beta_2}x^{p_2}}
+#' \deqn{{\beta_1}x^{\gamma_1}+{\beta_2}x^{\gamma_2}}
 #'
-#' \eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
-#' If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
+#' \eqn{x^{\gamma}} is a regular power except where \eqn{\gamma=0}, where \eqn{x^{(0)}=ln(x)}.
+#' If a fractional polynomial power \eqn{\gamma} repeats within the function it is multiplied by another \eqn{ln(x)}.
 #'
 #'
 #' @section Dose-response parameters:
