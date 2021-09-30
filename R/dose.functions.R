@@ -20,8 +20,8 @@
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #'
@@ -86,8 +86,8 @@ dexp <- function() {
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #'
@@ -167,8 +167,8 @@ dloglin <- function() {
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #' When relative effects are modelled on more than one dose-response parameter,
@@ -306,8 +306,8 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #' When relative effects are modelled on more than one dose-response parameter,
@@ -431,8 +431,8 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #' When relative effects are modelled on more than one dose-response parameter,
@@ -626,8 +626,8 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #' When relative effects are modelled on more than one dose-response parameter,
@@ -798,8 +798,8 @@ dnonparam <- function(direction="increasing") {
 #' | \strong{Argument} | \strong{Model specification} |
 #' | ----------------- | ---------------------------- |
 #' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
-#' | `"common"` | Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, **independently of agent**. |
-#' | `"random"` | Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is **independent of agent**. This approach allows for modelling of between-study heterogeneity of absolute effects. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
 #' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
 #'
 #' When relative effects are modelled on more than one dose-response parameter,
