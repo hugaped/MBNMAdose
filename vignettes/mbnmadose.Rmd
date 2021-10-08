@@ -312,6 +312,11 @@ summary(emax)
 In this example `ed50` only has a single parameter, which corresponds to the dose at which 50% of the maximum efficacy is achieved, assumed to be equal across all agents in the network.
 
 
+#### Parameter interpretation
+
+## ADD INFO ON THIS HERE
+
+
 ### Additional arguments for `mbnma.run()`
 
 Several additional arguments can be given to `mbnma.run()` that require further explanation.
@@ -320,7 +325,7 @@ Several additional arguments can be given to `mbnma.run()` that require further 
 
 Similar effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
 
-In particular, the scales for different dose-response parameters must be the same for this assumption to be valid. For example, in an Emax model it may be reasonable to assume a class effect on the Emax parameter, as this is parameterised on the response scale and so could be similar across agents of the same class. However, the scale for the ED50 parameter is on the dose scale, which is likely to differ for each agent and so an assumption of similarity between agents for this parameter may be less valid.
+One difficult of this modelling aspect in particular is that the scales for dose-response parameters must be the same across different agents within a class for this assumption to be valid. For example, in an Emax model it may be reasonable to assume a class effect on the Emax parameter, as this is parameterised on the response scale and so could be similar across agents of the same class. However, the ED50 parameter is parameterised on the dose scale, which is likely to differ for each agent and so an assumption of similarity between agents for this parameter may be less valid.
 
 Class effects can only be applied to dose-response parameters which vary by agent. In `mbnma.run()` they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for `mbnma.run()`. The class effect for each dose-response parameter can be either `"common"`, in which the effects for each agent within the same class are constrained to a common class effect, or `"random"`, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.
 
@@ -337,51 +342,36 @@ pain.df$class <- pain.df$class
 pain.df$class[pain.df$agent %in% c("Naproxcinod", "Naproxen")] <- 
   "NSAID"
 
-# Run a restricted cubic spline MBNMA with a common class effect on beta.1
+# Run a restricted cubic spline MBNMA with a random class effect on beta.1
 classnet <- mbnma.network(pain.df)
-splines <- mbnma.run(classnet, fun="rcs", class.effect = list(beta.1="common"))
+splines <- mbnma.run(classnet, fun=dspline(type="bs", knots=2), class.effect = list(beta.1="random"))
 ```
 
 Mean class effects are given in the output as `D.ed50`/`D.1` parameters. These can be interpreted as the effect of each class for Emax parameters (`beta.1`). Note the number of `D.ed50` parameters is therefore equal to the number of classes defined in the dataset.
 
 If we had specified that the class effects were `"random"`, each treatment effect for Emax (`beta.1`) would be assumed to be randomly distributed around its class mean with SD given in the output as `sd.D.ed50`/`sd.D.1`.
 
-
-#### Correlation between dose-response parameters
-
-`mbnma.run()` automatically models correlation between relative effects dose-response parameters (unless `cor=FALSE`). The correlation is modelled using a vague Wishart prior, but this can be made more informative by indicating the relative magnitude of scales of the parameters that are modelled using relative effects. 
-
-`var.scale` can be used for this - it takes a numeric vector the same length as the number of relative effect dose-response parameters, and the relative magnitude of the numbers indicates the relative magnitude of the scales. Each element of `var.scale` corresponds to the relevant dose-response parameter (i.e. `var.scale[1]` will correspond to `beta.1`)
-
-For example, with the triptans dataset we might expect that values for Emax might be 4 times larger for ED50 (on the log scale):
-
-```{r, eval=FALSE}
-# Define relative magnitudes of Emax and ED50
-rel.size <- c(4,1)
-
-mbnma.emax(tripnet, emax="rel", ed50="rel", method="random", 
-           var.scale=rel.size)
-```
+Mean class effects are represented in the output by the upper case name of the dose-response parameter they correspond to. In this case, `BETA.1` is the class effects on `beta.1`, the first spline coefficient. The SD of the class effect is the SD of agents within a class for the dose-response parameter they correspond to. In this case `sd.BETA.1` is the within-class SD for `beta.1`.
 
 
 #### User-defined dose-response function
 
-Users can define their own dose-response function rather than using one of the functions provided in `mbnma.run()`. By specifying `fun = "user"` in the arguments, a function can then be provided to `user.fun`, which specifies a new dose-response in terms of `beta` parameters and `dose`. This allows a huge degree of flexibility when defining the dose-response relationship.
+Users can define their own dose-response function using `duser()` rather than using one of the functions provided in `MBNMAdose`. The dose-response is specified in terms of `beta` parameters and `dose`. This allows a huge degree of flexibility when defining the dose-response relationship.
 
-The function assigned to `user.fun` needs to fulfil a few criteria to be valid:
+The function assigned needs to fulfil a few criteria to be valid:
 * `dose` must always be included in the function
-* At least one `beta` time-course parameter must be specified, up to a maximum of four. These must always be named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and must be included sequentially (i.e. don't include `beta.3` if `beta.2` is not included)
-* Indices used by JAGS should *not* be added to `user.fun` (e.g. use `dose` rather than `dose[i,k]`)
+* At least one `beta` dose-response parameter must be specified, up to a maximum of four. These must always be named `beta.1`, `beta.2`, `beta.3` and `beta.4`, and must be included sequentially (i.e. don't include `beta.3` if `beta.2` is not included)
+* Indices used by JAGS should *not* be added (e.g. use `dose` rather than `dose[i,k]`)
 * Any mathematical/logical operators that can be implemented in JAGS can be added to the function (e.g. `exp()`, `ifelse()`)
 
 ```{r, eval=FALSE}
+# Using the depression SSRI dataset
 depnet <- mbnma.network(ssri)
 
 # An example specifying a quadratic dose-response function
-quad <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
+quadfun <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-mbnma.run(depnet, fun="user", user.fun=quad,
-          beta.1 = "rel", beta.2 = "rel")
+quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))
 ```
 
 
@@ -422,6 +412,11 @@ knots <- c(0.25,0.5,0.75)
 depnet <- mbnma.network(ssri)
 mbnma.run(depnet, fun="rcs", knots=knots)
 ```
+
+
+#### Correlation between dose-response parameters
+
+`mbnma.run()` automatically models correlation between relative effects dose-response parameters. This can be prevented by specifying `cor=FALSE` in `mbnma.run()`. The correlation is modelled using a vague Wishart prior, but this can be made more informative by specifying a scale matrix for the prior. This corresponds to the expectation of the Wishart prior. A different scale matrix can be given to the model in `omega`. Each row of the scale matrix corresponds to the 1st, 2nd, 3rd, etc. dose-response parameter that has been modelled using relative effects (as specified in the dose-response function).
 
 
 #### Priors
