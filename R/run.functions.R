@@ -588,7 +588,7 @@ mbnma.jags <- function(data.ab, model,
                             likelihood=likelihood, link=link, fun=fun,
                             nodesplit=nodesplit)
 
-    if (!is.null(omega)) {
+    if (!is.null(omega) & class==FALSE) {
       jagsdata[["omega"]] <- omega
     }
 

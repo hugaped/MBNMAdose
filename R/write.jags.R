@@ -175,9 +175,9 @@ write.check <- function(fun=dloglin(),
       stop("Class effects can only be modelled when using a single dose-response function")
     }
 
-    if (any(c("rcs", "ns", "bs") %in% fun$name)) {
-      warning("Class effects applied to spline function parameters may produce\nnon-interpretable results since knot locations will differ between agents")
-    }
+    # if (any(c("rcs", "ns", "bs") %in% fun$name)) {
+    #   warning("Class effects applied to spline function parameters may produce\nnon-interpretable results since knot locations will differ between agents")
+    # }
 
 
     if (!all(names(class.effect) %in% fun$params)) {
@@ -194,22 +194,22 @@ write.check <- function(fun=dloglin(),
 
   if (!is.null(omega)) {
     if (length(class.effect)>0) {
-      warning("Class effects cannot be modelled with correlation between time-course relative effects - 'omega' will be ignored")
-    }
-
-    err <- FALSE
-    nrel <- sum(fun$apool %in% "rel")
-    if (!all(dim(omega)==nrel)) {
-      err <- TRUE
-    }
-    if (!isSymmetric(omega)) {
-      err <- TRUE
-    }
-    if (any(eigen(omega)$values <= 0)) {
-      err <- TRUE
-    }
-    if (err==TRUE) {
-      stop("omega must be a symmetric positive definite matrix with dimensions equal to the number of\ndose-course parameters modelled using relative effects ('rel')")
+      #warning("Class effects cannot be modelled with correlation between time-course relative effects - 'omega' will be ignored")
+    } else {
+      err <- FALSE
+      nrel <- sum(fun$apool %in% "rel")
+      if (!all(dim(omega)==nrel)) {
+        err <- TRUE
+      }
+      if (!isSymmetric(omega)) {
+        err <- TRUE
+      }
+      if (any(eigen(omega)$values <= 0)) {
+        err <- TRUE
+      }
+      if (err==TRUE) {
+        stop("omega must be a symmetric positive definite matrix with dimensions equal to the number of\ndose-course parameters modelled using relative effects ('rel')")
+      }
     }
   }
 
