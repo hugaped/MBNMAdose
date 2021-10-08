@@ -828,7 +828,7 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
   checkmate::reportAssertions(argcheck)
 
   params <- list(beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
-  for (i in 1:degree) {
+  for (i in 1:4) {
     err <- TRUE
     if (length(params[[i]])==1) {
       if (any(c("rel", "common", "random") %in% params[[i]])) {
@@ -853,7 +853,7 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
     stop("'fun' must be a function of beta parameters and dose")
   }
   jags <- gsub("dose", "dose[i,k]", user.str)
-  jags <- gsub("s.beta", "beta", jags)
+  jags <- gsub("beta", "s.beta", jags)
 
 
   # Get number of parameters
