@@ -176,8 +176,7 @@ write.check <- function(fun=dloglin(),
     }
 
     if (any(c("rcs", "ns", "bs") %in% fun$name)) {
-      warning("Class effects applied to spline function parameters may produce\n#
-              non-interpretable results since knot locations will differ between agents")
+      warning("Class effects applied to spline function parameters may produce\nnon-interpretable results since knot locations will differ between agents")
     }
 
 
