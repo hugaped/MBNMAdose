@@ -831,13 +831,15 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' Treatment is defined as a combination of agent and dose. Only agents specified in
 #' `mbnma` can be included. Each element in `treatments` is named corresponding to the
 #' agent and contains a numeric vector of doses. Relative effects will be calculated between
-#' all treatments specified in `treatments`.
+#' all treatments specified in `treatments`. If `treatments` is left empty then the maximum
+#' dose for all agents in `mbnma` will be used as the default.
 #'
 #'
 #' @return An array of `length(treatments) x length(treatments) x nsims`, where `nsims`
 #' is the number of iterations monitored in `mbnma`. The array contains the individual
-#' MCMC values for each relative effect calculated between all `treatments`. The
-#' direction of effect is for the row-defined treatment versus the column-defined
+#' MCMC values for each relative effect calculated between all `treatments` on the link scale
+#' specified in the `mbnma` model. The direction of effect is for the row-defined treatment
+#' versus the column-defined
 #' treatment.
 #'
 #'
@@ -854,10 +856,19 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' @export
 get.relative <- function(mbnma, treatments=list()) {
 
-  # Check that treatments list is what it should be
-  # if (length(mbnma$model.arg$fun)>1) {
-  #   stop("length(mbnma$model.arg$fun)>1: get.relative cannot be used\non MBNMA models with multiple dose-response functions")
-  # }
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertList(treatments, null.ok=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # If treatments is not specified use the max dose of each agent in the dataset
+  if (length(treatments)==0) {
+    jagsdat <- mbnma$model.arg$jagsdata
+    for (i in seq_along(mbnma$network$agents)) {
+      treatments[[mbnma$network$agents[i]]] <- max(jagsdat$dose[jagsdat$agent==i], na.rm=TRUE)
+    }
+  }
 
   if (length(treatments)<2) {
     if (length(treatments[[1]])<2) {
@@ -899,7 +910,7 @@ get.relative <- function(mbnma, treatments=list()) {
       trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
                                spline=splineopt[which(splineopt %in% mbnma$model.arg$fun$name)],
                                       max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
-                                                                                which(names(trtnew)[i] == network$agents)
+                                                                                which(names(trtnew)[i] == mbnma$network$agents)
                                                                                 ]))
     }
   }
@@ -1001,6 +1012,9 @@ get.relative <- function(mbnma, treatments=list()) {
       if (length(rel)<=1) {stop("length(rel)<=1")}
 
       rel[i,k,] <- chunk
+      rel[k,i,] <- -chunk
+      rel[i,i,] <- 0
+      rel[k,k,] <- 0
 
     }
   }
@@ -1020,7 +1034,44 @@ get.relative <- function(mbnma, treatments=list()) {
   rownames(rel) <- trtnames
   colnames(rel) <- trtnames
 
-  return(rel)
+  outmat <- rel
+
+
+  ######### Summary matrixes ######
+
+  xmat <- outmat
+
+  meanmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
+  semat <- meanmat
+  medmat <- meanmat
+  l95mat <- medmat
+  u95mat <- medmat
+
+  for (i in 1:nrow(xmat)) {
+    for (k in 1:ncol(xmat)) {
+      if (!is.na(xmat[i,k,1])) {
+        meanmat[i,k] <- mean(xmat[i,k,])
+        semat[i,k] <- stats::sd(xmat[i,k,])
+        medmat[i,k] <- stats::median(xmat[i,k,])
+        l95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.025)
+        u95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.975)
+      }
+    }
+  }
+
+  sumlist <- list("mean"=meanmat, "se"=semat, "median"=medmat, "lower95"=l95mat, "upper95"=u95mat)
+
+  for (i in seq_along(sumlist)) {
+    dimnames(sumlist[[i]])[[1]] <- dimnames(xmat)[[1]]
+    dimnames(sumlist[[i]])[[2]] <- dimnames(xmat)[[2]]
+  }
+
+  out <- list("relarray"=outmat)
+  out <- c(out, sumlist)
+
+  class(out) <- "relative.array"
+
+  return(out)
 }
 
 
