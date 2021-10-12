@@ -314,7 +314,23 @@ In this example `ed50` only has a single parameter, which corresponds to the dos
 
 #### Parameter interpretation
 
-## ADD INFO ON THIS HERE
+Parameter interpretation depends both on the link scale on which the outcome is modeled, and on the dose-response function used in the model. 
+
+For example for a binomial outcome modeled using a logit link function and an Emax dose-response function, the `emax` parameter represents the maximum efficacy on the logit scale - it is modeled on the outcome scale and hence is dependent on the link function. As indicated in the help file (`?demax()`), the `ed50` parameter is modeled on the log-scale to ensure that it takes positive values on the natural scale, but is not modeled on the outcome scale so is not dependent on the link function. Therefore it can be interpreted as the log-dose at which 50% of the maximum efficacy is achieved. The `hill` parameter is also modeled on the log-scale, and it can be interpreted as a log-value that controls the sigmoidicity of the dose-response function for the outcome on the logit scale.
+
+For a continuous outcome modeled using `link="smd"`, whilst not a true link function it implies modelling Standardised Mean Differences (SMD). For a linear dose-response function (`dpoly(degree=1)`), `beta.1` represents the change in SMD for each additional unit of dose. For a quadratic dose-response function (`dpoly(degree=2)`), `beta.2` represents the change in `beta.1` for each additional unit of dose.
+
+With some dose-response functions (e.g. splines, fractional polynomials) parameter interpretation can be challenging. The `get.relative()` function can make this easier as this allows relative effects to be estimated between agents at specific doses, which is typically much more easily understandable and presentable.
+
+```{r}
+# Specify treatments (agents and doses) for which to estimate relative effects
+treats <- list("Placebo"=0,
+               "eletriptan"= 1,
+               "sumatriptan"=2,
+               "almotriptan"=1)
+
+get.relative(mbnma, treatments = treats)
+```
 
 
 ### Additional arguments for `mbnma.run()`
@@ -371,7 +387,7 @@ depnet <- mbnma.network(ssri)
 # An example specifying a quadratic dose-response function
 quadfun <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))
+quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))|
 ```
 
 
@@ -379,38 +395,43 @@ quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel")
 
 Different dose-response functions can be used for different agents within the network. This allows for the modelling of more complex dose-response functions in agents for which there are many doses available, and less complex functions in agents for which there are fewer doses available. Note that these models are typically less computationally stable than single dose-response function models, and they are likely to benefit less from modelling correlation between multiple dose-response parameters since there are fewer agents informing correlations between each dose-response parameter.
 
-This can be modelled in `mbnma.run()` by assigning a character vector of dose-response functions to the `fun` argument, with each element in the vector corresponding to an agent in the network. When using multiple dose-response functions, the length of `fun` must therefore be equal to the number of agents in the network. The choice of dose-response function used for Placebo is irrelevant, since evaluating the function at dose=0 will always equal 0.
-
-Different dose-response parameters across the different functions are numbered in increasing order following the functions `"user"`, `"linear"`, `"exponential"`, `"emax"`, `"emax.hill"`, `"rcs"`. For example, as the following model uses exponential and Emax functions, `beta.1` corresponds to the rate parameter of the exponential function, `beta.2` to the Emax parameter of the Emax function, and `beta.3` to the ED50 parameter of the Emax function.
+This can be modeled using the `dmulti()` dose-response function and assigning a list of objects of class `"dosefun"` to it. Each element in the list corresponds to an agent in the network (the order of which should be the same as the order of agents in the `"mbnma.network"` object). A dose-response function for Placebo should be included in the list, though which function is used is typically irrelevant since evaluating the function at dose=0 will typically equal 0.
 
 ```{r, eval=FALSE}
-# Placebo can be modeled using any function (since it will evaluate to 0)
-# Adalimubab and Guselkumab: exponential function (limited dose-response info)
-# All others: restricted cubic spline with 3 knots
-dr.funs <- rep(NA, length(psorinet$agents))
-dr.funs[which(psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
-  "exponential"
-dr.funs[which(!psorinet$agents %in% c("Placebo", "Adalimumab", "Guselkumab"))] <- 
-  "rcs"
+# Using the depression SSRI dataset
+depnet <- mbnma.network(ssri)
 
-multifun <- mbnma.run(psorinet, fun=dr.funs, method="common", knots=3, n.iter=50000)
+dr.funs <- dmulti(list(
+  "Placebo"=dpoly(degree=2),
+  "citalopram"=dpoly(degree=2),
+  "escitalopram"=dpoly(degree=2),
+  "fluoxetine"=dspline(type="rcs",knots=3),
+  "paroxetine"=dpoly(degree=2),
+  "sertraline"=dspline(type="rcs",knots=3)
+  ))
+
+multifun <- mbnma.run(depnet, fun=dr.funs, method="common", n.iter=50000)
 summary(multifun)
 ```
 
+Because an MBNMA model with a linear dose-response function (`dpoly(degree=1)`) is mathematically equivalent to a standard NMA model, using agent-specific dose-response functions allows analysis of datasets that both include multiple doses of different drugs *and* interventions for which a dose-response relationship is not realistic (e.g. surgery) or difficult to assume (e.g. psychotherapy, exercise interventions). Interventions without a dose-response relationship can be coded in the dataset as different agents (each with a dose of 1) and these can then be assigned a linear dose-response relationship, whilst agents with a dose-response can be assigned a function that appropriately captures their dose-response relationship. 
 
-#### Restricted cubic splines and `knots`
 
-For a more flexible dose-response shape, restricted cubic splines can be fitted to the data by setting `fun="rcs"`. The model is very flexible and can allow for non-monotonic dose-response relationships, though parameters can be difficult to interpret. This follows the method of Hamza et a. (2020) [@hamza2020]. 
 
-To fit this model, the number/location of `knots` should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.
+#### Splines and `knots`
+
+For a more flexible dose-response shape, various different splines can be fitted to the data by using `dspline()`. This model is very flexible and can allow for a variety of non-monotonic dose-response relationships, though parameters can be difficult to interpret. For restricted cubic splines (`dspline(type="rcs")`) this follows the method of Hamza et a. (2020) [@hamza2020]. 
+
+To fit this model, the number/location of `knots` (the points at which the different spline pieces meet) should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.
 
 ```{r, eval=FALSE}
-knots <- 3
+dspline(type="bs", knots=3)
 # ...is equivalent to 
-knots <- c(0.25,0.5,0.75)
+dspline(type="bs", knots=c(0.25,0.5,0.75))
 
+# Using a restricted cubic spline on the SSRI dataset
 depnet <- mbnma.network(ssri)
-mbnma.run(depnet, fun="rcs", knots=knots)
+rcs <- mbnma.run(depnet, fun=dspline(type="rcs", knots=c(0.25,0.5,0.75)))
 ```
 
 
