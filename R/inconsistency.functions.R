@@ -833,6 +833,8 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' agent and contains a numeric vector of doses. Relative effects will be calculated between
 #' all treatments specified in `treatments`. If `treatments` is left empty then the maximum
 #' dose for all agents in `mbnma` will be used as the default.
+#' @param eform Whether outputted results should be presented in their exponential form (e.g. for
+#' models with log or logit link functions)
 #'
 #'
 #' @return An array of `length(treatments) x length(treatments) x nsims`, where `nsims`
@@ -854,7 +856,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' rel.eff <- get.relative(expon, treatments=list("Celebrex"=c(100,200), "Tramadol"=100))
 #'
 #' @export
-get.relative <- function(mbnma, treatments=list()) {
+get.relative <- function(mbnma, treatments=list(), eform=FALSE) {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -905,15 +907,45 @@ get.relative <- function(mbnma, treatments=list()) {
 
   # Generate spline basis matrix if required
   splineopt <- c("rcs", "bs", "ns", "ls")
-  if (any(splineopt %in% mbnma$model.arg$fun$name)) {
-    for (i in seq_along(trtnew)) {
-      trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
-                               spline=splineopt[which(splineopt %in% mbnma$model.arg$fun$name)],
-                                      max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
-                                                                                which(names(trtnew)[i] == mbnma$network$agents)
-                                                                                ]))
-    }
+  fun <- mbnma$model.arg$fun
+  # if (any(splineopt %in% mbnma$model.arg$fun$name)) {
+  #   for (i in seq_along(trtnew)) {
+  #     trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
+  #                              spline=splineopt[which(splineopt %in% mbnma$model.arg$fun$name)],
+  #                                     max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
+  #                                                                               which(names(trtnew)[i] == mbnma$network$agents)
+  #                                                                               ]))
+  #   }
+  # }
+
+
+  index <- match(names(trtnew), object$network$agents)
+
+  # If there are multiple DR functions
+  if ("posvec" %in% names(fun)) {
+    posvec <- fun$posvec
+  } else {
+    posvec <- rep(1, length(index))
   }
+  for (i in seq_along(index)) {
+    if (fun$name[posvec[index[i]]] %in% splineopt) {
+      trtnew[[i]] <- genspline(trtnew[[i]],
+                               spline = fun$name[posvec[index[i]]],
+                               knots=fun$knots[posvec[index[i]]],
+                               degree = fun$degree[posvec[index[i]]],
+                               max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==which(names(trtnew)[i] == mbnma$network$agents)]))
+    }
+    # } else {
+    #   # Generate empty matrix for non-spline DR functions
+    #   splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
+    # }
+  }
+
+  # splinefun <- splineopt[which(splineopt %in% fun$name)]
+  # for (i in seq_along(doses)) {
+  #   splinedoses[[i]] <- t(genspline(doses[[i]], knots=fun$knots, spline=splinefun,
+  #                                   max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==agent.num[i]])))
+  # }
 
   # Create list of treatments with doses
   trtlist <- list()
@@ -1034,7 +1066,11 @@ get.relative <- function(mbnma, treatments=list()) {
   rownames(rel) <- trtnames
   colnames(rel) <- trtnames
 
-  outmat <- rel
+  if (eform==FALSE) {
+    outmat <- rel
+  } else {
+    outmat <- exp(rel)
+  }
 
 
   ######### Summary matrixes ######
