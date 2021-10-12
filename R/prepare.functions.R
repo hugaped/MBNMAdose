@@ -776,11 +776,6 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         datalist[["dose"]][i,k] <- max(df$dose[as.numeric(df$studyID)==i &
                                                  df$arm==k])
 
-        # Add agent-specific index matrix f
-        if (length(fun$name)>1) {
-          datalist[["f"]][i,k] <- mult$posvec[datalist[["agent"]][i,k]]
-        }
-
         # Add spline matrix
         if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
@@ -816,7 +811,16 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     datalist[["maxdose"]] <- data.ab$maxdose
   }
 
-  datalist[["spline"]][is.na(datalist[["spline"]])] <- 0
+  if ("spline" %in% names(datalist)) {
+    datalist[["spline"]][is.na(datalist[["spline"]])] <- 0
+  }
+
+  # Add agent-specific index matrix f
+  if (length(fun$name)>1) {
+    datalist[["f"]] <- matrix(fun$posvec[datalist$agent],
+                              nrow=nrow(datalist$agent),
+                              ncol=ncol(datalist$agent))
+  }
 
   return(datalist)
 
