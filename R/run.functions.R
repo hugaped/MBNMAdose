@@ -1073,6 +1073,19 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
       if (length(fun[["posvec"]])!=length(network$agents)) {
         stop("Number of agent-specific dose-response functions in dmulti() must be equal to the number of agents in network$agents")
       }
+      if (!is.null(fun[["agents"]])) {
+        err <- which(is.na(match(fun$agents, network$agents)))
+        if (length(err)>1) {
+          stop(paste0("Agent names specified in dmulti() are not in network object:\n",
+                      paste(fun$agents[err], collapse="\t")))
+        }
+
+        # Order of agents must be same as in network
+        err <- match(fun$agents, network$agents)
+        if (!all(err==1:length(fun$agents))) {
+          stop("Agent names specified in dmulti() must be ordered the same as agents in network object")
+        }
+      }
     }
     fun <- fun
   } else {
