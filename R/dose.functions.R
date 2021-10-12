@@ -1029,7 +1029,8 @@ dmulti <- function(funs=list()) {
   # Add check to mbnma.run that length(fun$name) == length(network$treatments)
 
   out <- list(name=name, params=params, nparam=length(params), jags=jags,
-              apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, degree=degree)
+              apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, degree=degree,
+              agents=names(funs))
   class(out) <- "dosefun"
   return(out)
 
