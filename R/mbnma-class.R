@@ -764,13 +764,57 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
   # Add spline basis matrix
   splineopt <- c("rcs", "bs", "ns", "ls")
-  if (any(splineopt %in% object$model.arg$fun$name)) {
+  fun <- object$model.arg$fun
+  if (any(splineopt %in% fun$name)) {
+
     splinedoses <- doses
-    splinefun <- splineopt[which(splineopt %in% object$model.arg$fun$name)]
-    for (i in seq_along(doses)) {
-      splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots, spline=splinefun,
-                                      max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
+
+    index <- match(names(doses), object$network$agents)
+
+    # If there are multiple spline functions
+    if ("posvec" %in% names(fun)) {
+      posvec <- fun$posvec
+    } else {
+      posvec <- rep(1, length(index))
     }
+    for (i in seq_along(index)) {
+      if (fun$name[posvec[index[i]]] %in% splineopt) {
+        splinedoses[[i]] <- t(genspline(splinedoses[[i]],
+                                   spline = fun$name[posvec[index[i]]],
+                                   knots=fun$knots[posvec[index[i]]],
+                                   degree = fun$degree[posvec[index[i]]],
+                                   max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])
+                                   ))
+
+      } else {
+        # Generate empty matrix for non-spline DR functions
+        splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
+      }
+    }
+
+
+    # if (length(fun$name[fun$name %in% splineopt])>1) {
+    #   index <- match(names(doses), object$network$agents)
+    #
+    #   for (i in seq_along(index)) {
+    #     if (fun$name[fun$posvec[index[i]]] %in% splineopt) {
+    #       splinedoses[[i]] <- t(genspline(splinedoses[[i]],
+    #                                     spline = fun$name[fun$posvec[index[i]]],
+    #                                     knots=fun$knots[fun$posvec[index[i]]],
+    #                                     degree = fun$degree[fun$posvec[index[i]]]))
+    #     } else {
+    #       # Generate empty matrix for non-spline DR functions
+    #       splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
+    #     }
+    #   }
+    #
+    # } else {
+    #   splinefun <- splineopt[which(splineopt %in% object$model.arg$fun$name)]
+    #   for (i in seq_along(doses)) {
+    #     splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots, spline=splinefun,
+    #                                     max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
+    #   }
+    # }
   }
 
   # Replace segments of dose-response function string with values for prediction
