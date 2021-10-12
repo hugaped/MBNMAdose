@@ -629,16 +629,65 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       doses <- df[, colnames(df) %in% c("agent", "dose")]
       doses <- unique(dplyr::arrange(doses, agent, dose))
 
-      splinefun <- unique(splineopt[which(splineopt %in% fun$name)])
-      degree <- fun$degree
-      knots <- fun$knots
+      # If there are multiple spline functions
+      if (dplyr::n_distinct(fun$name[fun$name %in% splineopt])>1) {
+        doses$splinefun <- fun$name[fun$posvec][doses$agent]
+      } else {
+        doses$splinefun <- unique(fun$name[fun$name %in% splineopt])
+      }
+
+      # If there are multiple spline degrees
+      degcheck <- fun$degree[fun$posvec][fun$name[fun$posvec] %in% splineopt]
+      if (dplyr::n_distinct(degcheck)>1) {
+        doses$degree <- fun$degree[fun$posvec][doses$agent]
+      } else {
+        doses$degree <- unique(fun$degree[fun$name %in% splineopt])
+      }
+
+      # If there are multiple spline knots
+      if (dplyr::n_distinct(fun$knots[fun$name %in% splineopt])>1) {
+        doses$knots <- fun$knots[fun$posvec][doses$agent]
+      } else {
+        doses$knots <- unique(fun$knots[fun$name %in% splineopt])
+      }
+
+      # Fill non-spline splinefun with any spline function
+      doses$splinefun[!doses$splinefun %in% splineopt] <- doses$splinefun[doses$splinefun %in% splineopt][1]
+
+      # Fill NAs with 1 for non-spline functions
+      doses$degree[is.na(doses$degree)] <- 1
+      doses$knots[is.na(doses$knots)] <- 1
+
+
+      # splinefun <- unique(splineopt[which(splineopt %in% fun$name)])
+      # degree <- fun$degree
+      # knots <- fun$knots
 
       # Generate spline basis matrix
       # Run for placebo separately to avoid matrix dimension problems
       if (0 %in% doses$dose[doses$agent==1] & length(doses$dose[doses$agent==1])==1) {
 
-        dosespline <- doses[doses$agent!=1,] %>% dplyr::group_by(agent) %>%
-          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
+        dosespline <- doses[doses$agent!=1,]
+
+        uniag <- unique(dosespline$agent)
+        splinemat <- matrix(nrow=nrow(dosespline), ncol=100)
+        for (i in seq_along(uniag)) {
+          sub <- subset(dosespline, agent==uniag[i])
+
+          subspline <- genspline(sub$dose,
+                                 spline=unique(sub$splinefun),
+                                 knots=unique(sub$knots),
+                                 degree=unique(sub$degree))
+
+          splinemat[which(dosespline$agent==uniag[i]),1:ncol(subspline)] <- subspline
+        }
+        # Remove excess columns
+        splinemat <- splinemat[,1:(min(which(apply(splinemat, MARGIN=2, FUN=function(x) all(is.na(x)))))-1)]
+
+        dosespline$spline <- splinemat
+
+        # dosespline <- doses[doses$agent!=1,] %>% dplyr::group_by(agent) %>%
+        #   dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
 
         matsize <- ncol(dosespline$spline)
 
@@ -646,8 +695,30 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         dosespline <- rbind(dosespline, pldose)
 
       } else {
-        dosespline <- doses %>% dplyr::group_by(agent) %>%
-          dplyr::mutate(spline=genspline(dose, spline=splinefun, knots=knots, degree=degree))
+        dosespline <- doses
+
+        uniag <- unique(dosespline$agent)
+        splinemat <- matrix(nrow=nrow(dosespline), ncol=100)
+        for (i in seq_along(uniag)) {
+          sub <- subset(dosespline, agent==uniag[i])
+
+          subspline <- genspline(sub$dose,
+                                  spline=unique(sub$splinefun),
+                                  knots=unique(sub$knots),
+                                  degree=unique(sub$degree))
+
+          splinemat[which(dosespline$agent==uniag[i]),1:ncol(subspline)] <- subspline
+        }
+        # Remove excess columns
+        splinemat <- splinemat[,1:(min(which(apply(splinemat, MARGIN=2, FUN=function(x) all(is.na(x)))))-1)]
+
+        dosespline$spline <- splinemat
+
+        # dosespline <- doses %>% dplyr::group_by(agent) %>%
+        #   dplyr::mutate(spline=genspline(dose,
+        #                                              spline=unique(splinefun),
+        #                                              knots=unique(knots),
+        #                                              degree=unique(degree)))
 
         matsize <- ncol(dosespline$spline)
       }
@@ -659,6 +730,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       datalist[["spline"]] <- array(dim=c(nrow(datalist[["dose"]]),
                                           ncol(datalist[["dose"]]),
                                           matsize))
+
     }
 
   } else if (level=="treatment") {
@@ -713,7 +785,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
                                              df$arm==k,
-                                           grepl("spline", colnames(df))]
+                                           grepl("spline$", colnames(df))]
         }
       } else if (level=="treatment") {
         datalist[["treatment"]][i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
@@ -743,6 +815,8 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
     datalist[["maxdose"]] <- data.ab$maxdose
   }
+
+  datalist[["spline"]][is.na(datalist[["spline"]])] <- 0
 
   return(datalist)
 
