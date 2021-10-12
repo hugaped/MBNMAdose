@@ -929,7 +929,7 @@ dmulti <- function(funs=list()) {
   checkmate::reportAssertions(argcheck)
 
   if (any(sapply(funs, FUN=function(x) {x[["name"]]})=="nonparam")) {
-    stop("dmulti() cannot be used with non-parametric dose-response functions")
+    stop("dmulti() cannot currently be used with non-parametric dose-response functions")
   }
 
 
@@ -980,6 +980,12 @@ dmulti <- function(funs=list()) {
       degree <- append(degree, NA)
     }
 
+    if ("knots" %in% names(fun)) {
+      knots <- append(knots, fun[["knots"]])
+    } else {
+      knots <- append(knots, NA)
+    }
+
     for (k in seq_along(fun[["params"]])){
       j <- gsub(fun[["bname"]][k], paste0("betaswap.",length(bname)+1), j)
       bname <- append(bname, paste0("beta.",length(bname)+1))
@@ -1006,19 +1012,19 @@ dmulti <- function(funs=list()) {
 
 
   # Check for consistency of knots - I think this is essential tbh
-  knots <- sapply(funs, FUN=function(x) {x[["knots"]]})
-  names(knots) <- seq_along(knots)
-  knots[sapply(knots, is.null)] <- NULL
-  if (dplyr::n_distinct(knots)>1) {
-    stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
-  }
-  knots <- unlist(knots)
-
-  # Check for consistency of spline functions
-  check <- c("rcs", "bs", "ls", "ns") %in% name
-  if (sum(check)>1) {
-    stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
-  }
+  # knots <- sapply(funs, FUN=function(x) {x[["knots"]]})
+  # names(knots) <- seq_along(knots)
+  # knots[sapply(knots, is.null)] <- NULL
+  # if (dplyr::n_distinct(knots)>1) {
+  #   stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
+  # }
+  # knots <- unlist(knots)
+  #
+  # # Check for consistency of spline functions
+  # check <- c("rcs", "bs", "ls", "ns") %in% name
+  # if (sum(check)>1) {
+  #   stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
+  # }
 
   # Add check to mbnma.run that length(fun$name) == length(network$treatments)
 
