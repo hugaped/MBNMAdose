@@ -18,7 +18,7 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
@@ -42,8 +42,8 @@ Checks done within the validation:
 \item Checks there are no NAs
 \item Checks that all SEs are >0 (if variables are included in dataset)
 \item Checks that all doses are >=0
-\item Checks that all r and N are positive (if variables are included in dataset)
-\item Checks that all y, se, r, N and E are numeric
+\item Checks that all r and n are positive (if variables are included in dataset)
+\item Checks that all y, se, r, n and E are numeric
 \item Checks that class codes are consistent within each agent
 \item Checks that agent/class names do not contain restricted characters
 \item Checks that studies have at least two arms (if \code{single.arm = FALSE})

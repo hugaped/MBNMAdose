@@ -17,7 +17,6 @@ mbnma.run(
   likelihood = NULL,
   link = NULL,
   priors = NULL,
-  model.file = NULL,
   n.iter = 20000,
   n.chains = 3,
   n.burnin = floor(n.iter/2),
@@ -30,6 +29,8 @@ mbnma.run(
   beta.3 = "rel",
   beta.4 = "rel",
   user.fun = NULL,
+  model.file = NULL,
+  jagsdata = NULL,
   arg.params = NULL,
   ...
 )
@@ -93,10 +94,6 @@ on the likelihood.}
 replacement prior distribution values given as strings
 \strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
 
-\item{model.file}{A JAGS model written as a character object that can be used
-to overwrite the JAGS model that is automatically written based on the
-specified options.#'}
-
 \item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
 \item{n.chains}{number of Markov chains (default: 3)}
@@ -133,6 +130,15 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 
 \item{user.fun}{\strong{Deprecated from version 0.4.0 onwards.} A formula specifying any relationship including \code{dose} and
 one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+
+\item{model.file}{The file path to a JAGS model (.jags file) that can be used
+to overwrite the JAGS model that is automatically written based on the
+specified options in \code{MBNMAdose}. Useful for adding further model flexibility.}
+
+\item{jagsdata}{A named list of the data objects to be used in the JAGS model. Only
+required if users are defining their own JAGS model using \code{model.file}. Format
+should match that of standard models fitted in \code{MBNMAdose}
+(see \code{mbnma$model.arg$jagsdata})}
 
 \item{...}{Arguments to be sent to R2jags.}
 
@@ -182,8 +188,8 @@ by specifying the relative scale of variances between the dose-response paramete
 \tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"rel"} \tab Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. \cr
-   \code{"common"} \tab Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network. \cr
-   \code{"random"} \tab Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect. This approach allows for modelling of between-study heterogeneity of absolute effects. \cr
+   \code{"common"} \tab Implies that all agents share the same common effect for this dose-response parameter. \cr
+   \code{"random"} \tab Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. \cr
    \code{numeric()} \tab Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. \cr
 }
 }

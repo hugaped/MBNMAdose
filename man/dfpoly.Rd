@@ -21,10 +21,10 @@ assigned a numeric value (see details).}
 \item{beta.2}{Pooling for the 2nd fractional polynomial coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
 
-\item{power.1}{Pooling for the 1st fractional polynomial power. Can take \code{"common"}, \code{"random"} or be
+\item{power.1}{Pooling for the 1st fractional polynomial power (\eqn{\gamma_1}). Can take \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
 
-\item{power.2}{Pooling for the 2nd fractional polynomial power. Can take \code{"common"}, \code{"random"} or be
+\item{power.2}{Pooling for the 2nd fractional polynomial power (\eqn{\gamma_2}). Can take \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
 }
 \value{
@@ -37,25 +37,25 @@ Fractional polynomial dose-response function
 \itemize{
 \item \eqn{\beta_1} represents the 1st coefficient.
 \item \eqn{\beta_2} represents the 2nd coefficient.
-\item \eqn{p_1} represents the 1st power
-\item \eqn{p_2} represents the 2nd power
+\item \eqn{\gamma_1} represents the 1st fractional polynomial power
+\item \eqn{\gamma_2} represents the 2nd fractional polynomial power
 }
 
 For a polynomial of \code{degree=1}:
-\deqn{{\beta_1}x^{p_1}}
+\deqn{{\beta_1}x^{\gamma_1}}
 
 For a polynomial of \code{degree=2}:
-\deqn{{\beta_1}x^{p_1}+{\beta_2}x^{p_2}}
+\deqn{{\beta_1}x^{\gamma_1}+{\beta_2}x^{\gamma_2}}
 
-\eqn{x^{(p)}} is a regular power except where \eqn{p=0}, where \eqn{x^{(0)}=ln(x)}.
-If a fractional polynomial power \eqn{p_m} repeats within the function it is multiplied by another \eqn{ln(x)}.
+\eqn{x^{\gamma}} is a regular power except where \eqn{\gamma=0}, where \eqn{x^{(0)}=ln(x)}.
+If a fractional polynomial power \eqn{\gamma} repeats within the function it is multiplied by another \eqn{ln(x)}.
 }
 \section{Dose-response parameters}{
 \tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
    \code{"rel"} \tab Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. \cr
-   \code{"common"} \tab Implies that all studies estimate the same true \emph{absolute} effect for this dose-response parameter across the whole network, \strong{independently of agent}. \cr
-   \code{"random"} \tab Implies that all studies estimate separate true \emph{absolute} effects for this dose-response parameter, but that each of these true effects are exchangeable around a true mean effect that is \strong{independent of agent}. This approach allows for modelling of between-study heterogeneity of absolute effects. \cr
+   \code{"common"} \tab Implies that all agents share the same common effect for this dose-response parameter. \cr
+   \code{"random"} \tab Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. \cr
    \code{numeric()} \tab Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. \cr
 }
 

@@ -26,7 +26,7 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.

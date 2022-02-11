@@ -24,7 +24,7 @@ in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
 \item{obs2}{A matrix (study x arm) or array (study x arm x time point) containing
-observed data for \code{se} (normal likelihood), \code{N} (binomial likelihood) or \code{E} (poisson likelihood)
+observed data for \code{se} (normal likelihood), \code{n} (binomial likelihood) or \code{E} (poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
@@ -88,7 +88,7 @@ result <- mbnma.run(network, fun=dloglin(), method="random",
 
 # Prepare data for pD calculation
 r <- result$model$data()$r
-N <- result$model$data()$N
+n <- result$model$data()$n
 narm <- result$model$data()$narm
 NS <- result$model$data()$NS
 
@@ -96,7 +96,7 @@ psi <- result$BUGSoutput$median$psi
 resdevs <- result$BUGSoutput$median$resdev
 
 # Calculate pD via plugin method
-pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
+pD <- pDcalc(obs1=r, obs2=n, narm=narm, NS=NS,
           theta.result=psi, resdev.result=resdevs,
           likelihood="binomial", type="dose")
 }

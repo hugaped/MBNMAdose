@@ -26,7 +26,7 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
@@ -68,7 +68,7 @@ JAGS. List elements are:
 \item If \code{likelihood="binomial"}:
 \itemize{
 \item \code{r} An array of the number of responses/count for each each arm within each study
-\item \code{N} An array of the number of participants for each arm within each study
+\item \code{n} An array of the number of participants for each arm within each study
 }
 \item If \code{likelihood="poisson"}:
 \itemize{
