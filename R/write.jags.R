@@ -220,7 +220,7 @@ write.check <- function(fun=dloglin(),
 
 
 
-#' Write the basic JAGS model code for MBNMA to which other lines of model
+#' Write the basic JAGS model code for MBnMA to which other lines of model
 #' code can be added
 #'
 #' @return A character object of JAGS model code
@@ -377,7 +377,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   checkmate::reportAssertions(argcheck)
 
   if (likelihood=="binomial") {
-    like <- "r[i,k] ~ dbin(psi[i,k], N[i,k])"
+    like <- "r[i,k] ~ dbin(psi[i,k], n[i,k])"
     if (is.null(link)) {link <- "logit"}
   } else if (likelihood=="normal") {
     like <- c("y[i,k] ~ dnorm(psi[i,k], prec[i,k])",
@@ -405,13 +405,13 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
 
     # Add SMD components
     smd.sub <- c(
-      "sd.study[i,k] <- se[i,k] * pow(N[i,k],0.5)",
-      "nvar[i,k] <- (N[i,k]-1) * pow(sd.study[i,k],2)"
+      "sd.study[i,k] <- se[i,k] * pow(n[i,k],0.5)",
+      "nvar[i,k] <- (n[i,k]-1) * pow(sd.study[i,k],2)"
     )
     model <- model.insert(model, pos=which(names(model)=="arm"), x=smd.sub)
 
     pool.sd <- c(
-      "df[i] <- sum(N[i,1:narm[i]]) - narm[i]",
+      "df[i] <- sum(n[i,1:narm[i]]) - narm[i]",
       "pool.var[i] <- sum(nvar[i,1:narm[i]])/df[i]",
       "pool.sd[i] <- pow(pool.var[i], 0.5)"
     )
@@ -424,8 +424,8 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   # Add deviance contributions
   if (likelihood=="binomial") {
     resdevs <- c(
-      "rhat[i,k] <- psi[i,k] * N[i,k]",
-      "resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (N[i,k] - r[i,k]) * (log(N[i,k] - r[i,k]) - log(N[i,k] - rhat[i,k])))"
+      "rhat[i,k] <- psi[i,k] * n[i,k]",
+      "resdev[i,k] <- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (n[i,k] - r[i,k]) * (log(n[i,k] - r[i,k]) - log(n[i,k] - rhat[i,k])))"
     )
   } else if (likelihood=="normal") {
     resdevs <- c(

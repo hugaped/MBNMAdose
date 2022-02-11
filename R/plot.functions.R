@@ -566,7 +566,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   # Obtain raw responses to plot over fitted
   if (mbnma$model.arg$likelihood=="binomial") {
-    theta <- mbnma$model$data()$r / mbnma$model$data()$N
+    theta <- mbnma$model$data()$r / mbnma$model$data()$n
   } else if (mbnma$model.arg$likelihood=="poisson") {
     theta <- mbnma$model$data()$r / mbnma$model$data()$E
   } else if (mbnma$model.arg$likelihood=="normal") {

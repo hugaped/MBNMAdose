@@ -131,7 +131,7 @@ Depending on the type of data (and the likelihood) the following columns are req
   + `se` Numeric data indicating the standard error for a given study arm
 * Binomial likelihood
   + `r` Numeric data indicating the number of responders in a given study arm
-  + `N` Numeric data indicating the total number of participants in a given study arm
+  + `n` Numeric data indicating the total number of participants in a given study arm
 * Poisson likelihood
   + `r` Numeric data indicating the number of events in a given study arm
   + `E` Numeric data indicating the total exposure time in a given study arm

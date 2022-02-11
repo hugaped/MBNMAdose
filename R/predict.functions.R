@@ -63,7 +63,7 @@ get.model.vals <- function(mbnma) {
 #'   continuous data.
 #'   * `r` Numeric data indicating the number of responders within a study arm. Required for
 #'   binomial or poisson data.
-#'   * `N` Numeric data indicating the total number of participants within a study arm. Required for
+#'   * `n` Numeric data indicating the total number of participants within a study arm. Required for
 #'   binomial data
 #'   * `E` Numeric data indicating the total exposure time for participants within a study arm. Required
 #'   for poisson data.
@@ -187,7 +187,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
 #' @noRd
 E0.validate <- function(data.ab, likelihood=NULL) {
 
-  data.ab <- data.ab[,names(data.ab) %in% c("studyID", "dose", "agent", "treatment", "r", "N", "E", "y", "se")]
+  data.ab <- data.ab[,names(data.ab) %in% c("studyID", "dose", "agent", "treatment", "r", "n", "E", "y", "se")]
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, any.missing=FALSE, add=argcheck)

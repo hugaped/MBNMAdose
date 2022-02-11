@@ -987,7 +987,7 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
 
 
   if (is.null(likelihood)) {
-    if (all(c("r", "N") %in% names(data.ab))) {
+    if (all(c("r", "n") %in% names(data.ab))) {
       likelihood <- "binomial"
       message("`likelihood` not given by user - set to `binomial` based on data provided")
     } else if (all(c("y", "se") %in% names(data.ab))) {
@@ -1012,16 +1012,16 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
   }
 
   # Check valid likelihood is used
-  if (likelihood=="binomial" & !all(c("r", "N") %in% names(data.ab))) {
-    stop("Binomial likelihood - columns `r` and `N` must be included in `data.ab`")
-  } else if (likelihood=="poisson" & !all(c("E", "N") %in% names(data.ab))) {
-    stop("Poisson likelihood - columns `E` and `N` must be included in `data.ab`")
+  if (likelihood=="binomial" & !all(c("r", "n") %in% names(data.ab))) {
+    stop("Binomial likelihood - columns `r` and `n` must be included in `data.ab`")
+  } else if (likelihood=="poisson" & !all(c("E", "n") %in% names(data.ab))) {
+    stop("Poisson likelihood - columns `E` and `n` must be included in `data.ab`")
   } else if (likelihood=="normal" & !all(c("y", "se") %in% names(data.ab))) {
     stop("Normal likelihood - columns `y` and `se` must be included in `data.ab`")
   }
 
   # Check valid data available for SMD
-  if (link=="smd" & !all("N" %in% names(data.ab))) {
+  if (link=="smd" & !all("n" %in% names(data.ab))) {
     stop("Treatment effects modelled as Standardised Mean Differences (SMD)\n columns 'n' must be included in data.ab")
   }
 
@@ -1439,7 +1439,7 @@ mbnma.emax.hill <- function(network,
 #'   in each arm of each study. This will be the same array
 #'   used as data for the JAGS model.
 #' @param obs2 A matrix (study x arm) or array (study x arm x time point) containing
-#'   observed data for `se` (normal likelihood), `N` (binomial likelihood) or `E` (poisson likelihood)
+#'   observed data for `se` (normal likelihood), `n` (binomial likelihood) or `E` (poisson likelihood)
 #'   in each arm of each study. This will be the same array
 #'   used as data for the JAGS model.
 #' @param fups A numeric vector of length equal to the number of studies,
@@ -1492,7 +1492,7 @@ mbnma.emax.hill <- function(network,
 #'
 #' # Prepare data for pD calculation
 #' r <- result$model$data()$r
-#' N <- result$model$data()$N
+#' n <- result$model$data()$n
 #' narm <- result$model$data()$narm
 #' NS <- result$model$data()$NS
 #'
@@ -1500,7 +1500,7 @@ mbnma.emax.hill <- function(network,
 #' resdevs <- result$BUGSoutput$median$resdev
 #'
 #' # Calculate pD via plugin method
-#' pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
+#' pD <- pDcalc(obs1=r, obs2=n, narm=narm, NS=NS,
 #'           theta.result=psi, resdev.result=resdevs,
 #'           likelihood="binomial", type="dose")
 #' }
@@ -1720,7 +1720,7 @@ changepd <- function(model, jagsdata=NULL, pd="pv", likelihood=NULL, type="dose"
       obs2 <- jagsdata[["se"]]
     } else if (likelihood=="binomial") {
       obs1 <- jagsdata[["r"]]
-      obs2 <- jagsdata[["N"]]
+      obs2 <- jagsdata[["n"]]
     } else if (likelihood=="poisson") {
       obs1 <- jagsdata[["r"]]
       obs2 <- jagsdata[["E"]]

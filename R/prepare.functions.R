@@ -23,7 +23,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' continuous data.
 #' * `r` Numeric data indicating the number of responders within a study arm. Required for
 #' binomial or poisson data.
-#' * `N` Numeric data indicating the total number of participants within a study arm. Required for
+#' * `n` Numeric data indicating the total number of participants within a study arm. Required for
 #' binomial data or when modelling Standardised Mean Differences
 #' * `E` Numeric data indicating the total exposure time for participants within a study arm. Required
 #' for poisson data.
@@ -91,8 +91,8 @@ mbnma.network <- function(data.ab, description="Network") {
 #' * Checks there are no NAs
 #' * Checks that all SEs are >0 (if variables are included in dataset)
 #' * Checks that all doses are >=0
-#' * Checks that all r and N are positive (if variables are included in dataset)
-#' * Checks that all y, se, r, N and E are numeric
+#' * Checks that all r and n are positive (if variables are included in dataset)
+#' * Checks that all y, se, r, n and E are numeric
 #' * Checks that class codes are consistent within each agent
 #' * Checks that agent/class names do not contain restricted characters
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
@@ -103,12 +103,12 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
 
   varnames <- c("studyID", "agent", "dose")
   var_norm <- c("y", "se")
-  var_bin <- c("r", "N")
+  var_bin <- c("r", "n")
   var_pois <- c("r", "E")
   data.ab <- dplyr::arrange(data.ab, data.ab$studyID, data.ab$agent, data.ab$dose)
 
   # Check data.ab has required column names
-  msg <- "Required variable names are: 'studyID', 'agent', 'dose' and either `y` and `se` for data with a normal likelihood, `r` and `N` for data with a binomial likelihood, or `r` and `E` for data with a poisson likelihood"
+  msg <- "Required variable names are: 'studyID', 'agent', 'dose' and either `y` and `se` for data with a normal likelihood, `r` and `n` for data with a binomial likelihood, or `r` and `E` for data with a poisson likelihood"
   if (all(varnames %in% names(data.ab))==FALSE) {
     if ("time" %in% names(data.ab)) {
       message(paste(
@@ -339,7 +339,7 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
 
 
   # Reorder columns in data.ab
-  ord <- c("agent", "dose", "treatment", "class", "narm", "arm", "y", "se", "r", "E", "N")
+  ord <- c("agent", "dose", "treatment", "class", "narm", "arm", "y", "se", "r", "E", "n")
   newdat <- data.frame("studyID"=data.ab$studyID)
   for (i in seq_along(ord)) {
     if (ord[i] %in% names(data.ab)) {
@@ -492,7 +492,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'     - `se` An array of standard errors for each arm within each study
 #'   * If `likelihood="binomial"`:
 #'     - `r` An array of the number of responses/count for each each arm within each study
-#'     - `N` An array of the number of participants for each arm within each study
+#'     - `n` An array of the number of participants for each arm within each study
 #'   * If `likelihood="poisson"`:
 #'     - `r` An array of the number of responses/count for each each arm within each study
 #'     - `E` An array of the total exposure time for each arm within each study
@@ -560,7 +560,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
   # Add variables depending on likelihood
   if (likelihood == "binomial") {
-    datavars <- c("r", "N")
+    datavars <- c("r", "n")
   } else if (likelihood == "poisson") {
     datavars <- c("r", "E")
   } else if (likelihood=="normal") {
@@ -569,7 +569,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
     stop("`likelihood` can be either `binomial`, `poisson`, or `normal`")
   }
   if (link=="smd") {
-    datavars <- append(datavars, "N")
+    datavars <- append(datavars, "n")
   }
   varnames <- append(varnames, datavars)
 
@@ -1518,8 +1518,8 @@ calcom <- function(data.ab, link, likelihood, buffer=1.2) {
   df <- data.ab
 
   if (likelihood=="binomial") {
-    df$x <- df$r / df$N
-    df$x[df$x==1 | df$x==0] <- (df$r[df$x==1 | df$x==0]+0.5) / (df$N[df$x==1 | df$x==0]+1)
+    df$x <- df$r / df$n
+    df$x[df$x==1 | df$x==0] <- (df$r[df$x==1 | df$x==0]+0.5) / (df$n[df$x==1 | df$x==0]+1)
   } else if (likelihood=="normal") {
     df$x <- df$y
   } else if (likelihood=="poisson") {
@@ -1530,7 +1530,7 @@ calcom <- function(data.ab, link, likelihood, buffer=1.2) {
   df$xlink <- rescale.link(df$x, direction="link", link=link)
 
   if (link=="smd") {
-    df$xlink <- df$y / (df$se * (df$N^0.5))
+    df$xlink <- df$y / (df$se * (df$n^0.5))
   }
 
   rel <- max(df$xlink) - min(df$xlink)
