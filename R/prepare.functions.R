@@ -636,6 +636,9 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
         doses$splinefun <- unique(fun$name[fun$name %in% splineopt])
       }
 
+      # Remove non-spline functions
+      doses <- subset(doses, splinefun %in% splineopt)
+
       # If there are multiple spline degrees
       degcheck <- fun$degree[fun$posvec][fun$name[fun$posvec] %in% splineopt]
       if (dplyr::n_distinct(degcheck)>1) {
@@ -645,23 +648,56 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
       }
 
       # If there are multiple spline knots
-      if (dplyr::n_distinct(fun$knots[fun$name %in% splineopt])>1) {
-        doses$knots <- fun$knots[fun$posvec][doses$agent]
+      #if (dplyr::n_distinct(fun$knots[[fun$name %in% splineopt]])>1) {
+      if (length(unique(fun$knots))>1) {
+        nknot <- max(unlist(lapply(fun$knots, length)), na.rm = TRUE)
+
+        # If this dose not work unhash section below and hash this instead
+        knotposvec <- fun$knots[fun$posvec]
+
+        temp <- matrix(nrow=nrow(doses), ncol=nknot)
+        for (r in 1:nrow(temp)) {
+          temp[r,1:length(knotposvec[[doses$agent[r]]])] <- knotposvec[[doses$agent[r]]]
+        }
+        doses$knots <- temp
+
+        # if (nknot>1) {
+        #   temp <- fun$knots[fun$posvec]
+        #
+        #   doses$knots <- matrix(nrow=nrow(doses), ncol=nknot)
+        #   print(temp)
+        #   for (r in seq_along(doses$agent)) {
+        #     doses$knots[r] <- temp[[doses$agent[r]]]
+        #   }
+        #
+        # } else {
+        #   doses$knots <- fun$knots[[fun$posvec]][doses$agent]
+        # }
+
       } else {
-        doses$knots <- unique(fun$knots[fun$name %in% splineopt])
+        nknot <- length(unique(fun$knots[[fun$name %in% splineopt]]))
+
+        # If this dose not work unhash section below and hash this instead
+        temp <- matrix(rep(unique(fun$knots[[fun$name %in% splineopt]]), nrow(doses)),
+                       byrow = TRUE, nrow=nrow(doses))
+        doses$knots <- temp
+        # if (nknot>1) {
+        #   temp <- matrix(rep(unique(fun$knots[[fun$name %in% splineopt]]), nrow(doses)),
+        #                  byrow = TRUE, nrow=nrow(doses))
+        #   doses$knots <- temp
+        # } else {
+        #   doses$knots <- unique(fun$knots[[fun$name %in% splineopt]])
+        # }
       }
 
       # Fill non-spline splinefun with any spline function
       doses$splinefun[!doses$splinefun %in% splineopt] <- doses$splinefun[doses$splinefun %in% splineopt][1]
 
+
       # Fill NAs with 1 for non-spline functions
-      doses$degree[is.na(doses$degree)] <- 1
-      doses$knots[is.na(doses$knots)] <- 1
+      # doses$degree[is.na(doses$degree)] <- 1
+      # doses$knots[is.na(doses$knots)] <- 1
 
-
-      # splinefun <- unique(splineopt[which(splineopt %in% fun$name)])
-      # degree <- fun$degree
-      # knots <- fun$knots
 
       # Generate spline basis matrix
       # Run for placebo separately to avoid matrix dimension problems
@@ -676,6 +712,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 
           subspline <- genspline(sub$dose,
                                  spline=unique(sub$splinefun),
+                                 #knots=as.vector(unique(sub$knots)),
                                  knots=unique(sub$knots),
                                  degree=unique(sub$degree))
 
@@ -1348,6 +1385,9 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
   checkmate::assertIntegerish(degree, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Remove NA values
+  knots <- knots[!is.na(knots)]
 
   # Check knot specification
   if (spline=="rcs") {

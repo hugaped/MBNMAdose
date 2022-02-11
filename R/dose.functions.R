@@ -719,7 +719,7 @@ dspline <- function(type="bs", knots=1, degree=1,
   }
 
   out <- list(name=type, fun=fun, params=paramnames,
-              nparam=nparam, knots=knots, degree=degree, jags=jags,
+              nparam=nparam, knots=list(knots), degree=degree, jags=jags,
               apool=apool, bname=bname)
   class(out) <- "dosefun"
 
@@ -967,7 +967,7 @@ dmulti <- function(funs=list()) {
   apool <- vector()
   apoollist <- list()
   bname <- vector()
-  knots <- vector()
+  knots <- list()
   degree <- vector()
   for (i in seq_along(univec)) {
     fun <- funs[[which(posvec==univec[i])[1]]]
@@ -981,9 +981,10 @@ dmulti <- function(funs=list()) {
     }
 
     if ("knots" %in% names(fun)) {
-      knots <- append(knots, fun[["knots"]])
+      knots[[length(knots)+1]] <- fun[["knots"]][[1]]
     } else {
-      knots <- append(knots, NA)
+      knots[[length(knots)+1]] <- NA
+      #knots <- append(knots, NA)
     }
 
     for (k in seq_along(fun[["params"]])){

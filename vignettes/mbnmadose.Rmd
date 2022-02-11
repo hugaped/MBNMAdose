@@ -414,8 +414,7 @@ multifun <- mbnma.run(depnet, fun=dr.funs, method="common", n.iter=50000)
 summary(multifun)
 ```
 
-Because an MBNMA model with a linear dose-response function (`dpoly(degree=1)`) is mathematically equivalent to a standard NMA model, using agent-specific dose-response functions allows analysis of datasets that both include multiple doses of different drugs *and* interventions for which a dose-response relationship is not realistic (e.g. surgery) or difficult to assume (e.g. psychotherapy, exercise interventions). Interventions without a dose-response relationship can be coded in the dataset as different agents (each with a dose of 1) and these can then be assigned a linear dose-response relationship, whilst agents with a dose-response can be assigned a function that appropriately captures their dose-response relationship. 
-
+Because an MBNMA model with a linear dose-response function (`dpoly(degree=1)`) is mathematically equivalent to a standard NMA model, using agent-specific dose-response functions allows analysis of datasets that both include multiple doses of different drugs *and* interventions for which a dose-response relationship is not realistic (e.g. surgery) or difficult to assume (e.g. psychotherapy, exercise interventions). Interventions without a dose-response relationship can be coded in the dataset as different agents, each of which should be assigned a dose of 1, and these can then be modeled using a linear dose-response relationship, whilst agents with a plausible dose-response can be assigned a function that appropriately captures their dose-response relationship. 
 
 
 #### Splines and `knots`

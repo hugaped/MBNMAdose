@@ -270,7 +270,7 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 
   # Add split NMAs to plot
   g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=dose, y=`50%`)) +
-    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`))
+    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`), width=.05)
 
 
   #### Report split NMA model fit statistics ####

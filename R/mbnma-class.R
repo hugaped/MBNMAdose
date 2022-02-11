@@ -781,7 +781,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
       if (fun$name[posvec[index[i]]] %in% splineopt) {
         splinedoses[[i]] <- t(genspline(splinedoses[[i]],
                                    spline = fun$name[posvec[index[i]]],
-                                   knots=fun$knots[posvec[index[i]]],
+                                   knots=fun$knots[[posvec[index[i]]]],
                                    degree = fun$degree[posvec[index[i]]],
                                    max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])
                                    ))
