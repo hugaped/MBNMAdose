@@ -483,7 +483,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'   level (for MBNMA) or `"treatment"` to indicate that data should be at the treatment-
 #'   level (for NMA)
 #' @param nodesplit A numeric vector of length 2 containing treatment codes on which to perform
-#'   an MBNMA nodesplit (see \code\link{mbnma.nodesplit}).
+#'   an MBNMA nodesplit (see \code{\link{mbnma.nodesplit}}).
 #'
 #' @return A named list of numbers, vector, matrices and arrays to be sent to
 #'   JAGS. List elements are:

@@ -54,7 +54,7 @@ level (for NMA)}
 dose-response. See Details.}
 
 \item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
-an MBNMA nodesplit (see \code\link{mbnma.nodesplit}).}
+an MBNMA nodesplit (see \code{\link{mbnma.nodesplit}}).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to

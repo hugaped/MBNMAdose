@@ -55,7 +55,7 @@ Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a
 \item{user.fun}{\strong{Deprecated from version 0.4.0 onwards.} A formula specifying any relationship including \code{dose} and
 one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
 
-\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{\link[forestplot:forestplot]{forestplot::forestplot()}}}
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{forestplot::forestplot()}}
 
 \item{x}{An object of \code{class("nodesplit")}}
 
