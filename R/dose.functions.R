@@ -5,11 +5,22 @@
 
 #' Exponential dose-response function
 #'
-#' Modelled assuming relative effects (`"rel"`)
+#' Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Can fit
+#' a 1-parameter (Emax only) or 2-parameter model (includes onset parameter that controls the curvature of
+#' the dose-response relationship)
 #'
+#' 1-parameter model:
 #' \eqn{emax\times{(1-exp(-x))}}
 #'
-#' where emax is the maximum efficacy of an agent.
+#' 2-parameter model:
+#' \eqn{emax\times{(1-exp(exp(onset)*-x))}}
+#'
+#' where emax is the maximum efficacy of an agent and rate is the speed
+#'
+#' @param emax Pooling for Emax  parameter. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
+#' @param onset Pooling for onset parameter. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -29,28 +40,68 @@
 #'   \insertAllCited
 #'
 #' @examples
+#' # Single parameter exponential function is default
 #' dexp()
 #'
+#' # Two parameter exponential function
+#' dexp(onset="rel")
+#'
 #' @export
-dexp <- function() {
-  emax <- "rel"
+dexp <- function(emax="rel", onset=NULL) {
+
+  # Run checks
+  params <- list(emax=emax, onset=onset)
+  for (i in seq_along(params)) {
+    err <- TRUE
+    if (!is.null(params[[i]])) {
+      if (length(params[[i]])==1) {
+        if (any(c("rel", "common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+    } else if (names(params)[i]=="onset") {
+      err <- FALSE
+    }
+    if (err) {
+      stop(paste0(names(params)[i], " must take either 'rel', 'common', 'random' or be assigned a numeric value"))
+    }
+  }
+
 
   # Define function
-  fun <- ~ emax * (1 - exp(-dose))
-  jags <- "s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))"
+  if (is.null(onset)) {
+    fun <- ~ emax * (1 - exp(-dose))
+    jags <- "s.beta.1 * (1 - exp(- dose[i,k]))"
 
-  f <- function(dose, beta.1) {
-    y <- beta.1 * (1-exp(-dose))
+  } else {
+    fun <- ~ emax * (1 - exp(exp(onset) * -dose))
+    jags <- "s.beta.1 * (1 - exp(exp(s.beta.2) * - dose[i,k]))"
+  }
+
+  for (i in seq_along(params)) {
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
+  }
+
+  f <- function(dose, beta.1, beta.2=0) {
+    y <- beta.1 * (1-exp(exp(onset)*-dose))
     return(y)
   }
 
-  # Generate output values
-  paramnames <- "emax"
-  nparam <- 1
 
-  apool <- emax
-  names(apool) <- paramnames
+  # Generate output values
+  paramnames <- c("emax")
+  apool <- c(emax)
+
+  if (!is.null(onset)) {
+    paramnames <- append(paramnames, "onset")
+    apool <- append(apool, onset)
+  }
+  nparam <- length(paramnames)
   bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
   names(bname) <- paramnames
 
   if (!any("rel" %in% apool)) {
@@ -60,8 +111,9 @@ dexp <- function() {
   out <- list(name="exp", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
-
   class(out) <- "dosefun"
+
+  message("'onset' parameters are on exponential scale to ensure they take positive values on the natural scale")
 
   return(out)
 }
