@@ -184,7 +184,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(predict(result), NA)
     expect_error(suppressWarnings(summary(result)), NA)
 
-    result <- mbnma.run(network, fun=dspline(type="ns", knots=c(0.2), beta.1="common", beta.2 = "rel", beta.3="random"),
+    result <- mbnma.run(network, fun=dspline(type="ns", knots=c(0.2,0.5), beta.1="common", beta.2 = "rel", beta.3="random"),
                         n.iter=n.iter, pd=pd)
     expect_equal(all(c("beta.1", "beta.2") %in% result$parameters.to.save), TRUE)
     expect_equal(all(c("sd", "beta.3") %in% result$parameters.to.save), FALSE)
