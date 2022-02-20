@@ -398,7 +398,7 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 
 #' Fractional polynomial dose-response function
 #'
-#' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}
+#' @param degree The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAdose}
 #' @param beta.1 Pooling for the 1st fractional polynomial coefficient. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
 #' @param beta.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"`, `"common"`, `"random"` or be
@@ -600,11 +600,11 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 
 #' Spline dose-response functions
 #'
-#' Used to fit B-splines, natural cubic splines, restricted cubic splines and
-#' piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
+#' Used to fit B-splines, natural cubic splines, and
+#' piecewise linear splines\insertCite{perperoglu2019}{MBNMAdose}.
 #'
 #' @param type The type of spline. Can take `"bs"` (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
-#'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), `"rcs"` (restricted cubic spline)
+#'   `"ns"` (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}),
 #'   or `"ls"` (piecewise linear spline)
 #' @param knots The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
 #'   be equally spaced across the range of doses *for each agent*). If a numeric vector is given it indicates the location of the knots.

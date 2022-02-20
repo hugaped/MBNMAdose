@@ -49,10 +49,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' print(HF2PPITT)
+#' print(triptans)
 #'
 #' # Define network
-#' network <- mbnma.network(HF2PPITT, description="Example network")
+#' network <- mbnma.network(triptans, description="Example network")
 #'
 #' summary(network)
 #' plot(network)
@@ -512,7 +512,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #' jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 #'
 #'
@@ -522,7 +522,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #'
 #' # Get JAGS data at the treatment level for split Network Meta-Analysis
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
 #' @export
@@ -899,7 +899,7 @@ getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit
 #'
 #'
 #' # Using the triptans headache dataset
-#' network <- mbnma.network(HF2PPITT) # Adds treatment identifiers
+#' network <- mbnma.network(triptans) # Adds treatment identifiers
 #' mbnma.comparisons(network$data.ab)
 #'
 #' @export
@@ -970,7 +970,7 @@ mbnma.comparisons <- function(df)
 #'
 #' @examples
 #' # Using the triptans headache dataset
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #' drops <- drop.disconnected(network)
 #'
 #' # No studies have been dropped since network is fully connected
@@ -1350,7 +1350,7 @@ check.network <- function(g, reference=1) {
 #'
 #' @param x A numeric vector indicating all time points available in the dataset
 #' @param spline Indicates the type of spline function. Can be either a piecewise linear spline (`"ls"`),
-#' natural cubic spline (`"ns"`), restricted cubic spline (`"rcs"`) or B-spline (`"bs"`).
+#' natural cubic spline (`"ns"`), or B-spline (`"bs"`).
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.dose A number indicating the maximum dose between which to calculate the spline function.
@@ -1371,7 +1371,7 @@ check.network <- function(g, reference=1) {
 #' genspline(x, spline="bs", knots=2, degree=2)
 #'
 #' # Generate a restricted cubic spline with 3 knots at selected quantiles
-#' genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+#' genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 #'
 #' # Generate a piecewise linear spline with 3 equally spaced knots
 #' genspline(x, spline="ls", knots=3)
@@ -1390,18 +1390,18 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
   knots <- knots[!is.na(knots)]
 
   # Check knot specification
-  if (spline=="rcs") {
-    err <- "Minimum number of knots for 'rcs' is 3"
-    if (length(knots)==1) {
-      if (knots<3) {
-        stop(err)
-      }
-    } else if (length(knots)>1) {
-      if (length(knots)<3){
-        stop(err)
-      }
-    }
-  }
+  # if (spline=="rcs") {
+  #   err <- "Minimum number of knots for 'rcs' is 3"
+  #   if (length(knots)==1) {
+  #     if (knots<3) {
+  #       stop(err)
+  #     }
+  #   } else if (length(knots)>1) {
+  #     if (length(knots)<3){
+  #       stop(err)
+  #     }
+  #   }
+  # }
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) {
@@ -1436,13 +1436,11 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
     # Generate spline basis matrix
     if (spline=="bs") {
       splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
-    } else if (spline=="rcs") {
-      splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
+    # } else if (spline=="rcs") {
+    #   splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x=x0, knots=knots)
 
-      # splinedesign <- splines::ns(x0, knots=knots)
-      # splinedesign <- cbind(x0, splinedesign)
     } else if (spline=="ls") {
       splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
     }
@@ -1450,11 +1448,6 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
 
     # Drop 0 if it was originally added to vector to ensure returned matrix has same size as x
     splinedesign <- splinedesign[rownames(splinedesign) %in% x,]
-    # if (length(x0)>1) {
-    #   splinedesign <- splinedesign[which(splinedesign[,1] %in% x),]
-    # } else {
-    #   splinedesign <- matrix(0, ncol=length(splinedesign))
-    # }
 
     if (!is.matrix(splinedesign)) {
       splinedesign <- matrix(splinedesign, nrow=1)
