@@ -1,8 +1,8 @@
 testthat::context("Testing prepare.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(HF2PPITT, psoriasis75, ssri, osteopain_2wkabs, GoutSUA_2wkCFB)
-datanams <- c("HF2PPITT", "psoriasis75", "ssri", "osteopain_2wkabs", "GoutSUA_2wkCFB")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain_2wkabs, GoutSUA_2wkCFB)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain_2wkabs", "GoutSUA_2wkCFB")
 
 for (dat in seq_along(alldfs)) {
 
@@ -166,7 +166,7 @@ for (dat in seq_along(alldfs)) {
 
 
     # With a complete network
-    if (datanam %in% c("HF2PPITT", "psoriasis75", "ssri", 2)) {
+    if (datanam %in% c("triptans", "psoriasis75", "ssri", 2)) {
       df.num <- mbnma.network(df1)$data.ab
 
       fullrow <- nrow(df.num)
@@ -188,24 +188,24 @@ for (dat in seq_along(alldfs)) {
     xlist <- list(c(0:50), c(10,25,89), c(5,10), c(1))
     for (i in seq_along(xlist)) {
       x <- xlist[[i]]
-      expect_silent(genspline(x, spline="rcs", knots=3, max.dose=max(x)))
-      expect_silent(genspline(x, spline="rcs", knots=4, max.dose=max(x)))
+      expect_silent(genspline(x, spline="ns", knots=2, max.dose=max(x)))
+      expect_silent(genspline(x, spline="ns", knots=3, max.dose=max(x)))
 
-      knots <- 5
-      splines <- genspline(x, spline="rcs", knots=knots, max.dose=max(x))
+      knots <- 3
+      splines <- genspline(x, spline="ns", knots=knots, max.dose=max(x))
       expect_equal(nrow(splines), length(x))
-      expect_equal(ncol(splines), knots-1)
+      expect_equal(ncol(splines), knots+1)
 
-      knots <- c(0.35,0.5,0.1,0.9)
-      expect_silent(genspline(x, spline="rcs", knots=knots, max.dose=10))
+      knots <- c(0.35,0.5,0.1)
+      expect_silent(genspline(x, spline="ns", knots=knots, max.dose=10))
 
       if (length(x)>1) {
-        expect_equal(ncol(genspline(x, spline="ns", knots=3, max.dose=10)), length(knots))
+        expect_equal(ncol(genspline(x, spline="ns", knots=3, max.dose=10)), length(knots)+1)
       }
 
-      expect_error(genspline(x, spline="rcs", knots=2, max.dose=max(x)), "Minimum number of knots")
-      expect_error(genspline(x, spline="rcs", knots=c(0.5,1), max.dose=max(x)), "Minimum number of knots")
-      expect_error(genspline(x, spline="rcs", knots=c(1,2,3), max.dose=max(x)), "'probs' outside")
+      expect_error(genspline(x, spline="ns", knots=0, max.dose=max(x)), "Element 1 is not >= 1")
+      expect_error(genspline(x, spline="ns", knots=5, max.dose=max(x)), "complexity")
+      expect_error(genspline(x, spline="ns", knots=c(1,2,3), max.dose=max(x)), "'probs' outside")
 
       expect_error(genspline(x, spline="badger", knots=3, max.dose=max(x)))
 

@@ -150,7 +150,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(predict(result), NA)
     expect_error(suppressWarnings(summary(result)), NA)
 
-    result <- mbnma.run(network, fun=dspline(type="rcs", knots=4, beta.1="rel", beta.2="random", beta.3="common"),
+    result <- mbnma.run(network, fun=dspline(type="ns", knots=3, beta.1="rel", beta.2="random", beta.3="common"),
                         method="random", n.iter=n.iter, pd=pd)
     expect_equal(all(c("beta.1", "beta.2", "sd.beta.2", "sd", "beta.3") %in% result$parameters.to.save), TRUE)
     expect_equal(any(grepl("spline", result$model.arg$jagscode)), TRUE)
