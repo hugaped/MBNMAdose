@@ -26,7 +26,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
 #' emax <- mbnma.run(network, fun=demax(), method="random")

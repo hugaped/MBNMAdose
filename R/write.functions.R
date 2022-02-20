@@ -71,7 +71,7 @@ write.inserts <- function() {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA
 #' result <- mbnma.run(network, fun=demax(), method="random")

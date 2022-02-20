@@ -328,7 +328,7 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
 #' emax <- mbnma.run(network, fun=demax(), method="random")
@@ -522,7 +522,7 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
 #' emax <- mbnma.run(network, fun=demax(), method="random")
@@ -670,7 +670,7 @@ plot.invisible <- function(...){
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
 #' emax <- mbnma.run(network, fun=demax(), method="random")

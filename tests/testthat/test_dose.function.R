@@ -3,7 +3,7 @@ testthat::context("Testing dose.functions")
 testthat::test_that("dexp functions correctly", {
   dosefun <- dexp()
   expect_equal(dosefun$nparam, 1)
-  expect_equal(dosefun$apool, c("rate"="rel"))
+  expect_equal(dosefun$apool, c("emax"="rel"))
   expect_equal(dosefun$name, "exp")
 })
 

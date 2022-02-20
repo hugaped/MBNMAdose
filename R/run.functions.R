@@ -176,7 +176,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #'
 #' ######## Dose-response functions ########
@@ -833,7 +833,7 @@ gen.parameters.to.save <- function(fun, model) {
 #' nma <- nma.run(goutnet, method="common", drop.discon=FALSE)
 #'
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
-#' tripnet <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(triptans)
 #' ume <- nma.run(tripnet, method="random", UME=TRUE)
 #' }
 #'
@@ -1130,7 +1130,7 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' tripnet <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(triptans)
 #'
 #' # Fit a linear dose-response MBNMA with random treatment effects
 #' linear <- mbnma.linear(tripnet, slope="rel", method="random")
@@ -1202,7 +1202,7 @@ mbnma.linear <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' tripnet <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(triptans)
 #'
 #' # Fit a exponential dose-response MBNMA with random treatment effects
 #' exponential <- mbnma.exponential(tripnet, lambda="rel", method="random")
@@ -1277,7 +1277,7 @@ mbnma.exponential <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' tripnet <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(triptans)
 #'
 #' # Fit an Emax dose-response MBNMA with random treatment effects on Emax and ED50
 #' emax <- mbnma.emax(tripnet, emax="rel", ed50="rel", method="random")
@@ -1360,7 +1360,7 @@ mbnma.emax <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' tripnet <- mbnma.network(HF2PPITT)
+#' tripnet <- mbnma.network(triptans)
 #'
 #' # Fit an Emax (with Hill parameter) dose-response MBNMA with random treatment
 #' #effects on Emax, ED50 and Hill
@@ -1481,7 +1481,7 @@ mbnma.emax.hill <- function(network,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 #' result <- mbnma.run(network, fun=dloglin(), method="random",
@@ -1616,7 +1616,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 #' result <- mbnma.run(network, fun=dloglin(), method="random",

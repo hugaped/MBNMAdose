@@ -142,7 +142,7 @@ summary.mbnma.network <- function(object,...) {
 #'
 #' @examples
 #' # Create an mbnma.network object from the data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Generate a network plot from the data
 #' plot(network)

@@ -9,8 +9,8 @@ test_that(paste("run.functions work correctly"), {
 
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(HF2PPITT, psoriasis75, ssri, osteopain_2wkabs, GoutSUA_2wkCFB)
-datanams <- c("HF2PPITT", "psoriasis75", "ssri", "osteopain_2wkabs", "GoutSUA_2wkCFB")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain_2wkabs, GoutSUA_2wkCFB)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain_2wkabs", "GoutSUA_2wkCFB")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)

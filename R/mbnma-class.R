@@ -26,7 +26,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an exponential dose-response MBNMA and generate the forest plot
 #' exponential <- mbnma.run(network, fun=dexp())
@@ -39,7 +39,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' #### Forest plots including class effects ####
 #' # Generate some classes for the data
-#' class.df <- HF2PPITT
+#' class.df <- triptans
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 #' netclass <- mbnma.network(class.df)
@@ -258,7 +258,7 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Rank selected agents from a log-linear dose-response MBNMA
 #' loglin <- mbnma.run(network, fun=dloglin())
@@ -273,7 +273,7 @@ plot.mbnma <- function(x, params=NULL, ...) {
 #'
 #' #### Ranking by class ####
 #' # Generate some classes for the data
-#' class.df <- HF2PPITT
+#' class.df <- triptans
 #' class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 #' class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 #' netclass <- mbnma.network(class.df)
@@ -523,7 +523,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA
 #' emax <- mbnma.run(network, fun=demax(), method="random")

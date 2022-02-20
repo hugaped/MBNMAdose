@@ -29,7 +29,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
 #'   method="common")
@@ -287,7 +287,7 @@ nma.nodesplit <- function(network, likelihood=NULL, link=NULL, method="common",
 #' \donttest{
 #' # Identify comparisons informed by direct and indirect evidence
 #' #in triptans dataset
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #' inconsistency.loops(network$data.ab)
 #'
 #' # Include indirect evidence via dose-response relationship
@@ -646,7 +646,7 @@ check.indirect.drops <- function(df, comp) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' split <- mbnma.nodesplit(network, fun=demax(), likelihood = "binomial", link="logit",
 #'   method="common")
