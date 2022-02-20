@@ -95,7 +95,7 @@ Converts MBNMA data frame to a list for use in JAGS model
 }
 \examples{
 # Using the triptans headache dataset
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 
 
@@ -105,7 +105,7 @@ jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 
 # Get JAGS data at the treatment level for split Network Meta-Analysis
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 jagsdat <- getjagsdata(network$data.ab, level="treatment")
 
 }

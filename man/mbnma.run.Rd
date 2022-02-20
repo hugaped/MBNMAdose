@@ -222,7 +222,7 @@ in the network.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 
 ######## Dose-response functions ########

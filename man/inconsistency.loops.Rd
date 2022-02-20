@@ -51,7 +51,7 @@ reference treatment would also be identifying heterogeneity. Depends on
 \donttest{
 # Identify comparisons informed by direct and indirect evidence
 #in triptans dataset
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 inconsistency.loops(network$data.ab)
 
 # Include indirect evidence via dose-response relationship

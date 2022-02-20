@@ -16,7 +16,7 @@ dspline(
 }
 \arguments{
 \item{type}{The type of spline. Can take \code{"bs"} (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
-\code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}), \code{"rcs"} (restricted cubic spline)
+\code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}),
 or \code{"ls"} (piecewise linear spline)}
 
 \item{knots}{The number/location of spline internal knots. If a single number is given it indicates the number of knots (they will
@@ -40,8 +40,8 @@ assigned a numeric value (see details).}
 An object of \code{class("dosefun")}
 }
 \description{
-Used to fit B-splines, natural cubic splines, restricted cubic splines and
-piecewise linear splines\insertCite{perperoglu2019}{MBNMAtime}.
+Used to fit B-splines, natural cubic splines, and
+piecewise linear splines\insertCite{perperoglu2019}{MBNMAdose}.
 }
 \section{Dose-response parameters}{
 \tabular{ll}{

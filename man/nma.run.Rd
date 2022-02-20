@@ -109,7 +109,7 @@ goutnet <- mbnma.network(gout)
 nma <- nma.run(goutnet, method="common", drop.discon=FALSE)
 
 # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
-tripnet <- mbnma.network(HF2PPITT)
+tripnet <- mbnma.network(triptans)
 ume <- nma.run(tripnet, method="random", UME=TRUE)
 }
 

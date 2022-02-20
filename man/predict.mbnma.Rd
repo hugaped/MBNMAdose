@@ -93,7 +93,7 @@ agent. This may be more useful when ranking different predicted responses using
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an Emax dose-response MBNMA
 emax <- mbnma.run(network, fun=demax(), method="random")

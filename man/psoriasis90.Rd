@@ -12,7 +12,7 @@ A data frame in long format (one row per arm and study), with 81 rows and 9 vari
 \item \code{dose_mg} Numeric data indicating the dose to which participants were randomised in mg
 \item \code{freq} Character data indicating the frequency of the dose to which participants were randomised
 \item \code{dose} Numeric data indicating the dose in mg/week to which the participants were randomised
-\item \code{N} Numeric data indicating the number of participants randomised
+\item \code{n} Numeric data indicating the number of participants randomised
 \item \code{r} Numeric data indicating the number of participants who achieved >=90\% improvement in PASI score after 12 weeks
 }
 }

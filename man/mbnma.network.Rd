@@ -132,7 +132,7 @@ be included.
 
 \examples{
 # Create an mbnma.network object from the data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Generate a network plot from the data
 plot(network)
@@ -162,10 +162,10 @@ net.noplac <- mbnma.network(noplac.df)
 # Plotting network automatically plots connections to Placebo via dose-response
 plot(net.noplac)
 # Using the triptans headache dataset
-print(HF2PPITT)
+print(triptans)
 
 # Define network
-network <- mbnma.network(HF2PPITT, description="Example network")
+network <- mbnma.network(triptans, description="Example network")
 
 summary(network)
 plot(network)

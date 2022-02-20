@@ -81,13 +81,13 @@ Defaults for \code{n.iter}, \code{n.burnin}, \code{n.thin} and \code{n.chains} a
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an Emax dose-response MBNMA
 emax <- mbnma.run(network, fun=demax(), method="random")
 
 # Data frame for synthesis can be taken from placebo arms
-ref.df <- HF2PPITT[HF2PPITT$agent=="placebo",]
+ref.df <- triptans[triptans$agent=="placebo",]
 
 # Meta-analyse placebo studies using fixed treatment effects
 E0 <- ref.synth(ref.df, emax, synth="fixed")

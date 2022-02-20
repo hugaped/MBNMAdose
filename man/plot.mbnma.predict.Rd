@@ -59,7 +59,7 @@ sequence of time points to avoid misrepresentation of shaded densities.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an Emax dose-response MBNMA and predict responses
 emax <- mbnma.run(network, fun=demax(), method="random")

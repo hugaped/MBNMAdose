@@ -31,7 +31,7 @@ Plot cumulative ranking curves from MBNMA models
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Estimate rankings  from an Emax dose-response MBNMA
 emax <- mbnma.run(network, fun=demax(), method="random")

@@ -34,7 +34,7 @@ will be included, to avoid duplicating rankings.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Rank all predictions from a log-linear dose-response MBNMA
 loglin <- mbnma.run(network, fun=dloglin())

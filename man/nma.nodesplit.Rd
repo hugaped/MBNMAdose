@@ -75,7 +75,7 @@ of posterior densities for direct and indirect evidence.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
   method="common")

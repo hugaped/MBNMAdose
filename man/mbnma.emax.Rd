@@ -132,7 +132,7 @@ uses more clearly defined parameter names.
 \examples{
 \donttest{
 # Using the triptans data
-tripnet <- mbnma.network(HF2PPITT)
+tripnet <- mbnma.network(triptans)
 
 # Fit an Emax dose-response MBNMA with random treatment effects on Emax and ED50
 emax <- mbnma.emax(tripnet, emax="rel", ed50="rel", method="random")

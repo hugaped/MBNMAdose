@@ -128,7 +128,7 @@ uses more clearly defined parameter names.
 \examples{
 \donttest{
 # Using the triptans data
-tripnet <- mbnma.network(HF2PPITT)
+tripnet <- mbnma.network(triptans)
 
 # Fit a exponential dose-response MBNMA with random treatment effects
 exponential <- mbnma.exponential(tripnet, lambda="rel", method="random")

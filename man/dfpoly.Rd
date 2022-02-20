@@ -13,7 +13,7 @@ dfpoly(
 )
 }
 \arguments{
-\item{degree}{The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAtime}}
+\item{degree}{The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAdose}}
 
 \item{beta.1}{Pooling for the 1st fractional polynomial coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}

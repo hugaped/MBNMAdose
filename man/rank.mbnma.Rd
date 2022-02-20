@@ -47,7 +47,7 @@ Ranking cannot currently be performed on non-parametric dose-response MBNMA
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Rank selected agents from a log-linear dose-response MBNMA
 loglin <- mbnma.run(network, fun=dloglin())
@@ -62,7 +62,7 @@ summary(ranks)
 
 #### Ranking by class ####
 # Generate some classes for the data
-class.df <- HF2PPITT
+class.df <- triptans
 class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 netclass <- mbnma.network(class.df)

@@ -23,7 +23,7 @@ Drop studies that are not connected to the network reference treatment
 }
 \examples{
 # Using the triptans headache dataset
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 drops <- drop.disconnected(network)
 
 # No studies have been dropped since network is fully connected

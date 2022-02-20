@@ -10,7 +10,7 @@ genspline(x, spline = "bs", knots = 1, degree = 1, max.dose = max(x))
 \item{x}{A numeric vector indicating all time points available in the dataset}
 
 \item{spline}{Indicates the type of spline function. Can be either a piecewise linear spline (\code{"ls"}),
-natural cubic spline (\code{"ns"}), restricted cubic spline (\code{"rcs"}) or B-spline (\code{"bs"}).}
+natural cubic spline (\code{"ns"}), or B-spline (\code{"bs"}).}
 
 \item{knots}{The number/location of knots. If a single integer is given it indicates the number of knots (they will
 be equally spaced across the range of doses \emph{for each agent}). If a numeric vector is given it indicates the quantiles of the knots as
@@ -37,8 +37,8 @@ genspline(x)
 # Generate a quadratic B-spline with 1 equally spaced internal knot
 genspline(x, spline="bs", knots=2, degree=2)
 
-# Generate a restricted cubic spline with 3 knots at selected quantiles
-genspline(x, spline="rcs", knots=c(0.1, 0.5, 0.7))
+# Generate a natural cubic spline with 3 knots at selected quantiles
+genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 
 # Generate a piecewise linear spline with 3 equally spaced knots
 genspline(x, spline="ls", knots=3)

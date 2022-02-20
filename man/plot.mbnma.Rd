@@ -27,7 +27,7 @@ Generates a forest plot for dose-response parameters.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an exponential dose-response MBNMA and generate the forest plot
 exponential <- mbnma.run(network, fun=dexp())
@@ -40,7 +40,7 @@ plot(emax, params=c("emax"))
 
 #### Forest plots including class effects ####
 # Generate some classes for the data
-class.df <- HF2PPITT
+class.df <- triptans
 class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 netclass <- mbnma.network(class.df)

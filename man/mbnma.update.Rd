@@ -59,7 +59,7 @@ Useful for obtaining deviance contributions or fitted values. Same function used
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 result <- mbnma.run(network, fun=dloglin(), method="random",

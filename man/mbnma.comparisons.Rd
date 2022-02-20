@@ -37,7 +37,7 @@ mbnma.comparisons(df)
 
 
 # Using the triptans headache dataset
-network <- mbnma.network(HF2PPITT) # Adds treatment identifiers
+network <- mbnma.network(triptans) # Adds treatment identifiers
 mbnma.comparisons(network$data.ab)
 
 }

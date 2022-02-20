@@ -77,7 +77,7 @@ pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
 result <- mbnma.run(network, fun=dloglin(), method="random",
