@@ -517,7 +517,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #'
 #' # Get JAGS data with class
-#' netclass <- mbnma.network(osteopain_2wkabs)
+#' netclass <- mbnma.network(osteopain)
 #' jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 #'
 #'

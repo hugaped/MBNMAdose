@@ -19,7 +19,7 @@ testthat::test_that(paste0("test.inconsistency.loops for: ", datanam), {
 
   expect_equal(any(grepl("drparams", comps$path)), TRUE)
 
-  if (!datanam %in% c("osteopain_2wkabs", "gout")) {
+  if (!datanam %in% c("osteopain", "gout")) {
     compsnodr <- inconsistency.loops(network$data.ab, incldr = FALSE)
     expect_equal(nrow(compsnodr)<nrow(comps), TRUE)
 
@@ -47,7 +47,7 @@ testthat::test_that(paste0("test.nma.nodesplit for: ", datanam), {
     link <- "logit"
   }
 
-  if (!datanam %in% c("osteopain_2wkabs", "gout")) {
+  if (!datanam %in% c("osteopain", "gout")) {
     split <- nma.nodesplit(network, likelihood = like, link=link,
                            method="common", n.iter=1000)
     expect_equal(nrow(inconsistency.loops(network$data.ab)), length(split))
@@ -136,7 +136,7 @@ testthat::test_that("test.mbnma.nodesplit", {
   split <- mbnma.nodesplit(network, fun="rcs", knots=3, likelihood = like, link=link,
                          method="common", n.iter=1000)
   expect_equal(nrow(comps), length(split))
-  if (!datanam %in% c("osteopain_2wkabs", "gout")) {
+  if (!datanam %in% c("osteopain", "gout")) {
     expect_equal(nrow(inconsistency.loops(network$data.ab, incldr = FALSE))==length(split), FALSE)
   }
   expect_equal(class(split), "nodesplit")

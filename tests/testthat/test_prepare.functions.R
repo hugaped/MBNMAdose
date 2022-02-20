@@ -1,8 +1,8 @@
 testthat::context("Testing prepare.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(triptans, psoriasis75, ssri, osteopain_2wkabs, gout)
-datanams <- c("triptans", "psoriasis75", "ssri", "osteopain_2wkabs", "gout")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
 for (dat in seq_along(alldfs)) {
 
@@ -100,7 +100,7 @@ for (dat in seq_along(alldfs)) {
   test_that(paste0("mbnma.network functions correctly for: ", datanam), {
     expect_message(mbnma.network(df1))
 
-    if (datanam!="osteopain_2wkabs") {
+    if (datanam!="osteopain") {
       expect_message(mbnma.network(df2))
     } else {
       expect_error(mbnma.network(df2), "Class codes are different")
@@ -124,7 +124,7 @@ for (dat in seq_along(alldfs)) {
 
     for (i in seq_along(datalist)) {
 
-      if (i==2 & datanam!="osteopain_2wkabs") {
+      if (i==2 & datanam!="osteopain") {
         network <- mbnma.network(datalist[[i]])
 
         expect_error(mbnma.comparisons(network))

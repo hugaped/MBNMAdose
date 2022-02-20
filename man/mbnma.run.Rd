@@ -276,7 +276,7 @@ multidose <- mbnma.run(network, fun=multifun)
 ########## Class effects ##########
 
  # Using the osteoarthritis dataset
- pain.df <- osteopain_2wkabs
+ pain.df <- osteopain
 
  # Set a shared class (NSAID) only for Naproxcinod and Naproxen
  pain.df <- pain.df \%>\% mutate(

@@ -847,7 +847,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #'
 #' @examples
 #' # Using the osteoarthritis data
-#' network <- mbnma.network(osteopain_2wkabs)
+#' network <- mbnma.network(osteopain)
 #'
 #' expon <- mbnma.run(network, fun=dexp(), method="random")
 #'

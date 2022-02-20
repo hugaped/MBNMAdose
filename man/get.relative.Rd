@@ -32,7 +32,7 @@ Calculates relative effects between treatments in an MBNMA model
 }
 \examples{
 # Using the osteoarthritis data
-network <- mbnma.network(osteopain_2wkabs)
+network <- mbnma.network(osteopain)
 
 expon <- mbnma.run(network, fun=dexp(), method="random")
 

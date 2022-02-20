@@ -9,8 +9,8 @@ test_that(paste("run.functions work correctly"), {
 
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(triptans, psoriasis75, ssri, osteopain_2wkabs, gout)
-datanams <- c("triptans", "psoriasis75", "ssri", "osteopain_2wkabs", "gout")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)
@@ -70,7 +70,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(predict(result))
 
       # Three parameter DR functions
-      if (datanam!="osteopain_2wkabs") {
+      if (datanam!="osteopain") {
         result <- mbnma.emax.hill(netclass, emax="rel", ed50="rel", hill="common",
                                   method="random", n.iter=n.iter, pd=pd)
         expect_equal(all(c("emax", "ed50", "hill", "sd") %in% result$parameters.to.save), TRUE)

@@ -10,13 +10,13 @@ psoriasis.r$r <- psoriasis.r$r75
 datalist <- list("HF2PPITT"=HF2PPITT,
                  "psoriasis"=psoriasis.r,
                  "ssri"=ssri,
-                 "osteopain_2wkabs"=osteopain_2wkabs,
+                 "osteopain"=osteopain,
                  "gout"=gout
                  )
 
 
 #
-# datalist <- list("osteopain_2wkabs"=osteopain_2wkabs)
+# datalist <- list("osteopain"=osteopain)
 # for (dataset.number in seq_along(datalist)) {
 #   print(paste("Testing dataset:", names(datalist)[dataset.number]))
 #

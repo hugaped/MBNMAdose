@@ -9,8 +9,8 @@ testthat::context("Testing full set of functions")
 
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(triptans, psoriasis75, ssri, osteopain_2wkabs, gout)
-datanams <- c("triptans", "psoriasis75", "ssri", "osteopain_2wkabs", "gout")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)
@@ -260,7 +260,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(fitplot(result), NA)
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
-    } else if (datanam %in% c("osteopain_2wkabs", "gout")) {
+    } else if (datanam %in% c("osteopain", "gout")) {
       expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), NA)
       result <- mbnma.run(network, fun=dexp(), link="log", n.iter=n.iter, pd=pd)
       expect_equal(result$model.arg$link, "log")

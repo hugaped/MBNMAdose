@@ -100,7 +100,7 @@ jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 
 
 # Get JAGS data with class
-netclass <- mbnma.network(osteopain_2wkabs)
+netclass <- mbnma.network(osteopain)
 jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 
