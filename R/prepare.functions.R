@@ -1381,7 +1381,7 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertNumeric(knots, add=argcheck, lower=1)
+  checkmate::assertNumeric(knots, add=argcheck, lower=0)
   checkmate::assertIntegerish(degree, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
