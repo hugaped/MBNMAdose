@@ -1,8 +1,8 @@
 testthat::context("Testing predict.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(HF2PPITT, psoriasis75, ssri, osteopain_2wkabs, GoutSUA_2wkCFB)
-datanams <- c("HF2PPITT", "psoriasis75", "ssri", "osteopain_2wkabs", "GoutSUA_2wkCFB")
+alldfs <- list(HF2PPITT, psoriasis75, ssri, osteopain_2wkabs, gout)
+datanams <- c("HF2PPITT", "psoriasis75", "ssri", "osteopain_2wkabs", "gout")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)

@@ -11,7 +11,7 @@ datalist <- list("HF2PPITT"=HF2PPITT,
                  "psoriasis"=psoriasis.r,
                  "ssri"=ssri,
                  "osteopain_2wkabs"=osteopain_2wkabs,
-                 "GoutSUA_2wkCFB"=GoutSUA_2wkCFB
+                 "gout"=gout
                  )
 
 

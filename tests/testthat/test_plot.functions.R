@@ -46,7 +46,7 @@ if ("class" %in% names(dataset)) {
 
 test_that(paste0("plot.mbnma.network functions correctly for:", datanam), {
 
-  if (datanam!="GoutSUA_2wkCFB") {
+  if (datanam!="gout") {
     expect_silent(plot(network, layout = igraph::as_star(),
                        edge.scale=1, label.distance=0))
 

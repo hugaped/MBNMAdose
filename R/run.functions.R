@@ -829,7 +829,7 @@ gen.parameters.to.save <- function(fun, model) {
 #' plot(nma)
 #'
 #' # Run common effects NMA keeping treatments that are disconnected in the NMA
-#' goutnet <- mbnma.network(GoutSUA_2wkCFB)
+#' goutnet <- mbnma.network(gout)
 #' nma <- nma.run(goutnet, method="common", drop.discon=FALSE)
 #'
 #' # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset

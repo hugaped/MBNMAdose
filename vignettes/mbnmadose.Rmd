@@ -82,10 +82,10 @@ kable(head(ssri), digits=2)
 
 ### Interventions for Serum Uric Acid (SUA) reduction in gout
 
-`GoutSUA_2wkCFB` is from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in patients with gout *[not published previously]*. The outcome is continuous, and aggregate data responses correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA) arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total there were 19 different treatments (combination of dose and agent). `GoutSUA_2wkCFB` is a data frame in long format (one row per arm and study), with the variables `studyID`, `y`, `se`, `agent` and `dose`.
+`gout` is from a systematic review of interventions for lowering Serum Uric Acid (SUA) concentration in patients with gout *[not published previously]*. The outcome is continuous, and aggregate data responses correspond to the mean change from baseline in SUA in mg/dL at 2 weeks follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs), comparing 5 different agents, and placebo. Data for one agent (RDEA) arises from an RCT that is not placebo-controlled, and so is not connected to the network directly. In total there were 19 different treatments (combination of dose and agent). `gout` is a data frame in long format (one row per arm and study), with the variables `studyID`, `y`, `se`, `agent` and `dose`.
 
 ```{r, echo=FALSE}
-kable(head(GoutSUA_2wkCFB), digits=2) 
+kable(head(gout), digits=2) 
 ```
 
 
@@ -173,7 +173,7 @@ If some vertices are not connected to the network reference treatment through an
 
 ```{r, message=FALSE, warning=FALSE}
 # Prepare data using the gout dataset
-goutnet <- mbnma.network(GoutSUA_2wkCFB)
+goutnet <- mbnma.network(gout)
 summary(goutnet)
 ```
 ```{r}
@@ -512,7 +512,7 @@ One of the strengths of dose-response MBNMA is that it allows treatments to be c
 ```{r, message=FALSE, warning=FALSE}
 # Generate dataset without placebo
 noplac.gout <- 
-  GoutSUA_2wkCFB[!GoutSUA_2wkCFB$studyID %in% c(2001, 3102),] # Drop two-arm placebo studies
+  gout[!gout$studyID %in% c(2001, 3102),] # Drop two-arm placebo studies
 noplac.gout <- 
   noplac.gout[noplac.gout$agent!="Plac",] # Drop placebo arm from multi-arm studies
 
