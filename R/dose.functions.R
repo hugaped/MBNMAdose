@@ -710,7 +710,7 @@ dspline <- function(type="bs", knots=1, degree=1,
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
-  checkmate::assertChoice(type, choices=c("rcs", "bs", "ns", "ls"), add=argcheck)
+  checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
