@@ -1370,7 +1370,7 @@ check.network <- function(g, reference=1) {
 #' # Generate a quadratic B-spline with 1 equally spaced internal knot
 #' genspline(x, spline="bs", knots=2, degree=2)
 #'
-#' # Generate a restricted cubic spline with 3 knots at selected quantiles
+#' # Generate a natural cubic spline with 3 knots at selected quantiles
 #' genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 #'
 #' # Generate a piecewise linear spline with 3 equally spaced knots

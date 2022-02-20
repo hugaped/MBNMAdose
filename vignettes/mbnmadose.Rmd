@@ -57,10 +57,10 @@ At each of these stages there are a number of informative plots that can be gene
 
 ### Triptans for migraine pain relief
 
-`HF2PPITT` is from a systematic review of interventions for pain relief in migraine [@thorlund2014]. The outcome is binary, and represents (as aggregate data) the number of participants who were headache-free at 2 hours. Data are from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses are standardised as relative to a "common" dose, and in total there are 23 different treatments (combination of dose and agent). `HF2PPITT` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
+`triptans` is from a systematic review of interventions for pain relief in migraine [@thorlund2014]. The outcome is binary, and represents (as aggregate data) the number of participants who were headache-free at 2 hours. Data are from patients who had had at least one migraine attack, who were not lost to follow-up, and who did not violate the trial protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7 triptans with placebo. Doses are standardised as relative to a "common" dose, and in total there are 23 different treatments (combination of dose and agent). `triptans` is a data frame in long format (one row per arm and study), with the variables `studyID`, `AuthorYear`, `N`, `r`, `dose` and `agent`.
 
 ```{r, echo=FALSE}
-kable(head(HF2PPITT), digits=2) 
+kable(head(triptans), digits=2) 
 ```
 
 
@@ -113,7 +113,7 @@ Before embarking on an analysis, the first step is to have a look at the raw dat
 
 ```{r}
 # Using the triptans dataset
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 summary(network)
 ```
 
@@ -162,7 +162,7 @@ Within these network plots, vertices are automatically aligned in a circle (as t
 
 ```{r, error = TRUE, purl = FALSE}
 # Prepare data using the triptans dataset
-tripnet <- mbnma.network(HF2PPITT)
+tripnet <- mbnma.network(triptans)
 summary(tripnet)
 
 # Draw network plot
@@ -246,7 +246,7 @@ For the following functions $x_{i,k}$ refers to the dose and $t_{i,k}$ to the ag
 
 * Fractional polynomial (`dfpoly()`): $f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k}}}x^{\gamma_p}_{i,k}$ where $p$ is the degree of the polynomial, $\beta_p$ are the coefficients, and $x_{i,k}^{\gamma_p}$ is a regular power except where $\gamma_p=0$ where ${x_{i,k}^{(0)}=ln(x_{i,k})}$. If a fractional polynomial power ${\gamma_p}$ repeats within the function it is multiplied by another ${ln(x_{i,k})}$.
 
-* Spline functions (`dspline()`): B-splines (`type="bs"`), natural splines (`type="ns"`), restricted cubic splines (`type="rcs"`) and piecewise linear splines (`type="ls"`) can be fitted. $f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$ where $\beta_{p,t_{i,k}}$ is the regression coefficient for the $p^{th}$ spline and $X_{1:P,i,k}$ is the basis matrix for the spline, defined by the spline type.
+* Spline functions (`dspline()`): B-splines (`type="bs"`), natural cubic splines (`type="ns"`) and piecewise linear splines (`type="ls"`) can be fitted. $f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$ where $\beta_{p,t_{i,k}}$ is the regression coefficient for the $p^{th}$ spline and $X_{1:P,i,k}$ is the basis matrix for the spline, defined by the spline type.
 
 * Non-parametric monotonic function (`dnonparam()`): Follows the approach of Owen et al. [-@owen2015]. The `direction` can be specified as `"increasing"` or `"decreasing"`.
 
@@ -405,9 +405,9 @@ dr.funs <- dmulti(list(
   "Placebo"=dpoly(degree=2),
   "citalopram"=dpoly(degree=2),
   "escitalopram"=dpoly(degree=2),
-  "fluoxetine"=dspline(type="rcs",knots=3),
+  "fluoxetine"=dspline(type="ns",knots=2),
   "paroxetine"=dpoly(degree=2),
-  "sertraline"=dspline(type="rcs",knots=3)
+  "sertraline"=dspline(type="ns",knots=2)
   ))
 
 multifun <- mbnma.run(depnet, fun=dr.funs, method="common", n.iter=50000)
@@ -419,7 +419,7 @@ Because an MBNMA model with a linear dose-response function (`dpoly(degree=1)`) 
 
 #### Splines and `knots`
 
-For a more flexible dose-response shape, various different splines can be fitted to the data by using `dspline()`. This model is very flexible and can allow for a variety of non-monotonic dose-response relationships, though parameters can be difficult to interpret. For restricted cubic splines (`dspline(type="rcs")`) this follows the method of Hamza et a. (2020) [@hamza2020]. 
+For a more flexible dose-response shape, various different splines can be fitted to the data by using `dspline()`. This model is very flexible and can allow for a variety of non-monotonic dose-response relationships, though parameters can be difficult to interpret.
 
 To fit this model, the number/location of `knots` (the points at which the different spline pieces meet) should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.
 
@@ -428,9 +428,9 @@ dspline(type="bs", knots=3)
 # ...is equivalent to 
 dspline(type="bs", knots=c(0.25,0.5,0.75))
 
-# Using a restricted cubic spline on the SSRI dataset
+# Using a natural cubic spline on the SSRI dataset
 depnet <- mbnma.network(ssri)
-rcs <- mbnma.run(depnet, fun=dspline(type="rcs", knots=c(0.25,0.5,0.75)))
+ns <- mbnma.run(depnet, fun=dspline(type="ns", knots=c(0.25,0.5,0.75)))
 ```
 
 
@@ -579,7 +579,7 @@ Note that some post-estimation functions (e.g. ranking, prediction) cannot be pe
 For looking at post-estimation in MBNMA we will demonstrate using results from an Emax MBNMA on the triptans dataset unless specified otherwise:
 
 ```{r, results="hide"}
-tripnet <- mbnma.network(HF2PPITT)
+tripnet <- mbnma.network(triptans)
 trip.emax <- mbnma.emax(tripnet, emax="rel", ed50="rel") 
 ```
 
@@ -666,7 +666,7 @@ After performing an MBNMA, responses can be predicted from the model parameter e
 Another approach is to estimate `E0` from a set of studies. These would ideally be studies of untreated/placebo-treated patients that closely resemble the population for which predictions are desired, and the studies may be observational. However, synthesising results from the placebo arms of trials in the original network is also possible. For this, `E0` is assigned a data frame of studies in the long format (one row per study arm) with the variables `studyID`, and a selection of `y`, `se`, `r`, `N` and `E` (depending on the likelihood used in the MBNMA model). `synth` can be set to `"fixed"` or `"random"` to indicate whether this synthesis should be fixed or random effects.
   
 ```{r, eval=FALSE}
-E0 <- HF2PPITT[HF2PPITT$dose==0,]
+E0 <- triptans[triptans$dose==0,]
 ```
   
 Additionally, it's also necessary to specify the doses at which to predict responses. By default, `predict()` uses the maximum dose within the dataset for each agent, and predicts doses at a series of cut points. The number of cut points can be specified using `n.doses`, and the maximum dose to use for prediction for each agent can also be specified using `max.doses` (a named list of numeric values where element names correspond to agent names).
@@ -688,7 +688,7 @@ pred <- predict(trip.emax, E0="rbeta(n, shape1=2, shape2=10)",
 
 
 # Predict exact doses for two agents, and estimate E0 from the data
-E0.data <- HF2PPITT[HF2PPITT$dose==0,]
+E0.data <- triptans[triptans$dose==0,]
 doses <- list("eletriptan"=c(0,1,3),
                   "sumatriptan"=c(0,3))
 ```
