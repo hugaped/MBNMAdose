@@ -874,7 +874,6 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
       stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
     }
 
-    message("Bayesian prediction intervals to be calculated")
   } else {
     addsd <- FALSE
   }
@@ -1127,6 +1126,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
 
   out <- list("relarray"=outmat)
   out <- c(out, sumlist)
+  out$lim <- lim
 
   class(out) <- "relative.array"
 

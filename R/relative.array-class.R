@@ -15,6 +15,12 @@ print.relative.array <- function(x, digits=2, ...) {
 
   xmat <- x$relarray
 
+  if (x$lim=="cred") {
+    lim <- "credible"
+  } else if (x$lim=="pred") {
+    lim <- "prediction"
+  }
+
   outmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
   # dimnames(outmat)[[1]] <- dimnames(xmat)[[1]]
   # dimnames(outmat)[[2]] <- dimnames(xmat)[[2]]
@@ -28,7 +34,7 @@ print.relative.array <- function(x, digits=2, ...) {
   }
   diag(outmat) <- dimnames(xmat)[[1]]
 
-  cat(crayon::bold(paste0("========================================\nRelative treatment comparisons\n========================================\n")))
+  cat(crayon::bold(paste0("============================================================\nRelative treatment comparisons (95% ", lim, " intervals)\n============================================================\n")))
   cat("\n")
   #knitr::kable(outmat, ...)
 
