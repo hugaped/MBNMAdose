@@ -532,7 +532,9 @@ recode.agent <- function(data.ab, level="agent") {
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
 #' @export
-getjagsdata <- function(data.ab, class=FALSE, likelihood="binomial", link="logit",
+getjagsdata <- function(data.ab, class=FALSE,
+                        likelihood=check.likelink(data.ab)$likelihood,
+                        link=check.likelink(data.ab)$link,
                         level="agent", fun=NULL, nodesplit=NULL) {
 
   # Run Checks

@@ -342,7 +342,7 @@ mbnma.run <- function(network,
                    user.fun=user.fun)
 
   # Check/assign link and likelihood
-  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
+  likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link, warnings=TRUE)
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
@@ -976,38 +976,56 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
 #' @inheritParams mbnma.network
 #'
 #' @export
-check.likelink <- function(data.ab, likelihood=NULL, link=NULL) {
+check.likelink <- function(data.ab, likelihood=NULL, link=NULL, warnings=FALSE) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(link, choices=c("logit", "identity", "cloglog", "probit", "log", "smd"), null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(warnings, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
 
   if (is.null(likelihood)) {
     if (all(c("r", "n") %in% names(data.ab))) {
       likelihood <- "binomial"
-      message("`likelihood` not given by user - set to `binomial` based on data provided")
+
+      if (warnings==TRUE) {
+        message("`likelihood` not given by user - set to `binomial` based on data provided")
+      }
     } else if (all(c("y", "se") %in% names(data.ab))) {
       likelihood <- "normal"
-      message("`likelihood` not given by user - set to `normal` based on data provided")
+
+      if (warnings==TRUE) {
+        message("`likelihood` not given by user - set to `normal` based on data provided")
+      }
     } else if (all(c("r", "E") %in% names(data.ab))) {
       likelihood <- "poisson"
-      message("`likelihood` not given by user - set to `poisson` based on data provided")
+
+      if (warnings==TRUE) {
+        message("`likelihood` not given by user - set to `poisson` based on data provided")
+      }
     }
   }
   if (is.null(link)) {
     if (likelihood=="binomial") {
       link <- "logit"
-      message("`link` not given by user - set to `logit` based on assigned value for `likelihood`")
+
+      if (warnings==TRUE) {
+        message("`link` not given by user - set to `logit` based on assigned value for `likelihood`")
+      }
     } else if (likelihood=="normal") {
       link <- "identity"
-      message("`link` not given by user - set to `identity` based on assigned value for `likelihood`")
+
+      if (warnings==TRUE) {
+        message("`link` not given by user - set to `identity` based on assigned value for `likelihood`")
+      }
     } else if (likelihood=="poisson") {
       link <- "log"
-      message("`link` not given by user - set to `log` based on assigned value for `likelihood`")
+
+      if (warnings==TRUE) {
+        message("`link` not given by user - set to `log` based on assigned value for `likelihood`")
+      }
     }
   }
 
