@@ -747,7 +747,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 
 
   # Calculate relative effects for MBNMA
-  mbnma.rel <- get.relative(mbnma.jags, treatments = comp.list)
+  mbnma.rel <- get.relative(mbnma.jags, treatments = comp.list)$relarray
 
   nodesplit.result <- list()
   for (split in seq_along(comparisons[,1])) {
@@ -777,9 +777,9 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
     #                       warn.rhat=FALSE, nodesplit=c(1, comp[2]), ...)
 
     # Get indirect
-    ind.res <- get.relative(ind.jags, treatments = comp.list)[compnames[2],
-                                                              compnames[1],
-                                                              ]
+    ind.res <- get.relative(ind.jags, treatments = comp.list)$relarray[compnames[2],
+                                                                       compnames[1],
+                                                                       ]
 
     # Get direct
     dir.res <- ind.jags$BUGSoutput$sims.matrix[
