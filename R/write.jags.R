@@ -477,7 +477,10 @@ write.delta <- function(model, method="common", om) {
       model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
       model <- model.insert(model, pos=which(names(model)=="end"), x=c(
         #"sd ~ dnorm(0,0.0025) T(0,)",
-        paste0("sd ~ dunif(0, ", om$rel, ")"),
+        ifelse(om$rel>0,
+               paste0("sd ~ dunif(0, ", om$rel, ")"),
+               paste0("sd ~ dunif(", om$rel, ", 0)")
+               ),
         "tau <- pow(sd, -2)"
       ))
     } else {
@@ -554,7 +557,9 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0(pname, "[k]  ~ dnorm(", toupper(pname), "[class[k]], tau.", toupper(pname), ")")
             model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
-            insert <- c(paste0("sd.", toupper(pname), " ~ dunif(0,", om$rel, ")"),
+            insert <- c(ifelse(om$rel>0,
+                               paste0("sd.", toupper(pname), " ~ dunif(0, ", om$rel, ")"),
+                               paste0("sd.", toupper(pname), " ~ dunif(", om$rel, ", 0)")),
                         paste0("tau.", toupper(pname), " <- pow(sd.", toupper(pname), ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
           }
@@ -586,7 +591,9 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0("s.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
 
-            insert <- c(paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
+            insert <- c(ifelse(om$abs>0,
+                               paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
+                               paste0("sd.", pname, " ~ dunif(", om$abs, ", 0)")),
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -604,7 +611,9 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0("s.beta.", i, "[k,c] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
 
-            insert <- c(paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
+            insert <- c(ifelse(om$abs>0,
+                               paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
+                               paste0("sd.", pname, " ~ dunif(", om$abs, ", 0)")),
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -881,7 +890,10 @@ write.nma <- function(method="common", likelihood="binomial", link="logit", om,
     model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
 
     insert <- c("tau <- pow(sd,-2)",
-                paste0("sd ~ dunif(0,", om$rel, ")"))
+
+                ifelse(om$rel>0,
+                       paste0("sd ~ dunif(0, ", om$rel, ")"),
+                       paste0("sd ~ dunif(", om$rel, ", 0)")))
     model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
 
@@ -957,7 +969,9 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
   } else if (synth=="random") {
     mucode <- "mu[i] ~ dnorm(m.mu, tau.mu)"
     musdcode <- c("tau.mu <- pow(sd.mu, -2)",
-                  paste0("sd.mu ~ dunif(0,", om$abs, ")"))
+                  ifelse(om$abs>0,
+                         paste0("sd.mu ~ dunif(0,", om$abs, ")"),
+                         paste0("sd.mu ~ dunif(", om$abs, ", 0)")))
 
     model <- model.insert(model, pos=which(names(model)=="study"), x=mucode)
     model <- model.insert(model, pos=which(names(model)=="end"), x=musdcode)
