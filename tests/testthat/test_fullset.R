@@ -313,7 +313,7 @@ for (dat in seq_along(alldfs)) {
     multifun <- mbnma.run(network, fun=mult,
                           n.iter=n.iter, pd=pd)
     expect_equal(length(multifun$model.arg$fun$name)>1, TRUE)
-    expect_equal(all(c("beta.1", "beta.2", "emax", "ed50", "rate") %in% multifun$parameters.to.save), TRUE)
+    expect_equal(all(c("beta.1", "beta.2", "emax", "ed50", "emax.4") %in% multifun$parameters.to.save), TRUE)
 
 
 
@@ -340,18 +340,5 @@ for (dat in seq_along(alldfs)) {
       expect_error(mbnma.run(netclass, fun=mult,
                              class.effect = list(beta.2="common")), "single dose-response function")
     }
-
-    expect_error(
-      mult <- dmulti(
-        c(rep(list(dspline(knots = 2, type="ns")),2),
-          rep(list(dspline(type="bs")),2)
-        )), "single type of spline function")
-
-    expect_error(
-      mult <- dmulti(
-        c(rep(list(dspline(knots = 2, type="ns")),2),
-          rep(list(dspline(knots=3, type="ns")),3)
-        )), "single type of spline function")
-
   })
 }

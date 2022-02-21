@@ -1,5 +1,5 @@
 ---
-title: "MBNMAdose for dose-response Model-Based (Network) Meta-Analysis"
+title: "MBNMAdose for dose-response Model-Based Network Meta-Analysis"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
 output:
@@ -66,11 +66,7 @@ kable(head(triptans), digits=2)
 
 ### Biologics for treatment of moderate-to-severe psoriasis
 
-`psoriasis` is from a systematic review of RCTs comparing biologics at different doses and placebo [@warren2019]. Three different binary outcomes are included, all based on the number of patients experiencing degrees of improvement on the Psoriasis Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset includes 28 Randomised-Controlled Trials (RCTs), comparing 9 different biologics at different doses with placebo. There are three response variables, indicating the number of participants who achieved >=75% (`r75`), >=90% (`r90`) and 100% (`r100`) improvement in PASI score after 12 weeks.
-
-```{r, echo=FALSE}
-kable(head(psoriasis), digits=2) 
-```
+There are 3 psoriasis datasets from a systematic review of RCTs comparing biologics at different doses and placebo [@warren2019]. Each dataset contains a different binary outcome, all based on the number of patients experiencing degrees of improvement on the Psoriasis Area and Severity Index (PASI) measured at 12 weeks follow-up. Each dataset contains information on the number of participants who achieved $\geq75\%$ (`psoriasis75`), $\geq90\%$ (`psoriasis90`), or $100\%$ (`psoriasis100`).
 
 ### Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression
 
@@ -91,10 +87,10 @@ kable(head(gout), digits=2)
 
 ### Interventions for pain relief in osteoarthritis
 
-`osteopain_2wkabs` is from a systematic review of interventions for pain relief in osteoarthritis, used previously in Pedder et al. [-@pedder2019]. The outcome is continuous, and aggregate data responses correspond to the mean WOMAC pain score at 2 weeks follow-up. The dataset includes 18 Randomised-Controlled Trials (RCTs), comparing 8 different agents with placebo. In total there were 26 different treatments (combination of dose and agent). The active treatments can also be grouped into 3 different classes, within which they have similar mechanisms of action. `osteopain_2wkabs` is a data frame in long format (one row per arm and study), with the variables `studyID`, `agent`, `dose`, `class`, `y`, `se`, and `N`.
+`osteopain` is from a systematic review of interventions for pain relief in osteoarthritis, used previously in Pedder et al. [-@pedder2019]. The outcome is continuous, and aggregate data responses correspond to the mean WOMAC pain score at 2 weeks follow-up. The dataset includes 18 Randomised-Controlled Trials (RCTs), comparing 8 different agents with placebo. In total there were 26 different treatments (combination of dose and agent). The active treatments can also be grouped into 3 different classes, within which they have similar mechanisms of action. `osteopain_2wkabs` is a data frame in long format (one row per arm and study), with the variables `studyID`, `agent`, `dose`, `class`, `y`, `se`, and `N`.
 
 ```{r, echo=FALSE}
-kable(head(osteopain_2wkabs), digits=2) 
+kable(head(osteopain), digits=2) 
 ```
 
 
@@ -339,7 +335,7 @@ When working with class effects in `MBNMAdose` a variable named `class` must be 
 
 ```{r, results="hide", message=FALSE, warning=FALSE}
 # Using the osteoarthritis dataset
-pain.df <- osteopain_2wkabs
+pain.df <- osteopain
 
 # Set class equal to agent for all agents
 pain.df$class <- pain.df$class
@@ -426,7 +422,7 @@ ns <- mbnma.run(depnet, fun=dspline(type="ns", knots=c(0.25,0.5,0.75)))
 
 #### Correlation between dose-response parameters
 
-`mbnma.run()` automatically models correlation between relative effects dose-response parameters. This can be prevented by specifying `cor=FALSE` in `mbnma.run()`. The correlation is modelled using a vague Wishart prior, but this can be made more informative by specifying a scale matrix for the prior. This corresponds to the expectation of the Wishart prior. A different scale matrix can be given to the model in `omega`. Each row of the scale matrix corresponds to the 1st, 2nd, 3rd, etc. dose-response parameter that has been modelled using relative effects (as specified in the dose-response function).
+`mbnma.run()` automatically models correlation between relative effects dose-response parameters. This can be prevented by specifying `cor=FALSE` in `mbnma.run()`. The correlation is modeled using a vague Wishart prior, but this can be made more informative by specifying a scale matrix for the prior. This corresponds to the expectation of the Wishart prior. A different scale matrix can be given to the model in `omega`. Each row of the scale matrix corresponds to the 1st, 2nd, 3rd, etc. dose-response parameter that has been modeled using relative effects (as specified in the dose-response function).
 
 
 #### Priors
@@ -440,11 +436,11 @@ $$
   &\sigma \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
   &\sigma_{p} \sim N(0,400) \text{  limited to  } x \in [0,\infty]\\
   &D_{p,c} \sim N(0,1000)\\
-  &\sigma_{p} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
+  &\sigma^D_{p} \sim N(0,400) \text{ limited to } x \in [0,\infty]\\
 \end{aligned}
 $$
 
-...where $p$ is an identifier for the dose-response parameter (e.g. 1 for Emax and 2 for ED50), $a$ is an agent identifier and $c$ is a class identifier
+...where $p$ is an identifier for the dose-response parameter (e.g. 1 for Emax and 2 for ED50), $a$ is an agent identifier and $c$ is a class identifier.
 
 Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models. 
 
@@ -467,7 +463,7 @@ new.priors <- list(
   )
 
 # Run an MBNMA model with new priors
-emax <- mbnma.emax(alognet, emax="rel", ed50="rel", method="random",
+emax <- mbnma.run(alognet, fun=demax(), method="random",
                    priors=new.priors)
 ```
 
@@ -544,16 +540,16 @@ In this way we can fully connect up treatments in an otherwise disconnected netw
 
 ### Non-parametric dose-response functions
 
-In addition to the parametric dose-response functions described above, two non-parametric monotonic dose-response relationships can also be specified in `mbnma.run()`. Setting `fun="nonparam.up"` or `fun="nonparam.down"` can be used to specify a monotonically increasing or decreasing dose-response respectively. This is achieved in the model by imposing restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater/less (for `"nonparam.up"` and `"nonparam.down"` respectively) than the previous dose. The approach results in a similar model to that developed by Owen et al. [-@owen2015]. 
+In addition to the parametric dose-response functions described above, a non-parametric monotonic dose-response relationship can also be specified in `mbnma.run()`. `fun=dnonparam()` can be used to specify a monotonically increasing (`direction="increasing"`) or decreasing (`direction="decreasing"`) dose-response respectively. This is achieved in the model by imposing restrictions on the prior distributions of treatment effects that ensure that each increasing dose of an agent has an effect that is either the same or greater than the previous dose. The approach results in a similar model to that developed by Owen et al. [-@owen2015]. 
 
-By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modelled, it cannot be used to connect networks that are disconnected at the treatment-level, unlike a parametric MBNMA.
+By making this assumption, this model is slightly more informative, and can lead to some slight gains in precision if relative effects are otherwise imprecisely estimated. However, because a functional form for the dose-response is not modeled, it cannot be used to connect networks that are disconnected at the treatment-level, unlike a parametric MBNMA.
 
 In the case of MBNMA, it may be useful to compare the fit of a non-parametric model to that of a parametric dose-response function, to ensure that fitting a parametric dose-response function does not lead to significantly poorer model fit.
 
-When fitting a non-parametric dose-response model, there is no need to specify arguments for dose-response parameters (`beta.1`, `beta.2`, `beta.3`, `beta.4`), as these are ignored in this modelling approach. `method` can still be used to specify either `"common"` or `"random"` effects. It is important to correctly choose either `"nonparam.up"` or `"nonparam.down"` depending on the expected direction of effect, or this can lead to computation errors.
+When fitting a non-parametric dose-response model, it is important to correctly choose the expected `direction` of the monotonic response, otherwise it can lead to computation error.
 
-```{r, results="hide"}
-nonparam <- mbnma.run(tripnet, fun="nonparam.up", method="random")
+```{r, nonparam, results="hide"}
+nonparam <- mbnma.run(tripnet, fun=dnonparam(direction="increasing"), method="random")
 ```
 ```{r}
 print(nonparam)
@@ -570,7 +566,7 @@ For looking at post-estimation in MBNMA we will demonstrate using results from a
 
 ```{r, results="hide"}
 tripnet <- mbnma.network(triptans)
-trip.emax <- mbnma.emax(tripnet, emax="rel", ed50="rel") 
+trip.emax <- mbnma.run(tripnet, fun=demax(emax="rel", ed50="rel")) 
 ```
 
 ### Deviance plots
@@ -644,10 +640,10 @@ Histograms for ranking results can also be plotted using the `plot()` method, wh
 
 ```{r}
 # Ranking histograms for Emax
-plot(ranks, params = "d.emax")
+plot(ranks, params = "emax")
 
 # Ranking histograms for ED50
-plot(ranks, params = "d.ed50")
+plot(ranks, params = "ed50")
 ```
 
 Alternatively, cumulative ranking plots for all parameters can be plotted simultaneously so as to be able to compare the effectiveness of different agents on different parameters. The surface under cumulative ranking curve (SUCRA) for each parameter can also be estimated by setting `sucra=TRUE`.
@@ -731,7 +727,7 @@ We can also plot the results of a "split" Network Meta-Analysis (NMA) in which a
 
 ```{r, results="hide", warning=FALSE, message=FALSE}
 alognet <- mbnma.network(alog_pcfb)
-alog.emax <- mbnma.emax(alognet, method="random")
+alog.emax <- mbnma.run(alognet, fun=demax(), method="random")
 pred <- predict(alog.emax, E0=0, n.dose=20)
 plot(pred, overlay.split = TRUE, method="random")
 ```
@@ -835,7 +831,7 @@ print(splitcomps)
 
 # If we want to fit an Emax dose-response function, there is insufficient
 #indirect evidence in all but the first 6 comparisons
-nodesplit <- mbnma.nodesplit(psorinet, fun="emax", comparisons=splitcomps[1:6,], method="common")
+nodesplit <- mbnma.nodesplit(psorinet, fun=demax(), comparisons=splitcomps[1:6,], method="common")
 ```
 ```{r, eval=FALSE}
 print(nodesplit)
@@ -860,7 +856,7 @@ plot(nodesplit, plot.type="forest")
 plot(nodesplit, plot.type="density")
 ```
 
-## Convergence
+## MCMC Convergence
 
 `MBNMAdose` runs Bayesian models in JAGS, which uses Markov Chain Monte Carlo (MCMC) simulation. However, the validity of results is reliant on the MCMC chains having converged successfully on the posterior densities of all parameters in the model. For highly parameterised models run on relatively limited data, as is often the case with MBNMA models, convergence can often be an challenge. Note that convergence is *necessary* to be able to compare models and evaluate model fit. However, successful convergence *does not* imply good model fit.
 

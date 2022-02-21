@@ -655,9 +655,20 @@ getjagsdata <- function(data.ab, class=FALSE,
         doses$degree <- unique(fun$degree[fun$name %in% splineopt])
       }
 
+      # TEST
+      # nknot <- max(unlist(lapply(fun$knots, length)), na.rm = TRUE)
+      #
+      # # If this dose not work unhash section below and hash this instead
+      # knotposvec <- fun$knots[fun$posvec]
+      #
+      # temp <- matrix(nrow=nrow(doses), ncol=nknot)
+      # for (r in 1:nrow(temp)) {
+      #   temp[r,1:length(knotposvec[[doses$agent[r]]])] <- knotposvec[[doses$agent[r]]]
+      # }
+      # doses$knots <- temp
+
       # If there are multiple spline knots
-      #if (dplyr::n_distinct(fun$knots[[fun$name %in% splineopt]])>1) {
-      if (length(unique(fun$knots))>1) {
+      if (length(unique(fun$knots)[!is.na(unique(fun$knots))])>1) {
         nknot <- max(unlist(lapply(fun$knots, length)), na.rm = TRUE)
 
         # If this dose not work unhash section below and hash this instead
@@ -669,24 +680,11 @@ getjagsdata <- function(data.ab, class=FALSE,
         }
         doses$knots <- temp
 
-        # if (nknot>1) {
-        #   temp <- fun$knots[fun$posvec]
-        #
-        #   doses$knots <- matrix(nrow=nrow(doses), ncol=nknot)
-        #   print(temp)
-        #   for (r in seq_along(doses$agent)) {
-        #     doses$knots[r] <- temp[[doses$agent[r]]]
-        #   }
-        #
-        # } else {
-        #   doses$knots <- fun$knots[[fun$posvec]][doses$agent]
-        # }
-
       } else {
-        nknot <- length(unique(fun$knots[[fun$name %in% splineopt]]))
+        nknot <- length(unique(fun$knots[fun$name %in% splineopt]))
 
         # If this dose not work unhash section below and hash this instead
-        temp <- matrix(rep(unique(fun$knots[[fun$name %in% splineopt]]), nrow(doses)),
+        temp <- matrix(rep(unique(fun$knots[fun$name %in% splineopt]), nrow(doses)),
                        byrow = TRUE, nrow=nrow(doses))
         doses$knots <- temp
         # if (nknot>1) {
@@ -721,7 +719,7 @@ getjagsdata <- function(data.ab, class=FALSE,
           subspline <- genspline(sub$dose,
                                  spline=unique(sub$splinefun),
                                  #knots=as.vector(unique(sub$knots)),
-                                 knots=unique(sub$knots),
+                                 knots=as.numeric(unlist(unique(sub$knots))),
                                  degree=unique(sub$degree))
 
           splinemat[which(dosespline$agent==uniag[i]),1:ncol(subspline)] <- subspline
@@ -851,7 +849,7 @@ getjagsdata <- function(data.ab, class=FALSE,
   if ("nonparam" %in% fun$name) {
     data.ab <- data.ab %>% dplyr::group_by(agent) %>%
       dplyr::mutate(maxdose=max(dose, na.rm=TRUE)) %>%
-      dplyr::slice_head(temp)
+      dplyr::slice_head()
 
     datalist[["maxdose"]] <- data.ab$maxdose
   }
