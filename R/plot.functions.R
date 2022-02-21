@@ -805,6 +805,15 @@ forest.splits <- function(x, ...) {
 
 
 
+#' Dev-dev plot for comparing deviance contributions from two models
+#'
+#' Plots the deviances of two model types for comparison. Often used to assess
+#' consistency by comparing consistency (NMA or MBNMA) and unrelated mean effects (UME)
+#' models (see \insertCite{pedder2021cons;textual}{MBNMAdose}).
+
+
+
+
 
 #' MBNMA ggplot2 theme style
 #' @noRd
