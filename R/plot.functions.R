@@ -821,6 +821,29 @@ forest.splits <- function(x, ...) {
 #' @param mod2 Second model for which to plot deviance contributions
 #' @inheritParams devplot
 #'
+#'  @examples
+#' \donttest{
+#' # Using the triptans data
+#' network <- mbnma.network(triptans)
+#'
+#' # Run an poorly fitting linear dose-response
+#' lin <- mbnma.run(network, fun=dpoly(degree=1))
+#'
+#' # Run a better fitting Emax dose-response
+#' emax <- mbnma.run(network, fun=demax())
+#'
+#' # Run a standard NMA with unrelated mean effects (UME)
+#' ume <- nma.run(network, UME=TRUE)
+#'
+#' # Compare residual deviance contributions from linear and Emax
+#' devdev(lin, emax) # Suggests model fit is very different
+#'
+#' # Compare deviance contributions from Emax and UME
+#' devdev(emax, ume) # Suggests model fit is similar
+#'
+#' }
+#'
+#' @export
 devdev <- function(mod1, mod2, dev.type="resdev",
                    n.iter=2000, n.thin=1,
                    ...) {
