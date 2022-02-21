@@ -835,6 +835,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' dose for all agents in `mbnma` will be used as the default.
 #' @param eform Whether outputted results should be presented in their exponential form (e.g. for
 #' models with log or logit link functions)
+#' @param lim Specifies calculation of either 95% credible intervals (`lim="cred"`) or 95% prediction intervals (`lim="pred"`).
 #'
 #'
 #' @return An array of `length(treatments) x length(treatments) x nsims`, where `nsims`
@@ -856,13 +857,25 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' rel.eff <- get.relative(expon, treatments=list("Celebrex"=c(100,200), "Tramadol"=100))
 #'
 #' @export
-get.relative <- function(mbnma, treatments=list(), eform=FALSE) {
+get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(mbnma, "mbnma", add=argcheck)
   checkmate::assertList(treatments, null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   checkmate::reportAssertions(argcheck)
+
+  # Ensure prediction intervals are used where appropriate
+  if (lim=="pred" & mbnma$model.arg$method=="random") {
+    addsd <- TRUE
+
+    if (!"sd" %in% mbnma$parameters.to.save) {
+      stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
+    }
+  } else {
+    addsd <- FALSE
+  }
 
   # If treatments is not specified use the max dose of each agent in the dataset
   if (length(treatments)==0) {
@@ -919,7 +932,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE) {
   # }
 
 
-  index <- match(names(trtnew), object$network$agents)
+  index <- match(names(trtnew), mbnma$network$agents)
 
   # If there are multiple DR functions
   if ("posvec" %in% names(fun)) {
@@ -1042,6 +1055,14 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE) {
       chunk <- eval(parse(text=paste0(DR1, " - ", DR2)))
 
       if (length(rel)<=1) {stop("length(rel)<=1")}
+
+      # Incorporate between-study SD
+      if (addsd==TRUE) {
+        mat <- matrix(nrow=length(chunk), ncol=2)
+        mat[,1] <- chunk
+        mat[,2] <- mbnma$BUGSoutput$sims.list[["sd"]]
+        chunk <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
+      }
 
       rel[i,k,] <- chunk
       rel[k,i,] <- -chunk
