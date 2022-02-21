@@ -4,7 +4,7 @@
 \alias{check.likelink}
 \title{Check likelihood and link function}
 \usage{
-check.likelink(data.ab, likelihood = NULL, link = NULL)
+check.likelink(data.ab, likelihood = NULL, link = NULL, warnings = FALSE)
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:

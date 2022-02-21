@@ -888,8 +888,8 @@ devdev <- function(mod1, mod2, dev.type="resdev",
 
   dev.df <- cbind(devlist[[1]], devlist[[2]]$mean)
 
-  dev.df <- dev.df %>% rename(mod1.mean="mean", mod2.mean="devlist[[2]]$mean") %>%
-    select(study, arm, mod1.mean, mod2.mean)
+  dev.df <- dev.df %>% dplyr::rename(mod1.mean="mean", mod2.mean="devlist[[2]]$mean") %>%
+    dplyr::select(study, arm, mod1.mean, mod2.mean)
 
   g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=mod1.mean, y=mod2.mean)) +
     ggplot2::geom_point(...)

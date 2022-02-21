@@ -7,8 +7,8 @@
 getjagsdata(
   data.ab,
   class = FALSE,
-  likelihood = "binomial",
-  link = "logit",
+  likelihood = check.likelink(data.ab)$likelihood,
+  link = check.likelink(data.ab)$link,
   level = "agent",
   fun = NULL,
   nodesplit = NULL
