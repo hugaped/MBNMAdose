@@ -215,5 +215,34 @@ for (dat in seq_along(alldfs)) {
 
   })
 
+
+  test_that(paste0("getjagsdata functions correctly for: ", datanam), {
+
+    data.ab <- network$data.ab
+
+    expect_error(getjagsdata(data.ab, class=FALSE, fun=demax(), nodesplit = c(1,3)), NA)
+
+
+    mult <- dmulti(
+      c(rep(list(dpoly(degree=1)),2),
+        rep(list(dspline(knots = 2, type="ns", beta.1=0.2)),1),
+        rep(list(dfpoly(degree=2)),length(network$agents)-3)
+      ))
+
+    expect_error(getjagsdata(data.ab, fun=mult), NA)
+
+
+    mult <- dmulti(
+      c(rep(list(dpoly(degree=1)),2),
+        rep(list(dspline(knots = c(0.1,0.5), type="ns", beta.1=0.2)),1),
+        rep(list(dspline(knots = 3, type="ls", beta.2="common")),length(network$agents)-3)
+      ))
+
+    expect_error(getjagsdata(data.ab, fun=mult), NA)
+
+    expect_error(getjagsdata(data.ab, class=FALSE, fun=demax(hill=0.5)), NA)
+
+  })
+
 }
 
