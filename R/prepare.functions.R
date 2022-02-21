@@ -97,6 +97,7 @@ mbnma.network <- function(data.ab, description="Network") {
 #' * Checks that agent/class names do not contain restricted characters
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
 #' * Checks that each study includes at least two treatments
+#' * Checks that agent names do not inlcude underscores
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
 mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
@@ -195,6 +196,11 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
     if (!all(data.ab$agent>0)) {
       stop("Agent codes in dataset must be numbered sequentially from 1")
     }
+  }
+
+  # Check that there are no underscores in agent names
+  if (any(grepl("_", data.ab$agent))) {
+    stop("Underscores (_) cannot be used in agent names")
   }
 
 
