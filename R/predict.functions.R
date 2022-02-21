@@ -26,6 +26,7 @@ get.model.vals <- function(mbnma) {
       temp <- as.matrix(res.mat[[names(fun$apool)[i]]], ncol=1)
     } else if (fun$apool[i] %in% "random") {
 
+      # Incorporates SD from between-study SD for ABSOLUTE pooling
       mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
       mat[,1] <- res.mat[[names(fun$apool)[i]]]
       mat[,2] <- res.mat[[paste0("sd.", names(fun$apool)[i])]]

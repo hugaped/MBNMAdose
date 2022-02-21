@@ -485,6 +485,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #'   specify the the type of pooling to use for synthesis of `E0` if a data frame
 #'   has been provided for it. Using `"random"` rather
 #'   than `"fixed"` for `synth` will result in wider 95\\% CrI for predictions.
+#' @param lim Specifies calculation of either 95% credible intervals (`lim="cred"`) or 95% prediction intervals (`lim="pred"`).
 #' @param ... Arguments to be sent to [R2jags::jags()] for synthesis of the network
 #'   reference treatment effect (using [ref.synth()])
 #'
@@ -584,7 +585,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #'
 #' @export
 predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
-                          E0=0.2, synth="fixed",
+                          E0=0.2, synth="fixed", lim="cred",
                           ...) {
   ######## CHECKS ########
 
@@ -595,6 +596,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   checkmate::assertList(exact.doses, types="numeric", null.ok=TRUE, add=argcheck)
   checkmate::assertInt(n.doses, lower=1, add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
+  checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   agents <- object$model$data()$agent
@@ -759,6 +761,19 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     }
   }
 
+  # Ensure prediction intervals are used where appropriate
+  if (lim=="pred" & object$model.arg$method=="random") {
+    addsd <- TRUE
+
+    if (!"sd" %in% object$parameters.to.save) {
+      stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
+    }
+
+    message("Bayesian prediction intervals to be calculated")
+  } else {
+    addsd <- FALSE
+  }
+
 
   predict.result <- list()
 
@@ -791,30 +806,6 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
       }
     }
-
-
-    # if (length(fun$name[fun$name %in% splineopt])>1) {
-    #   index <- match(names(doses), object$network$agents)
-    #
-    #   for (i in seq_along(index)) {
-    #     if (fun$name[fun$posvec[index[i]]] %in% splineopt) {
-    #       splinedoses[[i]] <- t(genspline(splinedoses[[i]],
-    #                                     spline = fun$name[fun$posvec[index[i]]],
-    #                                     knots=fun$knots[fun$posvec[index[i]]],
-    #                                     degree = fun$degree[fun$posvec[index[i]]]))
-    #     } else {
-    #       # Generate empty matrix for non-spline DR functions
-    #       splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
-    #     }
-    #   }
-    #
-    # } else {
-    #   splinefun <- splineopt[which(splineopt %in% object$model.arg$fun$name)]
-    #   for (i in seq_along(doses)) {
-    #     splinedoses[[i]] <- t(genspline(doses[[i]], knots=object$model.arg$fun$knots, spline=splinefun,
-    #                                     max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])))
-    #   }
-    # }
   }
 
   # Replace segments of dose-response function string with values for prediction
@@ -886,12 +877,23 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
           }
         }
+        tempme <<- tempDR
 
         # Evaluate dose-response string for prediction
         chunk <- eval(parse(text=tempDR))
         if (is.list(chunk)) {
           chunk <- chunk[[1]]
         }
+
+        # Incorporate between-study SD
+        if (addsd==TRUE) {
+          mat <- matrix(nrow=length(chunk), ncol=2)
+          mat[,1] <- chunk
+          mat[,2] <- object$BUGSoutput$sims.list[["sd"]]
+          chunk <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
+        }
+
+
         pred <- E0 + chunk
         if (length(pred)<=1) {stop()}
       }

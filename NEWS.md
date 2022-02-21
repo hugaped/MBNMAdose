@@ -1,3 +1,18 @@
+# MBNMAdose 0.4.1
+
+## Additions/changes
+
+- Added `get.relative()` to allow estimation of relative effects between any doses of different agents
+- Agent-specific dose-response functions run more smoothly. Can now incorporate splines with different knots
+- Number of responders should now be included in dataset as `n` rather than `N` so that datasets can be consistent with those used in `MBNMAtime`
+- Simplified names of datasets included in the package
+- Prediction intervals can be calculated in addition to credible intervals (the default) for `predict.mbnma()` and `get.relative()`
+
+## Bug fixes
+
+
+
+
 # MBNMAdose 0.4.0
 
 ## Additions/changes

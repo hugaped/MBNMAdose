@@ -297,8 +297,8 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
   # Add overlayed lines and legends
   g <- g +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% Interval")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% Interval")) +
     ggplot2::geom_line(ggplot2::aes(linetype="Posterior Median"))
 
   g <- g + ggplot2::facet_wrap(~agent, scales=scales) +
@@ -306,7 +306,7 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=c("Posterior Median"="solid",
-                                                   "95% CrI"="dashed")) +
+                                                   "95% Interval"="dashed")) +
     theme_mbnma()
 
   return(g)

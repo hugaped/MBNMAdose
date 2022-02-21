@@ -835,7 +835,7 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' dose for all agents in `mbnma` will be used as the default.
 #' @param eform Whether outputted results should be presented in their exponential form (e.g. for
 #' models with log or logit link functions)
-#' @param lim Specifies calculation of either 95% credible intervals (`lim="cred"`) or 95% prediction intervals (`lim="pred"`).
+#' @inheritParams predict.mbnma
 #'
 #'
 #' @return An array of `length(treatments) x length(treatments) x nsims`, where `nsims`
@@ -873,6 +873,8 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
     if (!"sd" %in% mbnma$parameters.to.save) {
       stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
     }
+
+    message("Bayesian prediction intervals to be calculated")
   } else {
     addsd <- FALSE
   }
