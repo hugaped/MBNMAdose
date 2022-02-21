@@ -612,7 +612,7 @@ plot(trip.emax)
 
 ### Estimating relative effects
 
-It may be of interest to calculate relative effects between different doses of agents to obtain outputs that are more similar to those from standard NMA. This can be particularly helpful for dose-response functions where parameter interpretation can be challenging (e.g. splines, fractional polynomials). The `get.relative()` function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default).
+It may be of interest to calculate relative effects between different doses of agents to obtain outputs that are more similar to those from standard NMA. This can be particularly helpful for dose-response functions where parameter interpretation can be challenging (e.g. splines, fractional polynomials). The `get.relative()` function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default), and for the conversion of results from the log to the natural scale.
 
 ```{r}
 # Specify treatments (agents and doses) for which to estimate relative effects
@@ -621,7 +621,8 @@ treats <- list("Placebo"=0,
                "sumatriptan"=2,
                "almotriptan"=1)
 
-get.relative(trip.emax, treatments = treats)
+# Print relative effects on the natural scale
+get.relative(trip.emax, treatments = treats, eform=TRUE)
 ```
 
 
