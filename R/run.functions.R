@@ -1599,6 +1599,7 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #'  * `"dev"` for deviance contributions
 #'  * `"resdev"` for residual deviance contributions
 #'  * `"delta"` for within-study relative effects versus the study reference treatment
+#' @param armdat Include raw arm-level data for each data point (agent, dose, study grouping)
 #' @inheritParams R2jags::jags
 #'
 #' @return A data frame containing the posterior mean of the updates by arm and study,
@@ -1630,15 +1631,16 @@ pDcalc <- function(obs1, obs2, fups=NULL, narm, NS, theta.result, resdev.result,
 #' }
 #'
 #' @export
-mbnma.update <- function(mbnma, param="theta",
+mbnma.update <- function(mbnma, param="theta", armdat=TRUE,
                          n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertClass(mbnma, "rjags", add=argcheck)
   checkmate::assertCharacter(param, len = 1, add=argcheck)
+  checkmate::assertLogical(armdat, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  modelcode <- mbnma$model.arg$jagscode
+  modelcode <- mbnma$model$model()
 
   # Ensure param is in model code
   if (all(grepl(paste0("^", param, "\\[i\\,k\\]"), modelcode)==FALSE)) {
@@ -1658,17 +1660,19 @@ mbnma.update <- function(mbnma, param="theta",
   # Remove missing values
   update.df <- update.df[stats::complete.cases(update.df),]
 
-  # Agent as facet
-  update.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
-    stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
-  ]
+  if (armdat==TRUE) {
+    # Agent as facet
+    update.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
+    ]
 
-  update.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
-    stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
-  ]
+    update.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
+    ]
 
-  # Study as group
-  update.df$groupvar <- as.numeric(update.df$study)
+    # Study as group
+    update.df$groupvar <- as.numeric(update.df$study)
+  }
 
   return(update.df)
 }

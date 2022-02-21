@@ -7,11 +7,10 @@
 - Number of responders should now be included in dataset as `n` rather than `N` so that datasets can be consistent with those used in `MBNMAtime`
 - Simplified names of datasets included in the package
 - Prediction intervals can be calculated in addition to credible intervals (the default) for `predict.mbnma()` and `get.relative()`
+- Added `devdev()` for comparing deviance contributions between models
 
 ## Bug fixes
-
-
-
+- Fixed issue with agent-specific dose-response functions that had different spline knot locations
 
 # MBNMAdose 0.4.0
 

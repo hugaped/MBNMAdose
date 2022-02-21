@@ -433,13 +433,15 @@ devplot <- function(mbnma, plot.type="box", facet=TRUE, dev.type="resdev",
 #' Extracts fitted values or deviance contributions into a data.frame with indices
 #'
 #' @inheritParams predict.mbnma
+#' @inheritParams mbnma.update
 #' @param The parameter for which to extract values - can take either `"theta"`, `"dev"` or `"resdev"`
 #' @noRd
-get.theta.dev <- function(mbnma, param="theta") {
+get.theta.dev <- function(mbnma, param="theta", armdat=TRUE) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertClass(mbnma, "rjags", add=argcheck)
   checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
+  checkmate::assertLogical(armdat, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   dev.df <- as.data.frame(
@@ -478,15 +480,18 @@ get.theta.dev <- function(mbnma, param="theta") {
       ncol=2
     )
 
-    # Agent as facet
-    dev.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
-      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
+    if (armdat==TRUE) {
+      # Agent as facet
+      dev.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+        stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
       ]
 
-    dev.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
-      stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
+      dev.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+        stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
       ]
-    dev.df$groupvar <- as.numeric(id[,1])
+      dev.df$groupvar <- as.numeric(id[,1])
+    }
+
   }
 
   dev.df$study <- as.numeric(id[,1])
@@ -809,8 +814,72 @@ forest.splits <- function(x, ...) {
 #'
 #' Plots the deviances of two model types for comparison. Often used to assess
 #' consistency by comparing consistency (NMA or MBNMA) and unrelated mean effects (UME)
-#' models (see \insertCite{pedder2021cons;textual}{MBNMAdose}).
+#' models (see \insertCite{pedder2021cons;textual}{MBNMAdose}). Models must be run
+#' on the *same set of data* or the deviance comparisons will not be valid.
+#'
+#' @param mod1 First model for which to plot deviance contributions
+#' @param mod2 Second model for which to plot deviance contributions
+#' @inheritParams devplot
+#'
+devdev <- function(mod1, mod2, dev.type="resdev",
+                   n.iter=2000, n.thin=1,
+                   ...) {
 
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(dev.type, choices = c("dev", "resdev"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!any(c("nma", "mbnma") %in% class(mod1))) {
+    stop("mod1 must be of class 'mbnma' or 'nma'")
+  }
+  if (!any(c("nma", "mbnma") %in% class(mod2))) {
+    stop("mod2 must be of class 'mbnma' or 'nma'")
+  }
+
+  modlist <- list(mod1, mod2)
+  devlist <- list()
+
+  for (mod in seq_along(modlist)) {
+    # Reformat NMA data if necessary
+    if ("nma" %in% class(modlist[[mod]])) {
+      modlist[[mod]] <- modlist[[mod]]$jagsresult
+    }
+
+    if (!(dev.type %in% modlist[[mod]]$parameters.to.save)) {
+      msg <- paste0("`", dev.type, "` not monitored in mod", mod, "$parameters.to.save.\n",
+                    "additional iterations will be run in order to obtain results for `", dev.type, "`")
+      message(msg)
+
+      devlist[[length(devlist)+1]] <- mbnma.update(modlist[[mod]], param=dev.type, n.iter=n.iter, n.thin=n.thin, armdat = FALSE)
+
+    } else {
+
+      devlist[[length(devlist)+1]] <- get.theta.dev(modlist[[mod]], param=dev.type)
+    }
+  }
+
+  if (nrow(devlist[[1]])!=nrow(devlist[[2]])) {
+    stop("Number of data points differ between mod1 and mod2\nsuggests models have not been run on the same dataset")
+  }
+
+  dev.df <- cbind(devlist[[1]], devlist[[2]]$mean)
+
+  dev.df <- dev.df %>% rename(mod1.mean="mean", mod2.mean="devlist[[2]]$mean") %>%
+    select(study, arm, mod1.mean, mod2.mean)
+
+  g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=mod1.mean, y=mod2.mean)) +
+    ggplot2::geom_point(...)
+
+  # Add axis labels
+  g <- g + ggplot2::xlab(paste0("Posterior mean of ", dev.type, " for mod1")) +
+    ggplot2::ylab(paste0("Posterior mean of ", dev.type, " for mod2")) +
+    theme_mbnma()
+
+  graphics::plot(g)
+  return(invisible(list("graph"=g, "dev.data"=dev.df)))
+
+}
 
 
 
