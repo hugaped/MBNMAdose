@@ -11,6 +11,7 @@ dose-response models}
   exact.doses = NULL,
   E0 = 0.2,
   synth = "fixed",
+  lim = "cred",
   ...
 )
 }
@@ -52,6 +53,8 @@ that investigate placebo. See \code{\link[=ref.synth]{ref.synth()}}
 specify the the type of pooling to use for synthesis of \code{E0} if a data frame
 has been provided for it. Using \code{"random"} rather
 than \code{"fixed"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 
 \item{...}{Arguments to be sent to \code{\link[R2jags:jags]{R2jags::jags()}} for synthesis of the network
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}

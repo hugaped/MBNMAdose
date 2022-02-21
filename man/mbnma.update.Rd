@@ -7,6 +7,7 @@
 mbnma.update(
   mbnma,
   param = "theta",
+  armdat = TRUE,
   n.iter = mbnma$BUGSoutput$n.iter,
   n.thin = mbnma$BUGSoutput$n.thin
 )
@@ -26,6 +27,8 @@ model code:
 \item \code{"resdev"} for residual deviance contributions
 \item \code{"delta"} for within-study relative effects versus the study reference treatment
 }}
+
+\item{armdat}{Include raw arm-level data for each data point (agent, dose, study grouping)}
 
 \item{n.iter}{number of total iterations per chain (including burn in;
     default: 2000)}

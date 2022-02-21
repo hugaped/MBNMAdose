@@ -4,7 +4,7 @@
 \alias{get.relative}
 \title{Calculates relative effects between treatments in an MBNMA model}
 \usage{
-get.relative(mbnma, treatments = list(), eform = FALSE)
+get.relative(mbnma, treatments = list(), eform = FALSE, lim = "cred")
 }
 \arguments{
 \item{mbnma}{An object of \code{class("mbnma")}}
@@ -18,6 +18,8 @@ dose for all agents in \code{mbnma} will be used as the default.}
 
 \item{eform}{Whether outputted results should be presented in their exponential form (e.g. for
 models with log or logit link functions)}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 }
 \value{
 An array of \verb{length(treatments) x length(treatments) x nsims}, where \code{nsims}

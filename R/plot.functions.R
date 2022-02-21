@@ -821,7 +821,7 @@ forest.splits <- function(x, ...) {
 #' @param mod2 Second model for which to plot deviance contributions
 #' @inheritParams devplot
 #'
-#'  @examples
+#' @examples
 #' \donttest{
 #' # Using the triptans data
 #' network <- mbnma.network(triptans)

@@ -4,18 +4,31 @@
 \alias{dexp}
 \title{Exponential dose-response function}
 \usage{
-dexp()
+dexp(emax = "rel", onset = NULL)
+}
+\arguments{
+\item{emax}{Pooling for Emax  parameter. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
+assigned a numeric value (see details).}
+
+\item{onset}{Pooling for onset parameter. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
+assigned a numeric value (see details).}
 }
 \value{
 An object of \code{class("dosefun")}
 }
 \description{
-Modelled assuming relative effects (\code{"rel"})
+Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Can fit
+a 1-parameter (Emax only) or 2-parameter model (includes onset parameter that controls the curvature of
+the dose-response relationship)
 }
 \details{
+1-parameter model:
 \eqn{emax\times{(1-exp(-x))}}
 
-where emax is the maximum efficacy of an agent.
+2-parameter model:
+\eqn{emax\times{(1-exp(exp(onset)*-x))}}
+
+where emax is the maximum efficacy of an agent and rate is the speed
 
 Dose-response parameter arguments:\tabular{ll}{
    \strong{Argument} \tab \strong{Model specification} \cr
@@ -26,7 +39,11 @@ Dose-response parameter arguments:\tabular{ll}{
 }
 }
 \examples{
+# Single parameter exponential function is default
 dexp()
+
+# Two parameter exponential function
+dexp(onset="rel")
 
 }
 \references{
