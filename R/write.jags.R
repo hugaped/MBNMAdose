@@ -672,7 +672,7 @@ write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL, corprior="wish
                       method="random", class.effect=list(), UME=FALSE) {
 
   if (length(class.effect)>0 & cor==TRUE) {
-    warning("Class effects cannot be modelled with correlation between time-course relative effects - correlation will be ignored")
+    warning("Class effects cannot be modelled with correlation between dose-response relative effects - correlation will be ignored")
   } else {
 
     # Prepare covariance matrix if cor=TRUE

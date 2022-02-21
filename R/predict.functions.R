@@ -125,7 +125,6 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
   checkmate::assertInt(n.burnin, lower=1, add=argcheck)
   checkmate::assertInt(n.thin, lower=1, add=argcheck)
   checkmate::assertInt(n.chains, lower=1, add=argcheck)
-
   checkmate::reportAssertions(argcheck)
 
   # To get model for meta-analysis of placebo must create v similar model
@@ -133,7 +132,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
   # Do all the mbnma.write bits but without the consistency bits
 
   # Calculate outcome measure scale
-  om <- calcom(data.ab=data.ab, likelihood=likelihood, link=mbnma$model.arg$link)
+  om <- calcom(data.ab=data.ab, likelihood=mbnma$model.arg$likelihood, link=mbnma$model.arg$link)
 
   jagsmodel <- write.E0.synth(synth=synth,
                               likelihood=mbnma$model.arg$likelihood,

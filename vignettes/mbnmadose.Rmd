@@ -486,7 +486,7 @@ Finally, pD can also be calculated using an optimism adjustment (`pd="popt"`)  w
 
 #### Arguments to be sent to JAGS
 
-In addition to the arguments specific to `mbnma.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS. Some of the key arguments that may be of interest are:
+In addition to the arguments specific to `mbnma.run()` it is also possible to use any arguments to be sent to `R2jags::jags()`. Most of these are likely to relate to improving the performance of MCMC simulations in JAGS and may help with parameter convergence (see [Convergence]). Some of the key arguments that may be of interest are:
 
 * `n.chains` The number of Markov chains to run (default is 3)
 * `n.iter` The total number of iterations per MCMC chain
@@ -859,6 +859,21 @@ plot(nodesplit, plot.type="forest")
 # Plot posterior densities of direct and indirect results for each nodesplit comparisons
 plot(nodesplit, plot.type="density")
 ```
+
+## Convergence
+
+`MBNMAdose` runs Bayesian models in JAGS, which uses Markov Chain Monte Carlo (MCMC) simulation. However, the validity of results is reliant on the MCMC chains having converged successfully on the posterior densities of all parameters in the model. For highly parameterised models run on relatively limited data, as is often the case with MBNMA models, convergence can often be an challenge. Note that convergence is *necessary* to be able to compare models and evaluate model fit. However, successful convergence *does not* imply good model fit.
+
+A full explanation of how to facilitate and to check for convergence is outside the scope of this vignette, but below are some simple steps for checking convergence. None of these steps alone ensures convergence has been successful, but interpretation of them jointly can provide strong evidence of it.
+
+* Rhat values close to 1 (<1.1 is considered acceptable by some). These are shown for monitored parameters in the summary statistics table when an `"mbnma"` or `"nma"` object is printed.
+* Trace plots that have a "fuzzy caterpillar" look that shows good mixing of MCMC chains
+* Density plots that show a smooth posterior distribution that is similar across all chains
+* Autocorrelation plots that show low autocorrelation between neighbouring MCMC iterations (i.e. low correlation at higher lags)
+
+An HTML document with all the above convergence plots can easily be generated for all parameters in the model simultaneously using `mcmcplots::mcmcplot()`.
+
+Two steps may improve convergence when using `MBNMAdose`. One step is to run models for more iterations (this can be done using the `n.iter` argument in `mbnma.run()`). It can take time for MCMC chains to converge, particularly for non-linear models with limited data. It is important to note that chains should only be monitored *after* they have converged - increasing the number of burn-in iterations ensures that this is the case (using the `n.burnin` argument in `mbnma.run()`). Another method to improve convergence is by providing more information to the model via informative priors.
 
 
 ## Model selection

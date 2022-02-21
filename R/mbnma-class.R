@@ -406,7 +406,8 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
       param.mod <- x[["BUGSoutput"]][["sims.list"]][[params[i]]]
 
       # Check that selected parameter is different over multiple treatments
-      if (!is.matrix(param.mod) | ncol(param.mod)!=length(subrank)) {
+      #if (!is.matrix(param.mod) | ncol(param.mod)!=length(subrank)) {
+      if (!is.matrix(param.mod) | ncol(param.mod)==1) {
         msg <- paste0(params[i], " does not vary by ", level, " and therefore cannot be ranked")
         stop(msg)
       }

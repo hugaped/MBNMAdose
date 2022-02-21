@@ -38,7 +38,7 @@ network <- mbnma.network(triptans)
 
 # Rank all predictions from a log-linear dose-response MBNMA
 loglin <- mbnma.run(network, fun=dloglin())
-pred <- predict(linear, E0 = 0.5)
+pred <- predict(loglin, E0 = 0.5)
 rank <- rank(pred)
 summary(rank)
 

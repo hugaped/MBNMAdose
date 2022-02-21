@@ -4,7 +4,7 @@
 \alias{recode.agent}
 \title{Assigns agent or class variables numeric identifiers}
 \usage{
-\method{recode}{agent}(data.ab, level = "agent")
+recode.agent(data.ab, level = "agent")
 }
 \arguments{
 \item{data.ab}{A data frame of arm-level data in "long" format containing the columns:

@@ -233,8 +233,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'  pain.df <- osteopain
 #'
 #'  # Set a shared class (NSAID) only for Naproxcinod and Naproxen
-#'  pain.df <- pain.df %>% mutate(
-#'                 class = case_when(agent %in% c("Naproxcinod", "Naproxen") ~ "NSAID",
+#'  pain.df <- pain.df %>% dplyr::mutate(
+#'                 class = dplyr::case_when(agent %in% c("Naproxcinod", "Naproxen") ~ "NSAID",
 #'                         !agent %in% c("Naproxcinod", "Naproxen") ~ agent
 #'                         )
 #'                 )
@@ -248,14 +248,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' ####### Priors #######
 #'
 #' # Obtain priors from a fractional polynomial function
-#' result <- mbnma.run(network, fun=dfpoly(degree=1))
+#' result <- mbnma.run(network, fun=dfpoly(degree=1), method="random")
 #' print(result$model.arg$priors)
 #'
 #' # Change the prior distribution for the power
 #' newpriors <- list(power.1 = "dnorm(0,0.001) T(0,)")
 #' newpriors <- list(sd = "dnorm(0,0.5) T(0,)")
 #'
-#' result <- mbnma.run(network, fun=dfpoly(degree=1),
+#' result <- mbnma.run(network, fun=dfpoly(degree=1), method="random",
 #'               priors=newpriors)
 #'
 #'
@@ -274,7 +274,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'               pd="popt")
 #'
 #'
-#' ####### Examine MCMC diagnostics (using mcmcplots package) #######
+#' ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
 #'
 #' # Density plots
 #' mcmcplots::denplot(result)
@@ -285,6 +285,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # Caterpillar plots
 #' mcmcplots::caterplot(result, "rate")
 #'
+#' # Autocorrelation plots (using the coda package)
+#' coda::autocorr.plot(coda::as.mcmc(result))
 #'
 #'####### Automatically run jags until convergence is reached #########
 #'
