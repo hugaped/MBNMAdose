@@ -209,10 +209,10 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' # with random relative effects
 #' result <- mbnma.run(network, fun=demax(hill=5), method="random")
 #'
-#' # Fit a model with restricted cubic splines
+#' # Fit a model with natural cubic splines
 #' # with 3 knots at 10% 30% and 60% quartiles of dose ranges
 #' depnet <- mbnma.network(ssri) # Using the sSRI depression dataset
-#' result <- mbnma.run(depnet, fun=dspline(type="rcs", knots=c(0.1,0.3,0.6)))
+#' result <- mbnma.run(depnet, fun=dspline(type="ns", knots=c(0.1,0.3,0.6)))
 #'
 #' # Fit a model with different dose-response functions for each agent
 #' multifun <- dmulti(list(dloglin(), # for placebo (can be any function)
