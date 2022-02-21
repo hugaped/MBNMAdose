@@ -796,7 +796,14 @@ col.names=c("Model", "Residual Deviance", "Betwen-study SD"))
 
 As both the residual deviances and between-study SDs are similar, this would suggest that there is no evidence of inconsistency in this network, though comparing results for individual comparisons from the models can also be useful.
 
-Deviance-deviance plots [@dias2013] can be compared between different models to investigate different data points, and we suggest comparing the following models using these plots:
+Deviance-deviance plots [@dias2013] can be compared between different models to investigate the fit of different data points. This can be done for two different models at a time using `devdev()`:
+
+```{r, results="hide", warning=FALSE, message=FALSE}
+# Compares residual deviance contributions from NMA and UME models
+devdev(nma, ume, dev.type="resdev")
+```
+
+In Pedder et al. [-@pedder2021cons] we suggest comparing the following models using these plots to evaluate consistency in MBNMA:
 
 1. Selected dose-response MBNMA model
 2. Treatment-level NMA model (using same common/random treatment effects as for the MBNMA)
