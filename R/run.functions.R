@@ -955,7 +955,7 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   out$BUGSoutput$pD <- fitstats$pd
   out$BUGSoutput$DIC <- fitstats$dic
 
-  output <- list("jagsresult"=out, "trt.labs"=trt.labs)
+  output <- list("jagsresult"=out, "trt.labs"=trt.labs, "UME"=UME)
   class(output) <- "nma"
   return(output)
 
