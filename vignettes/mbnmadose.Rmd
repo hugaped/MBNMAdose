@@ -320,17 +320,7 @@ For example for a binomial outcome modeled using a logit link function and an Em
 
 For a continuous outcome modeled using `link="smd"`, whilst not a true link function it implies modelling Standardised Mean Differences (SMD). For a linear dose-response function (`dpoly(degree=1)`), `beta.1` represents the change in SMD for each additional unit of dose. For a quadratic dose-response function (`dpoly(degree=2)`), `beta.2` represents the change in `beta.1` for each additional unit of dose.
 
-With some dose-response functions (e.g. splines, fractional polynomials) parameter interpretation can be challenging. The `get.relative()` function can make this easier as this allows relative effects to be estimated between agents at specific doses, which is typically much more easily understandable and presentable.
-
-```{r}
-# Specify treatments (agents and doses) for which to estimate relative effects
-treats <- list("Placebo"=0,
-               "eletriptan"= 1,
-               "sumatriptan"=2,
-               "almotriptan"=1)
-
-get.relative(mbnma, treatments = treats)
-```
+With some dose-response functions (e.g. splines, fractional polynomials) parameter interpretation can be challenging. The `get.relative()` function can make this easier as this allows relative effects to be estimated between agents at specific doses, which is typically much more easily understandable and presentable (see [Estimating relative effects]).
 
 
 ### Additional arguments for `mbnma.run()`
@@ -622,7 +612,18 @@ plot(trip.emax)
 
 ### Estimating relative effects
 
-ADD INFO HERE!!!!!!!!!!!!!!
+It may be of interest to calculate relative effects between different doses of agents to obtain outputs that are more similar to those from standard NMA. This can be particularly helpful for dose-response functions where parameter interpretation can be challenging (e.g. splines, fractional polynomials). The `get.relative()` function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default).
+
+```{r}
+# Specify treatments (agents and doses) for which to estimate relative effects
+treats <- list("Placebo"=0,
+               "eletriptan"= 1,
+               "sumatriptan"=2,
+               "almotriptan"=1)
+
+get.relative(trip.emax, treatments = treats)
+```
+
 
 ### Ranking
 
@@ -663,7 +664,7 @@ After performing an MBNMA, responses can be predicted from the model parameter e
 * Deterministic: `E0 <- 0.2`
 * Stochastic: `E0 <- "rbeta(n, shape1=2, shape2=10)"`
   
-Another approach is to estimate `E0` from a set of studies. These would ideally be studies of untreated/placebo-treated patients that closely resemble the population for which predictions are desired, and the studies may be observational. However, synthesising results from the placebo arms of trials in the original network is also possible. For this, `E0` is assigned a data frame of studies in the long format (one row per study arm) with the variables `studyID`, and a selection of `y`, `se`, `r`, `N` and `E` (depending on the likelihood used in the MBNMA model). `synth` can be set to `"fixed"` or `"random"` to indicate whether this synthesis should be fixed or random effects.
+Another approach is to estimate `E0` from a set of studies. These would ideally be studies of untreated/placebo-treated patients that closely resemble the population for which predictions are desired, and the studies may be observational. However, synthesising results from the placebo arms of trials in the original network is also possible. For this, `E0` is assigned a data frame of studies in the long format (one row per study arm) with the variables `studyID`, and a selection of `y`, `se`, `r`, `n` and `E` (depending on the likelihood used in the MBNMA model). `synth` can be set to `"fixed"` or `"random"` to indicate whether this synthesis should be fixed or random effects.
   
 ```{r, eval=FALSE}
 E0 <- triptans[triptans$dose==0,]
