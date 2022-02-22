@@ -195,14 +195,15 @@ for (dat in seq_along(alldfs)) {
     expect_error(predict(result), NA)
     expect_error(suppressWarnings(summary(result)), NA)
 
-    result <- mbnma.run(network, fun=dpoly(degree=3, beta.1="common", beta.2 = "rel", beta.3="random"),
-                        method="random", n.iter=n.iter, pd=pd)
-    expect_equal(all(c("beta.1", "beta.2", "sd.beta.3", "beta.3", "sd") %in% result$parameters.to.save), TRUE)
-    expect_error(plot(result), NA)
-    expect_error(rank(result), NA)
-    expect_error(predict(result), NA)
-    expect_error(suppressWarnings(summary(result)), NA)
-
+    if (!datanam %in% "osteopain") {
+      result <- mbnma.run(network, fun=dpoly(degree=3, beta.1="common", beta.2 = "rel", beta.3="random"),
+                          method="random", n.iter=n.iter, pd=pd)
+      expect_equal(all(c("beta.1", "beta.2", "sd.beta.3", "beta.3", "sd") %in% result$parameters.to.save), TRUE)
+      expect_error(plot(result), NA)
+      expect_error(rank(result), NA)
+      expect_error(predict(result), NA)
+      expect_error(suppressWarnings(summary(result)), NA)
+    }
 
     # Test Omega, cor
     expect_equal("inv.R" %in% names(result$model.arg$priors), FALSE)
@@ -263,14 +264,22 @@ for (dat in seq_along(alldfs)) {
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
     } else if (datanam %in% c("osteopain", "gout")) {
-      expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), NA)
-      result <- mbnma.run(network, fun=dexp(), link="log", n.iter=n.iter, pd=pd)
+
+      if (datanam %in% "gout") {
+        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), "must be included in data\\.ab")
+      } else if (datanam %in% "osteopain") {
+        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), NA)
+      }
+
+      result <- suppressWarnings(mbnma.run(network, fun=dexp(), link="log", n.iter=n.iter, pd=pd))
       expect_equal(result$model.arg$link, "log")
 
       expect_error(plot(result), NA)
       expect_error(rank(result), NA)
       expect_error(devplot(result), NA)
-      expect_error(fitplot(result), NA)
+      if (!datanam %in% "gout") {
+        expect_error(fitplot(result), NA)
+      }
       expect_error(predict(result), NA)
       expect_error(suppressWarnings(summary(result)), NA)
     }

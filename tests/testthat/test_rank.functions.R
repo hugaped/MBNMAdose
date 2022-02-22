@@ -28,6 +28,7 @@ test_that(paste("rank.functions work correctly"), {
   for (dat in seq_along(alldfs)) {
 
     df <- alldfs[[dat]]
+    dataset <- df
     datanam <- datanams[dat]
 
     network <- mbnma.network(df)
@@ -35,6 +36,9 @@ test_that(paste("rank.functions work correctly"), {
     # Make class data
     if ("class" %in% names(df)) {
       netclass <- mbnma.network(df)
+
+      emax.class <- suppressWarnings(mbnma.run(netclass, demax(), method="random", n.iter=1000,
+                              class.effect = list(ed50="random")))
     }
 
     # Models
@@ -44,7 +48,9 @@ test_that(paste("rank.functions work correctly"), {
 
     emax <- mbnma.run(network, demax(), method="random", n.iter=1000)
 
-    nonparam <- mbnma.run(network, fun=dnonparam(direction="increasing"), n.iter=1000)
+    if (!grepl("noplac", datanam)) {
+      nonparam <- mbnma.run(network, fun=dnonparam(direction="increasing"), n.iter=1000)
+    }
 
     spline <- mbnma.run(network, fun=dspline(type="bs", knots=c(0.1,0.8)), n.iter=1000)
 
@@ -92,21 +98,29 @@ test_that(paste("rank.functions work correctly"), {
       to.ranks <- c(2,4)
       rank <- rank(exponential, to.rank = to.ranks)
       expect_equal(ncol(rank$emax$rank.matrix), length(to.ranks))
-      expect_warning(rank.mbnma(exponential, to.rank = c(1,3,4)), "Placebo \\(d\\[1\\] or D\\[1\\]\\) cannot be included in the ranking")
+
+      if (grepl("noplac", datanam)) {
+        expect_silent(rank.mbnma(exponential, to.rank = c(1,3,4)))
+      } else {
+        expect_warning(rank.mbnma(exponential, to.rank = c(1,3,4)), "Placebo \\(d\\[1\\] or D\\[1\\]\\) cannot be included in the ranking")
+      }
       expect_silent(rank.mbnma(exponential, to.rank = c(network$agents[2], network$agents[3])))
 
       # Test classes
       if ("class" %in% names(dataset)) {
-        expect_error(rank.mbnma(emax, level="class"))
-        expect_error(rank.mbnma(emax.class, level="agent"))
+        expect_error(rank.mbnma(emax, level="class"), "classes have not been used")
+        expect_error(rank.mbnma(emax.class, level="agent"), NA)
+
         rank <- rank.mbnma(emax.class, level="class")
-        expect_equal(ncol(rank$EMAX$rank.matrix), length(unique(dataset$class[dataset$dose>0])))
+        expect_equal(ncol(rank$ED50$rank.matrix), length(unique(dataset$class[dataset$dose>0])))
         expect_error(print(rank), NA)
         expect_equal(class(summary(rank)[[1]]), "data.frame")
       }
 
 
-      expect_error(rank.mbnma(nonparam), "Ranking cannot currently be performed")
+      if (!grepl("noplac", datanam)) {
+        expect_error(rank.mbnma(nonparam), "Ranking cannot currently be performed")
+      }
 
 
       # Test params

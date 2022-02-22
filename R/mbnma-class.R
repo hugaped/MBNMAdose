@@ -888,7 +888,6 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
           }
         }
-        tempme <<- tempDR
 
         # Evaluate dose-response string for prediction
         chunk <- eval(parse(text=tempDR))
