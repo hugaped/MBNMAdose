@@ -914,26 +914,16 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
 
   # Get dose-response parameter values
   betaparams <- get.model.vals(mbnma)
-  # betas <- assignfuns(mbnma$model.arg$fun, mbnma$network$agents, mbnma$model.arg$user.fun,
-  #                     wrapper = ifelse(is.null(mbnma$model.arg$arg.fun), FALSE, TRUE))
+
 
   trtnew <- treatments
 
   # Generate spline basis matrix if required
   splineopt <- c("rcs", "bs", "ns", "ls")
   fun <- mbnma$model.arg$fun
-  # if (any(splineopt %in% mbnma$model.arg$fun$name)) {
-  #   for (i in seq_along(trtnew)) {
-  #     trtnew[[i]] <- genspline(trtnew[[i]], knots=mbnma$model.arg$fun$knots,
-  #                              spline=splineopt[which(splineopt %in% mbnma$model.arg$fun$name)],
-  #                                     max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==
-  #                                                                               which(names(trtnew)[i] == mbnma$network$agents)
-  #                                                                               ]))
-  #   }
-  # }
 
-
-  index <- match(names(trtnew), mbnma$network$agents)
+  # Get indices of non-placebo agents
+  index <- match(names(trtnew), mbnma$network$agents[!mbnma$network$agents %in% "Placebo"])
 
   # If there are multiple DR functions
   if ("posvec" %in% names(fun)) {
@@ -942,24 +932,15 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
     posvec <- rep(1, length(index))
   }
   for (i in seq_along(index)) {
+
     if (fun$name[posvec[index[i]]] %in% splineopt) {
       trtnew[[i]] <- genspline(trtnew[[i]],
                                spline = fun$name[posvec[index[i]]],
-                               knots=fun$knots[posvec[index[i]]],
+                               knots=fun$knots[[posvec[index[i]]]],
                                degree = fun$degree[posvec[index[i]]],
                                max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==which(names(trtnew)[i] == mbnma$network$agents)]))
     }
-    # } else {
-    #   # Generate empty matrix for non-spline DR functions
-    #   splinedoses[[i]] <- matrix(0, ncol=length(splinedoses[[i]]), nrow=2)
-    # }
   }
-
-  # splinefun <- splineopt[which(splineopt %in% fun$name)]
-  # for (i in seq_along(doses)) {
-  #   splinedoses[[i]] <- t(genspline(doses[[i]], knots=fun$knots, spline=splinefun,
-  #                                   max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==agent.num[i]])))
-  # }
 
   # Create list of treatments with doses
   trtlist <- list()
@@ -1014,7 +995,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
       # Replace spline
       for (m in 1:length(betaparams)) {
         DR1 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR1)
-        DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR2)
+        DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[k]][[2]][m], DR2)
       }
 
       for (beta in seq_along(betaparams)) {
