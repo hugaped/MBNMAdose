@@ -50,10 +50,10 @@ test_that(paste("rank.functions work correctly"), {
 
 
     mult <- dmulti(c(list(dloglin()),
-              list(dspline("bs", knots=2)),
-              list(dspline("ns", knots=0.5)),
-              rep(list(dloglin()), length(network$agents)-3)
-              ))
+                     list(dspline("bs", knots=2)),
+                     list(dspline("ns", knots=0.5)),
+                     rep(list(dloglin()), length(network$agents)-3)
+    ))
     multifun <- mbnma.run(network, fun=mult, n.iter=1000)
 
 

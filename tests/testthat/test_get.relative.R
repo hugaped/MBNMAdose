@@ -69,7 +69,7 @@ test_that(paste("get.relative functions work correctly"), {
       ))
 
     multifun2 <- mbnma.run(network, fun=mult,
-                          method="random", n.iter=n.iter, pd=pd)
+                           method="random", n.iter=n.iter, pd=pd)
 
 
     test_that(paste("get.relative works correctly for:", datanam), {
