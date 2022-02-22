@@ -866,6 +866,16 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
   checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  # Cannot use with UME
+  if (mbnma$model.arg$UME==TRUE) {
+    stop("get.relative() cannot be used on unrelated mean effects (UME=TRUE) models")
+  }
+
+  # Cannot use with nonparam
+  if ("nonparam" %in% mbnma$model.arg$fun$name) {
+    stop("get.relative() cannot be used on non-parametric models")
+  }
+
   # Ensure prediction intervals are used where appropriate
   if (lim=="pred" & mbnma$model.arg$method=="random") {
     addsd <- TRUE
