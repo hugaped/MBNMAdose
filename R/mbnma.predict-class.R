@@ -264,7 +264,7 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
-    if (!all(sum.pred$agent %in% network$agents)) {
+    if (!all(sum.pred$agent[sum.pred$agent!="Placebo"] %in% network$agents)) {
       stop("Agent labels in `network` differ from those in `pred`")
     }
 
