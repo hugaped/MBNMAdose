@@ -1,6 +1,5 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-
 <!-- badges: start -->
 
 [![CRAN
@@ -10,7 +9,7 @@ status](https://travis-ci.com/hugaped/MBNMAdose.svg?branch=master)](https://trav
 [![R-CMD-check](https://github.com/hugaped/MBNMAdose/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAdose/actions)
 <!-- badges: end -->
 
-# MBNMAdose 0.3.0
+# MBNMAdose 0.4.1
 
 The goal of `MBNMAdose` is to provide a collection of useful commands
 that allow users to run dose-response Model-Based Network Meta-Analyses
@@ -27,7 +26,7 @@ Network Meta-Analysis (NMA). All models and analyses are implemented in
 a Bayesian framework, following an extension of the standard NMA
 methodology presented by (Lu and Ades 2004) and are run in JAGS (Just
 Another Gibbs Sampler). For full details of dose-response MBNMA
-methodology see Mawdsley et al. (2016). Throughout this package we refer
+methodology see Mawdsley et al. (2016). Throughout this package we refer
 to a **treatment** as a specific **dose** or a specific **agent**.
 
 A short introductory YouTube video from the ESMAR Conference 2021 can be
@@ -76,9 +75,9 @@ functions that can be applied to objects of specific classes*
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-lu2004">
+<div id="ref-lu2004" class="csl-entry">
 
 Lu, G., and A. E. Ades. 2004. “Combination of Direct and Indirect
 Evidence in Mixed Treatment Comparisons.” Journal Article. *Stat Med* 23
@@ -86,7 +85,7 @@ Evidence in Mixed Treatment Comparisons.” Journal Article. *Stat Med* 23
 
 </div>
 
-<div id="ref-mawdsley2016">
+<div id="ref-mawdsley2016" class="csl-entry">
 
 Mawdsley, D., M. Bennetts, S. Dias, M. Boucher, and N. J. Welton. 2016.
 “Model-Based Network Meta-Analysis: A Framework for Evidence Synthesis
@@ -95,7 +94,7 @@ Pharmacol* 5 (8): 393–401. <https://doi.org/10.1002/psp4.12091>.
 
 </div>
 
-<div id="ref-pedder2021">
+<div id="ref-pedder2021" class="csl-entry">
 
 Pedder, H., S. Dias, M. Bennetts, M. Boucher, and N. J. Welton. 2021.
 “Joining the Dots: Linking Disconnected Networks of Evidence Using
