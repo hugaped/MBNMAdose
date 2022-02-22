@@ -1035,11 +1035,15 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
             DR1 <- DRcomb[1]
             DR2 <- DRcomb[2]
 
+          } else if (is.vector(betaparams[[beta]])) {
+            # Remove indices from DR
+            DR1 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
+            DR2 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
           }
         }
       }
 
-      chunk <- eval(parse(text=paste0(DR1, " - ", DR2)))
+      chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
 
       if (length(rel)<=1) {stop("length(rel)<=1")}
 
