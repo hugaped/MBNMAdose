@@ -610,7 +610,7 @@ plot(trip.emax)
 
 It may be of interest to calculate relative effects between different doses of agents to obtain outputs that are more similar to those from standard NMA. Relative effects can take the form of odds ratios, mean differences or rate ratios, depending on the likelihood and link function used in a model. Estimating relative effects can be particularly helpful for dose-response functions where parameter interpretation can be challenging (e.g. splines, fractional polynomials). 
 
-The `get.relative()` function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default), and for the conversion of results from the log to the natural scale.
+The `get.relative()` function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default), and for the conversion of results from the log to the natural scale. The resulting relative effects can also be ranked (see [Ranking] for more details).
 
 ```{r}
 # Specify treatments (agents and doses) for which to estimate relative effects
@@ -620,16 +620,20 @@ treats <- list("Placebo"=0,
                "almotriptan"=1)
 
 # Print relative effects on the natural scale
-get.relative(trip.emax, treatments = treats, eform=TRUE)
+rels <- get.relative(trip.emax, treatments = treats, eform=TRUE)
+print(rels)
+
+# Rank relative effects
+rank(rels)
 ```
 
 
 ### Ranking
 
-Rankings can be calculated for different dose-response parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to `params`. `direction` indicates whether negative responses should be ranked as "better" (`-1`) or "worse" (`1`).
+Rankings can be calculated for different dose-response parameters from MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to `params`. `lower_better` indicates whether negative responses should be ranked as "better" (`TRUE`) or "worse" (`FALSE`).
 
 ```{r}
-ranks <- rank(trip.emax, direction = 1)
+ranks <- rank(trip.emax, lower_better = FALSE)
 print(ranks)
 summary(ranks)
 ```
