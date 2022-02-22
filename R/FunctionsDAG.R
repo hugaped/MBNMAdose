@@ -57,12 +57,12 @@ g <- add_node_df(g, funnodes)
 # Generate edges between classes and functions
 funedges <-
   create_edge_df(
-    from = c("1", "9", "2", "10", "2", "11", "2", "12", "3", "13", "3", "14", "4", "3", "3", "7", "3", "5", "19", "3"),
-    to =   c("9", "2", "10", "3", "11", "5", "12", "6", "13", "4", "14", "7", "14", "15", "16", "17", "18", "18", "8", "19"),
+    from = c("1", "9", "2", "10", "2", "11", "2", "12", "3", "13", "3", "14", "4", "3", "3", "7", "3", "5", "19", "3", "8"),
+    to =   c("9", "2", "10", "3", "11", "5", "12", "6", "13", "4", "14", "7", "14", "15", "16", "17", "18", "18", "8", "19", "14"),
     color="black",
     rel = "a",
     fontname="Consolas",
-    arrowhead=c(rep(c("None", "normal"),6), rep("none",4), rep("none",2), "normal", "none")
+    arrowhead=c(rep(c("None", "normal"),6), rep("none",4), rep("none",2), "normal", "none", "normal")
   )
 g <- add_edge_df(g, funedges)
 
