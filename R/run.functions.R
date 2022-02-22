@@ -388,28 +388,6 @@ mbnma.run <- function(network,
     }
   }
 
-
-  # Switch beta parameters for wrapper parameters
-  # assigned.class <- class.effect
-  # if (!is.null(arg.params)) {
-  #   if (!all((names(arg.params)) %in% c("wrap.params", "run.params"))) {
-  #     stop("arg.params has been incorrectly specified")
-  #   }
-  #   wrap.params <- arg.params$wrap.params
-  #   run.params <- arg.params$run.params
-  #
-  #   fun.params <- names(class.effect)
-  #   for (k in seq_along(fun.params)) {
-  #     fun.params[k] <- run.params[which(fun.params[k]==wrap.params)]
-  #   }
-  #   names(class.effect) <- fun.params
-  #
-  # } else if (is.null(arg.params)) {
-  #   wrap.params <- list(beta.1, beta.2, beta.3, beta.4)
-  #   wrap.params <- which(sapply(wrap.params,
-  #                               is.character))
-  # }
-
   if (is.null(model.file)) {
 
     # Write JAGS model code
@@ -420,13 +398,6 @@ mbnma.run <- function(network,
                          om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood),
                          likelihood=likelihood, link=link
     )
-
-    # # Edit beta parameters if they aren't in dose-response function
-    # for (i in 1:4) {
-    #   if (!(grepl(paste0("beta\\.", i), model) | grepl(paste0("d\\.", i), model))) {
-    #     assign(paste0("beta.", i), NULL)
-    #   }
-    # }
 
     # Change code for if plac not included in network
     if (plac.incl==FALSE) {
@@ -439,24 +410,6 @@ mbnma.run <- function(network,
 
       model <- gsub("s\\.beta\\.[(0-9)+]\\[1\\] <- 0", "", model)
     }
-
-    # # Change beta.1 and beta.2 to wrapper parameters (e.g. emax, et50) if necessary
-    # if (!is.null(arg.params)) {
-    #   code.params <- c("d", "beta", "sd", "tau", "D", "sd.D")
-    #   for (i in seq_along(wrap.params)) {
-    #     for (k in seq_along(code.params)) {
-    #       model <- gsub(paste(code.params[k], strsplit(run.params[i], split="[.]")[[1]][2], sep="."),
-    #                     paste(code.params[k], wrap.params[i], sep="."), model)
-    #     }
-    #   }
-    #
-    #   wrap.params <- wrap.params[which(sapply(list(beta.1, beta.2, beta.3, beta.4),
-    #                                           is.character))]
-    #
-    # } else {
-    #   wrap.params <- which(sapply(list(beta.1, beta.2, beta.3, beta.4),
-    #                               is.character))
-    # }
 
     # Add user-defined priors to the model
     if (!is.null(priors)) {
