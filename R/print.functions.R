@@ -81,7 +81,12 @@ print.treat.str <- function(mbnma, digits=3, ...) {
             count <- count + listlen[k+1]
             k <- k+1
           }
-          subagents <- agents[which(fun$posvec[-1]==k)]
+          if ("Placebo" %in% mbnma$network$agents) {
+            temppos <- fun$posvec[-1]
+          } else {
+            temppos <- fun$posvec
+          }
+          subagents <- agents[which(temppos==k)]
           trt.df$agents <- subagents
 
         } else {
