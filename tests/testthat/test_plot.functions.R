@@ -83,13 +83,13 @@ test_that("plot functions correctly", {
                              level="agent", remove.loops = TRUE))
         } else {
           expect_warning(plot(network, layout = igraph::as_star(),
-                             edge.scale=1, label.distance=0), "not connected")
+                              edge.scale=1, label.distance=0), "not connected")
 
           expect_warning(plot(network, layout = igraph::with_fr(),
-                             edge.scale=1, label.distance=0), "not connected")
+                              edge.scale=1, label.distance=0), "not connected")
 
           expect_warning(plot(network, layout = igraph::in_circle(),
-                             level="agent", remove.loops = TRUE), "not connected")
+                              level="agent", remove.loops = TRUE), "not connected")
         }
 
 
@@ -110,7 +110,7 @@ test_that("plot functions correctly", {
                               level="agent", doselink = 10))
 
           expect_message(suppressWarnings(plot(network, layout=igraph::with_fr(),
-                              level="agent", doselink = 10)), "degrees of freedom")
+                                               level="agent", doselink = 10)), "degrees of freedom")
 
         } else {
           g1 <- plot(network,
@@ -320,7 +320,7 @@ test_that("plot functions correctly", {
 
       })
 
-    }
+  }
 })
 
 

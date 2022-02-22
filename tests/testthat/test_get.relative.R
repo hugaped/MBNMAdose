@@ -110,6 +110,17 @@ test_that(paste("get.relative functions work correctly"), {
       }
       expect_error(rank(temp), NA)
 
+      if (datanam %in% "triptans") {
+        temp <- get.relative(ns, treatments=list(Placebo=0, eletriptan=1))
+        expect_equal(anyNA(temp$relarray), FALSE)
+
+        temp <- get.relative(ns, treatments=list(Placebo=0, zolmitriptan=10))
+        expect_equal(anyNA(temp$relarray), FALSE)
+
+        temp <- get.relative(multifun2, treatments=list(zolmitriptan=1, eletriptan=1))
+        expect_equal(anyNA(temp$relarray), FALSE)
+      }
+
       # Check prediction intervals
       # For common effects model
       temp <- get.relative(bs)

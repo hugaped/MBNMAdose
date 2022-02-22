@@ -120,6 +120,9 @@ for (dat in seq_along(alldats)) {
 
     }
 
+    # Prevent skip
+    expect_equal(5,5)
+
   })
 
 
@@ -148,14 +151,12 @@ for (dat in seq_along(alldats)) {
     expect_identical(names(split[[1]]), c("comparison",
                                           "direct", "indirect", "mbnma",
                                           "overlap matrix", "p.values", "quantiles",
-                                          "forest.plot", "density.plot",
+                                          #"forest.plot", "density.plot",
                                           "split.model", "mbnma.model"))
     expect_equal(is.numeric(split[[1]]$p.values), TRUE)
     expect_equal(is.numeric(split[[2]]$indirect), TRUE)
     expect_equal(is.numeric(split[[3]]$direct), TRUE)
     expect_equal(length(split[[4]]$comparison), 2)
-    expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
-    expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
     expect_error(print(split), NA)
     expect_equal(class(summary(split)), "data.frame")
 
@@ -168,20 +169,18 @@ for (dat in seq_along(alldats)) {
     expect_identical(names(split[[1]]), c("comparison",
                                           "direct", "indirect", "mbnma",
                                           "overlap matrix", "p.values", "quantiles",
-                                          "forest.plot", "density.plot",
+                                          #"forest.plot", "density.plot",
                                           "split.model", "mbnma.model"))
     expect_equal(is.numeric(split[[1]]$p.values), TRUE)
     expect_equal(is.numeric(split[[2]]$indirect), TRUE)
     expect_equal(is.numeric(split[[3]]$direct), TRUE)
     expect_equal(length(split[[4]]$comparison), 2)
-    expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
-    expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
     expect_error(print(split), NA)
     expect_equal(class(summary(split)), "data.frame")
 
 
     # Test comparisons
-    split <- mbnma.nodesplit(net.noplac, fun="user", user.fun= ~beta.1 * dose + beta.2 * (dose^2),
+    split <- mbnma.nodesplit(net.noplac, fun=duser(fun= ~beta.1 * dose + beta.2 * (dose^2)),
                              likelihood = like, link=link,
                              method="random", n.iter=1000,
                              comparisons = rbind(comps.noplac[1,], comps.noplac[3,]))
@@ -189,20 +188,31 @@ for (dat in seq_along(alldats)) {
     expect_error(print(split), NA)
     expect_equal(class(summary(split)), "data.frame")
 
+    mult <- dmulti(c(list(dloglin()),
+                     list(dspline("bs", knots=2)),
+                     list(dspline("ns", knots=0.5)),
+                     rep(list(dloglin()), length(network$agents)-3)
+    ))
+
+    # mult <- dmulti(
+    #   c(rep(list(dexp()),2),
+    #     rep(list(dpoly(degree=2)),1),
+    #     rep(list(demax()),length(network$agents)-3)
+    #   ))
     comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
-    split <- mbnma.nodesplit(network, fun="emax",
+    split <- mbnma.nodesplit(network, fun=mult,
                              method="random", n.iter=1000,
                              comparisons = rbind(c(network$treatment[comps$t1[2]], network$treatment[comps$t2[2]])))
     expect_equal(1, length(split))
     expect_error(print(split), NA)
     expect_equal(class(summary(split)), "data.frame")
 
-    expect_error(mbnma.nodesplit(network, fum="linear",
+    expect_error(mbnma.nodesplit(network, fun="linear",
                                  method="random", n.iter=1000,
                                  comparisons = rbind(c("badger","rizatriptan_0.5"))),
                  "Treatment names given")
 
-    if (datanam=="HF2PPITT") {
+    if (datanam=="triptans") {
       expect_error(mbnma.nodesplit(network, fun="emax",
                                    method="random", n.iter=1000,
                                    comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
