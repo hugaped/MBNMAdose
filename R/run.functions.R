@@ -2,12 +2,6 @@
 # Author: Hugo Pedder
 # Date created: 2019-04-18
 
-## quiets concerns of R CMD check re: the .'s that appear in pipelines
-if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent", "dose", "Var1", "value",
-                                                        "Parameter", "fupdose", "groupvar", "y",
-                                                        "network", "a", "param", "med", "l95", "u95", "value",
-                                                        "Estimate", "2.5%", "50%", "97.5%", "treatment"))
-
 #' Run MBNMA dose-response models
 #'
 #' Fits a Bayesian dose-response for model-based network meta-analysis
@@ -98,10 +92,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #' @param beta.4 **Deprecated from version 0.4.0 onwards.** Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
-#' @param knots **Deprecated from version 0.4.0 onwards.** The number/location of knots if a restricted cubic spline dose-response function is fitted (`fun="rcs"`).
-#' If a single number is given it indicates the number of knots (they will
-#'   be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-#'   Minimum number of knots is 3.
 #'
 #' @details When relative effects are modelled on more than one dose-response parameter and
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
@@ -654,6 +644,7 @@ mbnma.jags <- function(data.ab, model,
 #'
 #' Ensures model runs properly
 #'
+#' @noRd
 gen.inits <- function(jagsdata, fun, n.chains) {
   if ("nonparam" %in% fun$name) {
     inits <- list()
@@ -930,7 +921,7 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
 #' @inheritParams mbnma.run
 #' @inheritParams mbnma.network
 #'
-#' @export
+#' @noRd
 check.likelink <- function(data.ab, likelihood=NULL, link=NULL, warnings=FALSE) {
 
   # Checks
@@ -1094,6 +1085,7 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 #' @inherit mbnma.run return references
 #' @param slope Refers to the slope parameter of the linear dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
+#' @param arg.params Assign run and wrapper parameters
 #'
 #' @inheritSection mbnma.run Dose-response parameter arguments
 #'
@@ -1163,6 +1155,7 @@ mbnma.linear <- function(network,
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams mbnma.linear
 #' @inherit mbnma.run return references
 #' @param lambda Refers to the rate of growth/decay of the exponential dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
@@ -1236,6 +1229,7 @@ mbnma.exponential <- function(network,
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams mbnma.linear
 #' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).
@@ -1317,6 +1311,7 @@ mbnma.emax <- function(network,
 #' uses more clearly defined parameter names.
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams mbnma.linear
 #' @inherit mbnma.run return references
 #' @param emax Refers to the Emax parameter of the Emax dose-response function.
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details in `?mbnma.run`).

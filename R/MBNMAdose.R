@@ -38,7 +38,7 @@
 #'
 #' @examples
 #' # Generate an "mbnma.network" object that stores data in the correct format
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Generate a network plot at the dose/treatment level
 #' plot(network, level="treatment")

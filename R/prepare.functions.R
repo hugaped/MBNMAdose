@@ -1128,6 +1128,7 @@ DR.comparisons <- function(data.ab, level="treatment", doselink=NULL) {
 #' not be properly encoded.
 #'
 #' @inheritParams mbnma.network
+#' @noRd
 change.netref <- function(network, ref=1) {
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()

@@ -12,6 +12,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 
 #' Print results as string with credible intervals in brackets
+#' @noRd
 neatCrI <- function(vals, digits=3) {
   vals <- signif(vals, digits = digits)
   neat <- paste0(vals[2], " (", vals[1], ", ", vals[3], ")")
@@ -21,6 +22,7 @@ neatCrI <- function(vals, digits=3) {
 
 
 #' Print a warning if any monitored parameters have rhat above the cutoff in an MBNMA model
+#' @noRd
 rhat.warning <- function(mbnma, cutoff=1.2) {
   rhats <- mbnma$BUGSoutput$summary[,colnames(mbnma$BUGSoutput$summary)=="Rhat"]
   rhats <- names(rhats)[rhats>cutoff]
@@ -181,6 +183,7 @@ print.method.sect <- function(mbnma) {
 
 
 #' Neatly prints class results
+#' @noRd
 print.class.str <- function(mbnma, digits=4, ...) {
 
   if (length(mbnma$model.arg$class.effect)>0) {
@@ -238,6 +241,7 @@ print.class.str <- function(mbnma, digits=4, ...) {
 
 
 #' Neatly prints model fit details
+#' @noRd
 print.modfit.str <- function(mbnma) {
   totresdev.str <- c()
 

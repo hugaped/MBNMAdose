@@ -8,4 +8,6 @@
 ^\.gitattributes$
 ^\.gitignore$
 ^CRAN-RELEASE$
+FunctionsDAG\.R$
+^Rplots\.pdf$
 ^FunctionsDAG\.R$

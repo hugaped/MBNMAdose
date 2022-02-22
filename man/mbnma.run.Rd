@@ -141,11 +141,6 @@ should match that of standard models fitted in \code{MBNMAdose}
 (see \code{mbnma$model.arg$jagsdata})}
 
 \item{...}{Arguments to be sent to R2jags.}
-
-\item{knots}{\strong{Deprecated from version 0.4.0 onwards.} The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
 }
 \value{
 An object of S3 \code{class(c("mbnma", "rjags"))} containing parameter

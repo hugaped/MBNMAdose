@@ -80,6 +80,8 @@ on the likelihood.}
 replacement prior distribution values given as strings
 \strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
 
+\item{arg.params}{Assign run and wrapper parameters}
+
 \item{...}{Arguments to be sent to R2jags.}
 }
 \value{
