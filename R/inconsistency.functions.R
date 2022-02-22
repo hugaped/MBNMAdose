@@ -890,10 +890,9 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
     if (length(treatments[[1]])<2) {
       stop("`treatments` must have at least two elements to estimate relative\neffects between them")
     }
-
-    if (!all(names(treatments) %in% mbnma$network$agents)) {
-      stop("names(treatments) are not all in mbnma$network$agents")
-    }
+  }
+  if (!all(names(treatments) %in% mbnma$network$agents)) {
+    stop("names(treatments) are not all in mbnma$network$agents")
   }
 
   # Change `placebo` to dose=0 of an agent
