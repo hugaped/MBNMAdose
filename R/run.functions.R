@@ -92,6 +92,7 @@
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
 #' @param beta.4 **Deprecated from version 0.4.0 onwards.** Refers to dose-parameter(s) specified within the dose-response function(s).
 #' Can take either `"rel"`, `"common"`, `"random"`, or be assigned a numeric value (see details).
+#' @param arg.params **Deprecated from version 0.4.0 onwards.** Assign run and wrapper parameters
 #'
 #' @details When relative effects are modelled on more than one dose-response parameter and
 #' `cor = TRUE`, correlation between the dose-response parameters is automatically
