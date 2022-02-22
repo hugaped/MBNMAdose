@@ -23,7 +23,7 @@ classnodes <-
     fontalign="left",
     height=0.7,
     width=2
-    )
+  )
 
 # Generate edges between classes
 # classedges <-
