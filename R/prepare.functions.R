@@ -1427,6 +1427,11 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
       x0 <- c(0,x0)
     }
 
+    # Add maximum dose (if not present) to allow basis matrix calculation
+    if (max(x)<max.dose) {
+      x0 <- c(x0, max.dose)
+    }
+
     # Calculate quantiles for knots
     if (length(knots)==1 & knots[1]>=1) {
       p <- seq(0,1,1/(knots+1))
