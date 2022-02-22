@@ -308,9 +308,14 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
     stop("Ranking cannot currently be performed for non-parametric models")
   }
 
-  # Cannot plot ume model results
+  # Cannot rank ume model results
   if (x$model.arg$UME==TRUE) {
     stop("rank() does not work for UME models")
+  }
+
+  # Cannot rank dmulti() models
+  if (length(x$model.arg$fun$name)>1) {
+    stop("Ranking cannot be performed for models with agent-specific dose-response functions\nTry ranking of get.relative() results instead")
   }
 
   # Change agent/class to agents/classes
@@ -595,7 +600,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   checkmate::assertClass(object, "mbnma", add=argcheck)
   # checkmate::assertList(max.doses, types="numeric", null.ok=TRUE, add=argcheck)
   checkmate::assertList(exact.doses, types="numeric", null.ok=TRUE, add=argcheck)
-  checkmate::assertInt(n.doses, lower=1, add=argcheck)
+  checkmate::assertInt(n.doses, lower=2, add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
   checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -612,6 +617,11 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   }
   if (!is.null(exact.doses)) {
     doses <- exact.doses
+
+    # Add placebo to exact doses if missing (required for plotting of predictions etc.)
+    if (!"Placebo" %in% names(doses)) {
+      doses <- c("Placebo"=0, doses)
+    }
   } else if (!is.null(max.doses)) {
     doses <- max.doses
 
