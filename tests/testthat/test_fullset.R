@@ -2,15 +2,15 @@ testthat::context("Testing full set of functions")
 
 # Includes tests for mbnma.run()
 
+# Across a range of datasets and dose-response functions:
 # Tests running
 # Tests default plots of running (including fitplot and devplot)
 # Tests default ranking (including cumrank)
 # Tests default prediction
+# Occasionally tests get.relative
 
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
-datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)
@@ -19,9 +19,8 @@ psoriasis90.noplac <- network$data.ab[network$data.ab$narm>2 & network$data.ab$a
 network <- mbnma.network(ssri)
 ssri.noplac <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
 
-alldfs[[length(alldfs)+1]] <- psoriasis90.noplac
-alldfs[[length(alldfs)+1]] <- ssri.noplac
-datanams <- append(datanams, c("psoriasis90", "ssri"))
+alldfs <- list(triptans, psoriasis90.noplac, osteopain, psoriasis75, ssri, ssri.noplac, gout)
+datanams <- c("triptans", "psoriasis90.noplac", "osteopain", "psoriasis75", "ssri", "ssri.noplac", "gout")
 
 
 
@@ -77,17 +76,18 @@ for (dat in seq_along(alldfs)) {
 
 
     if ("class" %in% names(dataset)) {
-      result <- mbnma.run(netclass, fun=dexp(), method="common",
-                          pd="popt", class.effect = list(rate="random"), n.iter=n.iter, pd=pd)
+      result <- expect_warning(mbnma.run(netclass, fun=dexp(), method="common",
+                          pd="popt", class.effect = list(emax="random"), n.iter=n.iter))
       expect_equal(class(result), c("mbnma", "rjags"))
-      expect_equal("RATE" %in% result$parameters.to.save, TRUE)
-      expect_equal("sd.RATE" %in% result$parameters.to.save, TRUE)
+      expect_equal("EMAX" %in% result$parameters.to.save, TRUE)
+      expect_equal("sd.EMAX" %in% result$parameters.to.save, TRUE)
       expect_error(plot(result), NA)
-      expect_error(rank(result))
+      expect_error(rank(result), NA)
       expect_error(devplot(result), NA)
       expect_error(fitplot(result), NA)
       expect_error(predict(result))
       expect_error(suppressWarnings(summary(result)), NA)
+      expect_error(get.relative(result), NA)
 
     }
 
@@ -121,11 +121,11 @@ for (dat in seq_along(alldfs)) {
 
       expect_warning(mbnma.run(netclass, fun=demax(), method="random",
                                class.effect=list(ed50="common"), n.iter=n.iter, pd=pd))
-      result <- mbnma.run(netclass, fun=demax(), method="random",
-                          class.effect=list(ed50="common"), n.iter=n.iter, pd=pd)
+      result <- suppressWarnings(mbnma.run(netclass, fun=demax(), method="random",
+                          class.effect=list(ed50="common"), n.iter=n.iter, pd=pd))
       expect_equal(all(c("emax", "ED50", "ed50", "sd") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
-      expect_error(rank(result))
+      expect_error(rank(result), NA)
       expect_error(predict(result))
       expect_error(suppressWarnings(summary(result)), NA)
 
@@ -212,6 +212,7 @@ for (dat in seq_along(alldfs)) {
                         method="random", n.iter=n.iter, pd=pd)
     expect_equal("inv.R" %in% names(result$model.arg$priors), TRUE)
     expect_equal(ncol(result$model.arg$omega), 2)
+    expect_error(get.relative(result), NA)
 
 
     omega <- matrix(c(10,2,2,10), byrow = TRUE, ncol=2)
@@ -239,6 +240,7 @@ for (dat in seq_along(alldfs)) {
     expect_equal(any(grepl("beta\\.2\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.3\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.1\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
+    expect_error(get.relative(result), "cannot be used on")
 
     expect_error(plot(result), "model results cannot be plotted")
     expect_error(rank(result), "does not work for UME")
@@ -275,10 +277,9 @@ for (dat in seq_along(alldfs)) {
 
 
     # Add tests for non-parametric
-    if (datanam %in% c("psoriasis90")) {
+    if (grepl("noplac", datanam)) {
       expect_error(mbnma.run(network, fun=dnonparam()), "must currently include placebo")
-    }
-    if (!datanam %in% c("psoriasis90", "ssri")) {
+    } else {
       result <- mbnma.run(network, fun=dnonparam(direction = "decreasing"), method="random", n.iter=n.iter, pd=pd)
       expect_equal("d.1[1,1]" %in% rownames(result$BUGSoutput$summary), TRUE)
       expect_equal("sd" %in% result$parameters.to.save, TRUE)
@@ -314,7 +315,10 @@ for (dat in seq_along(alldfs)) {
                           n.iter=n.iter, pd=pd)
     expect_equal(length(multifun$model.arg$fun$name)>1, TRUE)
     expect_equal(all(c("beta.1", "beta.2", "emax", "ed50", "emax.4") %in% multifun$parameters.to.save), TRUE)
+    expect_error(get.relative(multifun), NA)
 
+    # Check devdev
+    expect_error(devdev(result, multifun),NA)
 
 
     mult <- dmulti(
@@ -325,11 +329,26 @@ for (dat in seq_along(alldfs)) {
 
     multifun <- mbnma.run(network, fun=mult,
                           method="random", n.iter=n.iter, pd=pd)
-    expect_equal(all(c(paste0("beta.", 1:6), "power.1", "power.2", "sd") %in% multifun$parameters.to.save), TRUE)
+    expect_equal(all(c(paste0("beta.", c(1:6)), "power.1", "power.2", "sd") %in% multifun$parameters.to.save), TRUE)
     expect_equal(length(multifun$model.arg$fun$name)>1, TRUE)
 
     expect_error(plot(multifun), NA)
-    expect_error(rank(multifun), NA)
+    expect_error(rank(get.relative(multifun)), NA)
+    expect_error(devplot(multifun), NA)
+    expect_error(fitplot(multifun), NA)
+    expect_error(predict(multifun), NA)
+    expect_error(suppressWarnings(summary(multifun)), NA)
+
+
+    mult <- dmulti(c(list(dloglin()),
+                     list(dspline("bs", knots=2)),
+                     list(dspline("ns", knots=0.5)),
+                     rep(list(dloglin()), length(network$agents)-3)
+    ))
+    multifun <- mbnma.run(network, fun=mult, n.iter=n.iter)
+    expect_equal(all(c("rate", paste0("beta.", c(1,2,3,5,6))) %in% multifun$parameters.to.save), TRUE)
+    expect_error(plot(multifun), NA)
+    expect_error(rank(get.relative(multifun)), NA)
     expect_error(devplot(multifun), NA)
     expect_error(fitplot(multifun), NA)
     expect_error(predict(multifun), NA)
