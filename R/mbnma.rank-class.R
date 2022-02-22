@@ -151,6 +151,8 @@ print.mbnma.rank <- function(x, ...) {
   intro <- c()
   if ("Predictions" %in% names(x)) {
     intro <- c(intro, "Includes ranking of predictions from dose-response MBNMA")
+  } else if ("Relative Effects" %in% names(x)) {
+    intro <- c(intro, "Includes ranking of relative effects between treatments from dose-response MBNMA")
   } else {
     relef <- vector()
     classef <- vector()
