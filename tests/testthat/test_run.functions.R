@@ -12,7 +12,7 @@ test_that(paste("run.functions work correctly"), {
 alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
 datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
-# Datasets with no placebo
+# Datasets with no placebo/
 network <- mbnma.network(psoriasis90)
 psoriasis90.noplac <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
 
@@ -21,7 +21,7 @@ ssri.noplac <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1
 
 alldfs[[length(alldfs)+1]] <- psoriasis90.noplac
 alldfs[[length(alldfs)+1]] <- ssri.noplac
-datanams <- append(datanams, c("psoriasis90", "ssri"))
+datanams <- append(datanams, c("psoriasis90.noplac", "ssri.noplac"))
 
 for (dat in seq_along(alldfs)) {
 
@@ -48,10 +48,12 @@ for (dat in seq_along(alldfs)) {
 
   test_that(paste("mbnma.run wrappers function correctly for:", datanam), {
 
-    # Single parameter DR functions
-    expect_error(mbnma.linear(network, slope="random", n.iter=n.iter, pd=pd), "must include at least one parameter")
+    expect_warning(mbnma.linear(network, slope="rel", n.iter=n.iter, pd=pd), "syntax for specifying dose-response functions")
 
-    result <- mbnma.exponential(network, lambda="rel", method="common", n.iter=n.iter, pd=pd)
+    # Single parameter DR functions
+    expect_error(mbnma.run(network, fun=dpoly(degree=1, beta.1="random"), n.iter=n.iter, pd=pd), "must include at least one parameter")
+
+    result <- mbnma.run(network, fun=dloglin(), method="common", n.iter=n.iter, pd=pd)
     expect_equal(all(c("rate") %in% result$parameters.to.save), TRUE)
     expect_equal(all(c("sd") %in% result$parameters.to.save), FALSE)
     expect_error(summary(result), NA)
@@ -60,14 +62,15 @@ for (dat in seq_along(alldfs)) {
     expect_error(predict(result), NA)
 
     if ("class" %in% names(dataset)) {
+
       # Two parameter DR functions
-      result <- mbnma.emax(netclass, emax="rel", ed50="rel", method="common",
-                           class.effect=list(emax="common"), n.iter=n.iter, pd=pd, cor = FALSE)
+      result <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="rel", method="common",
+                           class.effect=list(emax="common"), n.iter=n.iter, pd=pd, cor = FALSE))
       expect_equal(all(c("EMAX", "ed50", "emax") %in% result$parameters.to.save), TRUE)
-      expect_error(summary(result), NA)
+      expect_error(suppressWarnings(summary(result), NA))
       expect_error(plot(result), NA)
-      expect_error(rank(result))
-      expect_error(predict(result))
+      expect_error(rank(result), NA)
+      expect_error(predict(result), "does not work with models that use class effects")
 
       # Three parameter DR functions
       if (datanam!="osteopain") {
@@ -99,7 +102,7 @@ for (dat in seq_along(alldfs)) {
       expect_error(check.likelink(df, likelihood = "normal", link="badger"))
       expect_error(check.likelink(df, likelihood = "test", link="identity"))
 
-    } else if (all(c("r", "N") %in% names(dataset))) {
+    } else if (all(c("r", "n") %in% names(dataset))) {
       expect_silent(check.likelink(df, likelihood = "binomial", link="identity"))
       expect_silent(check.likelink(df, likelihood = "binomial", link="logit"))
 
@@ -125,7 +128,7 @@ for (dat in seq_along(alldfs)) {
     expect_warning(nma.run(network, method="common", n.iter=n.iter, pd=pd, warn.rhat = FALSE), NA)
 
     result <- nma.run(network, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE)
-    expect_equal(names(result), c("jagsresult", "trt.labs"))
+    expect_equal(names(result), c("jagsresult", "trt.labs", "UME"))
     expect_equal(all(c("d", "sd") %in% result$jagsresult$parameters.to.save), TRUE)
 
     result <- nma.run(network, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE,
@@ -164,7 +167,11 @@ for (dat in seq_along(alldfs)) {
     if (all(c("y", "se") %in% names(dataset))) {
       likelihood <- "normal"
       link <- "identity"
-    } else if (all(c("r", "N") %in% names(dataset))) {
+
+      # Prevents skip
+      expect_equal(5,5)
+
+    } else if (all(c("r", "n") %in% names(dataset))) {
       likelihood <- "binomial"
       link <- "logit"
 
@@ -177,7 +184,7 @@ for (dat in seq_along(alldfs)) {
       jagsdata <- getjagsdata(network$data.ab, likelihood = likelihood, link=link)
 
       obs1 <- jagsdata$r
-      obs2 <- jagsdata$N
+      obs2 <- jagsdata$n
 
       pd.est <- pDcalc(obs1=obs1, obs2=obs2, narm=jagsdata[["narm"]], NS=jagsdata[["NS"]],
                    theta.result=result$BUGSoutput$mean$psi, resdev.result=result$BUGSoutput$mean$resdev,
@@ -226,6 +233,9 @@ for (dat in seq_along(alldfs)) {
 
     update <- mbnma.update(result, param="theta", n.iter=100)
     expect_equal(names(update), c("study", "arm", "mean", "facet", "fupdose", "groupvar"))
+
+    update <- mbnma.update(result, param="theta", n.iter=100, armdat = FALSE)
+    expect_equal(names(update), c("study", "arm", "mean"))
 
   })
 }
