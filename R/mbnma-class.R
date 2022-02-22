@@ -619,7 +619,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     doses <- exact.doses
 
     # Add placebo to exact doses if missing (required for plotting of predictions etc.)
-    if (!"Placebo" %in% names(doses)) {
+    if (!"Placebo" %in% names(doses) & length(doses)!=length(object$network$agents)) {
       doses <- c("Placebo"=0, doses)
     }
   } else if (!is.null(max.doses)) {
@@ -648,7 +648,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
       agent.num <- 1:length(mbnma.agents)
     } else if (!is.null(names(doses))) {
       if (any(is.na(suppressWarnings(as.numeric(names(doses)))))) {
-        if (!all(names(doses) %in% mbnma.agents)) {
+        if (!all(names(doses)[names(doses)!="Placebo"] %in% mbnma.agents)) {
           match.pass <- FALSE
         }
         agent.num <- match(names(doses), mbnma.agents)
