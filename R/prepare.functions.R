@@ -1181,8 +1181,6 @@ change.netref <- function(network, ref=1) {
 
 #' Used to remove superfluous outputs from rjags object if agent-specific dose-response functions are fitted
 #'
-#' Function not currently in use
-#'
 #' @noRd
 cutjags <- function(jagsresult) {
 
@@ -1207,10 +1205,10 @@ cutjags <- function(jagsresult) {
     for (i in seq_along(univec)) {
       index <- which(posvec==univec[i])
 
-      for (k in seq_along(apool[[i]])) {
-        if ("rel" %in% apool[[i]][k]) {
+      for (k in seq_along(apool[[univec[i]]])) {
+        if ("rel" %in% apool[[univec[i]]][k]) {
 
-          tag <- gsub("\\.", "\\\\.", names(apool[[i]])[k])
+          tag <- gsub("\\.", "\\\\.", names(apool[[univec[i]]])[k])
 
           # Cut sims.array
           dropi <- grep(paste0(tag, "\\["), dimnames(jagsresult$BUGSoutput$sims.array)[[3]])
@@ -1218,8 +1216,8 @@ cutjags <- function(jagsresult) {
           jagsresult$BUGSoutput$sims.array <- jagsresult$BUGSoutput$sims.array[,,-dropi]
 
           # Cut sims.list
-          jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]] <-
-            jagsresult$BUGSoutput$sims.list[[names(apool[[i]])[k]]][,index]
+          jagsresult$BUGSoutput$sims.list[[names(apool[[univec[i]]])[k]]] <-
+            jagsresult$BUGSoutput$sims.list[[names(apool[[univec[i]]])[k]]][,index]
 
           # Cut sims.matrix
           dropi <- grep(paste0(tag, "\\["), colnames(jagsresult$BUGSoutput$sims.matrix))
@@ -1232,9 +1230,9 @@ cutjags <- function(jagsresult) {
           jagsresult$BUGSoutput$summary <- jagsresult$BUGSoutput$summary[-dropi,]
 
           # Cut mean, SD and median
-          jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$mean[[names(apool[[i]])[k]]][index]
-          jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$sd[[names(apool[[i]])[k]]][index]
-          jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]] <- jagsresult$BUGSoutput$median[[names(apool[[i]])[k]]][index]
+          jagsresult$BUGSoutput$mean[[names(apool[[univec[i]]])[k]]] <- jagsresult$BUGSoutput$mean[[names(apool[[univec[i]]])[k]]][index]
+          jagsresult$BUGSoutput$sd[[names(apool[[univec[i]]])[k]]] <- jagsresult$BUGSoutput$sd[[names(apool[[univec[i]]])[k]]][index]
+          jagsresult$BUGSoutput$median[[names(apool[[univec[i]]])[k]]] <- jagsresult$BUGSoutput$median[[names(apool[[univec[i]]])[k]]][index]
 
         }
       }
