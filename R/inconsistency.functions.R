@@ -970,7 +970,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
       agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
 
       # Account for lack of placebo
-      if (!"Placebo_0" %in% mbnma$network$treatments) {
+      if (!"Placebo_0" %in% mbnma$network$treatments & length(fun$name)==1) {
         agnum.i <- agnum.i+1
         agnum.k <- agnum.k+1
       }
