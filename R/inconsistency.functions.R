@@ -907,7 +907,8 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
 
   # Change `placebo` to dose=0 of an agent
   if ("Placebo" %in% names(treatments)) {
-    treatments[[mbnma$network$agents[2]]] <- c(0, treatments[[mbnma$network$agents[2]]])
+    temptrts <- names(treatments)[names(treatments)!="Placebo"]
+    treatments[[temptrts[1]]] <- c(0, treatments[[temptrts[1]]])
     treatments$Placebo <- NULL
   }
 
@@ -943,7 +944,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
       posvec <- posvec[-1]
     }
   } else {
-    posvec <- rep(1, length(index))
+    posvec <- rep(1, max(index))
   }
   for (i in seq_along(index)) {
 
