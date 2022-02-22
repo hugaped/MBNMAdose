@@ -1,8 +1,8 @@
 testthat::context("Testing predict.functions")
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
-alldfs <- list(HF2PPITT, psoriasis75, ssri, osteopain, gout)
-datanams <- c("HF2PPITT", "psoriasis75", "ssri", "osteopain", "gout")
+alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
+datanams <- c("triptans", "psoriasis75", "ssri", "osteopain", "gout")
 
 # Datasets with no placebo
 network <- mbnma.network(psoriasis90)
@@ -13,7 +13,7 @@ ssri.noplac <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1
 
 alldfs[[length(alldfs)+1]] <- psoriasis90.noplac
 alldfs[[length(alldfs)+1]] <- ssri.noplac
-datanams <- append(datanams, c("psoriasis90", "ssri"))
+datanams <- append(datanams, c("psoriasis90.noplac", "ssri.noplac"))
 
 
 
@@ -72,7 +72,7 @@ for (dat in seq_along(alldfs)) {
       ref.df <- network$data.ab[network$data.ab$agent==1,]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
 
-      result <- ref.synth(ref.df, mbnma=emax, synth="fixed")
+      result <- suppressWarnings(ref.synth(ref.df, mbnma=emax, synth="fixed"))
       expect_equal(names(result), c("jagsmod", "m.mu"))
       expect_equal(nrow(result$m.mu), emax$BUGSoutput$n.sims)
 
@@ -83,13 +83,13 @@ for (dat in seq_along(alldfs)) {
 
       ref.df <- network$data.ab[network$data.ab$agent==network$data.ab$agent[2] & network$data.ab$dose==network$data.ab$dose[2],]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
-      expect_error(ref.synth(ref.df, mbnma=linear, synth="fixed"), NA)
+      expect_error(suppressWarnings(ref.synth(ref.df, mbnma=linear, synth="fixed")), NA)
 
       expect_error(ref.synth(ref.df, mbnma=emax, synth="arndom"))
 
       ref.df <- network$data.ab[network$data.ab$agent==1,]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
-      result <- ref.synth(ref.df, mbnma=multifun, synth="random", n.iter=1500, n.burnin=500)
+      result <- suppressWarnings(ref.synth(ref.df, mbnma=multifun, synth="random", n.iter=1500, n.burnin=500))
       expect_identical(names(result), c("jagsmod", "m.mu", "sd.mu"))
 
     })
@@ -122,7 +122,7 @@ for (dat in seq_along(alldfs)) {
       # Estimating E0
       ref.df <- network$data.ab[network$data.ab$agent==1,]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
-      pred <- predict(linear, E0 = ref.df)
+      pred <- suppressWarnings(predict(linear, E0 = ref.df))
       expect_identical(names(pred), c("predicts", "likelihood", "link", "network", "E0"))
       expect_equal(linear$model.arg$likelihood, pred$likelihood)
       expect_equal(linear$model.arg$link, pred$link)
@@ -157,45 +157,6 @@ for (dat in seq_along(alldfs)) {
       expect_error(print(pred), NA)
       expect_equal(class(summary(pred)), "data.frame")
 
-      # Changing max.doses - REMOVED FROM ARGUMENTS
-      # max.doses <- list()
-      # for (i in seq_along(network$agents)) {
-      #   max.doses[[length(max.doses)+1]] <- 1
-      # }
-      # pred <- predict(emax, E0=0.1, max.doses = max.doses)
-      # expect_identical(names(pred$predicts), emax$network$agents)
-      # expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
-      # expect_error(print(pred), NA)
-      # expect_equal(class(summary(pred)), "data.frame")
-      #
-      # names(max.doses) <- emax$agents
-      # expect_silent(predict(emax, E0=0.1, max.doses = max.doses))
-      #
-      # max.doses[[length(max.doses)+1]] <- 1
-      # expect_error(predict(emax, E0=0.1, max.doses = max.doses), "A greater number of agents")
-      #
-      #
-      # if (length(network$agents>=5)) {
-      #   max.doses <- list()
-      #   max.doses[[network$agents[2]]] <- 3
-      #   max.doses[[network$agents[5]]] <- 2
-      #   pred <- predict(emax, E0=0.1, max.doses = max.doses, n.doses = 10)
-      #   expect_equal(length(pred$predicts), length(max.doses))
-      #   expect_equal(names(pred$predicts), names(max.doses))
-      #   expect_equal(names(pred$predicts[[network$agents[2]]])[10], "3")
-      #   expect_equal(names(pred$predicts[[network$agents[5]]])[10], "2")
-      #   expect_equal(all(pred$predicts[[1]][[1]][1] > 0), TRUE)
-      #   expect_error(print(pred), NA)
-      #   expect_equal(class(summary(pred)), "data.frame")
-      # }
-      #
-      #
-      # max.doses <- list("badger"=3, "test"=1)
-      # expect_error(predict(linear, E0=0.1, max.doses = max.doses))
-      #
-      # max.doses <- list("eletriptan"="badger", "rizatriptan"=2)
-      # expect_error(predict(linear, E0=0.1, max.doses = max.doses, n.doses = 10))
-
 
       # Changing exact.doses
       if (length(network$agents)>=4) {
@@ -203,10 +164,10 @@ for (dat in seq_along(alldfs)) {
         doses[[network$agents[3]]] <- c(0,1,2,3)
         doses[[network$agents[4]]] <- c(0.5,1,2)
         pred <- predict(emax, E0=0.1, exact.doses = doses)
-        expect_identical(as.numeric(names(pred$predicts[[1]])), doses[[1]])
-        expect_identical(as.numeric(names(pred$predicts[[2]])), doses[[2]])
+        expect_identical(as.numeric(names(pred$predicts[[2]])), doses[[1]])
+        expect_identical(as.numeric(names(pred$predicts[[3]])), doses[[2]])
 
-        if (all(c("r", "N") %in% names(dataset))) {
+        if (all(c("r", "n") %in% names(dataset))) {
           expect_equal(all(pred$predicts[[2]][[2]][1] > 0), TRUE)
         }
 
@@ -236,7 +197,7 @@ for (dat in seq_along(alldfs)) {
       # Multiple dose-response functions
       ref.df <- network$data.ab[network$data.ab$agent==1,]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
-      expect_error(predict(multifun, E0=ref.df), NA)
+      expect_error(suppressWarnings(predict(multifun, E0=ref.df)), NA)
 
 
       if (length(network$agents)>=4) {
@@ -244,7 +205,7 @@ for (dat in seq_along(alldfs)) {
         doses[[network$agents[2]]] <- c(0,2,0.1,0.05, 0.3)
         doses[[network$agents[4]]] <- c(0,2,0.1,0.5,0.9,1)
         pred <- predict(multifun, E0=0.2, exact.doses = doses)
-        expect_identical(names(pred$predicts), c(network$agents[2], network$agents[4]))
+        expect_identical(names(pred$predicts), c("Placebo", network$agents[2], network$agents[4]))
 
       }
 
