@@ -928,6 +928,11 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
   # If there are multiple DR functions
   if ("posvec" %in% names(fun)) {
     posvec <- fun$posvec
+
+    # Remove 1st element if Placebo in network
+    if ("Placebo" %in% mbnma$network$agents) {
+      posvec <- posvec[-1]
+    }
   } else {
     posvec <- rep(1, length(index))
   }
