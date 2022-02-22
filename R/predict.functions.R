@@ -22,8 +22,10 @@ get.model.vals <- function(mbnma) {
   for (i in seq_along(fun$apool)) {
     temp <- vector()
     res.mat <- mbnma$BUGSoutput$sims.list
-    if (fun$apool[i] %in% c("rel", "common")) {
+    if (fun$apool[i] %in% c("rel")) {
       temp <- as.matrix(res.mat[[names(fun$apool)[i]]], ncol=1)
+    } else if (fun$apool[i] %in% c("common")) {
+      temp <- as.vector(res.mat[[names(fun$apool)[i]]])
     } else if (fun$apool[i] %in% "random") {
 
       # Incorporates SD from between-study SD for ABSOLUTE pooling
@@ -32,7 +34,7 @@ get.model.vals <- function(mbnma) {
       mat[,2] <- res.mat[[paste0("sd.", names(fun$apool)[i])]]
       mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
-      temp <- mat
+      temp <- as.vector(mat)
     } else if (suppressWarnings(!is.na(as.numeric(fun$apool[i])))) {
       temp <- rep(as.numeric(fun$apool[i]), mbnma$BUGSoutput$n.sims)
     }
