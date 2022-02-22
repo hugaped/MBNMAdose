@@ -747,7 +747,7 @@ getjagsdata <- function(data.ab, class=FALSE,
 
           subspline <- genspline(sub$dose,
                                   spline=unique(sub$splinefun),
-                                  knots=unique(sub$knots),
+                                  knots=as.numeric(unlist(unique(sub$knots))),
                                   degree=unique(sub$degree))
 
           splinemat[which(dosespline$agent==uniag[i]),1:ncol(subspline)] <- subspline
