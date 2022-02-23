@@ -4,7 +4,13 @@ Title: Dose-Response MBNMA Models
 Version: 0.4.1
 Language: en-GB
 Date: 2022-02-22
-Authors@R: c(person("Hugo", "Pedder", email = "hugopedder@gmail.com", role = c("aut", "cre")),
+Authors@R: c(person("Hugo", "Pedder", 
+        email = "hugopedder@gmail.com", 
+        role = c("aut", "cre"), 
+        comment = c(ORCID = "0000-0002-7813-3749")),
+    person("Daniel", "Gallardo Gomez", 
+        role = c("rev"),
+        comment = c(ORCID = "0000-0002-3029-026X")),
     person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
 URL: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
