@@ -9,8 +9,9 @@
 ^\.gitignore$
 ^CRAN-RELEASE$
 ^Rplots\.pdf$
-^R/FunctionsDAG\.R$
+^FunctionsDAG\.R$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^R/FunctionsDAG\.R$
