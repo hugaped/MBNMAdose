@@ -140,6 +140,8 @@ required if users are defining their own JAGS model using \code{model.file}. For
 should match that of standard models fitted in \code{MBNMAdose}
 (see \code{mbnma$model.arg$jagsdata})}
 
+\item{arg.params}{\strong{Deprecated from version 0.4.0 onwards.} Assign run and wrapper parameters}
+
 \item{...}{Arguments to be sent to R2jags.}
 }
 \value{
