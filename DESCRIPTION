@@ -1,6 +1,6 @@
 Package: MBNMAdose
 Type: Package
-Title: Dose-Response (MB)NMA Models
+Title: Dose-Response MBNMA Models
 Version: 0.4.1
 Language: en-GB
 Date: 2022-02-22
@@ -26,8 +26,6 @@ Imports:
     graphics,
     utils,
     scales,
-    utf8,
-    formatR,
     dplyr (>= 0.7.4),
     R2jags (>= 0.5-7), 
     rjags (>= 4-8),
