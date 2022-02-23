@@ -53,7 +53,7 @@ Suggests:
     ggdist (>= 2.4.0),
     lspline (>= 1.0-0),
     DiagrammeR (>= 1.0.6.1),
-    DiagrammeRsvg (>0.1),
+    DiagrammeRsvg (>= 0.1),
     rsvg (>= 2.1.2),
     knitr,
     rmarkdown
