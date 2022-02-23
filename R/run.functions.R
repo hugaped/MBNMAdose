@@ -1010,7 +1010,7 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 
   checkmate::assertClass(network, "mbnma.network")
 
-  if (class(fun)=="character") {
+  if ("character" %in% class(fun)) {
     if (length(fun)>1) {
       stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
     }
@@ -1033,7 +1033,7 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
     } else {
       stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
     }
-  } else if (class(fun)=="dosefun") {
+  } else if ("dosefun" %in% class(fun)) {
     if (length(fun[["name"]])>1) {
       if (length(fun[["posvec"]])!=length(network$agents)) {
         stop("Number of agent-specific dose-response functions in dmulti() must be equal to the number of agents in network$agents")
