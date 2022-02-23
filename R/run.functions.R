@@ -1073,9 +1073,9 @@ check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
 #######################################################
 
 
-#' Run MBNMA model with a linear dose-response function (DEPRACATED)
+#' Run MBNMA model with a linear dose-response function (DEPRECATED)
 #'
-#' FUNCTION IS NOW DEPRACATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
+#' FUNCTION IS NOW DEPRECATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
@@ -1118,7 +1118,7 @@ mbnma.linear <- function(network,
                          arg.params=NULL, ...)
 {
 
-  # Add warning that this will be depracated in future versions
+  # Add warning that this will be deprecated in future versions
   warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
@@ -1146,9 +1146,9 @@ mbnma.linear <- function(network,
 
 
 
-#' Run MBNMA model with a exponential dose-response function (DEPRACATED)
+#' Run MBNMA model with a exponential dose-response function (DEPRECATED)
 #'
-#' FUNCTION IS NOW DEPRACATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
+#' FUNCTION IS NOW DEPRECATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
@@ -1191,7 +1191,7 @@ mbnma.exponential <- function(network,
                          arg.params=NULL, ...)
 {
 
-  # Add warning that this will be depracated in future versions
+  # Add warning that this will be deprecated in future versions
   warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
@@ -1220,9 +1220,9 @@ mbnma.exponential <- function(network,
 
 
 
-#' Run MBNMA model with an Emax dose-response function (without Hill parameter) (DEPRACATED)
+#' Run MBNMA model with an Emax dose-response function (without Hill parameter) (DEPRECATED)
 #'
-#' FUNCTION IS NOW DEPRACATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
+#' FUNCTION IS NOW DEPRECATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
@@ -1272,7 +1272,7 @@ mbnma.emax <- function(network,
                          arg.params=NULL, ...)
 {
 
-  # Add warning that this will be depracated in future versions
+  # Add warning that this will be deprecated in future versions
   warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
@@ -1302,9 +1302,9 @@ mbnma.emax <- function(network,
 
 
 
-#' Run MBNMA model with an Emax dose-response function (with a Hill parameter) (DEPRACATED)
+#' Run MBNMA model with an Emax dose-response function (with a Hill parameter) (DEPRECATED)
 #'
-#' FUNCTION IS NOW DEPRACATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
+#' FUNCTION IS NOW DEPRECATED - USE `mbnma.run()` DIRECTLY WITH OBJECTS OF `class("dosefun")`
 #'
 #' Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
 #' dose-response function. Follows the methods
@@ -1365,7 +1365,7 @@ mbnma.emax.hill <- function(network,
                        arg.params=NULL, ...)
 {
 
-  # Add warning that this will be depracated in future versions
+  # Add warning that this will be deprecated in future versions
   warning("This syntax for specifying dose-response functions will be removed in future versions.\nPlease use mbnma.run() and specify functions as dosefun objects (e.g. dloglin())`")
 
   # Assign corresponding run and wrapper parameters
@@ -1661,7 +1661,7 @@ mbnma.update <- function(mbnma, param="theta", armdat=TRUE,
 #' time-course MBNMA (this accounts for multiple observations within an arm)
 #'
 #' @return A list containing `pd` (effective number of parameters calculated using the method
-#' specified in arguments), `deviance` (the posterior mdedian of the total residual deviance)
+#' specified in arguments), `deviance` (the posterior median of the total residual deviance)
 #' and `dic` (the model DIC)
 #'
 #' @inheritParams mbnma.run

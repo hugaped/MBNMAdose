@@ -84,15 +84,17 @@ plot(pred, overlay.split=TRUE)
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://hugaped.github.io/MBNMAdose}
   \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/}
 }
 
 }
 \author{
-\strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com}
+\strong{Maintainer}: Hugo Pedder \email{hugopedder@gmail.com} (\href{https://orcid.org/0000-0002-7813-3749}{ORCID})
 
 Other contributors:
 \itemize{
+  \item Daniel Gallardo Gomez (\href{https://orcid.org/0000-0002-3029-026X}{ORCID}) [reviewer]
   \item Lujin Li [reviewer]
   \item Adil Karim [contributor]
 }

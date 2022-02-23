@@ -48,6 +48,6 @@ Checks done within the validation:
 \item Checks that agent/class names do not contain restricted characters
 \item Checks that studies have at least two arms (if \code{single.arm = FALSE})
 \item Checks that each study includes at least two treatments
-\item Checks that agent names do not inlcude underscores
+\item Checks that agent names do not include underscores
 }
 }

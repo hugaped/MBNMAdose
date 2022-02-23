@@ -97,7 +97,7 @@ mbnma.network <- function(data.ab, description="Network") {
 #' * Checks that agent/class names do not contain restricted characters
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
 #' * Checks that each study includes at least two treatments
-#' * Checks that agent names do not inlcude underscores
+#' * Checks that agent names do not include underscores
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
 mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
@@ -1253,7 +1253,7 @@ cutjags <- function(jagsresult) {
 
 #' Assigns different parameters for agent-specific (multiple) dose-response functions in a model
 #'
-#' FUNCTION IS NOW DEPRACATED
+#' FUNCTION IS NOW DEPRECATED
 #'
 #' For a given  function (or set of functions), it indicates which parameter corresponds
 #' to which function (including a parameter name) and which agents are modelled by that parameter

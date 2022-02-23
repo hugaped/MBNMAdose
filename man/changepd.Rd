@@ -32,7 +32,7 @@ time-course MBNMA (this accounts for multiple observations within an arm)}
 }
 \value{
 A list containing \code{pd} (effective number of parameters calculated using the method
-specified in arguments), \code{deviance} (the posterior mdedian of the total residual deviance)
+specified in arguments), \code{deviance} (the posterior median of the total residual deviance)
 and \code{dic} (the model DIC)
 }
 \description{

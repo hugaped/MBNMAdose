@@ -2,7 +2,7 @@
 % Please edit documentation in R/run.functions.R
 \name{mbnma.exponential}
 \alias{mbnma.exponential}
-\title{Run MBNMA model with a exponential dose-response function (DEPRACATED)}
+\title{Run MBNMA model with a exponential dose-response function (DEPRECATED)}
 \usage{
 mbnma.exponential(
   network,
@@ -109,7 +109,7 @@ which includes \code{jagscode}, the JAGS code for the model that can help
 users identify the source of the error.
 }
 \description{
-FUNCTION IS NOW DEPRACATED - USE \code{mbnma.run()} DIRECTLY WITH OBJECTS OF \code{class("dosefun")}
+FUNCTION IS NOW DEPRECATED - USE \code{mbnma.run()} DIRECTLY WITH OBJECTS OF \code{class("dosefun")}
 }
 \details{
 Fits a Bayesian model-based network meta-analysis (MBNMA) with a defined
