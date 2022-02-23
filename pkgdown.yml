@@ -3,7 +3,7 @@ pkgdown: 2.0.2
 pkgdown_sha: ~
 articles:
   mbnmadose: mbnmadose.html
-last_built: 2022-02-23T12:12Z
+last_built: 2022-02-23T13:38Z
 urls:
   reference: https://hugaped.github.io/MBNMAdose/reference
   article: https://hugaped.github.io/MBNMAdose/articles

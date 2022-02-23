@@ -114,376 +114,191 @@ will be included, to avoid duplicating rankings.</p>
 <span class="r-in"><span class="va">rank</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Predictions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             rank.param       mean          sd    2.5%    25%   50%    75%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1            Placebo_0 183.991667  0.45643546 184.000 184.00 184.0 184.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     eletriptan_0.069 175.863000  1.76198729 172.000 175.00 176.0 177.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      eletriptan_0.14 163.638000  3.50738125 154.000 163.00 165.0 166.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      eletriptan_0.21 151.334000  4.89044130 138.000 149.00 152.0 155.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      eletriptan_0.28 138.400000  5.30000283 128.000 135.00 139.0 142.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      eletriptan_0.34 128.431333  5.20554039 119.000 124.00 129.0 132.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      eletriptan_0.41 117.863000  4.82396668 109.000 114.00 117.0 121.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      eletriptan_0.48 107.598667  4.69300255  99.000 104.00 108.0 110.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      eletriptan_0.55  97.635000  4.55756135  89.000  95.00  98.0 101.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     eletriptan_0.62  89.078333  4.36117765  80.000  86.00  89.0  92.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11     eletriptan_0.69  81.204000  4.65420289  72.000  78.00  81.0  84.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12     eletriptan_0.76  73.481000  4.94001757  63.000  70.00  74.0  77.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13     eletriptan_0.83  66.091333  5.22935053  55.000  63.00  66.0  70.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14      eletriptan_0.9  58.814667  5.55463196  48.000  55.00  59.0  63.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     eletriptan_0.97  51.840333  5.47029688  41.000  48.00  52.0  56.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16        eletriptan_1  48.550000  5.27555152  39.000  45.00  48.0  52.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17      eletriptan_1.1  41.791333  4.16400102  34.000  39.00  42.0  44.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18      eletriptan_1.2  37.639000  3.29083913  33.000  35.00  38.0  40.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19      eletriptan_1.3  34.818333  2.90725780  31.000  32.00  35.0  37.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20      eletriptan_1.4  32.364000  2.64130577  29.000  30.00  32.0  34.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21      eletriptan_1.5  30.115000  2.32613671  27.000  28.00  29.0  31.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22      eletriptan_1.6  28.038667  2.02563717  25.000  27.00  27.0  29.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23      eletriptan_1.7  26.136000  1.79756718  23.000  25.00  26.0  27.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24      eletriptan_1.8  24.345667  1.64815655  22.000  23.00  24.0  25.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25      eletriptan_1.9  22.600667  1.56993241  20.000  22.00  23.0  23.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        eletriptan_2  20.914000  1.52644926  18.000  20.00  21.0  22.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27   sumatriptan_0.069 179.783000  1.25157227 177.000 179.00 180.0 181.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28    sumatriptan_0.14 172.293667  2.21142262 167.000 172.00 173.0 174.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29    sumatriptan_0.21 165.766667  3.27156282 157.000 165.00 166.5 168.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30    sumatriptan_0.28 158.371667  4.16805168 146.000 157.00 159.0 161.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31    sumatriptan_0.34 152.170000  4.78017259 139.000 150.00 153.0 156.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32    sumatriptan_0.41 144.644000  5.19515100 133.000 142.00 146.0 149.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33    sumatriptan_0.48 137.509333  5.22178149 127.000 134.00 138.0 141.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34    sumatriptan_0.55 131.183667  5.08001333 122.000 127.00 132.0 135.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35    sumatriptan_0.62 124.999333  4.83912581 117.000 121.00 125.0 129.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36    sumatriptan_0.69 119.548333  4.61520284 112.000 116.00 119.0 123.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37    sumatriptan_0.76 114.070000  4.39866071 107.000 111.00 113.0 117.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38    sumatriptan_0.83 108.812333  4.27112734 101.000 106.00 109.0 111.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39     sumatriptan_0.9 103.650667  4.14097599  96.000 101.00 103.0 106.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40    sumatriptan_0.97  98.802667  3.91273511  92.000  96.00  99.0 101.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41       sumatriptan_1  96.263333  3.89731342  89.000  94.00  96.0  99.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42     sumatriptan_1.1  90.488000  3.78883990  83.000  88.00  91.0  93.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43     sumatriptan_1.2  85.043667  3.91512485  77.000  83.00  85.0  88.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44     sumatriptan_1.3  79.710000  4.10156567  71.000  77.00  80.0  83.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45     sumatriptan_1.4  74.534333  4.21276675  66.000  72.00  75.0  77.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46     sumatriptan_1.5  69.571333  4.30593682  61.000  67.00  70.0  73.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47     sumatriptan_1.6  64.761333  4.49508326  55.000  62.00  65.0  68.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48     sumatriptan_1.7  60.082000  4.67181813  50.000  57.00  60.0  63.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49     sumatriptan_1.8  55.412333  4.80520668  46.000  52.00  55.0  59.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50     sumatriptan_1.9  50.949000  4.79479534  41.000  48.00  51.0  54.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51       sumatriptan_2  46.713667  4.66107160  37.975  44.00  47.0  50.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52  frovatriptan_0.069 177.666333  1.69074523 174.000 177.00 178.0 178.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53   frovatriptan_0.14 168.221000  3.64736344 159.000 167.00 169.0 171.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54   frovatriptan_0.21 158.517667  5.66742691 145.000 156.00 159.0 162.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55   frovatriptan_0.28 148.534667  7.30898570 133.000 144.00 149.0 154.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56   frovatriptan_0.34 140.011667  8.17095172 124.000 134.00 140.0 146.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57   frovatriptan_0.41 130.888000  8.72273761 115.000 124.00 131.0 137.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58   frovatriptan_0.48 122.478000  9.21892142 105.000 116.00 122.0 129.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59   frovatriptan_0.55 114.498000  9.81791525  96.000 108.00 114.0 121.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60   frovatriptan_0.62 106.933333 10.31747897  88.000 100.00 107.0 114.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61   frovatriptan_0.69  99.847333 10.69701679  80.975  92.00  99.0 107.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62   frovatriptan_0.76  93.206667 11.01058732  73.000  86.00  93.0 100.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63   frovatriptan_0.83  86.954333 11.43065183  65.000  79.75  87.0  94.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64    frovatriptan_0.9  81.015000 11.93776689  57.975  73.00  81.0  88.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65   frovatriptan_0.97  75.275667 12.46523707  50.975  67.00  75.0  84.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66      frovatriptan_1  72.360667 12.68275221  47.000  64.00  72.0  81.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67    frovatriptan_1.1  65.183000 13.06806932  43.000  55.00  65.0  74.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68    frovatriptan_1.2  58.699000 12.94427481  40.000  48.00  58.0  68.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69    frovatriptan_1.3  53.057000 12.30938360  38.000  43.00  50.0  61.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70    frovatriptan_1.4  48.257667 11.39154059  35.000  40.00  44.0  55.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71    frovatriptan_1.5  44.174333 10.34399700  32.000  37.00  40.0  48.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72    frovatriptan_1.6  40.655000  9.33672140  29.000  35.00  38.0  43.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73    frovatriptan_1.7  37.601667  8.43690648  27.000  33.00  36.0  39.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74    frovatriptan_1.8  34.853000  7.73761470  24.000  31.00  34.0  36.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75    frovatriptan_1.9  32.361333  7.21184963  22.000  28.00  32.0  35.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76      frovatriptan_2  30.032333  6.77371751  20.000  26.00  29.0  33.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77   almotriptan_0.069 179.823000  1.33351556 177.000 179.00 180.0 181.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78    almotriptan_0.14 172.346000  2.35855993 167.000 171.75 173.0 174.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79    almotriptan_0.21 165.695333  3.56221954 156.000 164.00 166.0 168.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80    almotriptan_0.28 158.405667  4.51204544 146.000 157.00 159.0 161.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81    almotriptan_0.34 152.189000  5.29955729 139.000 149.00 153.0 156.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82    almotriptan_0.41 144.788667  5.88054973 132.000 141.00 145.0 149.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83    almotriptan_0.48 137.744667  6.02170174 126.000 134.00 138.0 142.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84    almotriptan_0.55 131.330000  6.03124299 120.000 127.00 131.0 136.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85    almotriptan_0.62 125.334000  5.95787513 115.000 121.00 125.0 130.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 86    almotriptan_0.69 119.751000  5.85500578 109.000 116.00 119.0 124.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 87    almotriptan_0.76 114.394667  5.84610673 104.000 110.00 114.0 118.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 88    almotriptan_0.83 109.120333  5.94813528  98.000 105.00 109.0 113.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 89     almotriptan_0.9 103.996333  6.02132920  93.000 100.00 104.0 108.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90    almotriptan_0.97  99.171333  5.97906581  88.000  95.00  99.0 103.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 91       almotriptan_1  96.632333  5.98289949  85.000  93.00  96.0 100.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 92     almotriptan_1.1  90.807667  5.99238217  79.000  87.00  91.0  95.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 93     almotriptan_1.2  85.295000  6.24475572  73.000  81.00  85.0  89.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 94     almotriptan_1.3  79.990000  6.57162807  67.000  76.00  80.0  85.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95     almotriptan_1.4  74.876000  6.84725631  62.000  70.00  75.0  79.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96     almotriptan_1.5  69.931333  7.18102643  56.000  65.00  70.0  75.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97     almotriptan_1.6  65.085667  7.54188004  50.000  60.00  65.0  70.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 98     almotriptan_1.7  60.312333  7.88620179  45.000  55.00  60.0  66.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99     almotriptan_1.8  55.727000  8.04379918  41.000  50.00  56.0  61.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100    almotriptan_1.9  51.415667  7.96475781  38.000  45.00  51.0  57.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 101      almotriptan_2  47.402333  7.66524928  35.000  42.00  46.0  52.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 102  zolmitriptan_0.34 144.504000  5.56653508 132.000 141.00 145.0 149.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 103  zolmitriptan_0.69 106.866333  5.68042448  96.000 103.00 107.0 110.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104     zolmitriptan_1  81.641333  6.05019778  69.000  78.00  82.0  86.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 105   zolmitriptan_1.4  55.360000  7.61273393  41.000  50.00  55.0  60.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 106   zolmitriptan_1.7  41.556333  5.58186459  33.000  38.00  41.0  45.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 107   zolmitriptan_2.1  33.861667  3.64942507  28.000  31.00  33.0  36.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 108   zolmitriptan_2.4  29.878333  3.17052277  25.000  28.00  29.0  32.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 109   zolmitriptan_2.8  25.782333  2.60369243  22.000  24.00  25.0  27.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 110   zolmitriptan_3.1  23.060333  2.15102352  21.000  21.00  23.0  24.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 111   zolmitriptan_3.4  20.961333  1.58114038  20.000  20.00  20.0  22.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 112   zolmitriptan_3.8  19.281667  0.91684827  19.000  19.00  19.0  19.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 113   zolmitriptan_4.1  18.104333  0.60682559  18.000  18.00  18.0  18.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 114   zolmitriptan_4.5  17.026000  0.37153288  17.000  17.00  17.0  17.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 115   zolmitriptan_4.8  16.013667  0.28897703  16.000  16.00  16.0  16.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 116   zolmitriptan_5.2  15.007333  0.22941323  15.000  15.00  15.0  15.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 117   zolmitriptan_5.5  14.005000  0.18344722  14.000  14.00  14.0  14.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 118   zolmitriptan_5.9  13.004333  0.17413978  13.000  13.00  13.0  13.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 119   zolmitriptan_6.2  12.003667  0.14021332  12.000  12.00  12.0  12.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 120   zolmitriptan_6.6  11.002667  0.11545850  11.000  11.00  11.0  11.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 121   zolmitriptan_6.9  10.002000  0.09308896  10.000  10.00  10.0  10.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 122   zolmitriptan_7.2   9.002000  0.09308896   9.000   9.00   9.0   9.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 123   zolmitriptan_7.6   8.001333  0.07302967   8.000   8.00   8.0   8.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 124   zolmitriptan_7.9   7.001333  0.07302967   7.000   7.00   7.0   7.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 125   zolmitriptan_8.3   6.001000  0.05477226   6.000   6.00   6.0   6.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 126   zolmitriptan_8.6   5.001000  0.05477226   5.000   5.00   5.0   5.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 127     zolmitriptan_9   4.000667  0.03651484   4.000   4.00   4.0   4.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 128   zolmitriptan_9.3   3.000667  0.03651484   3.000   3.00   3.0   3.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 129   zolmitriptan_9.7   2.000333  0.01825742   2.000   2.00   2.0   2.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 130    zolmitriptan_10   1.000333  0.01825742   1.000   1.00   1.0   1.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 131  naratriptan_0.069 182.981667  0.43365875 183.000 183.00 183.0 183.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 132   naratriptan_0.14 179.923000  1.58637213 178.000 179.00 180.0 181.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 133   naratriptan_0.21 176.566667  2.09833821 173.000 175.00 177.0 178.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 134   naratriptan_0.28 173.333000  2.56547037 168.000 172.00 173.0 175.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 135   naratriptan_0.34 170.591000  2.99856346 164.000 169.00 171.0 173.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 136   naratriptan_0.41 167.572000  3.63197096 160.000 165.00 168.0 170.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 137   naratriptan_0.48 164.577000  4.28231056 156.000 162.00 165.0 168.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 138   naratriptan_0.55 161.539667  4.98585126 151.000 158.00 162.0 165.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 139   naratriptan_0.62 158.564667  5.66296518 147.000 155.00 159.0 162.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 140   naratriptan_0.69 155.605000  6.39285522 142.000 152.00 156.0 160.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 141   naratriptan_0.76 152.643000  7.03960721 138.000 148.00 153.0 158.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 142   naratriptan_0.83 149.763000  7.66157496 134.000 144.00 150.0 155.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 143    naratriptan_0.9 146.890000  8.28887619 130.000 141.00 147.0 153.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 144   naratriptan_0.97 144.078667  8.86299399 127.000 138.00 144.0 151.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145      naratriptan_1 142.309333  9.11127422 124.000 136.00 142.0 149.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146    naratriptan_1.1 138.803000  9.93437240 119.000 132.00 139.0 146.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147    naratriptan_1.2 135.345000 10.69227525 113.000 128.00 136.0 143.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148    naratriptan_1.3 132.029000 11.45937454 108.000 125.00 132.0 140.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149    naratriptan_1.4 128.736000 12.26190940 103.000 121.00 129.0 137.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 150    naratriptan_1.5 125.458667 13.02738894  98.000 117.00 126.0 134.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 151    naratriptan_1.6 122.309667 13.79917554  94.000 114.00 123.0 132.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152    naratriptan_1.7 119.168000 14.51135081  89.000 110.00 120.0 129.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 153    naratriptan_1.8 116.064333 15.26527227  85.000 106.00 117.0 127.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 154    naratriptan_1.9 113.065667 15.90317552  81.000 103.00 114.0 124.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 155      naratriptan_2 110.069000 16.56708771  77.000  99.00 111.0 121.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 156  rizatriptan_0.034 181.646333  0.97650964 180.000 181.00 182.0 182.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 157  rizatriptan_0.069 174.768333  1.85233392 171.000 174.00 175.0 176.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 158    rizatriptan_0.1 169.288000  2.64727382 163.000 168.00 170.0 171.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 159   rizatriptan_0.14 161.803667  3.65717261 152.000 161.00 163.0 164.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 160   rizatriptan_0.17 156.252333  4.33877128 144.000 154.00 157.0 159.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 161   rizatriptan_0.21 148.425667  4.92732863 136.000 146.00 149.0 152.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 162   rizatriptan_0.24 142.290333  5.19804897 131.000 139.00 143.0 146.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 163   rizatriptan_0.28 134.779667  5.15719421 125.000 131.00 135.0 139.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 164   rizatriptan_0.31 129.410667  5.05600705 121.000 125.00 130.0 133.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 165   rizatriptan_0.34 124.155000  4.85930509 116.000 120.00 124.0 128.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 166   rizatriptan_0.38 117.829000  4.69500870 110.000 114.00 117.0 121.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 167   rizatriptan_0.41 112.882333  4.58179210 105.000 110.00 112.0 116.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 168   rizatriptan_0.45 106.646333  4.54622289  98.000 104.00 106.0 109.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 169   rizatriptan_0.48 101.754667  4.50509824  93.000  99.00 102.0 104.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 170   rizatriptan_0.52  95.895333  4.38818075  88.000  93.00  96.0  99.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 171   rizatriptan_0.55  91.727000  4.19718276  84.000  89.00  92.0  94.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 172   rizatriptan_0.59  86.816333  4.25753944  78.975  84.00  87.0  90.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 173   rizatriptan_0.62  82.976000  4.36910979  74.000  80.00  83.0  86.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 174   rizatriptan_0.66  78.201667  4.52163086  69.000  75.00  78.0  81.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 175   rizatriptan_0.69  74.479333  4.63638562  65.000  72.00  75.0  78.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 176   rizatriptan_0.72  70.812000  4.75207148  61.000  68.00  71.0  74.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 177   rizatriptan_0.76  66.300000  4.94052658  56.000  63.00  66.0  70.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 178   rizatriptan_0.79  62.712333  5.10074378  52.000  59.00  63.0  66.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 179   rizatriptan_0.83  58.187000  5.30201862  47.000  55.00  58.0  62.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 180   rizatriptan_0.86  54.638333  5.31886210  44.000  51.00  55.0  58.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 181    rizatriptan_0.9  50.380333  5.19583283  40.000  47.00  50.0  54.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 182   rizatriptan_0.93  47.236333  4.95472801  38.000  44.00  47.0  50.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 183   rizatriptan_0.97  43.850333  4.48456282  36.000  41.00  44.0  46.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 184      rizatriptan_1  41.378667  4.18988424  34.000  39.00  41.0  44.00</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   184.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   178.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   168.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   158.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   147.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   138.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   128.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   118.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9   107.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10   98.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11   90.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12   83.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13   76.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14   69.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15   63.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16   59.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17   51.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18   44.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19   41.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20   38.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21   36.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22   33.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23   31.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24   28.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25   26.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26   24.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27  181.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28  175.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29  170.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30  163.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31  158.025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32  152.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33  146.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34  140.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35  134.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36  129.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37  123.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38  118.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39  112.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40  107.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41  104.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42   98.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43   92.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44   87.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45   82.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46   77.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47   73.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48   69.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49   64.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50   60.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51   56.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52  180.025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53  174.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54  168.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55  161.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56  155.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57  148.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58  141.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59  134.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60  128.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 61  122.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 62  116.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 63  111.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 64  105.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 65  100.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 66   97.025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 67   91.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 68   86.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 69   80.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 70   75.025</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 71   71.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 72   66.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 73   61.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 74   57.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 75   52.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 76   48.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 77  181.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 78  175.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 79  170.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 80  165.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 81  160.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 82  154.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 83  148.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 84  143.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 85  137.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 86  132.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 87  127.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 88  122.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 89  117.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 90  112.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 91  109.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 92  103.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 93   98.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 94   92.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 95   88.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 96   84.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 97   80.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 98   76.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 99   72.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 100  68.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 101  64.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 102 153.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 103 118.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 104  93.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 105  71.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 106  55.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 107  41.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 108  37.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 109  32.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 110  29.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 111  25.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 112  22.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 113  19.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 114  17.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 115  16.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 116  15.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 117  14.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 118  13.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 119  12.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 120  11.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 121  10.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 122   9.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 123   8.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 124   7.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 125   6.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 126   5.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 127   4.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 128   3.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 129   2.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 130   1.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 131 183.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 132 182.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 133 181.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 134 179.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 135 176.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 136 174.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 137 173.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 138 170.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 139 169.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 140 167.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 141 165.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 142 164.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 143 162.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 144 160.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 145 159.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 146 157.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 147 155.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 148 153.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 149 151.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 150 149.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 151 148.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 152 146.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 153 144.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 154 142.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 155 141.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 156 182.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 157 177.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 158 172.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 159 166.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 160 162.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 161 156.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 162 151.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 163 144.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 164 139.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 165 134.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 166 128.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 167 123.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 168 116.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 169 111.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 170 105.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 171 100.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 172  95.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 173  91.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 174  87.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 175  83.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 176  80.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 177  76.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 178  72.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 179  68.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 180  65.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 181  61.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 182  58.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 183  53.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 184  50.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>             rank.param       mean         sd    2.5%    25% 50%    75%   97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1            Placebo_0 183.991667  0.4564355 184.000 184.00 184 184.00 184.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     eletriptan_0.069 175.894000  2.0422588 172.000 175.00 176 177.00 178.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      eletriptan_0.14 163.776667  3.5327443 154.000 163.00 165 166.00 168.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      eletriptan_0.21 151.567333  4.7341599 139.000 149.00 153 155.00 158.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      eletriptan_0.28 138.618333  5.1866139 128.000 135.00 139 142.00 147.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      eletriptan_0.34 128.622667  5.1798871 119.000 125.00 129 132.00 138.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      eletriptan_0.41 118.006000  4.8430482 110.000 115.00 118 121.00 128.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      eletriptan_0.48 107.762667  4.7321388  99.000 105.00 108 111.00 118.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      eletriptan_0.55  97.754333  4.6487832  89.000  95.00  98 101.00 107.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10     eletriptan_0.62  89.186667  4.4432424  80.000  86.00  89  92.00  98.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11     eletriptan_0.69  81.271000  4.7547620  72.000  78.00  81  84.00  90.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12     eletriptan_0.76  73.555000  5.0575522  63.000  70.00  74  77.00  83.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13     eletriptan_0.83  66.192000  5.3254035  55.000  63.00  66  70.00  76.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14      eletriptan_0.9  58.962333  5.6512146  47.000  55.00  59  63.00  70.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15     eletriptan_0.97  51.955667  5.6468573  41.000  48.00  52  56.00  63.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        eletriptan_1  48.653333  5.4589152  38.000  45.00  48  52.00  60.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17      eletriptan_1.1  41.798000  4.3472783  34.000  39.00  42  44.00  51.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18      eletriptan_1.2  37.596000  3.4211137  32.000  35.00  38  40.00  44.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19      eletriptan_1.3  34.715667  2.9924025  30.000  32.00  34  37.00  41.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20      eletriptan_1.4  32.293333  2.7019232  29.000  30.00  31  34.00  38.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21      eletriptan_1.5  30.067667  2.4006268  27.000  28.00  29  31.00  36.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22      eletriptan_1.6  28.074333  2.0802845  25.000  27.00  27  29.00  33.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23      eletriptan_1.7  26.192000  1.8186731  23.000  25.00  26  27.00  31.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24      eletriptan_1.8  24.408667  1.6419166  22.000  23.00  24  25.00  29.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25      eletriptan_1.9  22.665333  1.5500965  20.000  22.00  23  23.00  26.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        eletriptan_2  20.992667  1.4922093  18.000  20.00  21  22.00  24.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27   sumatriptan_0.069 179.804333  1.5518324 177.000 179.00 180 181.00 181.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28    sumatriptan_0.14 172.341333  2.5289570 167.000 172.00 173 174.00 175.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29    sumatriptan_0.21 165.879000  3.3556091 157.000 165.00 167 168.00 170.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30    sumatriptan_0.28 158.547667  4.1328063 146.975 157.00 160 161.00 163.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31    sumatriptan_0.34 152.388667  4.6709968 139.000 150.00 153 156.00 159.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32    sumatriptan_0.41 144.929000  5.0619990 133.000 142.00 146 149.00 152.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33    sumatriptan_0.48 137.765333  5.1446173 127.000 134.00 138 142.00 146.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34    sumatriptan_0.55 131.387667  5.0853385 122.000 127.00 132 135.00 140.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35    sumatriptan_0.62 125.144333  4.8831120 117.000 121.00 125 129.00 134.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36    sumatriptan_0.69 119.680667  4.6354995 112.000 116.00 119 123.00 129.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37    sumatriptan_0.76 114.225000  4.4128826 107.000 111.00 114 117.00 123.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38    sumatriptan_0.83 108.964667  4.2687421 101.000 106.00 109 111.00 118.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39     sumatriptan_0.9 103.756000  4.1128379  96.000 101.00 104 106.00 112.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40    sumatriptan_0.97  98.900000  3.9135370  91.000  96.00  99 101.00 107.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41       sumatriptan_1  96.355667  3.8315438  89.000  94.00  96  99.00 104.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42     sumatriptan_1.1  90.562000  3.7607008  83.000  88.00  91  93.00  98.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43     sumatriptan_1.2  85.072667  3.8913280  77.000  83.00  85  88.00  92.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44     sumatriptan_1.3  79.749000  4.0549739  72.000  77.00  80  83.00  87.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45     sumatriptan_1.4  74.558000  4.1999821  66.000  72.00  75  78.00  82.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46     sumatriptan_1.5  69.606333  4.2869748  61.000  67.00  70  73.00  77.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47     sumatriptan_1.6  64.830000  4.4424856  56.000  62.00  65  68.00  73.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48     sumatriptan_1.7  60.109667  4.6647143  50.000  57.00  60  63.00  69.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49     sumatriptan_1.8  55.469333  4.7922209  45.000  52.00  56  59.00  64.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50     sumatriptan_1.9  50.954667  4.8255266  41.000  48.00  51  54.00  60.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51       sumatriptan_2  46.747000  4.6363228  38.000  44.00  47  50.00  56.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52  frovatriptan_0.069 177.714333  1.8256978 174.000 177.00 178 179.00 181.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53   frovatriptan_0.14 168.406667  3.7455705 159.000 167.00 169 171.00 174.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54   frovatriptan_0.21 158.913333  5.6340989 145.000 156.00 160 163.00 168.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55   frovatriptan_0.28 149.110333  7.2803728 133.000 145.00 150 154.00 161.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56   frovatriptan_0.34 140.610333  8.1981846 124.000 135.00 141 146.00 155.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57   frovatriptan_0.41 131.551333  8.8124108 115.000 125.00 132 137.25 148.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58   frovatriptan_0.48 123.114000  9.3305604 105.000 117.00 123 129.00 141.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59   frovatriptan_0.55 115.174333  9.9509940  96.000 109.00 115 122.00 135.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60   frovatriptan_0.62 107.656667 10.4961348  88.000 100.00 108 114.00 128.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 61   frovatriptan_0.69 100.553000 10.8663034  80.000  93.00 100 108.00 122.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 62   frovatriptan_0.76  93.939000 11.1684163  72.000  87.00  93 101.00 116.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 63   frovatriptan_0.83  87.698000 11.5726447  65.000  80.00  88  95.00 110.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 64    frovatriptan_0.9  81.787000 12.0552094  57.000  74.00  82  89.00 105.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 65   frovatriptan_0.97  76.132000 12.5977568  50.000  68.00  76  84.00 100.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 66      frovatriptan_1  73.147333 12.7906539  47.000  65.00  74  82.00  97.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 67    frovatriptan_1.1  66.057333 13.1842325  43.000  56.00  66  75.00  91.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 68    frovatriptan_1.2  59.583000 13.0764716  40.000  48.00  59  69.00  85.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 69    frovatriptan_1.3  53.854000 12.5486456  37.000  43.00  52  62.00  80.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 70    frovatriptan_1.4  48.943333 11.6686549  35.000  40.00  45  56.00  75.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 71    frovatriptan_1.5  44.699000 10.6621273  32.000  38.00  41  50.00  71.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 72    frovatriptan_1.6  41.100000  9.6937431  30.000  35.00  38  44.00  66.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 73    frovatriptan_1.7  37.990333  8.8608734  27.000  33.00  36  40.00  62.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 74    frovatriptan_1.8  35.236000  8.2128022  24.000  31.00  34  37.00  57.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 75    frovatriptan_1.9  32.709333  7.7302500  22.000  29.00  32  35.00  52.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 76      frovatriptan_2  30.395000  7.3509855  20.000  26.00  30  33.00  48.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 77   almotriptan_0.069 179.791667  1.6216680 177.000 179.00 180 181.00 181.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 78    almotriptan_0.14 172.320000  2.6384188 167.000 171.00 173 174.00 175.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 79    almotriptan_0.21 165.705000  3.6457837 156.000 164.00 166 168.00 170.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 80    almotriptan_0.28 158.443000  4.5049805 146.000 157.00 159 161.00 164.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 81    almotriptan_0.34 152.222000  5.2759196 139.000 149.00 153 156.00 160.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 82    almotriptan_0.41 144.858000  5.8407654 132.000 141.00 146 149.00 154.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 83    almotriptan_0.48 137.753333  6.0322979 126.000 134.00 138 142.00 148.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 84    almotriptan_0.55 131.301333  6.0984912 120.000 127.00 132 136.00 143.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 85    almotriptan_0.62 125.254000  6.0873505 115.000 120.00 125 130.00 137.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 86    almotriptan_0.69 119.634000  5.9906043 109.000 115.00 119 124.00 132.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 87    almotriptan_0.76 114.217667  6.0217695 103.000 110.00 114 118.00 127.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 88    almotriptan_0.83 108.943333  6.0971453  98.000 105.00 109 113.00 122.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 89     almotriptan_0.9 103.801333  6.1502146  93.000 100.00 103 108.00 117.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 90    almotriptan_0.97  98.918000  6.0867856  88.000  95.00  99 103.00 112.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 91       almotriptan_1  96.372000  6.0826487  85.000  92.00  96 100.00 109.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 92     almotriptan_1.1  90.534333  6.0868030  78.975  87.00  90  94.00 103.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 93     almotriptan_1.2  85.022667  6.2965097  72.000  81.00  85  89.00  97.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 94     almotriptan_1.3  79.680667  6.6147268  67.000  75.00  80  84.00  92.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 95     almotriptan_1.4  74.525667  6.8956889  61.000  70.00  75  79.00  88.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 96     almotriptan_1.5  69.560000  7.2250352  55.000  65.00  70  74.00  83.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 97     almotriptan_1.6  64.660667  7.5759698  49.000  60.00  65  70.00  79.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 98     almotriptan_1.7  59.935000  7.8686772  44.000  55.00  60  65.00  75.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 99     almotriptan_1.8  55.370667  7.9867725  40.000  50.00  55  61.00  71.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 100    almotriptan_1.9  51.041333  7.8947493  37.000  45.00  51  57.00  67.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 101      almotriptan_2  47.046000  7.5403914  34.000  42.00  46  52.00  63.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 102  zolmitriptan_0.34 144.557667  5.4614971 132.000 141.00 145 149.00 153.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 103  zolmitriptan_0.69 106.756333  5.6544629  96.000 103.00 107 110.00 119.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 104     zolmitriptan_1  81.383667  5.9282528  69.975  77.00  81  85.00  93.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 105   zolmitriptan_1.4  54.974667  7.4216161  41.000  50.00  55  60.00  70.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 106   zolmitriptan_1.7  41.271000  5.2904526  33.000  38.00  41  44.00  53.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 107   zolmitriptan_2.1  33.519667  3.4962391  29.000  31.00  33  36.00  41.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 108   zolmitriptan_2.4  29.610667  3.0093363  25.000  28.00  29  31.00  37.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 109   zolmitriptan_2.8  25.593333  2.5135755  22.000  24.00  25  27.00  32.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 110   zolmitriptan_3.1  22.922333  2.0884815  21.000  21.00  23  24.00  28.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 111   zolmitriptan_3.4  20.867667  1.5488558  20.000  20.00  20  21.00  25.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 112   zolmitriptan_3.8  19.240333  0.9751360  19.000  19.00  19  19.00  21.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 113   zolmitriptan_4.1  18.088333  0.7672853  18.000  18.00  18  18.00  19.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 114   zolmitriptan_4.5  17.026667  0.6288249  17.000  17.00  17  17.00  17.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 115   zolmitriptan_4.8  16.016667  0.5766279  16.000  16.00  16  16.00  16.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 116   zolmitriptan_5.2  15.011667  0.5510279  15.000  15.00  15  15.00  15.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 117   zolmitriptan_5.5  14.010000  0.4946193  14.000  14.00  14  14.00  14.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 118   zolmitriptan_5.9  13.008667  0.4567944  13.000  13.00  13  13.00  13.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 119   zolmitriptan_6.2  12.008333  0.4385522  12.000  12.00  12  12.00  12.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 120   zolmitriptan_6.6  11.007667  0.4199206  11.000  11.00  11  11.00  11.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 121   zolmitriptan_6.9  10.007667  0.4199206  10.000  10.00  10  10.00  10.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 122   zolmitriptan_7.2   9.007000  0.3834058   9.000   9.00   9   9.00   9.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 123   zolmitriptan_7.6   8.007000  0.3834058   8.000   8.00   8   8.00   8.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 124   zolmitriptan_7.9   7.006667  0.3651484   7.000   7.00   7   7.00   7.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 125   zolmitriptan_8.3   6.006333  0.3468910   6.000   6.00   6   6.00   6.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 126   zolmitriptan_8.6   5.005667  0.3103761   5.000   5.00   5   5.00   5.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 127     zolmitriptan_9   4.005667  0.3103761   4.000   4.00   4   4.00   4.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 128   zolmitriptan_9.3   3.005333  0.2921187   3.000   3.00   3   3.00   3.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 129   zolmitriptan_9.7   2.005333  0.2921187   2.000   2.00   2   2.00   2.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 130    zolmitriptan_10   1.005000  0.2738613   1.000   1.00   1   1.00   1.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 131  naratriptan_0.069 182.974000  0.4733554 183.000 183.00 183 183.00 183.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 132   naratriptan_0.14 179.848667  1.6389001 177.000 179.00 179 181.00 182.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 133   naratriptan_0.21 176.444667  2.1671418 172.000 175.00 177 178.00 181.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 134   naratriptan_0.28 173.215000  2.6721692 168.000 172.00 173 175.00 179.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 135   naratriptan_0.34 170.429000  3.1214644 164.000 169.00 171 172.00 176.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 136   naratriptan_0.41 167.404667  3.7596485 160.000 165.00 168 170.00 175.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 137   naratriptan_0.48 164.359333  4.4719361 155.000 162.00 164 167.00 173.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 138   naratriptan_0.55 161.341667  5.1553651 150.000 158.00 162 165.00 170.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 139   naratriptan_0.62 158.318000  5.8778448 146.000 155.00 159 162.00 169.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 140   naratriptan_0.69 155.295000  6.5642216 142.000 151.00 156 160.00 166.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 141   naratriptan_0.76 152.333667  7.2108020 138.000 148.00 153 157.00 165.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 142   naratriptan_0.83 149.383000  7.8650025 133.000 144.00 150 155.00 163.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 143    naratriptan_0.9 146.515667  8.5035595 129.000 141.00 147 153.00 162.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 144   naratriptan_0.97 143.652333  9.0870046 125.000 138.00 144 150.00 160.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 145      naratriptan_1 141.866000  9.3524614 123.000 136.00 142 148.00 159.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 146    naratriptan_1.1 138.333667 10.1572334 118.000 132.00 139 145.00 157.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 147    naratriptan_1.2 134.872667 10.9327777 112.000 128.00 135 142.00 154.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 148    naratriptan_1.3 131.481000 11.7394312 107.000 124.75 132 139.00 153.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 149    naratriptan_1.4 128.159667 12.5428844 102.000 121.00 129 137.00 151.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 150    naratriptan_1.5 124.832000 13.3349559  97.000 117.00 125 133.00 150.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 151    naratriptan_1.6 121.658333 14.0772270  92.000 113.00 123 131.00 147.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 152    naratriptan_1.7 118.484000 14.8307921  87.000 110.00 120 129.00 146.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 153    naratriptan_1.8 115.355333 15.5231245  83.000 106.00 117 126.00 144.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 154    naratriptan_1.9 112.353333 16.2056378  79.000 102.00 114 123.00 142.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 155      naratriptan_2 109.319667 16.8622930  74.975  99.00 111 121.00 141.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 156  rizatriptan_0.034 181.650000  1.2659782 180.000 182.00 182 182.00 182.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 157  rizatriptan_0.069 174.772667  2.1812624 171.000 174.00 175 176.00 177.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 158    rizatriptan_0.1 169.293667  2.9003846 163.000 169.00 170 171.00 172.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 159   rizatriptan_0.14 161.902000  3.7214261 152.000 161.00 163 164.00 166.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 160   rizatriptan_0.17 156.360667  4.3062088 144.000 155.00 157 159.00 162.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 161   rizatriptan_0.21 148.537000  4.9008813 136.000 146.00 149 152.00 155.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 162   rizatriptan_0.24 142.415000  5.1238195 131.000 140.00 143 146.00 150.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 163   rizatriptan_0.28 134.852667  5.1238375 125.000 131.00 135 139.00 144.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 164   rizatriptan_0.31 129.441333  5.0852576 120.000 126.00 130 133.00 139.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 165   rizatriptan_0.34 124.182000  4.8954603 116.000 120.00 124 128.00 134.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 166   rizatriptan_0.38 117.810333  4.7150578 110.000 114.00 117 121.00 127.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 167   rizatriptan_0.41 112.851667  4.5890468 105.000 110.00 112 116.00 123.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 168   rizatriptan_0.45 106.572333  4.5546697  98.000 104.00 106 109.00 116.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 169   rizatriptan_0.48 101.661000  4.5123016  93.000  99.00 102 104.00 111.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 170   rizatriptan_0.52  95.778667  4.3683756  88.000  93.00  96  98.00 105.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 171   rizatriptan_0.55  91.557000  4.2434365  83.000  89.00  92  94.00 100.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 172   rizatriptan_0.59  86.660000  4.3308181  78.000  84.00  87  89.00  95.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 173   rizatriptan_0.62  82.778333  4.4498462  74.000  80.00  83  86.00  91.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 174   rizatriptan_0.66  77.996333  4.6180907  69.000  75.00  78  81.00  87.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 175   rizatriptan_0.69  74.247000  4.7261087  65.000  71.00  74  77.00  83.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 176   rizatriptan_0.72  70.567667  4.8417527  61.000  68.00  71  74.00  80.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 177   rizatriptan_0.76  66.084333  5.0378250  56.000  63.00  66  69.00  76.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 178   rizatriptan_0.79  62.461667  5.1693428  52.000  59.00  63  66.00  72.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 179   rizatriptan_0.83  57.954333  5.3831132  47.000  55.00  58  61.00  68.025</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 180   rizatriptan_0.86  54.354667  5.3928878  44.000  51.00  54  58.00  65.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 181    rizatriptan_0.9  50.119333  5.2613357  40.000  47.00  50  54.00  61.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 182   rizatriptan_0.93  46.968000  4.9951937  38.000  44.00  47  50.00  58.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 183   rizatriptan_0.97  43.582333  4.5583053  35.000  41.00  43  46.00  53.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 184      rizatriptan_1  41.132667  4.2802461  33.000  38.00  41  44.00  50.000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Rank selected predictions from an Emax dose-response MBNMA</span></span>
@@ -510,10 +325,10 @@ will be included, to avoid duplicating rankings.</p>
 <span class="r-in"><span class="co"># Print and generate summary data frame for `mbnma.rank` object</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $Predictions</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      rank.param mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  eletriptan_0 3.00 0.0000000    3   3   3   3     3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  eletriptan_2 1.32 0.4665539    1   1   1   2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 rizatriptan_2 1.68 0.4665539    1   1   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  eletriptan_0 3.000000 0.0000000    3   3   3   3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  eletriptan_2 1.327667 0.4694408    1   1   1   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 rizatriptan_2 1.672333 0.4694408    1   1   2   2     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -529,8 +344,8 @@ will be included, to avoid duplicating rankings.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment     | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:-------------|----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_2  | 1.32|      1|    1|     2|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_2 | 1.68|      2|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_2  | 1.33|      1|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_2 | 1.67|      2|    1|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_0  | 3.00|      3|    3|     3|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

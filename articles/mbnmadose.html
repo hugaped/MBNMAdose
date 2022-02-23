@@ -648,27 +648,27 @@
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span>
 <span class="co">#&gt; $jagsresult</span>
-<span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpdG73Pt/file40a47bde7080", fit using jags,</span>
+<span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp9iPqi1/file39d9109fb729", fit using jags,</span>
 <span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="co">#&gt;  n.sims = 3000 iterations saved</span>
 <span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
 <span class="co">#&gt; d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d[2]        -0.458   0.089   -0.632   -0.517   -0.459   -0.399   -0.283 1.001</span>
-<span class="co">#&gt; d[3]        -0.654   0.045   -0.741   -0.683   -0.654   -0.624   -0.567 1.001</span>
-<span class="co">#&gt; d[4]        -0.710   0.045   -0.798   -0.740   -0.712   -0.680   -0.618 1.001</span>
-<span class="co">#&gt; d[5]        -0.759   0.085   -0.919   -0.815   -0.760   -0.705   -0.584 1.002</span>
-<span class="co">#&gt; d[6]        -0.685   0.172   -1.025   -0.794   -0.686   -0.566   -0.357 1.001</span>
-<span class="co">#&gt; sd           0.123   0.029    0.074    0.104    0.121    0.140    0.188 1.002</span>
-<span class="co">#&gt; totresdev   47.788  10.125   29.919   40.852   47.068   53.974   70.199 1.001</span>
-<span class="co">#&gt; deviance  -123.526  10.125 -141.395 -130.462 -124.246 -117.340 -101.115 1.001</span>
+<span class="co">#&gt; d[2]        -0.452   0.092   -0.626   -0.515   -0.454   -0.391   -0.264 1.001</span>
+<span class="co">#&gt; d[3]        -0.654   0.046   -0.745   -0.684   -0.654   -0.624   -0.561 1.001</span>
+<span class="co">#&gt; d[4]        -0.708   0.046   -0.800   -0.739   -0.709   -0.679   -0.616 1.001</span>
+<span class="co">#&gt; d[5]        -0.761   0.085   -0.918   -0.817   -0.764   -0.709   -0.578 1.001</span>
+<span class="co">#&gt; d[6]        -0.686   0.170   -1.027   -0.797   -0.686   -0.574   -0.352 1.001</span>
+<span class="co">#&gt; sd           0.123   0.029    0.075    0.103    0.121    0.140    0.187 1.001</span>
+<span class="co">#&gt; totresdev   47.458   9.908   30.209   40.162   46.819   53.787   68.080 1.001</span>
+<span class="co">#&gt; deviance  -123.856   9.908 -141.105 -131.153 -124.495 -117.527 -103.234 1.001</span>
 <span class="co">#&gt;           n.eff</span>
 <span class="co">#&gt; d[1]          1</span>
 <span class="co">#&gt; d[2]       3000</span>
 <span class="co">#&gt; d[3]       3000</span>
 <span class="co">#&gt; d[4]       3000</span>
-<span class="co">#&gt; d[5]       1500</span>
+<span class="co">#&gt; d[5]       3000</span>
 <span class="co">#&gt; d[6]       3000</span>
-<span class="co">#&gt; sd         1700</span>
+<span class="co">#&gt; sd         3000</span>
 <span class="co">#&gt; totresdev  3000</span>
 <span class="co">#&gt; deviance   3000</span>
 <span class="co">#&gt; </span>
@@ -676,7 +676,7 @@
 <span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="co">#&gt; pD = 36.9 and DIC = -87.3</span>
+<span class="co">#&gt; pD = 36.8 and DIC = -87.7</span>
 <span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $trt.labs</span>
@@ -767,7 +767,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span>
 <span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span>
-<span class="co">#&gt; Between-study SD for relative effects        0.239 (0.159, 0.328)</span>
+<span class="co">#&gt; Between-study SD for relative effects        0.241 (0.154, 0.334)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span>
@@ -776,13 +776,13 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span>
-<span class="co">#&gt; |eletriptan   |emax[2]   | 2.6040| 2.1214| 3.2266|</span>
-<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8248| 1.4766| 2.4219|</span>
-<span class="co">#&gt; |frovatriptan |emax[4]   | 1.9896| 1.2770| 3.2448|</span>
-<span class="co">#&gt; |almotriptan  |emax[5]   | 1.8336| 1.2736| 2.9259|</span>
-<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.0892| 1.5651| 3.0317|</span>
-<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0818| 0.4854| 2.1806|</span>
-<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.5017| 1.9030| 3.9598|</span>
+<span class="co">#&gt; |eletriptan   |emax[2]   | 2.6005| 2.1225| 3.2506|</span>
+<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8374| 1.4854| 2.3983|</span>
+<span class="co">#&gt; |frovatriptan |emax[4]   | 1.9668| 1.2740| 3.3063|</span>
+<span class="co">#&gt; |almotriptan  |emax[5]   | 1.8640| 1.2951| 2.9956|</span>
+<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.1112| 1.5363| 3.0331|</span>
+<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0998| 0.4562| 2.3197|</span>
+<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.5229| 1.8546| 4.4752|</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span>
@@ -793,22 +793,22 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span>
 <span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span>
-<span class="co">#&gt; |eletriptan   |ed50[2]   | -0.6308| -1.3343| -0.0185|</span>
-<span class="co">#&gt; |sumatriptan  |ed50[3]   | -0.4995| -1.3517|  0.2783|</span>
-<span class="co">#&gt; |frovatriptan |ed50[4]   | -0.4768| -1.7062|  0.5507|</span>
-<span class="co">#&gt; |almotriptan  |ed50[5]   | -0.2408| -1.2986|  0.7006|</span>
-<span class="co">#&gt; |zolmitriptan |ed50[6]   | -0.3567| -1.2958|  0.4197|</span>
-<span class="co">#&gt; |naratriptan  |ed50[7]   | -0.1350| -1.3331|  1.0000|</span>
-<span class="co">#&gt; |rizatriptan  |ed50[8]   | -0.5573| -1.4140|  0.4144|</span>
+<span class="co">#&gt; |eletriptan   |ed50[2]   | -0.6133| -1.3202| -0.0249|</span>
+<span class="co">#&gt; |sumatriptan  |ed50[3]   | -0.4839| -1.3105|  0.2655|</span>
+<span class="co">#&gt; |frovatriptan |ed50[4]   | -0.4561| -1.6019|  0.5709|</span>
+<span class="co">#&gt; |almotriptan  |ed50[5]   | -0.2149| -1.1789|  0.7225|</span>
+<span class="co">#&gt; |zolmitriptan |ed50[6]   | -0.3418| -1.3026|  0.4622|</span>
+<span class="co">#&gt; |naratriptan  |ed50[7]   | -0.1558| -1.3035|  1.0988|</span>
+<span class="co">#&gt; |rizatriptan  |ed50[8]   | -0.5388| -1.5508|  0.5908|</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
 <span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span>
-<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 123.1</span>
+<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 122.1</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Deviance = 1095.9</span>
-<span class="co">#&gt; Residual deviance = 192.8</span>
-<span class="co">#&gt; Deviance Information Criterion (DIC) = 1219</span></code></pre></div>
+<span class="co">#&gt; Deviance = 1096.1</span>
+<span class="co">#&gt; Residual deviance = 192.9</span>
+<span class="co">#&gt; Deviance Information Criterion (DIC) = 1218.2</span></code></pre></div>
 <p>In this example the <code>emax</code> parameters are the maximum efficacy that can be achieved for each agent. The <code>ed50</code> parameters are the the dose at which 50% of the maximum efficacy is achieved for each agent. Results for ED50 are given on the log scale as it is constrained to be greater than zero. <code>sd</code> corresponds to the between-study SD (included because <code>method="random"</code>).</p>
 <p>Instead of estimating a separate relative effect for each agent, a simpler dose-response model that makes stronger assumptions could estimate a single parameter across the whole network for ED50, but still estimate a separate effect for each agent for Emax:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -832,7 +832,7 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span>
 <span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span>
-<span class="co">#&gt; Between-study SD for relative effects        0.239 (0.157, 0.334)</span>
+<span class="co">#&gt; Between-study SD for relative effects        0.245 (0.158, 0.342)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span>
@@ -841,13 +841,13 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span>
-<span class="co">#&gt; |eletriptan   |emax[2]   | 2.8156| 2.3417| 3.4253|</span>
-<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8941| 1.6255| 2.2793|</span>
-<span class="co">#&gt; |frovatriptan |emax[4]   | 2.0803| 1.3721| 2.9679|</span>
-<span class="co">#&gt; |almotriptan  |emax[5]   | 1.7739| 1.3569| 2.3038|</span>
-<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.1093| 1.6960| 2.6597|</span>
-<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0215| 0.4515| 1.6661|</span>
-<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.6940| 2.2019| 3.3974|</span>
+<span class="co">#&gt; |eletriptan   |emax[2]   | 2.8160| 2.3271| 3.4944|</span>
+<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8793| 1.5935| 2.2815|</span>
+<span class="co">#&gt; |frovatriptan |emax[4]   | 2.0295| 1.3608| 2.8993|</span>
+<span class="co">#&gt; |almotriptan  |emax[5]   | 1.7629| 1.3388| 2.3321|</span>
+<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.1010| 1.6699| 2.6615|</span>
+<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0185| 0.4482| 1.6809|</span>
+<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.6748| 2.1727| 3.4089|</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span>
@@ -856,18 +856,18 @@
 <span class="co">#&gt; on the natural scale</span>
 <span class="co">#&gt; Pooling: single parameter across all agents in the network</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; |Parameter |  Median|   2.5%|  97.5%|</span>
-<span class="co">#&gt; |:---------|-------:|------:|------:|</span>
-<span class="co">#&gt; |ed50      | -0.3832| -0.856| 0.0809|</span>
+<span class="co">#&gt; |Parameter |  Median|    2.5%|  97.5%|</span>
+<span class="co">#&gt; |:---------|-------:|-------:|------:|</span>
+<span class="co">#&gt; |ed50      | -0.4003| -0.9036| 0.0817|</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
 <span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span>
-<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 122.3</span>
+<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 120.9</span>
 <span class="co">#&gt; </span>
-<span class="co">#&gt; Deviance = 1095</span>
-<span class="co">#&gt; Residual deviance = 191.9</span>
-<span class="co">#&gt; Deviance Information Criterion (DIC) = 1217.4</span></code></pre></div>
+<span class="co">#&gt; Deviance = 1093.1</span>
+<span class="co">#&gt; Residual deviance = 190</span>
+<span class="co">#&gt; Deviance Information Criterion (DIC) = 1214</span></code></pre></div>
 <p>In this example <code>ed50</code> only has a single parameter, which corresponds to the dose at which 50% of the maximum efficacy is achieved, assumed to be equal across all agents in the network.</p>
 </div>
 <div class="section level4">
@@ -1107,43 +1107,43 @@
 <span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></code></pre></div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nonparam</span><span class="op">)</span>
-<span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpdG73Pt/file40a4517143f0", fit using jags,</span>
+<span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp9iPqi1/file39d94577881a", fit using jags,</span>
 <span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="co">#&gt;  n.sims = 3000 iterations saved</span>
 <span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
 <span class="co">#&gt; d.1[1,1]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
 <span class="co">#&gt; d.1[1,2]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,2]     1.190   0.175    0.853    1.074    1.188    1.307    1.528 1.001</span>
-<span class="co">#&gt; d.1[3,2]     1.737   0.116    1.507    1.659    1.733    1.815    1.969 1.001</span>
-<span class="co">#&gt; d.1[4,2]     2.038   0.141    1.767    1.942    2.034    2.131    2.319 1.001</span>
+<span class="co">#&gt; d.1[2,2]     1.197   0.180    0.850    1.077    1.200    1.315    1.552 1.002</span>
+<span class="co">#&gt; d.1[3,2]     1.742   0.119    1.505    1.661    1.743    1.821    1.979 1.001</span>
+<span class="co">#&gt; d.1[4,2]     2.045   0.146    1.767    1.948    2.040    2.139    2.343 1.001</span>
 <span class="co">#&gt; d.1[1,3]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,3]     0.951   0.137    0.646    0.867    0.963    1.050    1.188 1.004</span>
-<span class="co">#&gt; d.1[3,3]     1.117   0.084    0.950    1.062    1.117    1.173    1.279 1.003</span>
-<span class="co">#&gt; d.1[4,3]     1.256   0.112    1.046    1.176    1.255    1.332    1.473 1.001</span>
-<span class="co">#&gt; d.1[5,3]     1.457   0.085    1.289    1.398    1.456    1.514    1.633 1.001</span>
+<span class="co">#&gt; d.1[2,3]     0.956   0.136    0.662    0.869    0.970    1.054    1.185 1.001</span>
+<span class="co">#&gt; d.1[3,3]     1.119   0.083    0.956    1.065    1.119    1.174    1.286 1.001</span>
+<span class="co">#&gt; d.1[4,3]     1.258   0.111    1.055    1.177    1.254    1.337    1.480 1.001</span>
+<span class="co">#&gt; d.1[5,3]     1.461   0.086    1.298    1.401    1.460    1.519    1.632 1.002</span>
 <span class="co">#&gt; d.1[1,4]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,4]     1.245   0.213    0.842    1.096    1.242    1.384    1.676 1.001</span>
-<span class="co">#&gt; d.1[3,4]     1.617   0.319    1.062    1.393    1.595    1.816    2.303 1.001</span>
+<span class="co">#&gt; d.1[2,4]     1.248   0.206    0.860    1.103    1.245    1.383    1.659 1.012</span>
+<span class="co">#&gt; d.1[3,4]     1.624   0.310    1.061    1.403    1.608    1.826    2.287 1.005</span>
 <span class="co">#&gt; d.1[1,5]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,5]     0.630   0.242    0.137    0.464    0.635    0.810    1.062 1.017</span>
-<span class="co">#&gt; d.1[3,5]     1.036   0.121    0.803    0.954    1.037    1.114    1.278 1.003</span>
-<span class="co">#&gt; d.1[4,5]     1.442   0.207    1.063    1.297    1.431    1.578    1.862 1.003</span>
+<span class="co">#&gt; d.1[2,5]     0.626   0.243    0.147    0.453    0.630    0.802    1.066 1.001</span>
+<span class="co">#&gt; d.1[3,5]     1.038   0.125    0.789    0.956    1.037    1.122    1.291 1.001</span>
+<span class="co">#&gt; d.1[4,5]     1.445   0.211    1.064    1.296    1.434    1.586    1.876 1.001</span>
 <span class="co">#&gt; d.1[1,6]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,6]     0.771   0.318    0.115    0.545    0.803    1.010    1.297 1.011</span>
-<span class="co">#&gt; d.1[3,6]     1.244   0.114    1.025    1.169    1.242    1.319    1.470 1.004</span>
-<span class="co">#&gt; d.1[4,6]     1.556   0.191    1.222    1.420    1.541    1.679    1.949 1.007</span>
-<span class="co">#&gt; d.1[5,6]     1.888   0.276    1.416    1.690    1.871    2.063    2.469 1.004</span>
-<span class="co">#&gt; d.1[6,6]     2.944   0.618    1.880    2.500    2.905    3.326    4.279 1.003</span>
+<span class="co">#&gt; d.1[2,6]     0.791   0.304    0.143    0.588    0.822    1.025    1.290 1.002</span>
+<span class="co">#&gt; d.1[3,6]     1.252   0.118    1.027    1.174    1.252    1.328    1.495 1.001</span>
+<span class="co">#&gt; d.1[4,6]     1.564   0.196    1.219    1.427    1.553    1.686    1.966 1.001</span>
+<span class="co">#&gt; d.1[5,6]     1.895   0.274    1.411    1.695    1.881    2.074    2.474 1.001</span>
+<span class="co">#&gt; d.1[6,6]     2.932   0.628    1.868    2.470    2.873    3.346    4.333 1.002</span>
 <span class="co">#&gt; d.1[1,7]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,7]     0.545   0.209    0.142    0.402    0.546    0.684    0.962 1.007</span>
-<span class="co">#&gt; d.1[3,7]     1.004   0.304    0.470    0.788    0.983    1.193    1.650 1.001</span>
+<span class="co">#&gt; d.1[2,7]     0.558   0.205    0.151    0.422    0.561    0.692    0.963 1.002</span>
+<span class="co">#&gt; d.1[3,7]     0.994   0.301    0.459    0.786    0.981    1.183    1.636 1.002</span>
 <span class="co">#&gt; d.1[1,8]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,8]     0.492   0.318    0.027    0.234    0.451    0.700    1.175 1.002</span>
-<span class="co">#&gt; d.1[3,8]     1.270   0.160    0.950    1.160    1.269    1.381    1.566 1.001</span>
-<span class="co">#&gt; d.1[4,8]     1.611   0.102    1.416    1.543    1.609    1.679    1.820 1.001</span>
-<span class="co">#&gt; sd           0.256   0.046    0.169    0.226    0.254    0.286    0.354 1.010</span>
-<span class="co">#&gt; totresdev  189.976  18.936  154.327  176.744  189.386  202.171  229.310 1.001</span>
-<span class="co">#&gt; deviance  1093.082  18.936 1057.433 1079.850 1092.492 1105.277 1132.416 1.002</span>
+<span class="co">#&gt; d.1[2,8]     0.497   0.308    0.034    0.247    0.464    0.710    1.160 1.001</span>
+<span class="co">#&gt; d.1[3,8]     1.272   0.160    0.950    1.168    1.273    1.379    1.588 1.001</span>
+<span class="co">#&gt; d.1[4,8]     1.619   0.104    1.419    1.553    1.618    1.686    1.829 1.006</span>
+<span class="co">#&gt; sd           0.259   0.046    0.175    0.227    0.257    0.290    0.354 1.005</span>
+<span class="co">#&gt; totresdev  190.167  19.676  153.914  176.662  189.732  202.778  230.182 1.001</span>
+<span class="co">#&gt; deviance  1093.273  19.676 1057.020 1079.768 1092.838 1105.884 1133.288 1.001</span>
 <span class="co">#&gt;           n.eff</span>
 <span class="co">#&gt; d.1[1,1]      1</span>
 <span class="co">#&gt; d.1[1,2]      1</span>
@@ -1151,39 +1151,39 @@
 <span class="co">#&gt; d.1[3,2]   3000</span>
 <span class="co">#&gt; d.1[4,2]   3000</span>
 <span class="co">#&gt; d.1[1,3]      1</span>
-<span class="co">#&gt; d.1[2,3]    980</span>
-<span class="co">#&gt; d.1[3,3]   1200</span>
+<span class="co">#&gt; d.1[2,3]   3000</span>
+<span class="co">#&gt; d.1[3,3]   3000</span>
 <span class="co">#&gt; d.1[4,3]   3000</span>
-<span class="co">#&gt; d.1[5,3]   3000</span>
+<span class="co">#&gt; d.1[5,3]   1300</span>
 <span class="co">#&gt; d.1[1,4]      1</span>
-<span class="co">#&gt; d.1[2,4]   3000</span>
-<span class="co">#&gt; d.1[3,4]   2600</span>
+<span class="co">#&gt; d.1[2,4]    200</span>
+<span class="co">#&gt; d.1[3,4]    490</span>
 <span class="co">#&gt; d.1[1,5]      1</span>
-<span class="co">#&gt; d.1[2,5]    470</span>
-<span class="co">#&gt; d.1[3,5]    710</span>
-<span class="co">#&gt; d.1[4,5]    670</span>
+<span class="co">#&gt; d.1[2,5]   3000</span>
+<span class="co">#&gt; d.1[3,5]   3000</span>
+<span class="co">#&gt; d.1[4,5]   3000</span>
 <span class="co">#&gt; d.1[1,6]      1</span>
-<span class="co">#&gt; d.1[2,6]    510</span>
-<span class="co">#&gt; d.1[3,6]    580</span>
-<span class="co">#&gt; d.1[4,6]    320</span>
-<span class="co">#&gt; d.1[5,6]    620</span>
-<span class="co">#&gt; d.1[6,6]    700</span>
+<span class="co">#&gt; d.1[2,6]   3000</span>
+<span class="co">#&gt; d.1[3,6]   3000</span>
+<span class="co">#&gt; d.1[4,6]   2300</span>
+<span class="co">#&gt; d.1[5,6]   3000</span>
+<span class="co">#&gt; d.1[6,6]   1100</span>
 <span class="co">#&gt; d.1[1,7]      1</span>
-<span class="co">#&gt; d.1[2,7]    540</span>
-<span class="co">#&gt; d.1[3,7]   3000</span>
+<span class="co">#&gt; d.1[2,7]   1600</span>
+<span class="co">#&gt; d.1[3,7]   1100</span>
 <span class="co">#&gt; d.1[1,8]      1</span>
-<span class="co">#&gt; d.1[2,8]   1400</span>
+<span class="co">#&gt; d.1[2,8]   3000</span>
 <span class="co">#&gt; d.1[3,8]   3000</span>
-<span class="co">#&gt; d.1[4,8]   3000</span>
-<span class="co">#&gt; sd          230</span>
-<span class="co">#&gt; totresdev  2100</span>
-<span class="co">#&gt; deviance   1800</span>
+<span class="co">#&gt; d.1[4,8]    470</span>
+<span class="co">#&gt; sd          510</span>
+<span class="co">#&gt; totresdev  3000</span>
+<span class="co">#&gt; deviance   3000</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="co">#&gt; pD = 127.7 and DIC = 1220.2</span>
+<span class="co">#&gt; pD = 126.7 and DIC = 1219.5</span>
 <span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></code></pre></div>
 <p>In the output from non-parametric models, <code>d.1</code> parameters represent the relative effect for each treatment (specific dose of a specific agent) versus the reference treatment, similar to in a standard Network Meta-Analysis. The first index of <code>d</code> represents the dose identifier, and the second index represents the agent identifier. Information on the specific values of the doses is not included in the model, as only the ordering of them (lowest to highest) is important.</p>
 <p>Note that some post-estimation functions (e.g. ranking, prediction) cannot be performed on non-parametric models within the package.</p>
@@ -1258,10 +1258,10 @@
 <span class="co"><span style="font-weight: bold;">#&gt; Relative treatment comparisons (95% credible intervals)</span></span>
 <span class="co"><span style="font-weight: bold;">#&gt; ============================================================</span></span>
 <span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co">#&gt;     Placebo_0     0.18 (0.16, 0.21) 0.25 (0.23, 0.28) 0.36 (0.32, 0.42)</span>
-<span class="co">#&gt;  5.5 (4.8, 6.4)     eletriptan_1     1.4 (1.2, 1.6)     2 (1.7, 2.4)   </span>
-<span class="co">#&gt;   4 (3.6, 4.4)    0.73 (0.63, 0.84)   sumatriptan_2    1.5 (1.3, 1.7)  </span>
-<span class="co">#&gt;  2.7 (2.4, 3.2)    0.5 (0.41, 0.6)  0.68 (0.58, 0.79)   almotriptan_1</span>
+<span class="co">#&gt;     Placebo_0     0.18 (0.16, 0.21) 0.25 (0.22, 0.27) 0.36 (0.31, 0.42)</span>
+<span class="co">#&gt;  5.5 (4.8, 6.3)     eletriptan_1     1.4 (1.2, 1.6)     2 (1.7, 2.4)   </span>
+<span class="co">#&gt;   4 (3.7, 4.5)    0.73 (0.64, 0.85)   sumatriptan_2    1.5 (1.3, 1.7)  </span>
+<span class="co">#&gt;  2.8 (2.4, 3.2)   0.5 (0.41, 0.61)  0.68 (0.59, 0.8)    almotriptan_1</span>
 
 <span class="co"># Rank relative effects</span>
 <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span>
@@ -1304,46 +1304,46 @@
 <span class="co">#&gt; </span>
 <span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span>
 <span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span>
-<span class="co">#&gt; |naratriptan  | 1.17|      1|    1|     3|</span>
-<span class="co">#&gt; |sumatriptan  | 2.86|      3|    1|     5|</span>
-<span class="co">#&gt; |almotriptan  | 3.55|      3|    2|     7|</span>
-<span class="co">#&gt; |frovatriptan | 3.80|      4|    1|     7|</span>
-<span class="co">#&gt; |zolmitriptan | 4.28|      4|    2|     7|</span>
-<span class="co">#&gt; |rizatriptan  | 5.91|      6|    4|     7|</span>
-<span class="co">#&gt; |eletriptan   | 6.44|      7|    5|     7|</span>
+<span class="co">#&gt; |naratriptan  | 1.20|      1|    1|     4|</span>
+<span class="co">#&gt; |sumatriptan  | 2.85|      3|    1|     5|</span>
+<span class="co">#&gt; |almotriptan  | 3.62|      3|    2|     7|</span>
+<span class="co">#&gt; |frovatriptan | 3.67|      4|    1|     7|</span>
+<span class="co">#&gt; |zolmitriptan | 4.34|      4|    2|     7|</span>
+<span class="co">#&gt; |rizatriptan  | 5.89|      6|    4|     7|</span>
+<span class="co">#&gt; |eletriptan   | 6.43|      7|    5|     7|</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 ranking</span> (from best to worst)</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span>
 <span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span>
-<span class="co">#&gt; |eletriptan   | 2.58|      2|    1|     5|</span>
-<span class="co">#&gt; |sumatriptan  | 3.01|      3|    1|     6|</span>
-<span class="co">#&gt; |rizatriptan  | 3.39|      3|    1|     7|</span>
-<span class="co">#&gt; |frovatriptan | 3.83|      4|    1|     7|</span>
+<span class="co">#&gt; |eletriptan   | 2.60|      2|    1|     6|</span>
+<span class="co">#&gt; |sumatriptan  | 3.00|      3|    1|     6|</span>
+<span class="co">#&gt; |rizatriptan  | 3.36|      3|    1|     7|</span>
+<span class="co">#&gt; |frovatriptan | 3.86|      4|    1|     7|</span>
 <span class="co">#&gt; |zolmitriptan | 4.34|      5|    1|     7|</span>
 <span class="co">#&gt; |naratriptan  | 5.35|      6|    1|     7|</span>
 <span class="co">#&gt; |almotriptan  | 5.50|      6|    1|     7|</span>
 <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span>
 <span class="co">#&gt; $emax</span>
 <span class="co">#&gt;     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="co">#&gt; 1   eletriptan 6.440333 0.7334525    5   6   7   7     7</span>
-<span class="co">#&gt; 2  sumatriptan 2.857667 0.9253972    1   2   3   3     5</span>
-<span class="co">#&gt; 3 frovatriptan 3.802667 1.5615822    1   2   4   5     7</span>
-<span class="co">#&gt; 4  almotriptan 3.545333 1.4408228    2   2   3   5     7</span>
-<span class="co">#&gt; 5 zolmitriptan 4.280000 1.1983650    2   3   4   5     7</span>
-<span class="co">#&gt; 6  naratriptan 1.167333 0.6744018    1   1   1   1     3</span>
-<span class="co">#&gt; 7  rizatriptan 5.906667 0.9795962    4   5   6   7     7</span>
+<span class="co">#&gt; 1   eletriptan 6.426667 0.7559626    5   6   7   7     7</span>
+<span class="co">#&gt; 2  sumatriptan 2.854667 0.9178738    1   2   3   3     5</span>
+<span class="co">#&gt; 3 frovatriptan 3.668000 1.5764743    1   2   4   5     7</span>
+<span class="co">#&gt; 4  almotriptan 3.622667 1.4476365    2   2   3   5     7</span>
+<span class="co">#&gt; 5 zolmitriptan 4.341000 1.2079757    2   4   4   5     7</span>
+<span class="co">#&gt; 6  naratriptan 1.199333 0.7666782    1   1   1   1     4</span>
+<span class="co">#&gt; 7  rizatriptan 5.887667 0.9923253    4   5   6   7     7</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; $ed50</span>
 <span class="co">#&gt;     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="co">#&gt; 1   eletriptan 2.578333 1.385341    1   1   2   4     5</span>
-<span class="co">#&gt; 2  sumatriptan 3.013333 1.529249    1   2   3   4     6</span>
-<span class="co">#&gt; 3 frovatriptan 3.825333 1.979090    1   2   4   6     7</span>
-<span class="co">#&gt; 4  almotriptan 5.497333 1.569123    1   5   6   7     7</span>
-<span class="co">#&gt; 5 zolmitriptan 4.339000 1.774954    1   3   5   6     7</span>
-<span class="co">#&gt; 6  naratriptan 5.354333 1.868675    1   4   6   7     7</span>
-<span class="co">#&gt; 7  rizatriptan 3.392333 1.772603    1   2   3   5     7</span></code></pre></div>
+<span class="co">#&gt; 1   eletriptan 2.600333 1.376674    1   1   2   3     6</span>
+<span class="co">#&gt; 2  sumatriptan 3.000000 1.559533    1   2   3   4     6</span>
+<span class="co">#&gt; 3 frovatriptan 3.857000 2.020374    1   2   4   6     7</span>
+<span class="co">#&gt; 4  almotriptan 5.501667 1.570611    1   5   6   7     7</span>
+<span class="co">#&gt; 5 zolmitriptan 4.337000 1.767806    1   3   5   6     7</span>
+<span class="co">#&gt; 6  naratriptan 5.347667 1.867250    1   4   6   7     7</span>
+<span class="co">#&gt; 7  rizatriptan 3.356333 1.714742    1   2   3   5     7</span></code></pre></div>
 <p>The output is an object of <code>class("mbnma.rank")</code>, containing a list for each ranked parameter in <code>params</code>, which consists of a summary table of rankings and raw information on agent/class (depending on argument given to <code>level</code>) ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</p>
 <p>Histograms for ranking results can also be plotted using the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method, which takes the raw MCMC ranking results stored in <code>mbnma.rank</code> and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
@@ -1363,20 +1363,20 @@
 <pre><code><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span>
 <span class="co">#&gt;    agent        parameter sucra</span>
 <span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50       4.79</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax       1.06</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50       4.39</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50       4.77</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax       1.07</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50       4.40</span>
 <span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax       4.63</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50       3.58</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax       3.68</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50       1.99</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax       3.94</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50       3.55</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax       3.81</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50       1.98</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax       3.87</span>
 <span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50       3.12</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax       3.22</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50       2.11</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax       5.87</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50       4.02</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span> rizatriptan  emax       1.59</span></code></pre>
+<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax       3.16</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50       2.12</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax       5.85</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50       4.05</span>
+<span class="co">#&gt; <span style="color: #BCBCBC;">14</span> rizatriptan  emax       1.61</span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
@@ -1416,24 +1416,27 @@
 <code class="sourceCode R"><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="va">E0.data</span>,
                       exact.doses<span class="op">=</span><span class="va">doses</span><span class="op">)</span>
 <span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></code></pre></div>
+<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="co">#&gt; Warning in ref.synth(data.ab = E0, mbnma = object, synth = synth, ...): Rhat</span>
+<span class="co">#&gt; values for parameter(s) in reference treatment synthesis model are &gt;1.02.</span>
+<span class="co">#&gt; Suggest running for more iterations.</span></code></pre></div>
 <p>An object of class <code>"mbnma.predict"</code> is returned, which is a list of summary tables and MCMC prediction matrices for each treatment (combination of dose and agent). The <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method can be used to print mean posterior predictions at each time point for each treatment.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span>
 <span class="co">#&gt;         agent dose      mean          sd      2.5%       25%       50%</span>
-<span class="co">#&gt; 1     Placebo    0 0.1238996 0.003295849 0.1174828 0.1216819 0.1238853</span>
-<span class="co">#&gt; 2  eletriptan    0 0.1238996 0.003295849 0.1174828 0.1216819 0.1238853</span>
-<span class="co">#&gt; 3  eletriptan    1 0.4379111 0.018790253 0.4026626 0.4249884 0.4369199</span>
-<span class="co">#&gt; 4  eletriptan    3 0.5555408 0.026216969 0.5057414 0.5381079 0.5551111</span>
-<span class="co">#&gt; 5 sumatriptan    0 0.1238996 0.003295849 0.1174828 0.1216819 0.1238853</span>
-<span class="co">#&gt; 6 sumatriptan    3 0.3872791 0.017098642 0.3536117 0.3754711 0.3876162</span>
+<span class="co">#&gt; 1     Placebo    0 0.1238783 0.003254672 0.1176547 0.1216287 0.1237967</span>
+<span class="co">#&gt; 2  eletriptan    0 0.1238783 0.003254672 0.1176547 0.1216287 0.1237967</span>
+<span class="co">#&gt; 3  eletriptan    1 0.4373600 0.018974158 0.4005261 0.4243405 0.4370793</span>
+<span class="co">#&gt; 4  eletriptan    3 0.5552169 0.025929235 0.5041137 0.5374514 0.5544145</span>
+<span class="co">#&gt; 5 sumatriptan    0 0.1238783 0.003254672 0.1176547 0.1216287 0.1237967</span>
+<span class="co">#&gt; 6 sumatriptan    3 0.3874781 0.017252001 0.3551244 0.3757117 0.3867636</span>
 <span class="co">#&gt;         75%     97.5%</span>
-<span class="co">#&gt; 1 0.1261226 0.1304179</span>
-<span class="co">#&gt; 2 0.1261226 0.1304179</span>
-<span class="co">#&gt; 3 0.4509453 0.4761488</span>
-<span class="co">#&gt; 4 0.5722897 0.6078327</span>
-<span class="co">#&gt; 5 0.1261226 0.1304179</span>
-<span class="co">#&gt; 6 0.3982830 0.4211563</span></code></pre></div>
+<span class="co">#&gt; 1 0.1260444 0.1302778</span>
+<span class="co">#&gt; 2 0.1260444 0.1302778</span>
+<span class="co">#&gt; 3 0.4500704 0.4757169</span>
+<span class="co">#&gt; 4 0.5725890 0.6066890</span>
+<span class="co">#&gt; 5 0.1260444 0.1302778</span>
+<span class="co">#&gt; 6 0.3989582 0.4227571</span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="plotting-predicted-responses">Plotting predicted responses<a class="anchor" aria-label="anchor" href="#plotting-predicted-responses"></a>
@@ -1507,13 +1510,13 @@
 <tbody>
 <tr class="odd">
 <td align="left">NMA</td>
-<td align="right">46.20</td>
-<td align="left">0.12 (0.073, 0.18)</td>
+<td align="right">46.63</td>
+<td align="left">0.12 (0.075, 0.18)</td>
 </tr>
 <tr class="even">
 <td align="left">UME</td>
-<td align="right">45.76</td>
-<td align="left">0.14 (0.088, 0.21)</td>
+<td align="right">45.73</td>
+<td align="left">0.14 (0.087, 0.22)</td>
 </tr>
 </tbody>
 </table>
@@ -1586,11 +1589,6 @@
 </ul>
 <p>An HTML document with all the above convergence plots can easily be generated for all parameters in the model simultaneously using <code><a href="https://rdrr.io/pkg/mcmcplots/man/mcmcplot.html" class="external-link">mcmcplots::mcmcplot()</a></code>.</p>
 <p>Two steps may improve convergence when using <code>MBNMAdose</code>. One step is to run models for more iterations (this can be done using the <code>n.iter</code> argument in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>). It can take time for MCMC chains to converge, particularly for non-linear models with limited data. It is important to note that chains should only be monitored <em>after</em> they have converged - increasing the number of burn-in iterations ensures that this is the case (using the <code>n.burnin</code> argument in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>). Another method to improve convergence is by providing more information to the model via informative priors.</p>
-</div>
-<div class="section level2">
-<h2 id="model-selection">Model selection<a class="anchor" aria-label="anchor" href="#model-selection"></a>
-</h2>
-<p>TO ADD!!!!!</p>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
