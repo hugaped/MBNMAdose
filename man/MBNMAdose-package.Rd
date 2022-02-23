@@ -85,7 +85,6 @@ plot(pred, overlay.split=TRUE)
 Useful links:
 \itemize{
   \item \url{https://hugaped.github.io/MBNMAdose}
-  \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/}
 }
 
 }

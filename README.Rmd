@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.org/package=MBNMAdose)
-[![Travis build status](https://travis-ci.com/hugaped/MBNMAdose.svg?branch=master)](https://travis-ci.com/hugaped/MBNMAdose)
 [![R-CMD-check](https://github.com/hugaped/MBNMAdose/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAdose/actions)
 <!-- badges: end -->
 

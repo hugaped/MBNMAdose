@@ -1,4 +1,12 @@
 
+## Resumbission
+
+This is a resubmission. The following NOTES have been addressed:
+
+* if() no longer compares class() to string
+* invalid URLs have been fixed
+
+
 ## Test environments
 
 * Ubuntu 20.04 GitHub Actions (release, dev, oldrel-1)
