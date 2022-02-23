@@ -13,7 +13,7 @@ Authors@R: c(person("Hugo", "Pedder",
         comment = c(ORCID = "0000-0002-3029-026X")),
     person("Lujin", "Li", role = c("rev")),
     person("Adil", "Karim", role = c("ctb")))
-URL: https://hugaped.github.io/MBNMAdose, https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4999602/
+URL: https://hugaped.github.io/MBNMAdose
 Maintainer: Hugo Pedder <hugopedder@gmail.com>
 Description: Fits Bayesian dose-response model-based network meta-analysis (MBNMA) 
     that incorporate multiple doses within an agent by modelling different dose-response functions, as
@@ -40,6 +40,8 @@ Imports:
     Rdpack (>= 0.11-0),
     igraph (>= 1.1.2),
     rgeos (>= 0.5-2),
+    utf8,
+    formatR,
     reshape2 (>= 1.4.3)
 Suggests:
     overlapping (>= 1.5.0),
