@@ -35,7 +35,7 @@ classnodes <-
 #     fontname="Consolas"
 #     )
 
-g <- create_graph(nodes_df = classnodes, attr_theme = "tb")
+g <- DiagrammeR::create_graph(nodes_df = classnodes, attr_theme = "tb")
 
 # Generate function nodes
 funnodes <-

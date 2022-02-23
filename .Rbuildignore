@@ -14,4 +14,3 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^R/FunctionsDAG\.R$
