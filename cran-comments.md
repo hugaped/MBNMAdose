@@ -1,14 +1,10 @@
-## Resubmission
-
-This is a resubmission. In this version I have:
-
-* Ensured that the pubmed reference have correct URLs
-
 
 ## Test environments
 
-* Ubuntu 16.04 (on travis-ci), R 3.2.4
-* Local Windows, R 3.6.1 (devel and release)
+* Ubuntu 20.04 GitHub Actions (release, dev, oldrel-1)
+* Windows Server 2019 GitHub Actions (release)
+* macOS 11 GitHub Actions (release)
+* Local Windows, R 4.1.0 (devel and release)
 * Windows Server 2008 R2 SP1, R-devel, 32/64 bit (rhub)
 * Fedora Linux, R-devel, clang, gfortran (rhub)
 
