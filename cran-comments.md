@@ -1,9 +1,8 @@
 
 ## Resumbission
 
-This is a resubmission. The following NOTES have been addressed:
+This is a resubmission. The following NOTE has been addressed:
 
-* if() no longer compares class() to string
 * invalid URLs have been fixed
 
 

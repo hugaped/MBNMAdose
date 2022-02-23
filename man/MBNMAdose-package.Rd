@@ -84,7 +84,7 @@ plot(pred, overlay.split=TRUE)
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://hugaped.github.io/MBNMAdose}
+  \item \url{https://hugaped.github.io/MBNMAdose/}
 }
 
 }
