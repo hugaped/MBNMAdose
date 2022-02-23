@@ -7,11 +7,11 @@ dose-response models}
 \usage{
 \method{predict}{mbnma}(
   object,
-  n.doses = 15,
-  max.doses = NULL,
+  n.doses = 30,
   exact.doses = NULL,
-  E0 = 0,
+  E0 = 0.2,
   synth = "fixed",
+  lim = "cred",
   ...
 )
 }
@@ -20,26 +20,19 @@ dose-response models}
 a dose-response MBNMA model}
 
 \item{n.doses}{A number indicating the number of doses at which to make predictions
-within each agent. The default is \code{15}.}
+within each agent. The default is \code{30}.}
 
-\item{max.doses}{A list of numbers. Each named element in the list corresponds to an
-agent (either named similarly to agent names given in the data, or named
-correspondingly to the codes for agents given in \code{mbnma})
-and each number for that element corresponds to the maximum dose of the given agent, below which several
-predictions will be calculated at different doses (the number of these is determined by \code{n.doses}).
-Can only take positive values. If left as \code{NULL} (the default) results will be predicted based on the
-maximum dose of each agent given in the data.}
-
-\item{exact.doses}{A list of numeric vectors. Each named element in the list correponds to an
+\item{exact.doses}{A list of numeric vectors. Each named element in the list corresponds to an
 agent (either named similarly to agent names given in the data, or named
 correspondingly to the codes for agents given in \code{mbnma}) and each number within the vector
 for that element corresponds to a dose of the agent for which to predict responses.
-Doses can only take positive values.}
+Doses can only take positive values. For models fitted using \code{dspline()} making predictions at only a very small
+number of doses for each agent may throw an error since it can make the spline difficult to identify.}
 
 \item{E0}{An object to indicate the value(s) to use for the response at dose = 0 (i.e.
 placebo) in the prediction. This can take a number of different formats depending
-on how it will be used/calculated. The default is \code{0} but this will typically lead
-to non-sensical predictions.
+on how it will be used/calculated. The default is \code{0.2} since a default of \code{0} will typically lead
+to non-sensical predictions unless an identify link function has been used for the MBNMA model in \code{object}.
 \itemize{
 \item \code{numeric()} A single numeric value representing the deterministic response at dose = 0,
 given on the natural scale - so for binomial data, proportions should be given and
@@ -61,6 +54,8 @@ specify the the type of pooling to use for synthesis of \code{E0} if a data fram
 has been provided for it. Using \code{"random"} rather
 than \code{"fixed"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
 
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
+
 \item{...}{Arguments to be sent to \code{\link[R2jags:jags]{R2jags::jags()}} for synthesis of the network
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 }
@@ -68,13 +63,15 @@ reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}
 An S3 object of class \code{mbnma.predict} that contains the following
 elements:
 \itemize{
-\item \code{summary} A named list of data frames. Each data frame contains
-a summary of predicted responses at follow-up times specified in \code{times}
-for each treatment specified in \code{treats}
-\item \code{pred.mat} A named list of
+\item \code{predicts} A named list of
 matrices. Each matrix contains the MCMC results of predicted responses at
 follow-up times specified in \code{times} for each treatment specified in
 \code{treats}
+\item \code{likelihood} The likelihood used in the MBNMA model \code{object}
+\item \code{link} The link function used in the MBNMA model \code{object}
+\item \code{network} The dataset in \code{mbnma.network} format
+\item \code{E0} A numeric vector of value(s) used for E0 in the prediction, on the
+link scale.
 }
 }
 \description{
@@ -99,10 +96,10 @@ agent. This may be more useful when ranking different predicted responses using
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 
 
 ###########################
@@ -144,12 +141,6 @@ pred <- predict(emax, E0 = ref.df, synth="random")
 # Change the number of predictions for each agent
 pred <- predict(emax, E0 = 0.2, n.doses=20)
 pred <- predict(emax, E0 = 0.2, n.doses=3)
-
-# Change the range of predicted doses to be the same for all agents
-# But only predict responses for a subset of agents
-pred <- predict(emax, E0 = 0.2,
-            max.doses=list("Placebo"=0, "eletriptan"=5, "sumatriptan"=5))
-plot(pred) # Plot predictions
 
 # Specify several exact combinations of doses and agents to predict
 pred <- predict(emax, E0 = 0.2,

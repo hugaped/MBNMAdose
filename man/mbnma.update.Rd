@@ -7,6 +7,7 @@
 mbnma.update(
   mbnma,
   param = "theta",
+  armdat = TRUE,
   n.iter = mbnma$BUGSoutput$n.iter,
   n.thin = mbnma$BUGSoutput$n.thin
 )
@@ -26,6 +27,8 @@ model code:
 \item \code{"resdev"} for residual deviance contributions
 \item \code{"delta"} for within-study relative effects versus the study reference treatment
 }}
+
+\item{armdat}{Include raw arm-level data for each data point (agent, dose, study grouping)}
 
 \item{n.iter}{number of total iterations per chain (including burn in;
     default: 2000)}
@@ -54,15 +57,15 @@ arm of the study
 }
 }
 \description{
-Useful for obtaining deviance contributions or fitted values
+Useful for obtaining deviance contributions or fitted values. Same function used in MBNMAdose and MBNMAtime packages.
 }
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
   parameters.to.save=c("psi", "resdev"))
 
 mbnma.update(result, param="theta") # monitor theta

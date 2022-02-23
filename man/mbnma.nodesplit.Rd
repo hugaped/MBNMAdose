@@ -7,49 +7,28 @@
 \usage{
 mbnma.nodesplit(
   network,
-  fun = "linear",
-  user.fun = NULL,
+  fun = dloglin(),
+  method = "common",
+  comparisons = NULL,
+  incldr = TRUE,
   beta.1 = "rel",
   beta.2 = "rel",
   beta.3 = "rel",
   beta.4 = "rel",
-  method = "common",
-  knots = 3,
-  comparisons = NULL,
-  incldr = TRUE,
+  user.fun = NULL,
   ...
 )
 
-\method{plot}{nodesplit}(x, plot.type = NULL, ...)
+\method{plot}{nodesplit}(x, plot.type = "forest", ...)
 }
 \arguments{
 \item{network}{An object of class \code{mbnma.network}.}
 
-\item{fun}{A character vector specifying a functional form to be assigned to the
-dose-response. Options are given in \code{details}.}
-
-\item{user.fun}{A formula specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
-
-\item{beta.1}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.2}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.3}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.4}{Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+\item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
+dose-response. See Details.}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
-
-\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
 
 \item{comparisons}{A matrix specifying the comparisons to be split (one row per comparison).
 The matrix must have two columns indicating each treatment for each comparison. Values can
@@ -61,17 +40,31 @@ may change if \code{drop.discon = TRUE}).}
 the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
 for a greater number of potential loops in which to check for consistency.}
 
-\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}}
+\item{beta.1}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.2}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.3}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{beta.4}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
+Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
+
+\item{user.fun}{\strong{Deprecated from version 0.4.0 onwards.} A formula specifying any relationship including \code{dose} and
+one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
+
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{forestplot::forestplot()}}
 
 \item{x}{An object of \code{class("nodesplit")}}
 
 \item{plot.type}{A character string that can take the value of \code{"forest"} to plot
-only forest plots, \code{"density"} to plot only density plots, or left as \code{NULL} (the
-default) to plot both types of plot.}
+forest plots or \code{"density"} to plot posterior density plots.}
 }
 \value{
-Plots the desired graph(s) and returns an object (or list of object if
-\code{plot.type=NULL}) of \code{class(c("gg", "ggplot"))}
+Plots the desired graph if \code{plot.type="forest"} and plots and returns an object
+of \code{class(c("gg", "ggplot"))} if \code{plot.type="density"}.
 }
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
@@ -91,9 +84,9 @@ of posterior densities for direct and indirect evidence.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
-split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="logit",
+split <- mbnma.nodesplit(network, fun=demax(), likelihood = "binomial", link="logit",
   method="common")
 
 
@@ -104,17 +97,17 @@ split <- mbnma.nodesplit(network, fun="emax", likelihood = "binomial", link="log
 loops <- inconsistency.loops(network$data.ab, incldr=TRUE)
 
 # This...
-single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
+single.split <- mbnma.nodesplit(network, fun=dexp(), likelihood = "binomial", link="logit",
              method="random", comparisons=rbind(c("sumatriptan_1", "almotriptan_1")))
 
 #...is the same as...
-single.split <- mbnma.nodesplit(network, fun="exponential", likelihood = "binomial", link="logit",
+single.split <- mbnma.nodesplit(network, fun=dexp(), likelihood = "binomial", link="logit",
              method="random", comparisons=rbind(c(6, 12)))
 
 
 # Plot results
 plot(split, plot.type="density") # Plot density plots of posterior densities
-plot(split, plot.type="forest") # Plot forest plots of direct and indirect evidence
+plot(split, txt_gp=forestplot::fpTxtGp(cex=0.5)) # Plot forest plots (with smaller label size)
 
 # Print and summarise results
 print(split)

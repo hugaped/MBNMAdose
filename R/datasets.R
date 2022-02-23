@@ -10,14 +10,14 @@
 #' @format A data frame in long format (one row per arm and study), with with 181 rows and 6 variables:
 #' * `studyID` Study identifiers
 #' * `AuthorYear` The author and year published of the study
-#' * `N` Numeric data indicating the number of participants in a study arm
+#' * `n` Numeric data indicating the number of participants in a study arm
 #' * `r` Numeric data indicating the number of responders (headache free at 2 hours) in a study arm
 #' * `dose` Numeric data indicating the standardised dose received
 #' * `agent` Factor data indicating the agent to which participants were randomised
 #'
 #' @source
 #' \insertAllCited{}
-"HF2PPITT"
+"triptans"
 
 
 
@@ -39,7 +39,7 @@
 #' * `dose` Numeric data indicating the standardised dose received
 #'
 #' @source Pfizer Ltd.
-"GoutSUA_2wkCFB"
+"gout"
 
 
 
@@ -61,12 +61,13 @@
 #' * `class` Character data indicating the drug class to which the agent belongs to
 #' * `y` Numeric data indicating the mean pain score on the WOMAC scale in a study arm
 #' * `se` Numeric data indicating the standard error for the mean pain score on the WOMAC scale in a study arm
+#' * `n` Numeric data indicating the number of participants randomised
 #'
 #' @references
 #' \insertAllCited{}
 #'
 #' @source Pfizer Ltd.
-"osteopain_2wkabs"
+"osteopain"
 
 
 
@@ -92,6 +93,7 @@
 #' * `dose` Numeric data indicating the standardised dose received
 #' * `y` Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
 #' * `se` Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
+#' * `n` Numeric data indicating the number of participants randomised
 #'
 #' @references
 #' \insertAllCited{}
@@ -102,39 +104,13 @@
 
 
 
-#' Studies of biologics for psoriasis over 16 weeks
-#'
-#' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing different biologics for the
-#' treatment of psoriasis \insertCite{warren2019}{MBNMAdose}. The systematic review was simply performed and was intended to
-#' provide data to illustrate a statistical methodology rather than for clinical inference. Alogliptin is
-#' a treatment aimed at reducing blood glucose concentration in type II diabetes. The outcome is continuous,
-#' and aggregate data responses correspond to the mean change in HbA1c from baseline to follow-up in studies
-#' of at least 12 weeks follow-up. The dataset includes 14 Randomised-Controlled Trials (RCTs), comparing 5
-#' different doses of alogliptin with placebo, leading to 6 different treatments (combination of dose and agent)
-#' within the network.
-#'
-#' `alog_pcfb` is a data frame in long format (one row per arm and study), with the variables `studyID`, `agent`, `dose`, `y`, `se`, and `N`.
-#'
-#' @format A data frame in long format (one row per arm and study), with 46 rows and 6 variables:
-#' * `studyID` Study identifiers
-#' * `agent` Character data indicating the agent to which participants were randomised
-#' * `dose` Numeric data indicating the standardised dose received
-#' * `y` Numeric data indicating the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-#' * `se` Numeric data indicating the standard error for the mean change from baseline in blood glucose concentration (mg/dL) in a study arm
-#'
-#' @references
-#' \insertAllCited{}
-#'
-"alog_pcfb"
 
 
-
-
-#' Studies of biologics for treatment of moderate-to-severe psoriasis
+#' Studies of biologics for treatment of moderate-to-severe psoriasis (>=75% improvement)
 #'
 #' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing biologics at different doses and placebo
-#' \insertCite{warren2019}{MBNMAdose}. Three different binary outcomes are included, all based on the number of patients experiencing
-#' degrees of improvement on the Psoriasis Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset
+#' \insertCite{warren2019}{MBNMAdose}. The outcome is the number of patients experiencing >=75% improvement on the Psoriasis
+#' Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset
 #' includes 28 Randomised-Controlled Trials (RCTs), comparing 9 different biologics at different doses with placebo.
 #'
 #' @format A data frame in long format (one row per arm and study), with 81 rows and 9 variables:
@@ -143,15 +119,65 @@
 #' * `dose_mg` Numeric data indicating the dose to which participants were randomised in mg
 #' * `freq` Character data indicating the frequency of the dose to which participants were randomised
 #' * `dose` Numeric data indicating the dose in mg/week to which the participants were randomised
-#' * `N` Numeric data indicating the number of participants randomised
-#' * `r75` Numeric data indicating the number of participants who achieved >=75% improvement in PASI score after 12 weeks
-#' * `r90` Numeric data indicating the number of participants who achieved >=90% improvement in PASI score after 12 weeks
-#' * `r100` Numeric data indicating the number of participants who achieved 100% improvement in PASI score after 12 weeks
+#' * `n` Numeric data indicating the number of participants randomised
+#' * `r` Numeric data indicating the number of participants who achieved >=75% improvement in PASI score after 12 weeks
 #'
 #' @references
 #' \insertAllCited{}
 #'
-"psoriasis"
+"psoriasis75"
+
+
+
+
+
+#' Studies of biologics for treatment of moderate-to-severe psoriasis (>=90% improvement)
+#'
+#' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing biologics at different doses and placebo
+#' \insertCite{warren2019}{MBNMAdose}. The outcome is the number of patients experiencing >=90% improvement on the Psoriasis
+#' Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset
+#' includes 24 Randomised-Controlled Trials (RCTs), comparing 9 different biologics at different doses with placebo.
+#'
+#' @format A data frame in long format (one row per arm and study), with 81 rows and 9 variables:
+#' * `studyID` Study identifiers
+#' * `agent` Character data indicating the agent to which participants were randomised
+#' * `dose_mg` Numeric data indicating the dose to which participants were randomised in mg
+#' * `freq` Character data indicating the frequency of the dose to which participants were randomised
+#' * `dose` Numeric data indicating the dose in mg/week to which the participants were randomised
+#' * `n` Numeric data indicating the number of participants randomised
+#' * `r` Numeric data indicating the number of participants who achieved >=90% improvement in PASI score after 12 weeks
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"psoriasis90"
+
+
+
+
+
+#' Studies of biologics for treatment of moderate-to-severe psoriasis (100% improvement)
+#'
+#' A dataset from a systematic review of Randomised-Controlled Trials (RCTs) comparing biologics at different doses and placebo
+#' \insertCite{warren2019}{MBNMAdose}. The outcome is the number of patients experiencing 100% improvement on the Psoriasis
+#' Area and Severity Index (PASI) measured at 12 weeks follow-up. The dataset
+#' includes 19 Randomised-Controlled Trials (RCTs), comparing 8 different biologics at different doses with placebo.
+#'
+#' @format A data frame in long format (one row per arm and study), with 81 rows and 9 variables:
+#' * `studyID` Study identifiers
+#' * `agent` Character data indicating the agent to which participants were randomised
+#' * `dose_mg` Numeric data indicating the dose to which participants were randomised in mg
+#' * `freq` Character data indicating the frequency of the dose to which participants were randomised
+#' * `dose` Numeric data indicating the dose in mg/week to which the participants were randomised
+#' * `n` Numeric data indicating the number of participants randomised
+#' * `r` Numeric data indicating the number of participants who achieved 100% improvement in PASI score after 12 weeks
+#'
+#' @references
+#' \insertAllCited{}
+#'
+"psoriasis100"
+
+
 
 
 
@@ -169,7 +195,7 @@
 #' * `weeks` Duration of study follow-up
 #' * `agent` Character data indicating the agent to which participants were randomised
 #' * `dose` Numeric data indicating the dose to which participants were randomised in mg
-#' * `N` Numeric data indicating the number of participants randomised
+#' * `n` Numeric data indicating the number of participants randomised
 #' * `r` Numeric data indicating the number of participants who achieved >50% improvement in depression symptoms
 #'
 #' @references

@@ -3,75 +3,78 @@ testthat::context("Testing write.functions")
 
 testthat::test_that("mbnma.write functions correctly", {
 
-  write <- mbnma.write(fun="linear", beta.1="rel", method="common",
+  write <- mbnma.write(fun=dpoly(degree=1, beta.1="rel"), method="common",
                        likelihood="binomial", link="logit")
-  expect_equal(grepl("s\\.beta\\.1", write), TRUE)
-  expect_equal(grepl("s\\.beta\\.2", write), FALSE)
-  expect_equal(grepl("sd ", write), FALSE)
-  expect_equal(grepl("N\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("r\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("logit", write), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.1", write)), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.2", write)), FALSE)
+  expect_equal(any(grepl("sd ", write)), FALSE)
+  expect_equal(any(grepl("n\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("r\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("logit", write)), TRUE)
 
-  write <- mbnma.write(fun="emax", beta.1="rel", beta.2="rel", method="random",
+  write <- mbnma.write(fun=demax(emax="rel", ed50="rel"), method="random",
                        likelihood="normal", link="identity")
-  expect_equal(grepl("s\\.beta\\.1", write), TRUE)
-  expect_equal(grepl("s\\.beta\\.2", write), TRUE)
-  expect_equal(grepl("sd ", write), TRUE)
-  expect_equal(grepl("y\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("se\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("logit", write), FALSE)
+  expect_equal(any(grepl("s\\.beta\\.1", write)), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.2", write)), TRUE)
+  expect_equal(any(grepl("sd ", write)), TRUE)
+  expect_equal(any(grepl("y\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("se\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("logit", write)), FALSE)
 
-  write <- mbnma.write(fun="emax", beta.1="rel", beta.2="rel", method="random",
+  write <- mbnma.write(fun=demax(emax="rel", ed50="rel"), method="random",
                        likelihood="normal", link="identity")
-  expect_equal(grepl("s\\.beta\\.1", write), TRUE)
-  expect_equal(grepl("s\\.beta\\.2", write), TRUE)
-  expect_equal(grepl("sd ", write), TRUE)
-  expect_equal(grepl("Omega", write), TRUE)
-  expect_equal(grepl("y\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("se\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("logit", write), FALSE)
+  expect_equal(any(grepl("s\\.beta\\.1", write)), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.2", write)), TRUE)
+  expect_equal(any(grepl("sd ", write)), TRUE)
+  expect_equal(any(grepl("omega", write)), TRUE)
+  expect_equal(any(grepl("y\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("se\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("logit", write)), FALSE)
 
-  write <- mbnma.write(fun="emax.hill", beta.1="rel", beta.2="rel", beta.3="random",
+  write <- mbnma.write(fun=demax(emax="rel", ed50="rel", hill="random"),
                        method="random",
                        likelihood="poisson", link="cloglog")
-  expect_equal(grepl("s\\.beta\\.1", write), TRUE)
-  expect_equal(grepl("s\\.beta\\.2", write), TRUE)
-  expect_equal(grepl("beta\\.3,", write), TRUE)
-  expect_equal(grepl("\nd\\.3,", write), FALSE)
-  expect_equal(grepl("sd ", write), TRUE)
-  expect_equal(grepl("sd\\.3", write), TRUE)
-  expect_equal(grepl("sd\\.1", write), FALSE)
-  expect_equal(grepl("Omega", write), TRUE)
-  expect_equal(grepl("r\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("E\\[i,k\\]", write), TRUE)
-  expect_equal(grepl("cloglog", write), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.1", write)), TRUE)
+  expect_equal(any(grepl("s\\.beta\\.2", write)), TRUE)
+  expect_equal(any(grepl("beta\\.3", write)), TRUE)
+  expect_equal(any(grepl("\nd\\.3", write)), FALSE)
+  expect_equal(any(grepl("sd ", write)), TRUE)
+  expect_equal(any(grepl("sd\\.hill", write)), TRUE)
+  expect_equal(any(grepl("sd\\.emax", write)), FALSE)
+  expect_equal(any(grepl("omega", write)), TRUE)
+  expect_equal(any(grepl("r\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("E\\[i,k\\]", write)), TRUE)
+  expect_equal(any(grepl("cloglog", write)), TRUE)
 
-  write <- mbnma.write(fun="emax.hill", beta.1="rel", beta.2="rel", beta.3="random",
+  write <- mbnma.write(fun=demax(emax="rel", ed50="rel", hill="random"),
                        method="random",
                        likelihood="poisson", link="cloglog",
-                       var.scale=c(10,1))
-  expect_equal(grepl("Omega\\[1,1\\] <- 10", write), TRUE)
-  expect_equal(grepl("Omega\\[2,2\\] <- 1", write), TRUE)
+                       omega=matrix(c(10,0,0,5), nrow=2, byrow = TRUE))
+  expect_equal(any(grepl("omega", write)), TRUE)
 
-  expect_error(mbnma.write(fun="emax.hill", beta.1="rel", beta.2="rel", beta.3="random",
-                       method="random",
-                       likelihood="poisson", link="cloglog",
-                       var.scale=100))
+  expect_error(suppressWarnings(mbnma.write(fun=demax(emax="rel", ed50="rel", hill="random"),
+                                            method="random",
+                                            likelihood="poisson", link="cloglog",
+                                            omega=matrix(c(10,0,5,5), nrow=2, byrow = TRUE))), "definite")
 
-  write <- mbnma.write(fun="linear", beta.1="rel", method="common",
-                       likelihood="binomial", link="logit",
-                       class.effect=list(beta.1="random"))
-  expect_equal(grepl("D\\.1", write), TRUE)
-  expect_equal(grepl("sd\\.D\\.1", write), TRUE)
+  write <- suppressWarnings(mbnma.write(fun=dpoly(degree=1, beta.1="rel"), method="common",
+                                        likelihood="binomial", link="logit",
+                                        class.effect=list(beta.1="random")))
+  expect_equal(any(grepl("BETA\\.1", write)), TRUE)
+  expect_equal(any(grepl("sd\\.BETA\\.1", write)), TRUE)
 
-  expect_error(mbnma.write(fun="linear", beta.1="rel", method="common",
-                       likelihood="binomial", link="logit",
-                       class.effect=list(beta.2="random")))
+  expect_error(mbnma.write(fun=dpoly(degree=1, beta.1="rel"), method="common",
+                           likelihood="binomial", link="logit",
+                           class.effect=list(beta.2="random")))
 
-  write <- mbnma.write(fun="linear", beta.1="rel", method="common",
-                       likelihood="binomial", link="logit",
-                       class.effect=list(beta.1="common"))
-  expect_equal(grepl("D\\.1", write), TRUE)
-  expect_equal(grepl("sd\\.D\\.1", write), FALSE)
+  expect_error(suppressWarnings(mbnma.write(fun=dpoly(degree=3, beta.1="rel"), method="common",
+                                            likelihood="binomial", link="logit",
+                                            class.effect=list(beta.2="random"))), NA)
+
+  write <- suppressWarnings(mbnma.write(fun=dpoly(degree=1, beta.1="rel"), method="common",
+                                        likelihood="binomial", link="logit",
+                                        class.effect=list(beta.1="common")))
+  expect_equal(any(grepl("BETA\\.1", write)), TRUE)
+  expect_equal(any(grepl("sd\\.BETA\\.1", write)), FALSE)
 
 })

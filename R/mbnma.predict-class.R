@@ -10,6 +10,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 #' Rank predicted doses of different agents
 #'
+#' Ranks predictions at different doses from best to worst.
+#'
 #' @inheritParams rank.mbnma
 #' @inheritParams predict.mbnma
 #' @param rank.doses A list of numeric vectors. Each named element corresponds to an
@@ -30,16 +32,16 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
-#' # Rank predictions from a linear dose-response MBNMA
-#' linear <- mbnma.run(network, fun="linear")
-#' pred <- predict(linear, E0 = 0.5)
+#' # Rank all predictions from a log-linear dose-response MBNMA
+#' loglin <- mbnma.run(network, fun=dloglin())
+#' pred <- predict(loglin, E0 = 0.5)
 #' rank <- rank(pred)
 #' summary(rank)
 #'
 #' # Rank selected predictions from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
 #' pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
 #'             exact.doses=doses)
@@ -55,20 +57,13 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' }
 #'
 #' @export
-rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
+rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
 
   # Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, classes="mbnma.predict", add=argcheck)
-  checkmate::assertChoice(direction, choices = c(-1,1), add=argcheck)
-  #checkmate::assertList(rank.doses, types="numeric", null.ok = TRUE, add=argcheck)
+  checkmate::assertLogical(lower_better, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
-  if (direction==-1) {
-    decreasing <- FALSE
-  } else if (direction==1) {
-    decreasing <- TRUE
-  } else {stop("`direction` must be either -1 or 1 for ranking")}
 
   # If rank doses is null, get values from predict
   if (is.null(rank.doses)) {
@@ -115,6 +110,7 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
   }
 
 
+  # Generate matrix of rankings
   treats <- vector()
   rank.mat <- NULL
   for (i in seq_along(rank.doses)) {
@@ -135,14 +131,14 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 
   # Assign ranks
   rank.mat <- t(apply(rank.mat, MARGIN=1, FUN=function(x) {
-    order(order(x, decreasing = decreasing), decreasing=FALSE)
+    order(order(x, decreasing = lower_better), decreasing=FALSE)
   }))
   colnames(rank.mat) <- treats
 
   result <- list("summary"=sumrank(rank.mat),
                  "prob.matrix"=calcprob(rank.mat, treats=treats),
                  "rank.matrix"=rank.mat,
-                 "direction"=direction)
+                 "lower_better"=lower_better)
   result <- list("Predictions"=result)
 
   class(result) <- "mbnma.rank"
@@ -192,10 +188,10 @@ rank.mbnma.predict <- function(x, direction=1, rank.doses=NULL, ...) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' pred <- predict(emax, E0 = 0.5)
 #' plot(pred)
 #'
@@ -268,12 +264,15 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
     checkmate::assertClass(network, "mbnma.network", null.ok=TRUE)
 
     # Check that predict labels and agent labels in network are consistent
-    if (!all(sum.pred$agent %in% network$agents)) {
+    if (!all(sum.pred$agent[sum.pred$agent!="Placebo"] %in% network$agents)) {
       stop("Agent labels in `network` differ from those in `pred`")
     }
 
-    g <- disp.obs(g=g, network=network, predict=x,
-                  col="green", max.col.scale=NULL)
+    gobs <- disp.obs(g=g, network=network, predict=x,
+                     col="green", max.col.scale=NULL)
+
+    g <- gobs[[1]]
+    cols <- gobs[[2]]
 
   }
   if (overlay.split==TRUE) {
@@ -290,17 +289,16 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
       stop("`x` must include a predicted response at dose = 0 for at least one agent")
     }
 
-    g <- overlay.split(g=g, network=network, method=method,
+    g <- overlay.split(g=g, network=network, E0=x$E0, method=method,
                        likelihood = x[["likelihood"]],
                        link = x[["link"]])
 
   }
 
-
   # Add overlayed lines and legends
   g <- g +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% CrI")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% CrI")) +
+    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% Interval")) +
+    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% Interval")) +
     ggplot2::geom_line(ggplot2::aes(linetype="Posterior Median"))
 
   g <- g + ggplot2::facet_wrap(~agent, scales=scales) +
@@ -308,8 +306,8 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
   g <- g + ggplot2::scale_linetype_manual(name="",
                                           values=c("Posterior Median"="solid",
-                                                   "95% CrI"="dashed")) +
-    ggplot2::theme_bw()
+                                                   "95% Interval"="dashed")) +
+    theme_mbnma()
 
   return(g)
 }
@@ -336,7 +334,7 @@ summary.mbnma.predict <- function(object, ...) {
   output <- data.frame()
   for (i in seq_along(predict)) {
     for (k in seq_along(predict[[i]])) {
-      quant <- stats::quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975))
+      quant <- stats::quantile(predict[[i]][[k]], probs=c(0.025,0.25,0.5,0.75,0.975), na.rm=TRUE)
       df <- data.frame("agent"=names(predict)[i],
                        "dose"=as.numeric(as.character(names(predict[[i]])[k])),
                        "mean"=mean(predict[[i]][[k]]),

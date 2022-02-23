@@ -4,7 +4,7 @@
 \name{nma.nodesplit}
 \alias{nma.nodesplit}
 \alias{plot.nma.nodesplit}
-\title{Node-splitting model for testing consistency at the treatment level}
+\title{Node-splitting model for testing consistency at the treatment-level}
 \usage{
 nma.nodesplit(
   network,
@@ -25,8 +25,9 @@ nma.nodesplit(
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
-and identity link function. If left as \code{NULL} the link function will be automatically assigned based
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}), be assigned the value \code{"identity"} for
+an identity link function, or be assigned the value \code{"smd"} for modelling Standardised Mean Differences using an
+identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
@@ -59,7 +60,7 @@ Plots the desired graph(s) and returns an object (or list of object if
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
 indirect evidence. A discrepancy between the two suggests that the consistency
-assumption required for NMA and MBNMA may violated.
+assumption required for NMA (and subsequently MBNMA) may violated.
 }
 \details{
 The S3 method \code{plot()} on an \code{nma.nodesplit} object generates either
@@ -74,7 +75,7 @@ of posterior densities for direct and indirect evidence.
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
   method="common")

@@ -7,12 +7,11 @@
 getjagsdata(
   data.ab,
   class = FALSE,
-  likelihood = "binomial",
-  link = "logit",
+  likelihood = check.likelink(data.ab)$likelihood,
+  link = check.likelink(data.ab)$link,
   level = "agent",
   fun = NULL,
-  nodesplit = NULL,
-  knots = 3
+  nodesplit = NULL
 )
 }
 \arguments{
@@ -27,8 +26,8 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
-binomial data
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
+binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
@@ -42,24 +41,20 @@ information on different classes of treatments}
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
-and identity link function. If left as \code{NULL} the link function will be automatically assigned based
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}), be assigned the value \code{"identity"} for
+an identity link function, or be assigned the value \code{"smd"} for modelling Standardised Mean Differences using an
+identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
 \item{level}{Can take either \code{"agent"} to indicate that data should be at the agent-
 level (for MBNMA) or \code{"treatment"} to indicate that data should be at the treatment-
 level (for NMA)}
 
-\item{fun}{A character vector specifying a functional form to be assigned to the
-dose-response. Options are given in \code{details}.}
+\item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
+dose-response. See Details.}
 
 \item{nodesplit}{A numeric vector of length 2 containing treatment codes on which to perform
-an MBNMA nodesplit.}
-
-\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
+an MBNMA nodesplit (see \code{\link{mbnma.nodesplit}}).}
 }
 \value{
 A named list of numbers, vector, matrices and arrays to be sent to
@@ -73,7 +68,7 @@ JAGS. List elements are:
 \item If \code{likelihood="binomial"}:
 \itemize{
 \item \code{r} An array of the number of responses/count for each each arm within each study
-\item \code{N} An array of the number of participants for each arm within each study
+\item \code{n} An array of the number of participants for each arm within each study
 }
 \item If \code{likelihood="poisson"}:
 \itemize{
@@ -100,22 +95,17 @@ Converts MBNMA data frame to a list for use in JAGS model
 }
 \examples{
 # Using the triptans headache dataset
-network <- mbnma.network(HF2PPITT)
-
+network <- mbnma.network(triptans)
 jagsdat <- getjagsdata(network$data.ab, likelihood="binomial", link="logit")
 
 
 # Get JAGS data with class
-df <- HF2PPITT
-df$class <- ifelse(df$agent=="placebo", "placebo", "active")
-netclass <- mbnma.network(df)
-
+netclass <- mbnma.network(osteopain)
 jagsdat <- getjagsdata(netclass$data.ab, class=TRUE)
 
 
-# Get JAGS data at the treatment level for Network Meta-Analysis
-network <- mbnma.network(HF2PPITT)
-
+# Get JAGS data at the treatment level for split Network Meta-Analysis
+network <- mbnma.network(triptans)
 jagsdat <- getjagsdata(network$data.ab, level="treatment")
 
 }

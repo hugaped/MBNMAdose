@@ -42,6 +42,7 @@ print.mbnma.network <- function(x,...) {
 #' @export
 summary.mbnma.network <- function(object,...) {
 
+  # Print basic network statistics to the console
   cat(crayon::underline(crayon::bold("Description:", object$description, "\n")))
   cat("Number of studies:", length(unique(object$data.ab$studyID)), "\n")
   cat("Number of treatments:", length(object$treatments), "\n")
@@ -141,7 +142,7 @@ summary.mbnma.network <- function(object,...) {
 #'
 #' @examples
 #' # Create an mbnma.network object from the data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Generate a network plot from the data
 #' plot(network)
@@ -176,11 +177,6 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
                                edge.scale=1, v.scale=NULL, label.distance=0,
                                legend=TRUE, legend.x="bottomleft", legend.y=NULL,
                                ...)
-  # Requires igraph
-  #S3method(plot, mbnma.network)
-
-  # x is an object of class mbnma.network
-
 {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -267,6 +263,7 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
 
 
   igraph::E(g)$curved <- FALSE # ensure edges are straight
+  igraph::E(g)$color <- "grey20"
 
   if (!is.null(doselink)) {
     igraph::E(g)$color <- c(rep("red", nrow(dr.comp)),
@@ -315,9 +312,9 @@ plot.mbnma.network <- function(x, level="treatment", v.color="connect", doselink
   }
 
   # Plot netgraph
-  layout <- igraph::layout_(g, layout)
+  g$layout <- igraph::layout_(g, layout)
   igraph::plot.igraph(g,
-                      layout = layout,
+                      #layout = layout,
                       ...
   )
 

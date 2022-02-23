@@ -81,12 +81,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   predict.data <- summary(predict)
   predict.data[["count"]] <- NA
   predict.data[["cum.count"]] <- NA
-  #predict.data <- predict.data[0,]
-
-  # Change predict.data factors to numeric - REMOVE LATER
-  #predict.data$agent <- as.numeric(as.character(predict.data$agent))
-  #predict.data$dose <- as.numeric(as.character(predict.data$dose))
-
 
   # Identify counts of doses in raw data
   for (i in 1:nrow(predict.data)) {
@@ -133,7 +127,6 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
   }
 
   # Generate colours
-  #cols <- col.scale(n.cut=max(predict.data$count), col=col)
   cols <- alpha.scale(n.cut=n.cut, col=col)
 
   for (agent in seq_along(agents)) {
@@ -153,7 +146,7 @@ disp.obs <- function(g, network, predict, col="red", max.col.scale=NULL) {
 
   }
 
-  return(g)
+  return(list(g, cols))
 }
 
 
@@ -191,7 +184,6 @@ alpha.scale <- function(n.cut, col="blue") {
     hue <- col
   }
 
-  #min.rgb <- rgb.end
   cut <- (255-0)/(n.cut)
   alpha <- 0
   alpha.vec <- alpha
@@ -219,9 +211,10 @@ alpha.scale <- function(n.cut, col="blue") {
 #' Requires automatically running an NMA
 #'
 #' @inheritParams plot.mbnma.predict
+#' @inheritParams predict.mbnma
 #' @inheritParams disp.obs
 #' @noRd
-overlay.split <- function(g, network, method="common",
+overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), method="common",
                           likelihood="binomial", link="logit", ...) {
 
   # Check/assign link and likelihood
@@ -232,46 +225,52 @@ overlay.split <- function(g, network, method="common",
   splitNMA <- nma.run(network=network, method=method,
                       likelihood=likelihood, link=link, ...)
 
-  split.df <- splitNMA[["jagsresult"]]$BUGSoutput$summary
-  split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
+  splitmat <- splitNMA[["jagsresult"]]$BUGSoutput$sims.list$d
 
-  split.df$treatment <- splitNMA[["trt.labs"]]
-  split.df$agent <- sapply(splitNMA[["trt.labs"]],
-                       function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1])
-  split.df$dose <- as.numeric(sapply(splitNMA[["trt.labs"]],
-                           function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2]))
-
-  split.df$agent <- factor(split.df$agent, levels=network$agents)
-  #split.df$agent <- as.numeric(factor(split.df$agent, levels=network$agents))
-  #split.df$agent <- factor(split.df$agent, labels=levels(g$data$agent))
-
-  # Drop d[1] (reference)
-  #split.df <- split.df[-1,]
-
-  # Only include agents whose predictions are plotted
-  split.df <- split.df[split.df$agent %in% g$data$agent,]
-
-  # Add E0 (on correct scale)
-  E0 <- unique(g$data$`50%`[g$data$dose==0])
-  if (length(E0)>1) {
-    warning("E0 in predictions appears to differ for different agents")
+  if (splitNMA[["trt.labs"]][1]!="Placebo_0") {
+    warning("Split NMA network does not include placebo:\nresults cannot be displayed over MBNMA predictions")
+    return(g)
   }
 
-  # Convert to scale using link function
-  E0 <- rescale.link(E0, direction="link", link=link)
+  trtvec <- splitNMA[["trt.labs"]]
+  agentvec <- as.vector(sapply(splitNMA[["trt.labs"]],
+                           function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1]))
+  dosevec <- as.vector(as.numeric(sapply(splitNMA[["trt.labs"]],
+                                     function(x) strsplit(x, split="_", fixed=TRUE)[[1]][2])))
+  agentvec <- factor(agentvec, levels=network$agents)
 
-  split.df[,c(1:3)] <- split.df[,c(1:3)] + E0
+  # Ensure only agents whose predictions are plotted are included
+  splitmat <- splitmat[, agentvec %in% g$data$agent]
+  dosevec <- dosevec[agentvec %in% g$data$agent]
+  trtvec <- trtvec[agentvec %in% g$data$agent]
+  agentvec <- agentvec[agentvec %in% g$data$agent]
 
-  # Convert split.df to natural scale
-  for (i in 1:3) {
-    split.df[,i] <- rescale.link(split.df[,i], direction="natural", link=link)
+
+  # Ensure E0 is correct length to add to splitmat
+  if (length(E0)<nrow(splitmat)) {
+    E0 <- rep(E0, length.out=nrow(splitmat))
+  } else if (length(E0)>nrow(splitmat)) {
+    E0 <- replicate(nrow(splitmat), sample(E0))
   }
 
+  splitmat <- splitmat + E0
+
+  quants <- apply(splitmat, MARGIN=2, FUN=function(x) {
+    stats::quantile(x, probs=c(0.025,0.5,0.975))
+  })
+
+  # Return to natural scale
+  quants <- rescale.link(quants, direction="natural", link=link)
+
+  split.df <- data.frame("agent"=agentvec, "dose"=dosevec, "treatment"=trtvec,
+                         "2.5%"=quants[1,], "50%"=quants[2,], "97.5%"=quants[3,])
+
+  names(split.df)[4:6] <- c("2.5%", "50%", "97.5%")
 
 
   # Add split NMAs to plot
   g <- g + ggplot2::geom_point(data=split.df, ggplot2::aes(x=dose, y=`50%`)) +
-    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`))
+    ggplot2::geom_errorbar(data=split.df, ggplot2::aes(x=dose, ymin=`2.5%`, ymax=`97.5%`), width=.05)
 
 
   #### Report split NMA model fit statistics ####
@@ -305,7 +304,7 @@ overlay.split <- function(g, network, method="common",
 #'   a dose-response MBNMA model
 #' @param dev.type *STILL IN DEVELOPMENT FOR MBNMAdose!* Deviances to plot - can be either residual
 #' deviances (`"resdev"`, the default) or deviances (`"dev"`)
-#' @param plot.type Deviances can be plotted either as scatter points (`"scatter"` - the default)
+#' @param plot.type Deviances can be plotted either as scatter points (`"scatter"`)
 #' or as boxplots (`"box"`)
 #' @param facet A boolean object that indicates whether or not to facet (by agent for `MBNMAdose`
 #' and by treatment for `MBNMAtime`)
@@ -329,10 +328,10 @@ overlay.split <- function(g, network, method="common",
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Plot deviances
 #' devplot(emax)
@@ -340,8 +339,8 @@ overlay.split <- function(g, network, method="common",
 #' # Plot deviances using boxplots
 #' devplot(emax, plot.type="box")
 #'
-#' # Plot deviances on a single plot (not facetted by agent)
-#' devplot(emax, facet=FALSE, plot.type="box")
+#' # Plot deviances on a single scatter plot (not facetted by agent)
+#' devplot(emax, facet=FALSE, plot.type="scatter")
 #'
 #' # A data frame of deviance contributions can be obtained from the object
 #' #returned by `devplot`
@@ -354,8 +353,8 @@ overlay.split <- function(g, network, method="common",
 #' }
 #'
 #' @export
-devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
-                    n.iter=mbnma$BUGSoutput$n.iter, n.thin=mbnma$BUGSoutput$n.thin,
+devplot <- function(mbnma, plot.type="box", facet=TRUE, dev.type="resdev",
+                    n.iter=mbnma$BUGSoutput$n.iter/2, n.thin=mbnma$BUGSoutput$n.thin,
                     ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -388,21 +387,16 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   dev.df <- dplyr::arrange(dev.df, dev.df$study, dev.df$arm)
 
   # Plots the residual deviances
-  if (mbnma$type=="time") {
-    xlab <- "Follow-up count"
-    facetscale <- "fixed"
-  } else if (mbnma$type=="dose") {
-    agents <- mbnma$network$agents
+  agents <- mbnma$network$agents
 
-    # Remove placebo results if they are present
-    if (mbnma$network$agents[1]=="Placebo") {
-      dev.df <- dev.df[dev.df$facet!=1,]
-      agents <- agents[-1]
-    }
-
-    xlab <- "Dose"
-    facetscale <- "free_x"
+  # Remove placebo results if they are present
+  if (mbnma$network$agents[1]=="Placebo") {
+    dev.df <- dev.df[dev.df$facet!=1,]
+    agents <- agents[-1]
   }
+
+  xlab <- "Dose"
+  facetscale <- "free_x"
 
   if ("agents" %in% names(mbnma$network)) {
     dev.df$facet <- factor(dev.df$facet, labels=agents)
@@ -421,7 +415,7 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab("Posterior mean") +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   if (facet==TRUE) {
     g <- g + ggplot2::facet_wrap(~facet, scales = facetscale) +
@@ -439,13 +433,15 @@ devplot <- function(mbnma, plot.type="scatter", facet=TRUE, dev.type="resdev",
 #' Extracts fitted values or deviance contributions into a data.frame with indices
 #'
 #' @inheritParams predict.mbnma
+#' @inheritParams mbnma.update
 #' @param The parameter for which to extract values - can take either `"theta"`, `"dev"` or `"resdev"`
 #' @noRd
-get.theta.dev <- function(mbnma, param="theta") {
+get.theta.dev <- function(mbnma, param="theta", armdat=TRUE) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertClass(mbnma, "rjags", add=argcheck)
   checkmate::assertChoice(param, choices = c("dev", "resdev", "theta"), add=argcheck)
+  checkmate::assertLogical(armdat, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   dev.df <- as.data.frame(
@@ -484,15 +480,18 @@ get.theta.dev <- function(mbnma, param="theta") {
       ncol=2
     )
 
-    # Agent as facet
-    dev.df$facet <- as.vector(mbnma$model$data()$agent)[
-      stats::complete.cases(as.vector(mbnma$model$data()$agent))
+    if (armdat==TRUE) {
+      # Agent as facet
+      dev.df$facet <- as.vector(mbnma$model.arg$jagsdata$agent)[
+        stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$agent))
       ]
 
-    dev.df$fupdose <- as.vector(mbnma$model$data()$dose)[
-      stats::complete.cases(as.vector(mbnma$model$data()$dose))
+      dev.df$fupdose <- as.vector(mbnma$model.arg$jagsdata$dose)[
+        stats::complete.cases(as.vector(mbnma$model.arg$jagsdata$dose))
       ]
-    dev.df$groupvar <- as.numeric(id[,1])
+      dev.df$groupvar <- as.numeric(id[,1])
+    }
+
   }
 
   dev.df$study <- as.numeric(id[,1])
@@ -528,10 +527,10 @@ get.theta.dev <- function(mbnma, param="theta") {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA and predict responses
-#' emax <- mbnma.emax(network, method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Plot fitted values and observed values
 #' fitplot(emax)
@@ -572,7 +571,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
   # Obtain raw responses to plot over fitted
   if (mbnma$model.arg$likelihood=="binomial") {
-    theta <- mbnma$model$data()$r / mbnma$model$data()$N
+    theta <- mbnma$model$data()$r / mbnma$model$data()$n
   } else if (mbnma$model.arg$likelihood=="poisson") {
     theta <- mbnma$model$data()$r / mbnma$model$data()$E
   } else if (mbnma$model.arg$likelihood=="normal") {
@@ -601,13 +600,8 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
 
   # Axis labels
-  if (mbnma$type=="time") {
-    xlab <- "Follow-up count"
-    facetscale <- "fixed"
-  } else if (mbnma$type=="dose") {
-    xlab <- "Dose"
-    facetscale <- "free_x"
-  }
+  xlab <- "Dose"
+  facetscale <- "free_x"
   ylab <- "Response on link scale"
 
   # Add facet labels
@@ -624,11 +618,11 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   # Generate plot
   g <- ggplot2::ggplot(theta.df,
                        ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
-    ggplot2::geom_line()
+    ggplot2::geom_line(...)
 
   # Overlay observed responses
   if (disp.obs==TRUE) {
-    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1)
+    g <- g + ggplot2::geom_point(ggplot2::aes(y=y), size=1, ...)
   }
 
   # Add facets
@@ -637,7 +631,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   # Add axis labels
   g <- g + ggplot2::xlab(xlab) +
     ggplot2::ylab(ylab) +
-    ggplot2::theme_bw()
+    theme_mbnma()
 
   suppressWarnings(graphics::plot(g))
 
@@ -681,10 +675,10 @@ plot.invisible <- function(...){
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' ranks <- rank(emax)
 #'
 #' # Plot cumulative rankings for both dose-response parameters simultaneously
@@ -693,7 +687,6 @@ plot.invisible <- function(...){
 #' }
 #' @export
 cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
-  # ... are commands to be sent to geom_line
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
@@ -732,7 +725,8 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   g <- g + ggplot2::facet_wrap(~factor(Var2)) +
     ggplot2::xlab("Rank (1 = best)") +
     ggplot2::ylab("Cumulative probability") +
-    ggplot2::labs(linetype="Parameter", colour="Parameter")
+    ggplot2::labs(linetype="Parameter", colour="Parameter") +
+    theme_mbnma()
 
   graphics::plot(g)
 
@@ -754,4 +748,182 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   }
 
   return(invisible(output))
+}
+
+
+
+
+#' Returns a forest plot of nodesplit results
+#'
+#' @param ... Optional arguments to be passed to `forestplot::forestplot()`
+#' @inheritParams plot.nodesplit
+#' @noRd
+forest.splits <- function(x, ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(x, "nodesplit", add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+
+  df <- summary.nodesplit(x)
+
+  df$Evidence[df$Evidence %in% c("MBNMA", "NMA")] <- "Overall"
+
+  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs \n")})
+
+  match <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs ")})
+
+  df$Comparison <- unlist(comps)[match(df$Comparison, match)]
+
+  df <- dplyr::arrange(df, Comparison, Evidence)
+
+  names(df)[4:5] <- c("l95", "u95")
+
+
+  df$p.value <- format(df$p.value)
+  df$p.value[df$p.value=="0.000"] <- "<0.001"
+
+  # Remove surplus labels
+  df$Comparison[df$Evidence!="Direct"] <- NA
+  df$p.value[df$Evidence!="Indirect"] <- NA
+
+
+  # Add blank between groups
+  temp <- df[0,]
+  for (i in 1:(nrow(df)/3)) {
+    seg <- rbind(df[((i-1)*3+1):(i*3),], rep(NA,ncol(df)), rep(NA,ncol(df)))
+    temp <- rbind(temp, seg)
+  }
+  df <- temp
+
+  # Plot forest plot
+  forestplot::forestplot(labeltext=cbind(df$Comparison, df$Evidence, df$p.value),
+                         mean=df$Median, lower=df$l95, upper=df$u95,
+                         boxsize=0.2, graph.pos=3,
+                         xlab="Effect size (95% CrI)", hrzl_lines = TRUE,
+                         ...)
+
+}
+
+
+
+
+
+#' Dev-dev plot for comparing deviance contributions from two models
+#'
+#' Plots the deviances of two model types for comparison. Often used to assess
+#' consistency by comparing consistency (NMA or MBNMA) and unrelated mean effects (UME)
+#' models (see \insertCite{pedder2021cons;textual}{MBNMAdose}). Models must be run
+#' on the *same set of data* or the deviance comparisons will not be valid.
+#'
+#' @param mod1 First model for which to plot deviance contributions
+#' @param mod2 Second model for which to plot deviance contributions
+#' @inheritParams devplot
+#'
+#' @examples
+#' \donttest{
+#' # Using the triptans data
+#' network <- mbnma.network(triptans)
+#'
+#' # Run an poorly fitting linear dose-response
+#' lin <- mbnma.run(network, fun=dpoly(degree=1))
+#'
+#' # Run a better fitting Emax dose-response
+#' emax <- mbnma.run(network, fun=demax())
+#'
+#' # Run a standard NMA with unrelated mean effects (UME)
+#' ume <- nma.run(network, UME=TRUE)
+#'
+#' # Compare residual deviance contributions from linear and Emax
+#' devdev(lin, emax) # Suggests model fit is very different
+#'
+#' # Compare deviance contributions from Emax and UME
+#' devdev(emax, ume) # Suggests model fit is similar
+#'
+#' }
+#'
+#' @export
+devdev <- function(mod1, mod2, dev.type="resdev",
+                   n.iter=2000, n.thin=1,
+                   ...) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(dev.type, choices = c("dev", "resdev"), add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!any(c("nma", "mbnma") %in% class(mod1))) {
+    stop("mod1 must be of class 'mbnma' or 'nma'")
+  }
+  if (!any(c("nma", "mbnma") %in% class(mod2))) {
+    stop("mod2 must be of class 'mbnma' or 'nma'")
+  }
+
+  modlist <- list(mod1, mod2)
+  devlist <- list()
+
+  for (mod in seq_along(modlist)) {
+    # Reformat NMA data if necessary
+    if ("nma" %in% class(modlist[[mod]])) {
+      modlist[[mod]] <- modlist[[mod]]$jagsresult
+    }
+
+    if (!(dev.type %in% modlist[[mod]]$parameters.to.save)) {
+      msg <- paste0("`", dev.type, "` not monitored in mod", mod, "$parameters.to.save.\n",
+                    "additional iterations will be run in order to obtain results for `", dev.type, "`")
+      message(msg)
+
+      devlist[[length(devlist)+1]] <- mbnma.update(modlist[[mod]], param=dev.type, n.iter=n.iter, n.thin=n.thin, armdat = FALSE)
+
+    } else {
+
+      devlist[[length(devlist)+1]] <- get.theta.dev(modlist[[mod]], param=dev.type)
+    }
+  }
+
+  if (nrow(devlist[[1]])!=nrow(devlist[[2]])) {
+    stop("Number of data points differ between mod1 and mod2\nsuggests models have not been run on the same dataset")
+  }
+
+  dev.df <- cbind(devlist[[1]], devlist[[2]]$mean)
+
+  dev.df <- dev.df %>% dplyr::rename(mod1.mean="mean", mod2.mean="devlist[[2]]$mean") %>%
+    dplyr::select(study, arm, mod1.mean, mod2.mean)
+
+  g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=mod1.mean, y=mod2.mean)) +
+    ggplot2::geom_point(...)
+
+  # Add axis labels
+  g <- g + ggplot2::xlab(paste0("Posterior mean of ", dev.type, " for mod1")) +
+    ggplot2::ylab(paste0("Posterior mean of ", dev.type, " for mod2")) +
+    theme_mbnma()
+
+  graphics::plot(g)
+  return(invisible(list("graph"=g, "dev.data"=dev.df)))
+
+}
+
+
+
+
+#' MBNMA ggplot2 theme style
+#' @noRd
+theme_mbnma <- function(...) {
+  ggplot2::theme_bw(...) +
+    ggplot2::theme(
+      # change stuff here
+      panel.background  = ggplot2::element_blank(),
+      plot.background = ggplot2::element_rect(fill="white", colour=NA),
+      legend.background = ggplot2::element_rect(fill="transparent", colour=NA),
+      legend.key = ggplot2::element_rect(fill="transparent", colour=NA),
+
+      # From multinma
+      #panel.border = ggplot2::element_rect(colour = "grey70", fill = NA),
+      panel.grid.major = ggplot2::element_line(colour = "grey95"),
+      panel.grid.minor = ggplot2::element_line(colour = "grey95"),
+      strip.background = ggplot2::element_rect(colour = "black",
+                                               fill = "lightsteelblue1"),
+      strip.text = ggplot2::element_text(colour = "black")
+    )
 }

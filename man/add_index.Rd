@@ -18,8 +18,8 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
-binomial data
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
+binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier

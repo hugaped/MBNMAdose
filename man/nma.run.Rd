@@ -14,10 +14,11 @@ nma.run(
   link = NULL,
   priors = NULL,
   warn.rhat = TRUE,
-  n.iter = 10000,
+  n.iter = 20000,
   drop.discon = TRUE,
   UME = FALSE,
-  pd = "pv",
+  pd = "pd.kl",
+  parameters.to.save = NULL,
   ...
 )
 }
@@ -43,18 +44,19 @@ take either \code{"common"} or \code{"random"}.}
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
 
 \item{link}{A string indicating the link function to use in the model. Can take any link function
-defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}) or be assigned the value \code{"identity"} for
-and identity link function. If left as \code{NULL} the link function will be automatically assigned based
+defined within JAGS (e.g. \code{"logit"}, \code{"log"}, \code{"probit"}, \code{"cloglog"}), be assigned the value \code{"identity"} for
+an identity link function, or be assigned the value \code{"smd"} for modelling Standardised Mean Differences using an
+identity link function. If left as \code{NULL} the link function will be automatically assigned based
 on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see examples).}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
 
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
 for any monitored parameter are >1.02 (suggestive of non-convergence).}
 
-\item{n.iter}{number of total iterations per chain (including burn in; default: 10000)}
+\item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
 \item{drop.discon}{A boolean object that indicates whether or not to drop disconnected
 studies from the network.}
@@ -70,17 +72,20 @@ assumption is valid.}
 method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
 non-sensical values, due to skewed deviances that can arise with non-linear models.
 \item \code{pd.kl} calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
-will require running the model for additional iterations but
-will always produce a positive result.
+will require running the model for additional iterations but is a more robust calculation for the effective
+number of parameters in non-linear models.
 \item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}
+of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
 }}
+
+\item{parameters.to.save}{A character vector containing names of parameters
+to monitor in JAGS}
 }
 \description{
-Used for calculating split NMA results, either when comparing models that do not
-account for dose-response relationship, or to estimate split results for \code{overlay.split}.
+Used for calculating treatment-level NMA results, either when comparing MBNMA models to models that
+make no assumptions regarding dose-response , or to estimate split results for \code{overlay.split}.
 Results can also be compared between consistency (\code{UME=FALSE}) and inconsistency
-(\code{UME=TRUE}) models to test the validity of the consistency assumption.
+(\code{UME=TRUE}) models to test the validity of the consistency assumption at the treatment-level.
 }
 \section{Methods (by generic)}{
 \itemize{
@@ -94,18 +99,18 @@ relationships.
 \examples{
 \donttest{
 # Run random effects NMA on the alogliptin dataset
-network <- mbnma.network(alog_pcfb)
-nma <- nma.run(network, method="random")
+alognet <- mbnma.network(alog_pcfb)
+nma <- nma.run(alognet, method="random")
 print(nma)
 plot(nma)
 
 # Run common effects NMA keeping treatments that are disconnected in the NMA
-network <- mbnma.network(GoutSUA_2wkCFB)
-nma <- nma.run(network, method="common", drop.discon=FALSE)
+goutnet <- mbnma.network(gout)
+nma <- nma.run(goutnet, method="common", drop.discon=FALSE)
 
 # Run an Unrelated Mean Effects (UME) inconsistency model on triptans dataset
-network <- mbnma.network(HF2PPITT)
-ume <- nma.run(network, method="random", UME=TRUE)
+tripnet <- mbnma.network(triptans)
+ume <- nma.run(tripnet, method="random", UME=TRUE)
 }
 
 }

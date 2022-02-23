@@ -82,8 +82,8 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
-binomial data
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
+binomial data or when modelling Standardised Mean Differences
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
@@ -101,6 +101,7 @@ can be applied to this object to change its characteristics.
 \item \code{description} A short description of the network
 \item \code{data.ab} A data frame containing the arm-level network data (treatment identifiers will have
 been recoded to a sequential numeric code)
+\item \code{studyID} A character vector with the IDs of included studies
 \item \code{agents} A character vector indicating the agent identifiers that correspond to the
 new agent codes.
 \item \code{treatments} A character vector indicating the treatment identifiers that correspond
@@ -110,7 +111,7 @@ that correspond to the new class codes.
 }
 }
 \description{
-Creates an object of class \code{mbnma.network}. Various MBNMA functions can subsequently be applied
+Creates an object of \code{class("mbnma.network")}. Various MBNMA functions can subsequently be applied
 to this object.
 }
 \details{
@@ -131,7 +132,7 @@ be included.
 
 \examples{
 # Create an mbnma.network object from the data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Generate a network plot from the data
 plot(network)
@@ -161,12 +162,12 @@ net.noplac <- mbnma.network(noplac.df)
 # Plotting network automatically plots connections to Placebo via dose-response
 plot(net.noplac)
 # Using the triptans headache dataset
-print(HF2PPITT)
+print(triptans)
 
 # Define network
-network <- mbnma.network(HF2PPITT, description="Example")
+network <- mbnma.network(triptans, description="Example network")
 
-# Plot network
+summary(network)
 plot(network)
 
 }

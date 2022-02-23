@@ -4,7 +4,14 @@
 \alias{rank.mbnma}
 \title{Rank parameter estimates}
 \usage{
-\method{rank}{mbnma}(x, params = NULL, direction = 1, level = "agent", to.rank = NULL, ...)
+\method{rank}{mbnma}(
+  x,
+  params = NULL,
+  lower_better = TRUE,
+  level = "agent",
+  to.rank = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{An object on which to apply the rank method}
@@ -13,8 +20,7 @@
 or class (depending on the value assigned to \code{level}). If left as \code{NULL} (the default), then
 ranking will be calculated for all available parameters that vary by agent/class.}
 
-\item{direction}{Indicates whether negative responses are better (taking the
-value \code{-1}) or positive responses are better (taking the value \code{1})}
+\item{lower_better}{Indicates whether negative responses are better (\code{TRUE}) or positive responses are better (\code{FALSE})}
 
 \item{level}{Can be set to \code{"agent"} to rank across different agents or \code{"class"} to rank
 across different classes.}
@@ -41,30 +47,30 @@ Ranking cannot currently be performed on non-parametric dose-response MBNMA
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
-# Rank selected agents from a linear dose-response MBNMA
-linear <- mbnma.run(network, fun="linear")
-ranks <- rank(linear, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
+# Rank selected agents from a log-linear dose-response MBNMA
+loglin <- mbnma.run(network, fun=dloglin())
+ranks <- rank(loglin, to.rank=c("zolmitriptan", "eletriptan", "sumatriptan"))
 summary(ranks)
 
 # Rank only ED50 parameters from an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
-ranks <- rank(emax, params="d.ed50")
+emax <- mbnma.run(network, fun=demax(), method="random")
+ranks <- rank(emax, params="ed50")
 summary(ranks)
 
 
 #### Ranking by class ####
 # Generate some classes for the data
-class.df <- HF2PPITT
+class.df <- triptans
 class.df$class <- ifelse(class.df$agent=="placebo", "placebo", "active1")
 class.df$class <- ifelse(class.df$agent=="eletriptan", "active2", class.df$class)
 netclass <- mbnma.network(class.df)
-emax <- mbnma.emax(netclass, emax="rel", ed50="rel", method="random",
+emax <- mbnma.run(netclass, fun=demax(), method="random",
             class.effect=list("ed50"="common"))
 
-# Rank by class, with negative responses being "better"
-ranks <- rank(emax, level="class", direction=-1)
+# Rank by class, with negative responses being worse
+ranks <- rank(emax, level="class", lower_better=FALSE)
 print(ranks)
 
 # Print and generate summary data frame for `mbnma.rank` object

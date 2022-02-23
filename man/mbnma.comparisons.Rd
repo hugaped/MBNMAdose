@@ -4,10 +4,10 @@
 \alias{mbnma.comparisons}
 \title{Identify unique comparisons within a network}
 \usage{
-mbnma.comparisons(data)
+mbnma.comparisons(df)
 }
 \arguments{
-\item{data}{A data frame containing variables \code{studyID} and \code{treatment} (as numeric codes) that
+\item{df}{A data frame containing variables \code{studyID} and \code{treatment} (as numeric codes) that
 indicate which treatments are used in which studies.}
 }
 \value{
@@ -28,16 +28,16 @@ Identify unique contrasts within a network that make up all the head-to-head com
 of the same treatment comparison are grouped together.
 }
 \examples{
-data <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
+df <- data.frame(studyID=c(1,1,2,2,3,3,4,4,5,5,5),
   treatment=c(1,2,1,3,2,3,3,4,1,2,4)
   )
 
 # Identify unique comparisons within the data
-mbnma.comparisons(data)
+mbnma.comparisons(df)
 
 
 # Using the triptans headache dataset
-network <- mbnma.network(HF2PPITT) # Adds treatment identifiers
+network <- mbnma.network(triptans) # Adds treatment identifiers
 mbnma.comparisons(network$data.ab)
 
 }

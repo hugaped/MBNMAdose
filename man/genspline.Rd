@@ -4,24 +4,43 @@
 \alias{genspline}
 \title{Generates spline basis matrices for fitting to dose-response function}
 \usage{
-genspline(x, spline = "rcs", knots = 3, ord = 4, max.dose = max(x))
+genspline(x, spline = "bs", knots = 1, degree = 1, max.dose = max(x))
 }
 \arguments{
-\item{x}{A numeric vector indicating all doses of an agent available in the dataset (including placebo)}
+\item{x}{A numeric vector indicating all time points available in the dataset}
 
-\item{spline}{Indicates the type of spline function. Can be either natural cubic spline (\code{"ns"}), restricted cubic
-spline (\code{"rcs"}) or B-spline (\code{"bs"}).}
+\item{spline}{Indicates the type of spline function. Can be either a piecewise linear spline (\code{"ls"}),
+natural cubic spline (\code{"ns"}), or B-spline (\code{"bs"}).}
 
-\item{knots}{The number/location of knots if a restricted cubic spline dose-response function is fitted (\code{fun="rcs"}).
-If a single number is given it indicates the number of knots (they will
-be equally spaced across the range of doses). If a numeric vector is given it indicates the location of the knots.
-Minimum number of knots is 3.}
+\item{knots}{The number/location of knots. If a single integer is given it indicates the number of knots (they will
+be equally spaced across the range of doses \emph{for each agent}). If a numeric vector is given it indicates the quantiles of the knots as
+a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
+is 100mg/d, \code{knots=c(0.1,0.5)} would indicate knots should be fitted at 10mg/d and 50mg/d.}
 
-\item{ord}{a positive integer giving the order of the spline function. This is the number of coefficients in each
-piecewise polynomial segment, thus a cubic spline has order 4. Defaults to 4.}
+\item{degree}{a positive integer giving the degree of the polynomial from which the spline function is composed
+(e.g. \code{degree=3} represents a cubic spline).}
 
-\item{max.dose}{A number indicating the maximum dose between which to calculate knot points.}
+\item{max.dose}{A number indicating the maximum dose between which to calculate the spline function.}
+}
+\value{
+A spline basis matrix with number of rows equal to \code{length(x)} and the number of columns equal to the number
+of coefficients in the spline.
 }
 \description{
 Generates spline basis matrices for fitting to dose-response function
+}
+\examples{
+x <- 0:100
+
+genspline(x)
+
+# Generate a quadratic B-spline with 1 equally spaced internal knot
+genspline(x, spline="bs", knots=2, degree=2)
+
+# Generate a natural cubic spline with 3 knots at selected quantiles
+genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
+
+# Generate a piecewise linear spline with 3 equally spaced knots
+genspline(x, spline="ls", knots=3)
+
 }

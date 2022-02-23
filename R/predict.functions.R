@@ -16,37 +16,30 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @noRd
 get.model.vals <- function(mbnma) {
 
+  fun <- mbnma$model.arg$fun
+
   betaparams <- list()
-  for (i in 1:4) {
-    beta <- paste0("beta.",i)
-    if (!is.null(mbnma$model.arg[[beta]])) {
-      temp <- list()
-      temp$pool <- mbnma$model.arg[[beta]]
+  for (i in seq_along(fun$apool)) {
+    temp <- vector()
+    res.mat <- mbnma$BUGSoutput$sims.list
+    if (fun$apool[i] %in% c("rel")) {
+      temp <- as.matrix(res.mat[[names(fun$apool)[i]]], ncol=1)
+    } else if (fun$apool[i] %in% c("common")) {
+      temp <- as.vector(res.mat[[names(fun$apool)[i]]])
+    } else if (fun$apool[i] %in% "random") {
 
-      if (is.null(mbnma$model.arg$arg.params)) {
-        #temp$name <- betaparams[[beta]]
-        temp$name <- i
-      } else {
-        temp$name <- mbnma$model.arg$arg.params$wrap.params[
-          mbnma$model.arg$arg.params$run.params==beta
-          ]
-      }
+      # Incorporates SD from between-study SD for ABSOLUTE pooling
+      mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
+      mat[,1] <- res.mat[[names(fun$apool)[i]]]
+      mat[,2] <- res.mat[[paste0("sd.", names(fun$apool)[i])]]
+      mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
-      res.mat <- mbnma$BUGSoutput$sims.matrix
-      if (temp$pool=="rel") {
-        temp$result <- res.mat[,grepl(paste0("^d.", temp$name), colnames(res.mat))]
-      } else if (temp$pool=="common") {
-        temp$result <- res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))]
-      } else if (temp$pool=="random") {
-        temp$result <- stats::dnorm(res.mat[,grepl(paste0("^beta.", temp$name), colnames(res.mat))],
-                             res.mat[,grepl(paste0("^sd.", temp$name), colnames(res.mat))]
-        )
-      } else if (is.numeric(temp$pool)) {
-        temp$result <- rep(temp$pool, mbnma$BUGSoutput$n.sims)
-      }
-
-      betaparams[[beta]] <- temp
+      temp <- as.vector(mat)
+    } else if (suppressWarnings(!is.na(as.numeric(fun$apool[i])))) {
+      temp <- rep(as.numeric(fun$apool[i]), mbnma$BUGSoutput$n.sims)
     }
+
+    betaparams[[fun$bname[i]]] <- temp
   }
 
   return(betaparams)
@@ -73,7 +66,7 @@ get.model.vals <- function(mbnma) {
 #'   continuous data.
 #'   * `r` Numeric data indicating the number of responders within a study arm. Required for
 #'   binomial or poisson data.
-#'   * `N` Numeric data indicating the total number of participants within a study arm. Required for
+#'   * `n` Numeric data indicating the total number of participants within a study arm. Required for
 #'   binomial data
 #'   * `E` Numeric data indicating the total exposure time for participants within a study arm. Required
 #'   for poisson data.
@@ -96,13 +89,13 @@ get.model.vals <- function(mbnma) {
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Run an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #'
 #' # Data frame for synthesis can be taken from placebo arms
-#' ref.df <- HF2PPITT[HF2PPITT$agent=="placebo",]
+#' ref.df <- triptans[triptans$agent=="placebo",]
 #'
 #' # Meta-analyse placebo studies using fixed treatment effects
 #' E0 <- ref.synth(ref.df, emax, synth="fixed")
@@ -134,16 +127,19 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
   checkmate::assertInt(n.burnin, lower=1, add=argcheck)
   checkmate::assertInt(n.thin, lower=1, add=argcheck)
   checkmate::assertInt(n.chains, lower=1, add=argcheck)
-
   checkmate::reportAssertions(argcheck)
 
   # To get model for meta-analysis of placebo must create v similar model
   #to study model
   # Do all the mbnma.write bits but without the consistency bits
 
+  # Calculate outcome measure scale
+  om <- calcom(data.ab=data.ab, likelihood=mbnma$model.arg$likelihood, link=mbnma$model.arg$link)
+
   jagsmodel <- write.E0.synth(synth=synth,
                               likelihood=mbnma$model.arg$likelihood,
-                              link=mbnma$model.arg$link
+                              link=mbnma$model.arg$link,
+                              om=om
   )
 
   parameters.to.save <- c("m.mu", "resdev", "totresdev")
@@ -151,6 +147,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
     parameters.to.save <- append(parameters.to.save, "sd.mu")
   }
 
+  # Run synthesis
   jags.result <- suppressWarnings(
     mbnma.jags(data.ab, model=jagsmodel,
                parameters.to.save=parameters.to.save,
@@ -161,7 +158,8 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
                ...)[["jagsoutput"]]
   )
 
-  result <- list("m.mu"=jags.result$BUGSoutput$sims.list[["m.mu"]])
+  result <- list(jagsmod=jags.result,
+                 m.mu=jags.result$BUGSoutput$sims.list[["m.mu"]])
   if (synth=="random") {
     result[["sd.mu"]] <- jags.result$BUGSoutput$sims.list[["sd.mu"]]
   }
@@ -191,7 +189,7 @@ ref.synth <- function(data.ab, mbnma, synth="fixed",
 #' @noRd
 E0.validate <- function(data.ab, likelihood=NULL) {
 
-  data.ab <- data.ab[,names(data.ab) %in% c("studyID", "dose", "agent", "treatment", "r", "N", "E", "y", "se")]
+  data.ab <- data.ab[,names(data.ab) %in% c("studyID", "dose", "agent", "treatment", "r", "n", "E", "y", "se")]
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, any.missing=FALSE, add=argcheck)
@@ -255,7 +253,7 @@ rescale.link <- function(x, direction="link", link="logit") {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertNumeric(x, add=argcheck)
   checkmate::assertChoice(direction, choices=c("natural", "link"), null.ok = FALSE, add=argcheck)
-  checkmate::assertChoice(link, choices=c("logit", "identity", "log", "probit", "cloglog"), null.ok = FALSE, add=argcheck)
+  checkmate::assertChoice(link, choices=c("logit", "identity", "log", "probit", "cloglog", "smd"), null.ok = FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   if (direction=="link") {

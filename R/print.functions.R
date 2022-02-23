@@ -11,7 +11,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 
 
 
-
+#' Print results as string with credible intervals in brackets
+#' @noRd
 neatCrI <- function(vals, digits=3) {
   vals <- signif(vals, digits = digits)
   neat <- paste0(vals[2], " (", vals[1], ", ", vals[3], ")")
@@ -20,7 +21,8 @@ neatCrI <- function(vals, digits=3) {
 
 
 
-
+#' Print a warning if any monitored parameters have rhat above the cutoff in an MBNMA model
+#' @noRd
 rhat.warning <- function(mbnma, cutoff=1.2) {
   rhats <- mbnma$BUGSoutput$summary[,colnames(mbnma$BUGSoutput$summary)=="Rhat"]
   rhats <- names(rhats)[rhats>cutoff]
@@ -39,156 +41,123 @@ rhat.warning <- function(mbnma, cutoff=1.2) {
 #'
 #' @inheritParams predict.mbnma
 #' @noRd
-print.treat.str <- function(mbnma) {
-  #betanames <- get.beta.names(mbnma)
+print.treat.str <- function(mbnma, digits=3, ...) {
 
-  if (!is.null(mbnma$model.arg$arg.params)) {
-    wrapper <- TRUE
-  } else {wrapper <- FALSE}
-
-  betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
-                      wrapper=wrapper,
-                      knots=ifelse(length(mbnma$model.arg$knots)==1, mbnma$model.arg$knots, length(mbnma$model.arg$knots)))
-
+  fun <- mbnma$model.arg$fun
   datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
                                  mbnma$BUGSoutput$summary[,3],
                                  mbnma$BUGSoutput$summary[,7]))
+  datasum$param <- rownames(datasum)
 
   treat.sect <- c()
-  # DR parameters for each agent (generate treat.str)
-  for (i in seq_along(betas)) {
-    if (!(betas[[i]]$betaname %in% names(mbnma$model.arg$class.effect))) {
 
-      if (wrapper) {
-        headbeta <- betas[[i]]$betaname
-      } else {
-        headbeta <- paste0(betas[[i]]$betaname, " (", betas[[i]]$fun, ", ", betas[[i]]$param, ")")
-      }
+  # For each dose-response parameter generate results
+  for (i in seq_along(fun$params)) {
+    headbeta <- fun$params[i]
+    sect.head <- crayon::bold(paste(headbeta, "dose-response parameter results\n\n", sep=" "))
+    cat(crayon::underline(sect.head))
 
-      sect.head <- paste(crayon::bold(headbeta), "dose-response parameter results\n\n", sep=" ")
-      cat(crayon::underline(sect.head))
-
-      if (betas[[i]]$param %in% c("lambda", "ed50")) {
-        cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
-      }
-
-      agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
-
-      if (is.character(mbnma$model.arg[[names(betas)[i]]])) {
-
-        if (mbnma$model.arg[[names(betas)[i]]]=="rel") {
-          param <- "d"
-          cat("Pooling: relative effects\n\n")
-        } else if (mbnma$model.arg[[names(betas)[i]]] %in% c("common", "random")) {
-          param <- "beta"
-          cat("Pooling: single parameter shared across the network\n\n")
-        }
-
-        datai <- vector()
-        datai <- append(datai,
-                        which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
-        datai <- append(datai,
-                        which(grepl(paste0("^", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
-        datai <- datai[datai!=0]
-
-        datatab <- datasum
-        names(datatab) <- c("Median", "2.5%", "97.5%")
-        datatab$Parameter <- rownames(datatab)
-        datatab <- datatab[datai,c(4,1,2,3)]
-
-        #print(agents[betas[[i]]$agents])
-        #print(betas[[i]]$agents)
-
-        if (param=="d") {
-          # Drop rows that aren't relevant for multi-fun models
-          datatab <- datatab[betas[[i]]$agents,]
-          rownames(datatab) <- agents[betas[[i]]$agents]
-        } else if (param=="beta") {
-          rownames(datatab) <- ""
-        }
-
-        print(datatab)
-        cat("\n\n")
-
-        #data.tab <- get.timeparam.str(mbnma, beta=names(betas)[i], param = param)
-        #
-        # if (!is.null(data.tab)) {
-        #   data.str <- paste(data.head,
-        #                     data.tab,
-        #                     sep="")
-        # }
-
-        if (mbnma$model.arg[[names(betas)[i]]]=="random") {
-
-          datai <- vector()
-          datai <- append(datai, which(grepl(paste0("^sd\\.", i), rownames(mbnma$BUGSoutput$summary))))
-          datai <- append(datai, which(grepl(paste0("^sd\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
-          datai <- datai[datai!=0]
-
-          datatab <- as.data.frame(datasum)
-          colnames(datatab) <- c("Median", "2.5%", "97.5%")
-          datatab$Parameter <- rownames(datatab)
-          datatab <- datatab[datai,c(4,1,2,3)]
-
-          rownames(datatab) <- ""
-          print(datatab)
-          cat("\n\n")
-
-        }
-
-        # Parameters on exponential scale
-        # if (mbnma$model.arg$fun=="emax" | mbnma$model.arg$fun=="emax.hill") {
-        #   if (names(betanames)[i] %in% c("beta.2", "et50")) {
-        #     sect.head <- paste(sect.head,
-        #                        "Parameter modelled on exponential scale to ensure it takes positive values on the natural scale", sep="\n")
-        #   }
-        # }
-
-        # # String for pooling
-        # if (mbnma$model.arg[[names(betanames)[i]]]=="rel") {
-        #   pool <- "relative effects"
-        # } else if (mbnma$model.arg[[names(betanames)[i]]] %in% c("common", "random")) {
-        #   pool <- "absolute single parameter"
-        # }
-        # pool.str <- paste("Pooling:", pool, "\n", sep=" ")
-        #
-        # treat.str <- paste(sect.head, pool.str, data.str, sep="\n")
-
-      } else if (is.numeric(mbnma$model.arg[[names(betas)[i]]])) {
-        data.str <- paste("Assigned a numeric value:",
-                          mbnma$model.arg[[names(betas)[i]]],
-                          sep=" ")
-        cat(data.str)
-        cat("\n\n")
-
-        # treat.str <- paste(sect.head, data.str)
-      }
-
-      # treat.sect <- paste(treat.sect, treat.str, "", sep="\n\n")
+    if (fun$params[i] %in% c("ed50", "hill")) {
+      cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
     }
+
+    agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
+
+    if (fun$apool[i] %in% "rel") {
+      cat("Pooling: relative effects for each agent")
+
+      if (TRUE %in% mbnma$model.arg$UME | fun$params[i] %in% mbnma$model.arg$UME) {
+        cat("Unrelated Mean Effects modelled for this parameter")
+        cat("\n\n---- RESULTS TOO LONG FOR SUMMARY ----\n\n\n")
+      } else {
+        trt.df <- datasum[grepl(paste0("^", fun$params[i], "\\["), datasum$param),]
+
+        if (nrow(trt.df)==length(agents)) {
+          trt.df$agents <- agents
+        } else if (length(fun$name)>1) {
+
+          listlen <- lengths(fun$paramlist)
+          count <- 0
+          k <- 0
+          while (count<i) {
+            count <- count + listlen[k+1]
+            k <- k+1
+          }
+          if ("Placebo" %in% mbnma$network$agents) {
+            temppos <- fun$posvec[-1]
+          } else {
+            temppos <- fun$posvec
+          }
+          subagents <- agents[which(temppos==k)]
+          trt.df$agents <- subagents
+
+        } else {
+          stop("Agent named cannot be matched to parameters")
+        }
+
+        trt.df <- trt.df[,c(5,4,1,2,3)]
+        rownames(trt.df) <- NULL
+        print(knitr::kable(trt.df, col.names = c("Agent", "Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+        cat("\n\n")
+      }
+
+    } else if (fun$apool[i] %in% c("common", "random")) {
+      cat("Pooling: single parameter across all agents in the network")
+      trt.df <- datasum[grepl(paste0("^", fun$params[i], "$"), datasum$param),]
+
+      trt.df <- trt.df[,c(4,1,2,3)]
+      rownames(trt.df) <- NULL
+      print(knitr::kable(trt.df, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+      cat("\n\n")
+
+    } else if (suppressWarnings(!is.na(as.numeric(fun$apool[i])))) {
+      data.str <- paste("Assigned a numeric value:",
+                        fun$apool[i],
+                        sep=" ")
+      cat(data.str)
+      cat("\n\n")
+    }
+
+    if (fun$apool[i] %in% "random") {
+
+      trt.df <- datasum[grepl(paste0("sd\\.", fun$params[i]), datasum$param),]
+      trt.df <- trt.df[,c(4,1,2,3)]
+      rownames(trt.df) <- NULL
+      cat("Between-study SD for random (exchangeable) dose-response parameter:")
+      print(knitr::kable(trt.df, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+      cat("\n\n")
+
+    }
+
+
   }
-  # return(treat.sect)
+
   invisible(mbnma)
 }
 
 
-
+#' Neatly prints a summary of the method used in the model
+#'
+#' @noRd
 print.method.sect <- function(mbnma) {
   # String for method
   data.head <- paste("Parameter", "Median (95%CrI)", sep="\t\t\t\t\t")
   data.head <- paste(crayon::bold(data.head, "-----------------------------------------------------------------------", sep="\n"))
 
-  if (mbnma$model.arg$method=="common") {
-    method <- "Common (fixed) effects estimated for relative effects"
-    method <- paste0(method, "\n\n")
-  } else if (mbnma$model.arg$method=="random") {
-    method <- "Random effects estimated for relative effects"
+  fun <- mbnma$model.arg$fun
+  method <- vector()
 
-    # Check if >1 relative effect
-    betas <- c(mbnma$model.arg$beta.1, mbnma$model.arg$beta.2, mbnma$model.arg$beta.3)
-    if (table(betas)[names(table(betas))=="rel"]>=2) {
-      method <- paste(method, "Correlation modelled between relative effect dose-response parameters", sep="\n")
+  # Check if >1 relative effect
+  if (length(fun$name)==1 & mbnma$model.arg$cor==TRUE) {
+    if (sum(fun$apool %in% "rel")>=2) {
+      method <- paste0(method, "Correlation modelled between relative effect dose-response parameters")
     }
+  }
+
+  if (mbnma$model.arg$method=="common") {
+    method <- paste0(method, "Common (fixed) effects estimated for relative effects\n")
+  } else if (mbnma$model.arg$method=="random") {
+    method <- paste0(method, "Random effects estimated for relative effects")
 
     temp <- mbnma$BUGSoutput$summary[grepl("^sd$", rownames(mbnma$BUGSoutput$summary)),
                                      c(3,5,7)]
@@ -209,82 +178,61 @@ print.method.sect <- function(mbnma) {
 
 
 
-print.class.str <- function(mbnma) {
+
+
+
+
+#' Neatly prints class results
+#' @noRd
+print.class.str <- function(mbnma, digits=4, ...) {
 
   if (length(mbnma$model.arg$class.effect)>0) {
-    if (!is.null(mbnma$model.arg$arg.params)) {
-      wrapper <- TRUE
-    } else {wrapper <- FALSE}
 
-    classes <- mbnma$model.arg$class.effect
-    betas <- assignfuns(fun=mbnma$model.arg$fun, agents=mbnma$network$agents, user.fun=mbnma$model.arg$user.fun,
-                        wrapper=wrapper)
+    cat(crayon::bold(crayon::underline("\nClass effects\n")))
 
+    classef <- mbnma$model.arg$class.effect
+
+    classes <- mbnma$network$classes
+    if ("Placebo" %in% mbnma$network$agents) {
+      classes <- classes[-1]
+    }
+
+    fun <- mbnma$model.arg$fun
     datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
                                    mbnma$BUGSoutput$summary[,3],
                                    mbnma$BUGSoutput$summary[,7]))
+    datasum$param <- rownames(datasum)
 
-    head <- crayon::bold(crayon::underline("\nClass effects\n"))
+    # For each dose-response parameter generate results
+    for (i in seq_along(classef)) {
+      sect.head <- paste("Class effect results for:", toupper(names(classef)[i]), "\n", sep=" ")
+      cat(sect.head)
+      cat(paste0("Model assumes ", classef[[i]], " class effects"))
 
-    for (i in seq_along(classes)) {
-      if (wrapper) {
-        for (k in seq_along(betas)) {
-          if (names(classes)[i]==betas[[k]]$betaname) {
+      class.df <- datasum[grepl(paste0("^",toupper(names(classef)[i])), datasum$param),]
 
-            sect.head <- paste("Class effect results for:", names(classes)[i], "\n\n", sep=" ")
-            cat(sect.head)
-
-            if (mbnma$model.arg[[names(betas)[k]]]=="rel") {
-              param <- "D"
-            } else if (mbnma$model.arg[[names(betas)[k]]] %in% c("common", "random")) {
-              param <- "BETA"
-            }
-
-            datai <- vector()
-            datai <- append(datai,
-                            which(grepl(paste0("^", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
-            datai <- append(datai,
-                            which(grepl(paste0("^", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
-            datai <- datai[datai!=0]
-
-            datatab <- datasum
-            names(datatab) <- c("Median", "2.5%", "97.5%")
-            datatab$Parameter <- rownames(datatab)
-            datatab <- datatab[datai,c(4,1,2,3)]
-
-            #print(agents[betas[[i]]$agents])
-            #print(betas[[i]]$agents)
-
-            if (param=="D") {
-              if (nrow(datatab)==length(mbnma$network$classes)) {
-                rownames(datatab) <- mbnma$network$classes
-              } else {
-                rownames(datatab) <- mbnma$network$classes[-1]
-              }
-            }
-            print(datatab)
-            cat("\n\n")
-
-
-            if (classes[[i]]=="random") {
-
-              cat(paste0("Within-class SD for ", names(classes)[i], "\n\n"))
-
-              datai <- vector()
-              datai <- append(datai, which(grepl(paste0("^sd\\.", param, "\\.", i), rownames(mbnma$BUGSoutput$summary))))
-              datai <- append(datai, which(grepl(paste0("^sd\\.", param, "\\.", betas[[i]]$param), rownames(mbnma$BUGSoutput$summary))))
-              datai <- datai[datai!=0]
-
-              datatab <- as.matrix(datasum)
-              colnames(datatab) <- c("Median", "2.5%", "97.5%")
-              datatab <- datatab[datai,]
-              print(datatab)
-              cat("\n\n")
-
-            }
-          }
-        }
+      if (nrow(class.df)==length(classes)) {
+        class.df$classes <- classes
+      } else if (length(fun$name)>1) {
+        stop("Class names cannot be matched to parameters from agent-specific dose-response functions")
+      } else {
+        stop("Class names cannot be matched to parameters")
       }
+
+      class.df <- class.df[,c(5,4,1,2,3)]
+      rownames(class.df) <- NULL
+      print(knitr::kable(class.df, col.names = c("Class", "Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+      cat("\n\n")
+
+      if (classef[[i]] %in% "random") {
+        class.df <- datasum[grepl(paste0("sd\\.", toupper(names(classes)[i])), datasum$param),]
+        class.df <- class.df[,c(4,1,2,3)]
+        rownames(class.df) <- NULL
+        cat("Between-study SD for random (exchangeable) class effects:")
+        print(knitr::kable(class.df, col.names = c("Parameter", "Median", "2.5%", "97.5%"), digits=digits, ...))
+        cat("\n\n")
+      }
+
     }
 
     invisible(mbnma)
@@ -292,14 +240,15 @@ print.class.str <- function(mbnma) {
 }
 
 
-
+#' Neatly prints model fit details
+#' @noRd
 print.modfit.str <- function(mbnma) {
   totresdev.str <- c()
 
-  head <- crayon::bold(crayon::underline("Model Fit Statistics\n"))
+  cat(crayon::bold(crayon::underline("Model Fit Statistics\n")))
 
   # pD
-  pd.str <- "Effective number of parameters:"
+  cat("Effective number of parameters:\n")
   if (mbnma$model.arg$pd=="pv") {
     pd <- "pD (pV) calculated using the rule, pD = var(deviance)/2 ="
   } else if (mbnma$model.arg$pd=="plugin") {
@@ -309,12 +258,14 @@ print.modfit.str <- function(mbnma) {
   } else if (mbnma$model.arg$pd=="popt") {
     pd <- "pD calculated using an optimism adjustment ="
   }
-  pd.str <- paste(pd.str, paste(pd, round(mbnma$BUGSoutput$pD,1), sep=" "), sep="\n")
+  cat(paste(pd, round(mbnma$BUGSoutput$pD,1), sep=" "))
+  cat("\n\n")
 
   # Deviance
   dev <- mbnma$BUGSoutput$summary[
     rownames(mbnma$BUGSoutput$summary)=="deviance", 5]
-  dev.str <- paste("Deviance =", round(dev, 1), sep=" ")
+  cat(paste("Deviance =", round(dev, 1), sep=" "))
+  cat("\n")
 
   # Totresdev
   if ("totresdev" %in% mbnma$parameters.to.save) {
@@ -325,11 +276,10 @@ print.modfit.str <- function(mbnma) {
   } else {
     totresdev <- crayon::red("NOT MONITORED IN MODEL")
   }
-  totresdev.str <- paste("Residual deviance =", totresdev, sep=" ")
+  cat(paste("Residual deviance =", totresdev, sep=" "))
+  cat("\n")
 
   dic <- mbnma$BUGSoutput$DIC
-  dic.str <- paste("Deviance Information Criterion (DIC) =", round(dic, 1), "\n", sep=" ")
+  cat(paste("Deviance Information Criterion (DIC) =", round(dic, 1), "\n", sep=" "))
 
-  modfit.sect <- paste(head, pd.str, "", dev.str, totresdev.str, dic.str, sep="\n")
-  return(modfit.sect)
 }

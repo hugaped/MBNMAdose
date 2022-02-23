@@ -20,7 +20,7 @@ Easiest to use treatment labels stored by \code{mbnma.network()}}
 }
 \value{
 A series of histograms that show rankings for each treatment/agent/prediction, with a
-separate panel for each parameter
+separate panel for each parameter.
 The object returned is a list containing a separate element for each parameter in \code{params}
 which is an object of \code{class(c("gg", "ggplot"))}.
 }
@@ -30,17 +30,17 @@ Plot histograms of rankings from MBNMA models
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Estimate rankings  from an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 ranks <- rank(emax)
 
 # Plot rankings for both dose-response parameters (in two separate plots)
 plot(ranks)
 
 # Plot rankings just for ED50
-plot(ranks, params="d.ed50")
+plot(ranks, params="ed50")
 
 # Plot rankings from prediction
 doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
@@ -48,5 +48,10 @@ pred <- predict(emax, E0 = "rbeta(n, shape1=1, shape2=5)",
             exact.doses=doses)
 rank <- rank(pred)
 plot(rank)
+
+
+# Trying to plot a parameter that has not been ranked will return an error
+#### ERROR ####
+# plot(ranks, params="not.a.parameter")
 }
 }

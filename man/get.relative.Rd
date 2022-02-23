@@ -4,7 +4,7 @@
 \alias{get.relative}
 \title{Calculates relative effects between treatments in an MBNMA model}
 \usage{
-get.relative(mbnma, treatments = list())
+get.relative(mbnma, treatments = list(), eform = FALSE, lim = "cred")
 }
 \arguments{
 \item{mbnma}{An object of \code{class("mbnma")}}
@@ -13,13 +13,20 @@ get.relative(mbnma, treatments = list())
 Treatment is defined as a combination of agent and dose. Only agents specified in
 \code{mbnma} can be included. Each element in \code{treatments} is named corresponding to the
 agent and contains a numeric vector of doses. Relative effects will be calculated between
-all treatments specified in \code{treatments}.}
+all treatments specified in \code{treatments}. If \code{treatments} is left empty then the maximum
+dose for all agents in \code{mbnma} will be used as the default.}
+
+\item{eform}{Whether outputted results should be presented in their exponential form (e.g. for
+models with log or logit link functions)}
+
+\item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
 }
 \value{
 An array of \verb{length(treatments) x length(treatments) x nsims}, where \code{nsims}
 is the number of iterations monitored in \code{mbnma}. The array contains the individual
-MCMC values for each relative effect calculated between all \code{treatments}. The
-direction of effect is for the row-defined treatment versus the column-defined
+MCMC values for each relative effect calculated between all \code{treatments} on the link scale
+specified in the \code{mbnma} model. The direction of effect is for the row-defined treatment
+versus the column-defined
 treatment.
 }
 \description{
@@ -27,9 +34,9 @@ Calculates relative effects between treatments in an MBNMA model
 }
 \examples{
 # Using the osteoarthritis data
-network <- mbnma.network(osteopain_2wkabs)
+network <- mbnma.network(osteopain)
 
-expon <- mbnma.exponential(network, method="random")
+expon <- mbnma.run(network, fun=dexp(), method="random")
 
 # Calculate relative effects between:
 # Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d

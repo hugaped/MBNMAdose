@@ -28,7 +28,6 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(x, "nma", add=argcheck)
-  #checkmate::assertNumeric(intercept, len=1, add=argcheck)
   checkmate::assertLogical(bydose, len=1, add=argcheck)
   checkmate::assertChoice(scales, c("free_x", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
@@ -39,12 +38,12 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
   # Check if NMA is from UME model
   if (any(grepl("^d\\[[0-9+],[0-9]+\\]", rownames(x$jagsresult$BUGSoutput$summary)))) {
     split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+,1\\]", rownames(split.df)), c(3,5,7)])
-    #split.df <- as.data.frame(split.df[grepl("^d\\[[0-9+],1\\]", rownames(split.df)), c(3,5,7)])
   } else {
     split.df <- as.data.frame(split.df[grepl("^d\\[[0-9]+\\]", rownames(split.df)), c(3,5,7)])
   }
 
 
+  # Get doses, treatments and agent codes
   split.df$treatment <- x[["trt.labs"]]
   split.df$agent <- sapply(x[["trt.labs"]],
                            function(x) strsplit(x, split="_", fixed=TRUE)[[1]][1])
@@ -77,13 +76,14 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
       split.df[,1:3] <- split.df[,1:3] + intercept
     }
 
+    # Generate forest plot
     g <- ggplot2::ggplot(split.df, ggplot2::aes(x=dose, y=`50%`), ...) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, width=.05)) +
       ggplot2::facet_wrap(~factor(agent), scales = scales) +
       ggplot2::xlab("Dose") +
       ggplot2::ylab("Effect size on link scale") +
-      ggplot2::theme_bw()
+      theme_mbnma()
 
   } else if (bydose==FALSE) {
     # Plot conventional forest plot
@@ -91,11 +91,11 @@ plot.nma <- function(x, bydose=TRUE, scales="free_x", ...) {
 
     g <- ggplot2::ggplot(split.df, ggplot2::aes(y=`50%`, x=treatment), ...) +
       ggplot2::geom_point() +
-      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`)) +
+      ggplot2::geom_errorbar(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`), width=.2) +
       ggplot2::coord_flip() +
       ggplot2::ylab("Effect size on link scale") +
       ggplot2::xlab("Treatment") +
-      ggplot2::theme_bw()
+      theme_mbnma()
   }
 
   graphics::plot(g)

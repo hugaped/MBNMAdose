@@ -24,7 +24,7 @@ in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
 \item{obs2}{A matrix (study x arm) or array (study x arm x time point) containing
-observed data for \code{se} (normal likelihood), \code{N} (binomial likelihood) or \code{E} (poisson likelihood)
+observed data for \code{se} (normal likelihood), \code{n} (binomial likelihood) or \code{E} (poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.}
 
@@ -60,7 +60,8 @@ A single numeric value for pD calculated via the plugin method.
 \description{
 Uses results from MBNMA JAGS models to calculate pD via the
 plugin method \insertCite{spiegelhalter2002}{MBNMAdose}. Can only be used for models with known
-standard errors or covariance matrices (typically univariate likelihoods).
+standard errors or covariance matrices. Currently only functions with univariate likelihoods. Function
+is identical in MBNMAdose and MBNMAtime packages.
 }
 \details{
 Method for calculating pD via the plugin method proposed by
@@ -76,10 +77,10 @@ pD calculated by Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Fit a dose-response MBNMA, monitoring "psi" and "resdev"
-result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
+result <- mbnma.run(network, fun=dloglin(), method="random",
               parameters.to.save=c("psi", "resdev"))
 
 
@@ -87,7 +88,7 @@ result <- mbnma.run(network, fun="exponential", beta.1="rel", method="random",
 
 # Prepare data for pD calculation
 r <- result$model$data()$r
-N <- result$model$data()$N
+n <- result$model$data()$n
 narm <- result$model$data()$narm
 NS <- result$model$data()$NS
 
@@ -95,7 +96,7 @@ psi <- result$BUGSoutput$median$psi
 resdevs <- result$BUGSoutput$median$resdev
 
 # Calculate pD via plugin method
-pD <- pDcalc(obs1=r, obs2=N, narm=narm, NS=NS,
+pD <- pDcalc(obs1=r, obs2=n, narm=narm, NS=NS,
           theta.result=psi, resdev.result=resdevs,
           likelihood="binomial", type="dose")
 }

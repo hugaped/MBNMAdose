@@ -19,24 +19,24 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @inheritParams rank.mbnma
 #'
 #' @return A series of histograms that show rankings for each treatment/agent/prediction, with a
-#' separate panel for each parameter
+#' separate panel for each parameter.
 #' The object returned is a list containing a separate element for each parameter in `params`
 #' which is an object of `class(c("gg", "ggplot"))`.
 #'
 #' @examples
 #' \donttest{
 #' # Using the triptans data
-#' network <- mbnma.network(HF2PPITT)
+#' network <- mbnma.network(triptans)
 #'
 #' # Estimate rankings  from an Emax dose-response MBNMA
-#' emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+#' emax <- mbnma.run(network, fun=demax(), method="random")
 #' ranks <- rank(emax)
 #'
 #' # Plot rankings for both dose-response parameters (in two separate plots)
 #' plot(ranks)
 #'
 #' # Plot rankings just for ED50
-#' plot(ranks, params="d.ed50")
+#' plot(ranks, params="ed50")
 #'
 #' # Plot rankings from prediction
 #' doses <- list("eletriptan"=c(0,1,2,3), "rizatriptan"=c(0.5,1,2))
@@ -44,6 +44,11 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'             exact.doses=doses)
 #' rank <- rank(pred)
 #' plot(rank)
+#'
+#'
+#' # Trying to plot a parameter that has not been ranked will return an error
+#' #### ERROR ####
+#' # plot(ranks, params="not.a.parameter")
 #' }
 #' @export
 plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
@@ -60,8 +65,14 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
 
   if (is.null(params)) {
     params <- names(x)
+  } else {
+    # Check params is in x
+    if (!all(params %in% names(x))) {
+      stop("'params' must be a subset of named list elements in 'x' representing ranked parameters")
+    }
   }
 
+  # Plot a separate set of histograms for each parameter in param
   for (param in seq_along(params)) {
 
     rank.mat <- x[[params[param]]]$rank.matrix
@@ -81,17 +92,17 @@ plot.mbnma.rank <- function(x, params=NULL, treat.labs=NULL, ...) {
       }
       data$treat <- factor(data$treat, labels=treat.labs)
     } else {
-      #data$treat <- factor(as.numeric(as.character(data$treat)))
       data$treat <- factor(data$treat)
     }
 
+    # Plot histograms
     g <- ggplot2::ggplot(data, ggplot2::aes(x=ranks)) +
       ggplot2::geom_bar(...) +
       ggplot2::xlab("Rank (1 = best)") +
       ggplot2::ylab("MCMC iterations") +
       ggplot2::facet_wrap(~treat) +
       ggplot2::ggtitle(params[param]) +
-      ggplot2::theme_bw()
+      theme_mbnma()
 
     graphics::plot(g)
 
@@ -140,31 +151,59 @@ print.mbnma.rank <- function(x, ...) {
   intro <- c()
   if ("Predictions" %in% names(x)) {
     intro <- c(intro, "Includes ranking of predictions from dose-response MBNMA")
-  }
-  if (any(grepl("^d\\.", names(x)))) {
-    add <- "Includes ranking of relative effects from dose-response MBNMA:"
-    add <- paste(add,
-                 crayon::bold(paste(names(x)[grepl("^d\\.", names(x))], collapse="\t")),
-                 sep="\n")
-    intro <- c(intro, add)
-  }
-  if (any(grepl("^D\\.", names(x)))) {
-    add <- "Includes ranking of class effects from dose-response MBNMA:"
-    add <- paste(add,
-                 paste(names(x)[grepl("^D\\.", names(x))], collapse="\t"),
-                 sep="\n")
-    intro <- c(intro, add)
+  } else if ("Relative Effects" %in% names(x)) {
+    intro <- c(intro, "Includes ranking of relative effects between treatments from dose-response MBNMA")
+  } else {
+    relef <- vector()
+    classef <- vector()
+    for (i in seq_along(names(x))) {
+      if (grepl("[A-Z]", names(x)[i])) {
+        classef <- append(classef, names(x)[i])
+      } else {
+        relef <- append(relef, names(x)[i])
+      }
+    }
+    if (length(relef)>1) {
+      add <- "Includes ranking of relative effects from dose-response MBNMA:"
+      add <- paste(add,
+                   crayon::bold(paste(relef, collapse="\t")),
+                   sep="\n")
+      intro <- c(intro, add)
+    }
+    if (length(classef)>0) {
+      add <- "Includes ranking of class effects from dose-response MBNMA:"
+      add <- paste(add,
+                   crayon::bold(paste(classef, collapse="\t")),
+                   sep="\n")
+      intro <- c(intro, add)
+    }
   }
 
-  rankinfo <- paste(nrow(x[[1]]$summary), "parameters ranked", sep=" ")
-  if (x[[1]]$direction==1) {
+
+  rankinfo <- paste(nrow(x[[1]]$summary), "agents/classes/predictions ranked", sep=" ")
+  if (x[[1]]$lower_better==FALSE) {
     rankinfo <- paste(rankinfo, "with positive responses being", crayon::green(crayon::bold("`better`")), sep=" ")
-  } else if (x[[1]]$direction==-1) {
+  } else if (x[[1]]$lower_better==TRUE) {
     rankinfo <- paste(rankinfo, "with negative responses being", crayon::red(crayon::bold("`worse`")), sep=" ")
   }
 
   intro <- paste(intro, collapse="\n")
   out <- paste(head, intro, rankinfo, sep="\n\n")
+  cat(paste0(out, "\n\n"))
 
-  return(cat(out, ...))
+  # Add summary table
+  for (param in seq_along(names(x))) {
+
+    head <- paste0(crayon::bold(crayon::underline(paste0(names(x)[param], " ranking"))), " (from best to worst)")
+
+    sumtab <- x[[names(x)[param]]]$summary
+    sumtab <- dplyr::arrange(sumtab, mean)
+    sumtab <- sumtab[,c(1,2,6,4,8)]
+
+    cat(head)
+
+    print(knitr::kable(sumtab, col.names = c("Treatment", "Mean", "Median", "2.5%", "97.5%"), digits = 2))
+    cat("\n\n")
+  }
+
 }

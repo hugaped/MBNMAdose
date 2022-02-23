@@ -26,7 +26,7 @@ continuous data.
 continuous data.
 \item \code{r} Numeric data indicating the number of responders within a study arm. Required for
 binomial or poisson data.
-\item \code{N} Numeric data indicating the total number of participants within a study arm. Required for
+\item \code{n} Numeric data indicating the total number of participants within a study arm. Required for
 binomial data
 \item \code{E} Numeric data indicating the total exposure time for participants within a study arm. Required
 for poisson data.
@@ -81,13 +81,13 @@ Defaults for \code{n.iter}, \code{n.burnin}, \code{n.thin} and \code{n.chains} a
 \examples{
 \donttest{
 # Using the triptans data
-network <- mbnma.network(HF2PPITT)
+network <- mbnma.network(triptans)
 
 # Run an Emax dose-response MBNMA
-emax <- mbnma.emax(network, emax="rel", ed50="rel", method="random")
+emax <- mbnma.run(network, fun=demax(), method="random")
 
 # Data frame for synthesis can be taken from placebo arms
-ref.df <- HF2PPITT[HF2PPITT$agent=="placebo",]
+ref.df <- triptans[triptans$agent=="placebo",]
 
 # Meta-analyse placebo studies using fixed treatment effects
 E0 <- ref.synth(ref.df, emax, synth="fixed")
