@@ -1,11 +1,11 @@
-library(DiagrammeR)
-library(DiagrammeRsvg)
-library(rsvg)
+#library(DiagrammeR)
+#library(DiagrammeRsvg)
+#library(rsvg)
 
 
 # Generate nodes for MBNMA classes
 classnodes <-
-  create_node_df(
+  DiagrammeR::create_node_df(
     n = 8,
     label = c("data.frame\\l",
               "mbnma.network\\l - plot()\\l - summary()\\l",
@@ -39,7 +39,7 @@ g <- create_graph(nodes_df = classnodes, attr_theme = "tb")
 
 # Generate function nodes
 funnodes <-
-  create_node_df(
+  DiagrammeR::create_node_df(
     n=11,
     label=c("mbnma.network()", "mbnma.run()", "nma.run()", "mbnma.nodesplit()", "predict()", "rank()",
             "fitplot()", "devplot()", "cumrank()", "devdev()", "get.relative()"),
@@ -51,12 +51,12 @@ funnodes <-
     width=1.5,
     style="dashed"
   )
-g <- add_node_df(g, funnodes)
+g <- DiagrammeR::add_node_df(g, funnodes)
 
 
 # Generate edges between classes and functions
 funedges <-
-  create_edge_df(
+  DiagrammeR::create_edge_df(
     from = c("1", "9", "2", "10", "2", "11", "2", "12", "3", "13", "3", "14", "4", "3", "3", "7", "3", "5", "19", "3", "8"),
     to =   c("9", "2", "10", "3", "11", "5", "12", "6", "13", "4", "14", "7", "14", "15", "16", "17", "18", "18", "8", "19", "14"),
     color="black",
@@ -64,21 +64,21 @@ funedges <-
     fontname="Consolas",
     arrowhead=c(rep(c("None", "normal"),6), rep("none",4), rep("none",2), "normal", "none", "normal")
   )
-g <- add_edge_df(g, funedges)
+g <- DiagrammeR::add_edge_df(g, funedges)
 
 
 # Set graph attributes
 g <- g %>%
-  add_global_graph_attrs( attr = "splines",
+  DiagrammeR::add_global_graph_attrs( attr = "splines",
                           value = "ortho",
                           attr_type = "graph")
 
 # Render graph
-render_graph(g)
+DiagrammeR::render_graph(g)
 
 # Save graph
-render_graph(g) %>% export_svg %>% charToRaw %>%
-  rsvg_png("~/MBNMA/MBNMA R Package/Dose/MBNMAdose/man/figures/functionstructure.png")
+DiagrammeR::render_graph(g) %>% DiagrammeRsvg::export_svg %>% base::charToRaw %>%
+  rsvg::rsvg_png("~/MBNMA/MBNMA R Package/Dose/MBNMAdose/man/figures/functionstructure.png")
 
 
 
