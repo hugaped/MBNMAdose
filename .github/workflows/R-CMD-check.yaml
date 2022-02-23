@@ -43,8 +43,6 @@ jobs:
         with:
           extra-packages: rcmdcheck
 
-      - uses: r-lib/actions/check-r-package@v1
-
       - name: Install system dependencies (ubuntu)
         if: runner.os == 'Linux'
         run: |
@@ -66,6 +64,8 @@ jobs:
         run : |
           rm '/usr/local/bin/gfortran'
           brew install jags
+
+      - uses: r-lib/actions/check-r-package@v1
 
       - name: Show testthat output
         if: always()
