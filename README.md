@@ -63,6 +63,8 @@ Functions within `MBNMAdose` follow a clear pattern of use:
 4.  Check model fit and test for consistency using functions like
     `mbnma.nodesplit()`
 5.  Use your model to predict responses using `predict()`
+6.  Calculate relative effects between any doses (even those not in the
+    original dataset) using `get.relative()`
 
 At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regarding

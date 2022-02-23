@@ -11,3 +11,7 @@
 FunctionsDAG\.R$
 ^Rplots\.pdf$
 ^FunctionsDAG\.R$
+^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
