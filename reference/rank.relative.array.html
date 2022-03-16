@@ -26,7 +26,7 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -107,14 +107,14 @@ that each agent has a particular rank, for each parameter that has been ranked.<
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $`Relative Effects`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        rank.param     mean         sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1       Placebo_0 1.001667 0.04079759    1   1   1   1     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    eletriptan_2 7.569667 0.53719278    7   7   8   8     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   sumatriptan_2 4.038000 0.73034271    3   4   4   5     5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  frovatriptan_2 4.890000 1.32179766    3   4   5   6     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   almotriptan_2 3.674333 0.92658553    3   3   3   4     6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 zolmitriptan_10 7.216333 0.79608069    5   7   7   8     8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   naratriptan_2 2.034333 0.23059115    2   2   2   2     3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8   rizatriptan_1 5.575667 0.74952996    4   5   6   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1       Placebo_0 1.000667 0.02581558    1   1   1   1     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    eletriptan_2 7.573333 0.54288163    7   7   8   8     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   sumatriptan_2 4.111333 0.73922507    3   4   4   5     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  frovatriptan_2 4.744667 1.34340605    3   4   5   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   almotriptan_2 3.669333 0.89866313    3   3   3   4     6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6 zolmitriptan_10 7.208000 0.80225757    5   7   7   8     8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   naratriptan_2 2.029667 0.21939903    2   2   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8   rizatriptan_1 5.663000 0.68962999    4   5   6   6     7</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rank</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -131,12 +131,12 @@ that each agent has a particular rank, for each parameter that has been ranked.<
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment       | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------------|----:|------:|----:|-----:|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Placebo_0       | 1.00|      1|    1|     1|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_2   | 2.03|      2|    2|     3|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_2   | 2.03|      2|    2|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_2   | 3.67|      3|    3|     6|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_2   | 4.04|      4|    3|     5|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_2  | 4.89|      5|    3|     7|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1   | 5.58|      6|    4|     7|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_10 | 7.22|      7|    5|     8|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_2   | 4.11|      4|    3|     5|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_2  | 4.74|      5|    3|     7|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1   | 5.66|      6|    4|     7|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_10 | 7.21|      7|    5|     8|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_2    | 7.57|      8|    7|     8|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>

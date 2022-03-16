@@ -30,7 +30,7 @@ of Mawdsley et al. (2016)
   <a href="../reference/index.html">Reference</a>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
      
     <span class="caret"></span>
@@ -629,37 +629,37 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Print R2jags output and summary</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmp3I4l0l/file3130578fc2de", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpfDayzo/file3c4c3e19a144", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      1.990   0.151    1.685    1.889    1.990    2.091    2.296 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.309   0.089    1.134    1.249    1.308    1.367    1.485 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.651   0.320    1.033    1.432    1.644    1.863    2.279 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.357   0.191    0.977    1.232    1.359    1.483    1.722 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.433   0.146    1.149    1.332    1.434    1.532    1.717 1.007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.749   0.284    0.201    0.558    0.740    0.942    1.307 1.005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.296   0.180    1.956    2.175    2.291    2.417    2.657 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.365   0.044    0.284    0.334    0.362    0.392    0.457 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  184.229  18.632  148.414  171.377  183.807  196.769  220.335 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1087.335  18.632 1051.520 1074.483 1086.913 1099.875 1123.441 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      1.983   0.154    1.679    1.882    1.983    2.085    2.289 1.014</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.311   0.089    1.139    1.253    1.310    1.372    1.486 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.688   0.315    1.074    1.477    1.686    1.893    2.323 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.361   0.189    0.989    1.237    1.362    1.485    1.730 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.447   0.143    1.158    1.356    1.449    1.542    1.731 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.739   0.290    0.168    0.547    0.735    0.927    1.312 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.303   0.175    1.972    2.182    2.300    2.421    2.647 1.013</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.364   0.045    0.284    0.333    0.361    0.392    0.460 1.011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  184.349  19.297  148.388  171.225  183.597  196.588  223.332 1.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1087.455  19.297 1051.494 1074.331 1086.703 1099.694 1126.438 1.007</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]     970</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]    2700</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     320</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]     430</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd         1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance   1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]     150</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]     750</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]    1800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]    2300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]    1600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]     160</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd          190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    310</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 880.7 and DIC = 1967.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 895.8 and DIC = 1982.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
@@ -674,7 +674,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Parameter					Median (95%CrI)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">-----------------------------------------------------------------------</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.362 (0.284, 0.457)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.361 (0.284, 0.46)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">rate dose-response parameter results</span></span>
@@ -683,29 +683,27 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:------------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 1.9898| 1.6846| 2.2957|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3078| 1.1338| 1.4855|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6440| 1.0331| 2.2795|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3586| 0.9774| 1.7223|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4336| 1.1489| 1.7168|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7397| 0.2011| 1.3073|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2913| 1.9564| 2.6571|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 1.9831| 1.6788| 2.2887|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3101| 1.1385| 1.4858|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6862| 1.0743| 2.3232|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3618| 0.9887| 1.7297|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4487| 1.1576| 1.7309|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7349| 0.1679| 1.3124|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.3001| 1.9725| 2.6475|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Effective number of parameters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 880.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 895.8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1967.6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1982.5 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Plot forest plot of results</span></span>
 <span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Computation failed in `stat_slabinterval()`:</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> object 'median_qi' of mode 'function' was not found</span>
 <span class="r-plt img"><img src="mbnma.run-9.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span class="co"># }</span></span>
 <span class="r-in"></span>
