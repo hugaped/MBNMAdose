@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.org/package=MBNMAdose)
 [![R-CMD-check](https://github.com/hugaped/MBNMAdose/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAdose/actions)
+[![DOI](https://zenodo.org/badge/195961874.svg)](https://zenodo.org/badge/latestdoi/195961874)
 <!-- badges: end -->
 
 # MBNMAdose 0.4.1
