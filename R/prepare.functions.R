@@ -805,9 +805,10 @@ getjagsdata <- function(data.ab, class=FALSE,
 
   # Add data to datalist elements
   for (i in 1:max(as.numeric(df$studyID))) {
+    datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
+                                                                         df$arm==1])
+
     for (k in 1:max(df$arm[df$studyID==i])) {
-      datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
-                                                       df$arm==k])
       for (m in seq_along(datavars)) {
         datalist[[datavars[m]]][i,k] <- df[[datavars[m]]][as.numeric(df$studyID)==i &
                               df$arm==k]
