@@ -383,7 +383,13 @@ devplot <- function(mbnma, plot.type="box", facet=TRUE, dev.type="resdev",
   }
 
   # Add studyID in addition to study index from model and sort data frame
-  dev.df$studyID <- mbnma$model.arg$jagsdata$studyID
+  studvec <- vector()
+  for (i in seq_along(mbnma$model.arg$jagsdata$studyID)) {
+    studvec <- append(studvec, rep(mbnma$model.arg$jagsdata$studyID[i], mbnma$model.arg$jagsdata$narm[i]))
+  }
+
+  dev.df$studyID <- studvec
+  # dev.df$studyID <- mbnma$model.arg$jagsdata$studyID
   dev.df <- dplyr::arrange(dev.df, dev.df$study, dev.df$arm)
 
   # Plots the residual deviances
@@ -566,7 +572,13 @@ fitplot <- function(mbnma, disp.obs=TRUE,
   }
 
   # Add studyID in addition to study index from model
-  theta.df$studyID <- mbnma$model.arg$jagsdata$studyID
+  studvec <- vector()
+  for (i in seq_along(mbnma$model.arg$jagsdata$studyID)) {
+    studvec <- append(studvec, rep(mbnma$model.arg$jagsdata$studyID[i], mbnma$model.arg$jagsdata$narm[i]))
+  }
+
+  theta.df$studyID <- studvec
+  # theta.df$studyID <- mbnma$model.arg$jagsdata$studyID
 
 
   # Obtain raw responses to plot over fitted
