@@ -1104,6 +1104,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
   medmat <- meanmat
   l95mat <- medmat
   u95mat <- medmat
+  sum.df <- data.frame(comparison=NA, mean=NA, sd=NA, l95=NA, med=NA, u95=NA)
 
   for (i in 1:nrow(xmat)) {
     for (k in 1:ncol(xmat)) {
@@ -1113,9 +1114,22 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
         medmat[i,k] <- stats::median(xmat[i,k,])
         l95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.025)
         u95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.975)
+
+        if (k>i) {
+          sum.df <- dplyr::add_row(sum.df,
+                                   comparison = paste0(trtnames[i], " vs ", trtnames[k]),
+                                   mean=meanmat[i,k],
+                                   sd=semat[i,k],
+                                   l95=l95mat[i,k],
+                                   med=medmat[i,k],
+                                   u95=u95mat[i,k]
+          )
+        }
       }
     }
   }
+  sum.df <- sum.df[-1,]
+  names(sum.df) <- c("comparison", "mean", "sd", "2.5%", "50%", "97.5%")
 
   sumlist <- list("mean"=meanmat, "se"=semat, "median"=medmat, "lower95"=l95mat, "upper95"=u95mat)
 
@@ -1124,7 +1138,7 @@ get.relative <- function(mbnma, treatments=list(), eform=FALSE, lim="cred") {
     dimnames(sumlist[[i]])[[2]] <- dimnames(xmat)[[2]]
   }
 
-  out <- list("relarray"=outmat)
+  out <- list("data.frame"=sum.df, "relarray"=outmat)
   out <- c(out, sumlist)
   out$lim <- lim
 
