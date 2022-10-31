@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -57,38 +57,49 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline <span class="op">=</span> <span class="st">"bs"</span>, knots <span class="op">=</span> <span class="fl">1</span>, degree <span class="op">=</span> <span class="fl">1</span>, max.dose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline <span class="op">=</span> <span class="st">"bs"</span>, knots <span class="op">=</span> <span class="fl">1</span>, degree <span class="op">=</span> <span class="fl">1</span>, max.dose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A numeric vector indicating all time points available in the dataset</p></dd>
+
+
 <dt>spline</dt>
 <dd><p>Indicates the type of spline function. Can be either a piecewise linear spline (<code>"ls"</code>),
 natural cubic spline (<code>"ns"</code>), or B-spline (<code>"bs"</code>).</p></dd>
+
+
 <dt>knots</dt>
 <dd><p>The number/location of knots. If a single integer is given it indicates the number of knots (they will
 be equally spaced across the range of doses <em>for each agent</em>). If a numeric vector is given it indicates the quantiles of the knots as
 a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
 is 100mg/d, <code>knots=c(0.1,0.5)</code> would indicate knots should be fitted at 10mg/d and 50mg/d.</p></dd>
+
+
 <dt>degree</dt>
 <dd><p>a positive integer giving the degree of the polynomial from which the spline function is composed
 (e.g. <code>degree=3</code> represents a cubic spline).</p></dd>
+
+
 <dt>max.dose</dt>
 <dd><p>A number indicating the maximum dose between which to calculate the spline function.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A spline basis matrix with number of rows equal to <code>length(x)</code> and the number of columns equal to the number
+    
+
+<p>A spline basis matrix with number of rows equal to <code>length(x)</code> and the number of columns equal to the number
 of coefficients in the spline.</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0</span><span class="op">:</span><span class="fl">100</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">0</span><span class="op">:</span><span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        1    2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0   0.00 0.00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   0.02 0.00</span>
@@ -191,9 +202,9 @@ of coefficients in the spline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 98  0.04 0.96</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 99  0.02 0.98</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100 0.00 1.00</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a quadratic B-spline with 1 equally spaced internal knot</span></span>
-<span class="r-in"><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">2</span>, degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a quadratic B-spline with 1 equally spaced internal knot</span></span></span>
+<span class="r-in"><span><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">2</span>, degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           1       2       3      4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0   0.00000 0.00000 0.00000 0.0000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   0.05865 0.00045 0.00000 0.0000</span>
@@ -296,9 +307,9 @@ of coefficients in the spline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 98  0.00000 0.00180 0.11460 0.8836</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 99  0.00000 0.00045 0.05865 0.9409</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100 0.00000 0.00000 0.00000 1.0000</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a natural cubic spline with 3 knots at selected quantiles</span></span>
-<span class="r-in"><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a natural cubic spline with 3 knots at selected quantiles</span></span></span>
+<span class="r-in"><span><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.7</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                1            2          3            4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0   0.000000e+00  0.000000000 0.00000000  0.000000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   2.857143e-05 -0.014927620 0.03980699 -0.024879367</span>
@@ -401,9 +412,9 @@ of coefficients in the spline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 98  5.925926e-05 -0.073593953 0.39591474  0.677619955</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 99  7.407407e-06 -0.113280877 0.40204036  0.711233107</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100 0.000000e+00 -0.153061224 0.40816327  0.744897959</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a piecewise linear spline with 3 equally spaced knots</span></span>
-<span class="r-in"><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"ls"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a piecewise linear spline with 3 equally spaced knots</span></span></span>
+<span class="r-in"><span><span class="fu">genspline</span><span class="op">(</span><span class="va">x</span>, spline<span class="op">=</span><span class="st">"ls"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      1  2  3  4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0    0  0  0  0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1    1  0  0  0</span>
@@ -506,7 +517,7 @@ of coefficients in the spline.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 98  25 25 25 23</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 99  25 25 25 24</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 100 25 25 25 25</span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -521,7 +532,7 @@ of coefficients in the spline.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

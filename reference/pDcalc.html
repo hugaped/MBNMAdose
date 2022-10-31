@@ -23,7 +23,7 @@ is identical in MBNMAdose and MBNMAtime packages."><!-- mathjax --><script src="
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -68,17 +68,17 @@ is identical in MBNMAdose and MBNMAtime packages.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">pDcalc</span><span class="op">(</span>
-  <span class="va">obs1</span>,
-  <span class="va">obs2</span>,
-  fups <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">narm</span>,
-  <span class="va">NS</span>,
-  <span class="va">theta.result</span>,
-  <span class="va">resdev.result</span>,
-  likelihood <span class="op">=</span> <span class="st">"normal"</span>,
-  type <span class="op">=</span> <span class="st">"time"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pDcalc</span><span class="op">(</span></span>
+<span>  <span class="va">obs1</span>,</span>
+<span>  <span class="va">obs2</span>,</span>
+<span>  fups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">narm</span>,</span>
+<span>  <span class="va">NS</span>,</span>
+<span>  <span class="va">theta.result</span>,</span>
+<span>  <span class="va">resdev.result</span>,</span>
+<span>  likelihood <span class="op">=</span> <span class="st">"normal"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"time"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -88,39 +88,58 @@ is identical in MBNMAdose and MBNMAtime packages.</p>
 observed data for <code>y</code> (normal likelihood) or <code>r</code> (binomial or poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.</p></dd>
+
+
 <dt>obs2</dt>
 <dd><p>A matrix (study x arm) or array (study x arm x time point) containing
 observed data for <code>se</code> (normal likelihood), <code>n</code> (binomial likelihood) or <code>E</code> (poisson likelihood)
 in each arm of each study. This will be the same array
 used as data for the JAGS model.</p></dd>
+
+
 <dt>fups</dt>
 <dd><p>A numeric vector of length equal to the number of studies,
 containing the number of follow-up mean responses reported in each study. Required for
 time-course MBNMA models (if <code>type="time"</code>)</p></dd>
+
+
 <dt>narm</dt>
 <dd><p>A numeric vector of length equal to the number of studies,
 containing the number of arms in each study.</p></dd>
+
+
 <dt>NS</dt>
 <dd><p>A single number equal to the number of studies in the dataset.</p></dd>
+
+
 <dt>theta.result</dt>
 <dd><p>A matrix (study x arm) or array (study x arm x time point)
 containing the posterior mean predicted means/probabilities/rate in each arm of each
 study. This will be estimated by the JAGS model.</p></dd>
+
+
 <dt>resdev.result</dt>
 <dd><p>A matrix (study x arm) or array (study x arm x time point)
 containing the posterior mean residual deviance contributions in each arm of each
 study. This will be estimated by the JAGS model.</p></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>A character object of any of the following likelihoods:</p><ul><li><p><code>normal</code></p></li>
 <li><p><code>binomial</code> (does not work with time-course MBNMA models)</p></li>
 <li><p><code>poisson</code> (does not work with time-course MBNMA models)</p></li>
 </ul></dd>
+
+
 <dt>type</dt>
 <dd><p>The type of MBNMA model fitted. Can be either <code>"time"</code> or <code>"dose"</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A single numeric value for pD calculated via the plugin method.</p>
+    
+
+<p>A single numeric value for pD calculated via the plugin method.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -147,15 +166,15 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># Using the triptans data</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Fit a dose-response MBNMA, monitoring "psi" and "resdev"</span></span>
-<span class="r-in"><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span>
-<span class="r-in">              parameters.to.save<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"psi"</span>, <span class="st">"resdev"</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Fit a dose-response MBNMA, monitoring "psi" and "resdev"</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span></span>
+<span class="r-in"><span>              parameters.to.save<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"psi"</span>, <span class="st">"resdev"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -168,25 +187,25 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### Calculate pD for binomial data ####</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Prepare data for pD calculation</span></span>
-<span class="r-in"><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">r</span></span>
-<span class="r-in"><span class="va">n</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">n</span></span>
-<span class="r-in"><span class="va">narm</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">narm</span></span>
-<span class="r-in"><span class="va">NS</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">NS</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">psi</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">median</span><span class="op">$</span><span class="va">psi</span></span>
-<span class="r-in"><span class="va">resdevs</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">median</span><span class="op">$</span><span class="va">resdev</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Calculate pD via plugin method</span></span>
-<span class="r-in"><span class="va">pD</span> <span class="op">&lt;-</span> <span class="fu">pDcalc</span><span class="op">(</span>obs1<span class="op">=</span><span class="va">r</span>, obs2<span class="op">=</span><span class="va">n</span>, narm<span class="op">=</span><span class="va">narm</span>, NS<span class="op">=</span><span class="va">NS</span>,</span>
-<span class="r-in">          theta.result<span class="op">=</span><span class="va">psi</span>, resdev.result<span class="op">=</span><span class="va">resdevs</span>,</span>
-<span class="r-in">          likelihood<span class="op">=</span><span class="st">"binomial"</span>, type<span class="op">=</span><span class="st">"dose"</span><span class="op">)</span></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Calculate pD for binomial data ####</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Prepare data for pD calculation</span></span></span>
+<span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">r</span></span></span>
+<span class="r-in"><span><span class="va">n</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">n</span></span></span>
+<span class="r-in"><span><span class="va">narm</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">narm</span></span></span>
+<span class="r-in"><span><span class="va">NS</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="fu">data</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">NS</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">psi</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">median</span><span class="op">$</span><span class="va">psi</span></span></span>
+<span class="r-in"><span><span class="va">resdevs</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">BUGSoutput</span><span class="op">$</span><span class="va">median</span><span class="op">$</span><span class="va">resdev</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Calculate pD via plugin method</span></span></span>
+<span class="r-in"><span><span class="va">pD</span> <span class="op">&lt;-</span> <span class="fu">pDcalc</span><span class="op">(</span>obs1<span class="op">=</span><span class="va">r</span>, obs2<span class="op">=</span><span class="va">n</span>, narm<span class="op">=</span><span class="va">narm</span>, NS<span class="op">=</span><span class="va">NS</span>,</span></span>
+<span class="r-in"><span>          theta.result<span class="op">=</span><span class="va">psi</span>, resdev.result<span class="op">=</span><span class="va">resdevs</span>,</span></span>
+<span class="r-in"><span>          likelihood<span class="op">=</span><span class="st">"binomial"</span>, type<span class="op">=</span><span class="st">"dose"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -201,7 +220,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

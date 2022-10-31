@@ -18,7 +18,7 @@ agent and class (if included in the data)."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -59,7 +59,7 @@ agent and class (if included in the data).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">add_index</span><span class="op">(</span><span class="va">data.ab</span>, agents <span class="op">=</span> <span class="cn">NULL</span>, treatments <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">add_index</span><span class="op">(</span><span class="va">data.ab</span>, agents <span class="op">=</span> <span class="cn">NULL</span>, treatments <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -81,18 +81,25 @@ for poisson data.</p></li>
 <li><p><code>class</code> An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.</p></li>
 </ul></dd>
+
+
 <dt>agents</dt>
 <dd><p>A character string of agent names used to force a particular agent ordering.
 Default is <code>NULL</code>, which automatically orders <code>Placebo</code> (dose=0) as agent <code>1</code> and then
 subsequent agents by the order given in <code>data.ab</code></p></dd>
+
+
 <dt>treatments</dt>
 <dd><p>A character string of treatment names used to force a particular treatment ordering.
 Default is <code>NULL</code>, which automatically orders <code>Placebo</code> (dose=0) as treatment <code>1</code> and then
 subsequent treatments by the order of agents and doses (smallest to highest) given in <code>data.ab</code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame similar to <code>data.ab</code> but with additional columns:</p><ul><li><p><code>arm</code> Arm identifiers coded for each study</p></li>
+    
+
+<p>A data frame similar to <code>data.ab</code> but with additional columns:</p><ul><li><p><code>arm</code> Arm identifiers coded for each study</p></li>
 <li><p><code>narm</code> The total number of arms in each study</p></li>
 </ul><p>If <code>agent</code> or <code>class</code> are non-numeric or non-sequential (i.e. with missing numeric codes),
 agents/classes in the returned data frame will be numbered and recoded to enforce sequential
@@ -111,7 +118,7 @@ numbering (a warning will be shown stating this).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

@@ -19,7 +19,7 @@ relationship."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -61,22 +61,27 @@ relationship.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">DR.comparisons</span><span class="op">(</span><span class="va">data.ab</span>, level <span class="op">=</span> <span class="st">"treatment"</span>, doselink <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">DR.comparisons</span><span class="op">(</span><span class="va">data.ab</span>, level <span class="op">=</span> <span class="st">"treatment"</span>, doselink <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data.ab</dt>
 <dd><p>A data frame stored in an <code>mbnma.network</code> object (<code>mbnma.network$data.ab</code>)</p></dd>
+
+
 <dt>level</dt>
 <dd><p>A character that can take either <code>"treatment"</code> or <code>"agent"</code> to indicate the level of the
 network for which to identify dose-response</p></dd>
+
+
 <dt>doselink</dt>
 <dd><p>If given an integer value it indicates that connections via the dose-response
 relationship with placebo should be plotted. The integer represents the minimum number of doses
 from which a dose-response function could be estimated and is equivalent to the number of
 parameters in the desired dose-response function plus one. If left as <code>NULL</code> (the default), connections
 to placebo via dose-response relationships will not be included.</p></dd>
+
 </dl></div>
 
   </div>
@@ -91,7 +96,7 @@ to placebo via dose-response relationships will not be included.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

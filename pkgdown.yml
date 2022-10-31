@@ -1,9 +1,9 @@
 pandoc: 2.7.3
-pkgdown: 2.0.2
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles:
   mbnmadose: mbnmadose.html
-last_built: 2022-03-16T11:45Z
+last_built: 2022-10-31T10:48Z
 urls:
   reference: https://hugaped.github.io/MBNMAdose/reference
   article: https://hugaped.github.io/MBNMAdose/articles

@@ -19,7 +19,7 @@ inconsistency via node-splitting."><!-- mathjax --><script src="https://cdnjs.cl
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -61,7 +61,7 @@ inconsistency via node-splitting.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">df</span>, checkindirect <span class="op">=</span> <span class="cn">TRUE</span>, incldr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">df</span>, checkindirect <span class="op">=</span> <span class="cn">TRUE</span>, incldr <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -70,25 +70,34 @@ inconsistency via node-splitting.</p>
 <dd><p>A data frame containing variables <code>studyID</code> and <code>treatment</code> (as
 numeric codes) that indicate which treatments are used in which studies. If <code>checkindirect = TRUE</code>
 then variables <code>agent</code> and <code>dose</code> are also required.</p></dd>
+
+
 <dt>checkindirect</dt>
 <dd><p>A boolean object to indicate whether or not to perform an additional
 check to ensure network remains connected even after dropping direct evidence on a comparison.
 Default is <code>TRUE</code> and should be kept as <code>TRUE</code> if working with dose-response data, though this requires
 further computational iterations to confirm. If set to <code>FALSE</code>, additional comparisons may be identified, though computation will be much more
 rapid.</p></dd>
+
+
 <dt>incldr</dt>
 <dd><p>A boolean object indicating whether or not to allow for indirect evidence contributions via
 the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
 for a greater number of potential loops in which to check for consistency.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A data frame of comparisons that are informed by direct and indirect
+    
+
+<p>A data frame of comparisons that are informed by direct and indirect
 evidence from independent sources. Each row of the data frame is a
 different treatment comparison. Numerical codes in <code>t1</code> and <code>t2</code> correspond
 to treatment codes. <code>path</code> indicates the treatment codes that connect the
-shortest path of indirect evidence.
-If <code>incldr=TRUE</code> then <code>path</code> may indicate <code>doseresp</code> for some comparisons.
+shortest path of indirect evidence.</p>
+
+
+<p>If <code>incldr=TRUE</code> then <code>path</code> may indicate <code>doseresp</code> for some comparisons.
 These are comparisons for which indirect evidence is only available via the
 dose-response relationship. The two numbers given after (e.g. <code>3 2</code>) indicate the
 number of doses available in the indirect evidence with which to estimate the
@@ -110,13 +119,13 @@ reference treatment would also be identifying heterogeneity. Depends on
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># Identify comparisons informed by direct and indirect evidence</span></span>
-<span class="r-in"><span class="co">#in triptans dataset</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Identify comparisons informed by direct and indirect evidence</span></span></span>
+<span class="r-in"><span><span class="co">#in triptans dataset</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -132,9 +141,9 @@ reference treatment would also be identifying heterogeneity. Depends on
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9   6 23  6-&gt;1-&gt;23</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8   6 12  6-&gt;1-&gt;12</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 7   5 22  5-&gt;1-&gt;22</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Include indirect evidence via dose-response relationship</span></span>
-<span class="r-in"><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span>, incldr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Include indirect evidence via dose-response relationship</span></span></span>
+<span class="r-in"><span><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span>, incldr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -166,14 +175,14 @@ reference treatment would also be identifying heterogeneity. Depends on
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3   1  4 drparams 5 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   1  3 drparams 5 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1   1  2 drparams 5 3</span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Do not perform additional connectivity check on data</span></span>
-<span class="r-in"><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>studyID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span>
-<span class="r-in">            treatment<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span></span>
-<span class="r-in">            <span class="op">)</span></span>
-<span class="r-in"><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">data</span>, checkindirect<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Do not perform additional connectivity check on data</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>studyID<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">5</span>,<span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>            treatment<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">1</span>,<span class="fl">3</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span>            <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">inconsistency.loops</span><span class="op">(</span><span class="va">data</span>, checkindirect<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |==============                                                        |  20%  |                                                                              |============================                                          |  40%  |                                                                              |==========================================                            |  60%  |                                                                              |========================================================              |  80%  |                                                                              |======================================================================| 100%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   t1 t2    path</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5  3  4 3-&gt;1-&gt;4</span>
@@ -192,7 +201,7 @@ reference treatment would also be identifying heterogeneity. Depends on
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

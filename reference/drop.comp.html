@@ -18,7 +18,7 @@ data from each treatment in a nodesplit comparison (so as to maximise precision)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -59,21 +59,28 @@ data from each treatment in a nodesplit comparison (so as to maximise precision)
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">drop.comp</span><span class="op">(</span><span class="va">ind.df</span>, <span class="va">drops</span>, <span class="va">comp</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">drop.comp</span><span class="op">(</span><span class="va">ind.df</span>, <span class="va">drops</span>, <span class="va">comp</span>, start <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>ind.df</dt>
 <dd><p>A data frame in long format (one arm per row) from which to drop treatments</p></dd>
+
+
 <dt>drops</dt>
 <dd><p>A vector of study identifiers from which to drop treatments</p></dd>
+
+
 <dt>comp</dt>
 <dd><p>A numeric vector of length 2 that contains treatment codes corresponding to the comparison
 for node-splitting</p></dd>
+
+
 <dt>start</dt>
 <dd><p>Can take either <code>0</code> or <code>1</code> to indicate whether to drop the treatment
 in <code>comp[1]</code> (<code>0</code>) or <code>comp[2]</code> (<code>1</code>)</p></dd>
+
 </dl></div>
 
   </div>
@@ -88,7 +95,7 @@ in <code>comp[1]</code> (<code>0</code>) or <code>comp[2]</code> (<code>1</code>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

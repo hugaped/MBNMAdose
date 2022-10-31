@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -51,6 +51,21 @@
       
     </div>
 
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.2" id="mbnmadose-042">MBNMAdose 0.4.2<a class="anchor" aria-label="anchor" href="#mbnmadose-042"></a></h2>
+<div class="section level3">
+<h3 id="additionschanges-0-4-2">Additions/changes<a class="anchor" aria-label="anchor" href="#additionschanges-0-4-2"></a></h3>
+<ul><li>Fractional polynomial powers in <code><a href="../reference/dfpoly.html">dfpoly()</a></code> can only take numeric values from set defined in Jansen 2015.</li>
+<li>Added <code>calc.edx()</code> to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the maximum response (Emax) is reached)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-4-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-2"></a></h3>
+<ul><li>Fixed issue with duplication of studyIDs in <code><a href="../reference/getjagsdata.html">getjagsdata()</a></code>
+</li>
+<li>Fixed bug with studyID labels in <code><a href="../reference/fitplot.html">fitplot()</a></code> and <code><a href="../reference/devplot.html">devplot()</a></code>
+</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.1" id="mbnmadose-041">MBNMAdose 0.4.1<small>2022-02-24</small><a class="anchor" aria-label="anchor" href="#mbnmadose-041"></a></h2>
 <div class="section level3">
@@ -86,8 +101,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-4-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-0"></a></h3>
-<ul><li>Error with running random effects models in <code><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit()</a></code> fixed</li>
-</ul></div>
+<ul><li>Error with running random effects models in <code><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit()</a></code> fixed</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.1" id="mbnmadose-031">MBNMAdose 0.3.1<a class="anchor" aria-label="anchor" href="#mbnmadose-031"></a></h2>
@@ -158,8 +172,7 @@
 <h2 class="page-header" data-toc-text="0.2.6" id="mbnmadose-026">MBNMAdose 0.2.6<small>2020-02-15</small><a class="anchor" aria-label="anchor" href="#mbnmadose-026"></a></h2>
 <div class="section level3">
 <h3 id="additionschanges-0-2-6">Additions/Changes<a class="anchor" aria-label="anchor" href="#additionschanges-0-2-6"></a></h3>
-<ul><li>Ensured non-parametric functions are properly monotonic by setting default initial values. Each agent now includes an index dose level of 1, which corresponds to the reference treatment effect (placebo)</li>
-</ul></div>
+<ul><li>Ensured non-parametric functions are properly monotonic by setting default initial values. Each agent now includes an index dose level of 1, which corresponds to the reference treatment effect (placebo)</li></ul></div>
 </div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.2.5" id="mbnmadose-025">MBNMAdose 0.2.5<a class="anchor" aria-label="anchor" href="#mbnmadose-025"></a></h2>
@@ -176,8 +189,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-2-5">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-5"></a></h3>
-<ul><li>Changed <code>if {class(x)=="matrix"}</code> statements to <code>if {is.matrix(x)}</code> to address R development changes</li>
-</ul><div class="section level4">
+<ul><li>Changed <code>if {class(x)=="matrix"}</code> statements to <code>if {is.matrix(x)}</code> to address R development changes</li></ul><div class="section level4">
 <h4 id="major-0-2-5">Major<a class="anchor" aria-label="anchor" href="#major-0-2-5"></a></h4>
 <ul><li>Exponential function models were not working previously but the dose-response function has been rewritten so that it runs the model correctly.</li>
 <li>DIC reported correctly in output when using plugin (<code>pd="plugin"</code>), or Kullback-Leibler divergence (<code>pd="pd.kl"</code>)</li>
@@ -185,8 +197,7 @@
 </ul></div>
 <div class="section level4">
 <h4 id="minor-0-2-5">Minor<a class="anchor" aria-label="anchor" href="#minor-0-2-5"></a></h4>
-<ul><li>Downstream mbnma-related objects now store <code>mbnma.network</code> in their output rather than just treatment and agent names.</li>
-</ul></div>
+<ul><li>Downstream mbnma-related objects now store <code>mbnma.network</code> in their output rather than just treatment and agent names.</li></ul></div>
 </div>
 </div>
     <div class="section level2">
@@ -200,8 +211,7 @@
 <h3 id="bug-fixes-0-2-4">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-2-4"></a></h3>
 <div class="section level4">
 <h4 id="major-0-2-4">Major<a class="anchor" aria-label="anchor" href="#major-0-2-4"></a></h4>
-<ul><li>Fixed incorrect ordering of treatment codes in mbnma.network, which also led to problems in subsequent commands/plots</li>
-</ul></div>
+<ul><li>Fixed incorrect ordering of treatment codes in mbnma.network, which also led to problems in subsequent commands/plots</li></ul></div>
 <div class="section level4">
 <h4 id="minor-0-2-4">Minor<a class="anchor" aria-label="anchor" href="#minor-0-2-4"></a></h4>
 <ul><li>Fixed minor with numeric vs character coding of treatments in arguments for ranking functions</li>
@@ -239,7 +249,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

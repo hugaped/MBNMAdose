@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -57,26 +57,33 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">rescale.link</span><span class="op">(</span><span class="va">x</span>, direction <span class="op">=</span> <span class="st">"link"</span>, link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">rescale.link</span><span class="op">(</span><span class="va">x</span>, direction <span class="op">=</span> <span class="st">"link"</span>, link <span class="op">=</span> <span class="st">"logit"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>A numeric vector of data to be rescaled</p></dd>
+
+
 <dt>direction</dt>
 <dd><p>Can take either <code>"link"</code> to convert data to a particular scale
 as defined by the <code>link</code> function, or <code>"natural"</code> to return it to the natural scale.</p></dd>
+
+
 <dt>link</dt>
 <dd><p>A string indicating the link function to use in the model. Can take any link function
 defined within JAGS (e.g. <code>"logit"</code>, <code>"log"</code>, <code>"probit"</code>, <code>"cloglog"</code>), be assigned the value <code>"identity"</code> for
 an identity link function, or be assigned the value <code>"smd"</code> for modelling Standardised Mean Differences using an
 identity link function. If left as <code>NULL</code> the link function will be automatically assigned based
 on the likelihood.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A rescaled numeric vector</p>
+    
+
+<p>A rescaled numeric vector</p>
     </div>
 
   </div>
@@ -91,7 +98,7 @@ on the likelihood.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

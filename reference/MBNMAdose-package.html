@@ -18,7 +18,7 @@ Model-Based Network Meta-Analyses (MBNMA)."><!-- mathjax --><script src="https:/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -99,11 +99,11 @@ the data and to make decisions regarding model fitting.</p>
 <a href="https://mcmc-jags.sourceforge.io/" class="external-link">https://mcmc-jags.sourceforge.io/</a>.<br><br> Lu G, Ades AE (2004).
 “Combination of direct and indirect evidence in mixed treatment comparisons.”
 <em>Stat Med</em>, <b>23</b>(20), 3105-24.
-ISSN 0277-6715 (Print) 0277-6715 (Linking), doi: <a href="https://doi.org/10.1002/sim.1875" class="external-link">10.1002/sim.1875</a>
+ISSN 0277-6715 (Print) 0277-6715 (Linking), <a href="https://doi.org/10.1002/sim.1875" class="external-link">doi:10.1002/sim.1875</a>
 , <a href="https://pubmed.ncbi.nlm.nih.gov/15449338/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/15449338/</a>.<br><br> Mawdsley D, Bennetts M, Dias S, Boucher M, Welton NJ (2016).
 “Model-Based Network Meta-Analysis: A Framework for Evidence Synthesis of Clinical Trial Data.”
 <em>CPT Pharmacometrics Syst Pharmacol</em>, <b>5</b>(8), 393-401.
-ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/10.1002/psp4.12091" class="external-link">10.1002/psp4.12091</a>
+ISSN 2163-8306 (Electronic) 2163-8306 (Linking), <a href="https://doi.org/10.1002/psp4.12091" class="external-link">doi:10.1002/psp4.12091</a>
 , <a href="https://pubmed.ncbi.nlm.nih.gov/27479782/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/27479782/</a>.<br><br> Pedder H, Dias S, Bennetts M, Boucher M, Welton NJ (2021).
 “Joining the dots: Linking disconnected networks of evidence using dose-response Model-Based Network Meta-Analysis.”
 <em>Medical Decision Making</em>, <b>41</b>(2), 194-208.</p>
@@ -123,21 +123,21 @@ ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/1
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Generate an "mbnma.network" object that stores data in the correct format</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Generate an "mbnma.network" object that stores data in the correct format</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot at the dose/treatment level</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot at the dose/treatment level</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MBNMAdose-package-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot at the agent level</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># Perform "split" NMA to examine dose-response relationship</span></span>
-<span class="r-in"><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot at the agent level</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Perform "split" NMA to examine dose-response relationship</span></span></span>
+<span class="r-in"><span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> module glm loaded</span>
 <span class="r-plt img"><img src="MBNMAdose-package-2.png" alt="" width="700" height="433"></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -150,13 +150,13 @@ ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/1
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MBNMAdose-package-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Analyse data using mbnma.run() with an Emax dose-response function</span></span>
-<span class="r-in"><span class="co"># and common treatment effects</span></span>
-<span class="r-in"><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">  method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Analyse data using mbnma.run() with an Emax dose-response function</span></span></span>
+<span class="r-in"><span><span class="co"># and common treatment effects</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
@@ -170,21 +170,21 @@ ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/1
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate forest plots for model results</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate forest plots for model results</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MBNMAdose-package-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Rank results and plot rankograms</span></span>
-<span class="r-in"><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params<span class="op">=</span><span class="st">"emax"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Rank results and plot rankograms</span></span></span>
+<span class="r-in"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params<span class="op">=</span><span class="st">"emax"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="MBNMAdose-package-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Predict responses</span></span>
-<span class="r-in"><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">result</span>, E0<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot predicted response with "split" NMA results displayed</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, overlay.split<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Predict responses</span></span></span>
+<span class="r-in"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">result</span>, E0<span class="op">=</span><span class="fl">0.2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot predicted response with "split" NMA results displayed</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, overlay.split<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -195,11 +195,11 @@ ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/1
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Split NMA residual Deviance: 267.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Split NMA residual Deviance: 267</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-plt img"><img src="MBNMAdose-package-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># }</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -214,7 +214,7 @@ ISSN 2163-8306 (Electronic) 2163-8306 (Linking), doi: <a href="https://doi.org/1
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

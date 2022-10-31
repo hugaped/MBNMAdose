@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -57,15 +57,19 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">changepd</span><span class="op">(</span><span class="va">model</span>, jagsdata <span class="op">=</span> <span class="cn">NULL</span>, pd <span class="op">=</span> <span class="st">"pv"</span>, likelihood <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"dose"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">changepd</span><span class="op">(</span><span class="va">model</span>, jagsdata <span class="op">=</span> <span class="cn">NULL</span>, pd <span class="op">=</span> <span class="st">"pv"</span>, likelihood <span class="op">=</span> <span class="cn">NULL</span>, type <span class="op">=</span> <span class="st">"dose"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>model</dt>
 <dd><p>A model object of class <code>"rjags"</code></p></dd>
+
+
 <dt>jagsdata</dt>
 <dd><p>A list object containing data used to estimate <code>model</code></p></dd>
+
+
 <dt>pd</dt>
 <dd><p>Can take either:</p><ul><li><p><code>pv</code> only pV will be reported (as automatically outputted by <code>R2jags</code>).</p></li>
 <li><p><code>plugin</code> calculates pD by the plug-in
@@ -80,16 +84,23 @@ number of parameters in non-linear models.</p></li>
 of the penalized expected deviance (Plummer 2008)
 .</p></li>
 </ul></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>A string indicating the likelihood to use in the model. Can take either <code>"binomial"</code>,
 <code>"normal"</code> or <code>"poisson"</code>. If left as <code>NULL</code> the likelihood will be inferred from the data.</p></dd>
+
+
 <dt>type</dt>
 <dd><p>Can take either <code>"dose"</code> for a dose-response MBNMA or <code>"time"</code> for a
 time-course MBNMA (this accounts for multiple observations within an arm)</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A list containing <code>pd</code> (effective number of parameters calculated using the method
+    
+
+<p>A list containing <code>pd</code> (effective number of parameters calculated using the method
 specified in arguments), <code>deviance</code> (the posterior median of the total residual deviance)
 and <code>dic</code> (the model DIC)</p>
     </div>
@@ -106,7 +117,7 @@ and <code>dic</code> (the model DIC)</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

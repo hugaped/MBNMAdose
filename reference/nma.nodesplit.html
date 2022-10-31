@@ -19,7 +19,7 @@ assumption required for NMA (and subsequently MBNMA) may violated."><!-- mathjax
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -61,61 +61,82 @@ assumption required for NMA (and subsequently MBNMA) may violated.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">nma.nodesplit</span><span class="op">(</span>
-  <span class="va">network</span>,
-  likelihood <span class="op">=</span> <span class="cn">NULL</span>,
-  link <span class="op">=</span> <span class="cn">NULL</span>,
-  method <span class="op">=</span> <span class="st">"common"</span>,
-  comparisons <span class="op">=</span> <span class="cn">NULL</span>,
-  drop.discon <span class="op">=</span> <span class="cn">TRUE</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="co"># S3 method for nma.nodesplit</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, plot.type <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">nma.nodesplit</span><span class="op">(</span></span>
+<span>  <span class="va">network</span>,</span>
+<span>  likelihood <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  link <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  comparisons <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  drop.discon <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S3 method for nma.nodesplit</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">x</span>, plot.type <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>network</dt>
 <dd><p>An object of class <code>mbnma.network</code>.</p></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>A string indicating the likelihood to use in the model. Can take either <code>"binomial"</code>,
 <code>"normal"</code> or <code>"poisson"</code>. If left as <code>NULL</code> the likelihood will be inferred from the data.</p></dd>
+
+
 <dt>link</dt>
 <dd><p>A string indicating the link function to use in the model. Can take any link function
 defined within JAGS (e.g. <code>"logit"</code>, <code>"log"</code>, <code>"probit"</code>, <code>"cloglog"</code>), be assigned the value <code>"identity"</code> for
 an identity link function, or be assigned the value <code>"smd"</code> for modelling Standardised Mean Differences using an
 identity link function. If left as <code>NULL</code> the link function will be automatically assigned based
 on the likelihood.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Can take either <code>"common"</code> or <code>"random"</code> to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).</p></dd>
+
+
 <dt>comparisons</dt>
 <dd><p>A matrix specifying the comparisons to be split (one row per comparison).
 The matrix must have two columns indicating each treatment for each comparison. Values can
 either be character (corresponding to the treatment names given in <code>network</code>) or
 numeric (corresponding to treatment codes within the <code>network</code> - note that these
 may change if <code>drop.discon = TRUE</code>).</p></dd>
+
+
 <dt>drop.discon</dt>
 <dd><p>A boolean object that indicates whether to drop treatments
 that are disconnected at the treatment level. Default is <code>TRUE</code>. If set to <code>FALSE</code> then
 this could lead to identification of nodesplit comparisons that are not connected
 to the network reference treatment, or lead to errors in running the nodesplit models, though it
 can be useful for error checking.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments to be sent to <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot()</a></code></p></dd>
+
+
 <dt>x</dt>
 <dd><p>An object of <code>class("nma.nodesplit")</code></p></dd>
+
+
 <dt>plot.type</dt>
 <dd><p>A character string that can take the value of <code>"forest"</code> to plot
 only forest plots, <code>"density"</code> to plot only density plots, or left as <code>NULL</code> (the
 default) to plot both types of plot.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Plots the desired graph(s) and returns an object (or list of object if
+    
+
+<p>Plots the desired graph(s) and returns an object (or list of object if
 <code>plot.type=NULL</code>) of <code>class(c("gg", "ggplot"))</code></p>
+
+
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -131,14 +152,14 @@ of posterior densities for direct and indirect evidence.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># \donttest{</span></span>
-<span class="r-in"><span class="co"># Using the triptans data</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span>
-<span class="r-in">  method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
+<span class="r-in"><span>  method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -243,13 +264,13 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### To perform nodesplit on selected comparisons ####</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Check for closed loops of treatments with independent evidence sources</span></span>
-<span class="r-in"><span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### To perform nodesplit on selected comparisons ####</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Check for closed loops of treatments with independent evidence sources</span></span></span>
+<span class="r-in"><span><span class="va">loops</span> <span class="op">&lt;-</span> <span class="fu"><a href="inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -260,55 +281,10 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=================================================================     |  92%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |===================================================================   |  96%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |======================================================================| 100%</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># This...</span></span>
-<span class="r-in"><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span>
-<span class="r-in">             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sumatriptan_1"</span>, <span class="st">"almotriptan_1"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================================                                      |  46%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  54%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |========================================                              |  58%  |                                                                              |===========================================                           |  62%  |                                                                              |==============================================                        |  65%  |                                                                              |================================================                      |  69%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  81%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |===========================================================           |  85%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |==============================================================        |  88%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=================================================================     |  92%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |===================================================================   |  96%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |======================================================================| 100%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 205</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3980</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Calculating nodesplit for: almotriptan_1 vs sumatriptan_1"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 180</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 203</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3935</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 436</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4072</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#...is the same as...</span></span>
-<span class="r-in"><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span>
-<span class="r-in">             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># This...</span></span></span>
+<span class="r-in"><span><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
+<span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sumatriptan_1"</span>, <span class="st">"almotriptan_1"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -350,55 +326,100 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plot results</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span> <span class="co"># Plot density plots of posterior densities</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#...is the same as...</span></span></span>
+<span class="r-in"><span><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">nma.nodesplit</span><span class="op">(</span><span class="va">network</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
+<span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================================                                      |  46%  |                                                                              |===================================                                   |  50%  |                                                                              |======================================                                |  54%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |========================================                              |  58%  |                                                                              |===========================================                           |  62%  |                                                                              |==============================================                        |  65%  |                                                                              |================================================                      |  69%  |                                                                              |===================================================                   |  73%  |                                                                              |======================================================                |  77%  |                                                                              |=========================================================             |  81%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |===========================================================           |  85%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |==============================================================        |  88%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=================================================================     |  92%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |===================================================================   |  96%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |======================================================================| 100%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 205</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3980</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Calculating nodesplit for: almotriptan_1 vs sumatriptan_1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 180</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 203</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 436</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4072</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plot results</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span> <span class="co"># Plot density plots of posterior densities</span></span></span>
 <span class="r-plt img"><img src="nma.nodesplit-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span> <span class="co"># Plot forest plots of direct and indirect evidence</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Print and summarise results</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span> <span class="co"># Plot forest plots of direct and indirect evidence</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Print and summarise results</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Node-splitting analysis of inconsistency</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Comparison                         | p-value| Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:----------------------------------|-------:|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_1 vs almotriptan_1    |   0.342|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.116| -0.142|  0.363|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.285|  0.054|  0.520|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.209|  0.042|  0.384|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_1 vs almotriptan_1    |   0.495|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.118| -0.135|  0.374|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.286|  0.059|  0.519|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.206|  0.041|  0.378|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1 vs sumatriptan_1     |   0.107|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.195| -0.065|  0.442|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.484|  0.313|  0.660|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.384|  0.244|  0.523|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1 vs sumatriptan_1     |   0.171|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.187| -0.045|  0.434|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.482|  0.303|  0.661|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.389|  0.250|  0.528|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_1 vs sumatriptan_1     |   0.080|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        | -0.399| -0.688| -0.118|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        | -0.023| -0.227|  0.173|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        | -0.151| -0.319|  0.004|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_1 vs sumatriptan_1     |   0.140|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        | -0.393| -0.672| -0.108|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        | -0.024| -0.226|  0.169|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        | -0.151| -0.312|  0.021|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.5 vs sumatriptan_0.5 |   0.298|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.285|  0.020|  0.538|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.016| -0.409|  0.459|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.215| -0.016|  0.445|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.5 vs sumatriptan_0.5 |   0.432|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.282|  0.025|  0.550|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.020| -0.427|  0.442|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.214| -0.005|  0.431|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span> <span class="co"># Generate a data frame of summary results</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span> <span class="co"># Generate a data frame of summary results</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            Comparison Evidence Median   2.5%  97.5% p.value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     zolmitriptan_1 vs almotriptan_1   Direct  0.116 -0.142  0.363   0.342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     zolmitriptan_1 vs almotriptan_1 Indirect  0.285  0.054  0.520   0.342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     zolmitriptan_1 vs almotriptan_1      NMA  0.209  0.042  0.384   0.342</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      rizatriptan_1 vs sumatriptan_1   Direct  0.195 -0.065  0.442   0.107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      rizatriptan_1 vs sumatriptan_1 Indirect  0.484  0.313  0.660   0.107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      rizatriptan_1 vs sumatriptan_1      NMA  0.384  0.244  0.523   0.107</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      almotriptan_1 vs sumatriptan_1   Direct -0.399 -0.688 -0.118   0.080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      almotriptan_1 vs sumatriptan_1 Indirect -0.023 -0.227  0.173   0.080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      almotriptan_1 vs sumatriptan_1      NMA -0.151 -0.319  0.004   0.080</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 rizatriptan_0.5 vs sumatriptan_0.5   Direct  0.285  0.020  0.538   0.298</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 rizatriptan_0.5 vs sumatriptan_0.5 Indirect  0.016 -0.409  0.459   0.298</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 rizatriptan_0.5 vs sumatriptan_0.5      NMA  0.215 -0.016  0.445   0.298</span>
-<span class="r-in"><span class="co"># }</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     zolmitriptan_1 vs almotriptan_1   Direct  0.118 -0.135  0.374   0.495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     zolmitriptan_1 vs almotriptan_1 Indirect  0.286  0.059  0.519   0.495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     zolmitriptan_1 vs almotriptan_1      NMA  0.206  0.041  0.378   0.495</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      rizatriptan_1 vs sumatriptan_1   Direct  0.187 -0.045  0.434   0.171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      rizatriptan_1 vs sumatriptan_1 Indirect  0.482  0.303  0.661   0.171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      rizatriptan_1 vs sumatriptan_1      NMA  0.389  0.250  0.528   0.171</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      almotriptan_1 vs sumatriptan_1   Direct -0.393 -0.672 -0.108   0.140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      almotriptan_1 vs sumatriptan_1 Indirect -0.024 -0.226  0.169   0.140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      almotriptan_1 vs sumatriptan_1      NMA -0.151 -0.312  0.021   0.140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 rizatriptan_0.5 vs sumatriptan_0.5   Direct  0.282  0.025  0.550   0.432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 rizatriptan_0.5 vs sumatriptan_0.5 Indirect  0.020 -0.427  0.442   0.432</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 rizatriptan_0.5 vs sumatriptan_0.5      NMA  0.214 -0.005  0.431   0.432</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -413,7 +434,7 @@ of posterior densities for direct and indirect evidence.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

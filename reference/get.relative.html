@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -57,13 +57,15 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get.relative</span><span class="op">(</span><span class="va">mbnma</span>, treatments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, eform <span class="op">=</span> <span class="cn">FALSE</span>, lim <span class="op">=</span> <span class="st">"cred"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get.relative</span><span class="op">(</span><span class="va">mbnma</span>, treatments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, eform <span class="op">=</span> <span class="cn">FALSE</span>, lim <span class="op">=</span> <span class="st">"cred"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>mbnma</dt>
 <dd><p>An object of <code>class("mbnma")</code></p></dd>
+
+
 <dt>treatments</dt>
 <dd><p>A list whose elements each represent different treatments.
 Treatment is defined as a combination of agent and dose. Only agents specified in
@@ -71,15 +73,25 @@ Treatment is defined as a combination of agent and dose. Only agents specified i
 agent and contains a numeric vector of doses. Relative effects will be calculated between
 all treatments specified in <code>treatments</code>. If <code>treatments</code> is left empty then the maximum
 dose for all agents in <code>mbnma</code> will be used as the default.</p></dd>
+
+
 <dt>eform</dt>
 <dd><p>Whether outputted results should be presented in their exponential form (e.g. for
 models with log or logit link functions)</p></dd>
+
+
 <dt>lim</dt>
 <dd><p>Specifies calculation of either 95% credible intervals (<code>lim="cred"</code>) or 95% prediction intervals (<code>lim="pred"</code>).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>An array of <code>length(treatments) x length(treatments) x nsims</code>, where <code>nsims</code>is the number of iterations monitored in <code>mbnma</code>. The array contains the individual
+    
+
+<p>An array of <code>length(treatments) x length(treatments) x nsims</code>, where <code>nsims</code></p>
+
+
+<p>is the number of iterations monitored in <code>mbnma</code>. The array contains the individual
 MCMC values for each relative effect calculated between all <code>treatments</code> on the link scale
 specified in the <code>mbnma</code> model. The direction of effect is for the row-defined treatment
 versus the column-defined
@@ -88,14 +100,14 @@ treatment.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Using the osteoarthritis data</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">osteopain</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using the osteoarthritis data</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">osteopain</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `class` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="va">expon</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">expon</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `normal` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `identity` based on assigned value for `likelihood`</span>
@@ -109,11 +121,11 @@ treatment.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Calculate relative effects between:</span></span>
-<span class="r-in"><span class="co"># Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d</span></span>
-<span class="r-in"><span class="va">rel.eff</span> <span class="op">&lt;-</span> <span class="fu">get.relative</span><span class="op">(</span><span class="va">expon</span>, treatments<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Celebrex"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">200</span><span class="op">)</span>, <span class="st">"Tramadol"</span><span class="op">=</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Calculate relative effects between:</span></span></span>
+<span class="r-in"><span><span class="co"># Celebrex 100mg/d, Celebrex 200mg/d, Tramadol 100mg/d</span></span></span>
+<span class="r-in"><span><span class="va">rel.eff</span> <span class="op">&lt;-</span> <span class="fu">get.relative</span><span class="op">(</span><span class="va">expon</span>, treatments<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Celebrex"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">200</span><span class="op">)</span>, <span class="st">"Tramadol"</span><span class="op">=</span><span class="fl">100</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -128,7 +140,7 @@ treatment.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

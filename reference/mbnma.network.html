@@ -18,7 +18,7 @@ to this object.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -59,75 +59,99 @@ to this object.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="co"># S3 method for mbnma.network</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span>
-  <span class="va">x</span>,
-  level <span class="op">=</span> <span class="st">"treatment"</span>,
-  v.color <span class="op">=</span> <span class="st">"connect"</span>,
-  doselink <span class="op">=</span> <span class="cn">NULL</span>,
-  layout <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_in_circle.html" class="external-link">in_circle</a></span><span class="op">(</span><span class="op">)</span>,
-  remove.loops <span class="op">=</span> <span class="cn">FALSE</span>,
-  edge.scale <span class="op">=</span> <span class="fl">1</span>,
-  v.scale <span class="op">=</span> <span class="cn">NULL</span>,
-  label.distance <span class="op">=</span> <span class="fl">0</span>,
-  legend <span class="op">=</span> <span class="cn">TRUE</span>,
-  legend.x <span class="op">=</span> <span class="st">"bottomleft"</span>,
-  legend.y <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>
-<span class="op">)</span>
-
-<span class="fu">mbnma.network</span><span class="op">(</span><span class="va">data.ab</span>, description <span class="op">=</span> <span class="st">"Network"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for mbnma.network</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
+<span>  <span class="va">x</span>,</span>
+<span>  level <span class="op">=</span> <span class="st">"treatment"</span>,</span>
+<span>  v.color <span class="op">=</span> <span class="st">"connect"</span>,</span>
+<span>  doselink <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  layout <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_in_circle.html" class="external-link">in_circle</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  remove.loops <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  edge.scale <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  v.scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label.distance <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  legend.x <span class="op">=</span> <span class="st">"bottomleft"</span>,</span>
+<span>  legend.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="va">...</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">mbnma.network</span><span class="op">(</span><span class="va">data.ab</span>, description <span class="op">=</span> <span class="st">"Network"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p>An object of class <code>mbnma.network</code>.</p></dd>
+
+
 <dt>level</dt>
 <dd><p>A string indicating whether nodes/facets should represent <code>"treatment"</code>
 or <code>"agent"</code> in the plot. Can be used to examine the expected impact of modelling
 dose-response in terms of network connectivity.</p></dd>
+
+
 <dt>v.color</dt>
 <dd><p>Can take either <code>"connect"</code> (the default) to indicate that nodes should
 only be coloured if they are connected to the network reference treatment (indicates
 network connectivity) or <code>"agent"</code> to colour nodes by agent.</p></dd>
+
+
 <dt>doselink</dt>
 <dd><p>If given an integer value it indicates that connections via the dose-response
 relationship with placebo should be plotted. The integer represents the minimum number of doses
 from which a dose-response function could be estimated and is equivalent to the number of
 parameters in the desired dose-response function plus one. If left as <code>NULL</code> (the default), connections
 to placebo via dose-response relationships will not be included.</p></dd>
+
+
 <dt>layout</dt>
 <dd><p>An igraph layout specification. This is a function specifying an igraph
 layout that determines the arrangement of the vertices (nodes). The default
 <code>igraph::as_circle()</code> arranged vertices in a circle. Two other useful layouts for
 network plots are: <code><a href="https://rdrr.io/pkg/igraph/man/layout_as_star.html" class="external-link">igraph::as_star()</a></code>, <code><a href="https://rdrr.io/pkg/igraph/man/layout_with_fr.html" class="external-link">igraph::with_fr()</a></code>. Others can be found
 in <code><a href="https://rdrr.io/pkg/igraph/man/layout_.html" class="external-link">layout_</a></code></p></dd>
+
+
 <dt>remove.loops</dt>
 <dd><p>A boolean value indicating whether to include loops that
 indicate comparisons within a node.</p></dd>
+
+
 <dt>edge.scale</dt>
 <dd><p>A number to scale the thickness of connecting lines
 (edges). Line thickness is proportional to the number of studies for a
 given comparison. Set to 0 to make thickness equal for all comparisons.</p></dd>
+
+
 <dt>v.scale</dt>
 <dd><p>A number with which to scale the size of the nodes. If the variable <code>N</code>
 (to indicate the numbers of participants in each study arm) is included in the
 dataset then the size of the nodes will be proportional to the number of participants
 within a treatment/agent in the network.</p></dd>
+
+
 <dt>label.distance</dt>
 <dd><p>A number scaling the distance of labels from the nodes
 to improve readability. The labels will be directly on top of the nodes if
 the default of 0 is used. Option only applicable if <code>layout_in_circle</code> is
 set to <code>TRUE</code>.</p></dd>
+
+
 <dt>legend</dt>
 <dd><p>A boolean object to indicate whether or not to plot a legend to indicate which node colour
 corresponds to which agent if <code>v.color="agent"</code>. Default is <code>TRUE</code>.</p></dd>
+
+
 <dt>legend.x, legend.y</dt>
 <dd><p>The x and y co-ordinates to be used to position the legend. They can be specified
 by keyword or in any way which is accepted by <code>xy.coords</code>.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Options for plotting in <code>igraph</code>.</p></dd>
+
+
 <dt>data.ab</dt>
 <dd><p>A data frame of arm-level data in "long" format containing the columns:</p><ul><li><p><code>studyID</code> Study identifiers</p></li>
 <li><p><code>dose</code> Numeric data indicating the dose (must take positive values)</p></li>
@@ -145,14 +169,21 @@ for poisson data.</p></li>
 <li><p><code>class</code> An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.</p></li>
 </ul></dd>
+
+
 <dt>description</dt>
 <dd><p>Optional. Short description of the network.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: An object of <code>class("igraph")</code> - any functions from the <code>igraph</code> package
-can be applied to this object to change its characteristics.
-<code>mbnma.network()</code>: An object of <code>class("mbnma.network")</code> which is a list containing:</p><ul><li><p><code>description</code> A short description of the network</p></li>
+    
+
+<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: An object of <code>class("igraph")</code> - any functions from the <code>igraph</code> package
+can be applied to this object to change its characteristics.</p>
+
+
+<p><code>mbnma.network()</code>: An object of <code>class("mbnma.network")</code> which is a list containing:</p><ul><li><p><code>description</code> A short description of the network</p></li>
 <li><p><code>data.ab</code> A data frame containing the arm-level network data (treatment identifiers will have
 been recoded to a sequential numeric code)</p></li>
 <li><p><code>studyID</code> A character vector with the IDs of included studies</p></li>
@@ -182,56 +213,56 @@ be included.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Create an mbnma.network object from the data</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create an mbnma.network object from the data</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot from the data</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot from the data</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot at the agent level that removes loops indicating comparisons</span></span>
-<span class="r-in"><span class="co">#within a node</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot at the agent level that removes loops indicating comparisons</span></span></span>
+<span class="r-in"><span><span class="co">#within a node</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot at the treatment level that colours nodes by agent</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, v.color<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot at the treatment level that colours nodes by agent</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, v.color<span class="op">=</span><span class="st">"agent"</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Generate a network plot that includes connections via the dose-response function</span></span>
-<span class="r-in"><span class="co"># For a one parameter dose-response function (e.g. exponential)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">1</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate a network plot that includes connections via the dose-response function</span></span></span>
+<span class="r-in"><span><span class="co"># For a one parameter dose-response function (e.g. exponential)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">1</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dose-response connections to placebo plotted based on a dose-response</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>                    function with 0 degrees of freedom</span>
 <span class="r-plt img"><img src="mbnma.network-4.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># For a two parameter dose-response function (e.g. Emax)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">2</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># For a two parameter dose-response function (e.g. Emax)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">2</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dose-response connections to placebo plotted based on a dose-response</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>                    function with 1 degrees of freedom</span>
 <span class="r-plt img"><img src="mbnma.network-5.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Arrange network plot in a star with the reference treatment in the centre</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Arrange network plot in a star with the reference treatment in the centre</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co">#### Plot a network with no placebo data included ####</span></span>
-<span class="r-in"><span class="co"># Make data with no placebo</span></span>
-<span class="r-in"><span class="va">noplac.df</span> <span class="op">&lt;-</span> <span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">[</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">$</span><span class="va">narm</span><span class="op">&gt;</span><span class="fl">2</span> <span class="op">&amp;</span> <span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">$</span><span class="va">agent</span><span class="op">!=</span><span class="fl">1</span>,<span class="op">]</span></span>
-<span class="r-in"><span class="va">net.noplac</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">noplac.df</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#### Plot a network with no placebo data included ####</span></span></span>
+<span class="r-in"><span><span class="co"># Make data with no placebo</span></span></span>
+<span class="r-in"><span><span class="va">noplac.df</span> <span class="op">&lt;-</span> <span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">[</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">$</span><span class="va">narm</span><span class="op">&gt;</span><span class="fl">2</span> <span class="op">&amp;</span> <span class="va">network</span><span class="op">$</span><span class="va">data.ab</span><span class="op">$</span><span class="va">agent</span><span class="op">!=</span><span class="fl">1</span>,<span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">net.noplac</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">noplac.df</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Plotting network automatically plots connections to Placebo via dose-response</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net.noplac</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Plotting network automatically plots connections to Placebo via dose-response</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">net.noplac</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The following treatments/agents are not connected</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> to the network reference:</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> 4_1</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> 4_2</span>
 <span class="r-plt img"><img src="mbnma.network-7.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span class="co"># Using the triptans headache dataset</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="co"># Using the triptans headache dataset</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 182 × 6</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    studyID AuthorYear              n     r  dose agent       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>       </span>
@@ -246,13 +277,13 @@ be included.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>       5 Cady G 2006           167    52     0 placebo     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>       5 Cady G 2006           331   195     1 rizatriptan </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 172 more rows</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Define network</span></span>
-<span class="r-in"><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">triptans</span>, description<span class="op">=</span><span class="st">"Example network"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Define network</span></span></span>
+<span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">triptans</span>, description<span class="op">=</span><span class="st">"Example network"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">Description: Example network </span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of studies: 70 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Number of treatments: 23 </span>
@@ -262,9 +293,9 @@ be included.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-8.png" alt="" width="700" height="433"></span>
-<span class="r-in"></span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -279,7 +310,7 @@ be included.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

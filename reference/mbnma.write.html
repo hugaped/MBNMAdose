@@ -18,7 +18,7 @@ meta-analysis (MBNMA)."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -59,18 +59,18 @@ meta-analysis (MBNMA).</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">mbnma.write</span><span class="op">(</span>
-  fun <span class="op">=</span> <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>,
-  method <span class="op">=</span> <span class="st">"common"</span>,
-  cor <span class="op">=</span> <span class="cn">TRUE</span>,
-  cor.prior <span class="op">=</span> <span class="st">"wishart"</span>,
-  omega <span class="op">=</span> <span class="cn">NULL</span>,
-  om <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rel <span class="op">=</span> <span class="fl">5</span>, abs <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,
-  class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,
-  UME <span class="op">=</span> <span class="cn">FALSE</span>,
-  likelihood <span class="op">=</span> <span class="st">"binomial"</span>,
-  link <span class="op">=</span> <span class="cn">NULL</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mbnma.write</span><span class="op">(</span></span>
+<span>  fun <span class="op">=</span> <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  cor <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cor.prior <span class="op">=</span> <span class="st">"wishart"</span>,</span>
+<span>  omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  om <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rel <span class="op">=</span> <span class="fl">5</span>, abs <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  UME <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  likelihood <span class="op">=</span> <span class="st">"binomial"</span>,</span>
+<span>  link <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -78,49 +78,70 @@ meta-analysis (MBNMA).</p>
     <dl><dt>fun</dt>
 <dd><p>An object of <code>class("dosefun")</code> that specifies a functional form to be assigned to the
 dose-response. See Details.</p></dd>
+
+
 <dt>method</dt>
 <dd><p>Can take either <code>"common"</code> or <code>"random"</code> to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).</p></dd>
+
+
 <dt>cor</dt>
 <dd><p>A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters. This is
 automatically set to <code>FALSE</code> if class effects are modelled or if multiple dose-response
 functions are fitted.</p></dd>
+
+
 <dt>cor.prior</dt>
 <dd><p>NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
 between relative effects. Must be kept as <code>"wishart"</code></p></dd>
+
+
 <dt>omega</dt>
 <dd><p>A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between dose-response parameters (see Details for dose-response functions). <code>omega</code> must
 be a symmetric positive definite matrix with dimensions equal to the number of dose-response parameters modelled using
 relative effects (<code>"rel"</code>). If left as <code>NULL</code> (the default) a diagonal matrix with elements equal to 1
 is used.</p></dd>
+
+
 <dt>om</dt>
 <dd><p>a list with two elements that report the maximum relative (<code>"rel"</code>) and maximum absolute (<code>"abs"</code>) efficacies
 on the link scale.</p></dd>
+
+
 <dt>class.effect</dt>
 <dd><p>A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
 (<code>"common"</code> or <code>"random"</code>). Element names should match dose-response parameter names.
 Note that assuming class effects on some dose-response parameters may be unreasonable if
 the range of doses differ substantially across agents within a class.</p></dd>
+
+
 <dt>UME</dt>
 <dd><p>A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.</p></dd>
+
+
 <dt>likelihood</dt>
 <dd><p>A string indicating the likelihood to use in the model. Can take either <code>"binomial"</code>,
 <code>"normal"</code> or <code>"poisson"</code>. If left as <code>NULL</code> the likelihood will be inferred from the data.</p></dd>
+
+
 <dt>link</dt>
 <dd><p>A string indicating the link function to use in the model. Can take any link function
 defined within JAGS (e.g. <code>"logit"</code>, <code>"log"</code>, <code>"probit"</code>, <code>"cloglog"</code>), be assigned the value <code>"identity"</code> for
 an identity link function, or be assigned the value <code>"smd"</code> for modelling Standardised Mean Differences using an
 identity link function. If left as <code>NULL</code> the link function will be automatically assigned based
 on the likelihood.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>A single long character string containing the JAGS model generated
+    
+
+<p>A single long character string containing the JAGS model generated
 based on the arguments passed to the function.</p>
     </div>
     <div id="details">
@@ -134,52 +155,52 @@ by specifying the relative scale of variances between the dose-response paramete
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># Write model code for a model with an exponential dose-response function,</span></span>
-<span class="r-in"><span class="co"># with random treatment effects</span></span>
-<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">             method<span class="op">=</span><span class="st">"random"</span>,</span>
-<span class="r-in">             likelihood<span class="op">=</span><span class="st">"binomial"</span>,</span>
-<span class="r-in">             link<span class="op">=</span><span class="st">"logit"</span></span>
-<span class="r-in">             <span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Write model code for a model with an exponential dose-response function,</span></span></span>
+<span class="r-in"><span><span class="co"># with random treatment effects</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>,</span></span>
+<span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"binomial"</span>,</span></span>
+<span class="r-in"><span>             link<span class="op">=</span><span class="st">"logit"</span></span></span>
+<span class="r-in"><span>             <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials w[i,1] &lt;- 0 delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study rhat[i,k] &lt;- psi[i,k] * n[i,k] resdev[i,k] &lt;- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (n[i,k] - r[i,k]) * (log(n[i,k] - r[i,k]) - log(n[i,k] - rhat[i,k]))) r[i,k] ~ dbin(psi[i,k], n[i,k]) logit(psi[i,k]) &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- (s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))) - (s.beta.1[agent[i,1]] * (1 - exp(- dose[i,1]))) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] ~ dnorm(md[i,k], taud[i,k]) md[i,k] &lt;- DR[i,k] + sw[i,k] taud[i,k] &lt;- tau * 2*(k-1)/k w[i,k] &lt;- delta[i,k] - DR[i,k] sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1) } } for (k in 2:Nagent){ # Priors on relative treatment effects emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  sd ~ dunif(0, 5) tau &lt;- pow(sd, -2) # Model ends }</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Write model code for a model with an Emax dose-response function,</span></span>
-<span class="r-in"><span class="co"># relative effects modelled on Emax with a random effects model,</span></span>
-<span class="r-in"><span class="co"># a single parameter estimated for ED50 with a common effects model</span></span>
-<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span>,</span>
-<span class="r-in">             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span>
-<span class="r-in">             link<span class="op">=</span><span class="st">"identity"</span></span>
-<span class="r-in">             <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
+<span class="r-in"><span><span class="co"># relative effects modelled on Emax with a random effects model,</span></span></span>
+<span class="r-in"><span><span class="co"># a single parameter estimated for ED50 with a common effects model</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span></span>
+<span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span></span></span>
+<span class="r-in"><span>             <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] &lt;- DR[i,k] } } for (k in 2:Nagent){ # Priors on relative treatment effects s.beta.2[k] &lt;- ed50 emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  ed50 ~ dnorm(0,0.001) # Model ends }</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Write model code for a model with an Emax dose-response function,</span></span>
-<span class="r-in"><span class="co"># relative effects modelled on Emax and ED50.</span></span>
-<span class="r-in"><span class="co"># Class effects modelled on ED50 with common effects</span></span>
-<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span>
-<span class="r-in">             link<span class="op">=</span><span class="st">"identity"</span>,</span>
-<span class="r-in">             class.effect<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ed50"</span><span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span>
-<span class="r-in">             <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
+<span class="r-in"><span><span class="co"># relative effects modelled on Emax and ED50.</span></span></span>
+<span class="r-in"><span><span class="co"># Class effects modelled on ED50 with common effects</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span></span>
+<span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span>,</span></span>
+<span class="r-in"><span>             class.effect<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ed50"</span><span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>             <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Class effects cannot be modelled with correlation between dose-response relative effects - correlation will be ignored</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] &lt;- DR[i,k] } } for (k in 2:Nagent){ # Priors on relative treatment effects ed50[k]  &lt;- ED50[class[k]] s.beta.2[k] &lt;- ed50[k] emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } for (k in 2:Nclass){ # Priors on relative class effects ED50[k] ~ dnorm(0,0.001) } totresdev &lt;- sum(resstudydev[])  # Model ends }</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># Write model code for a model with an Emax dose-response function,</span></span>
-<span class="r-in"><span class="co"># relative effects modelled on Emax and ED50 with a</span></span>
-<span class="r-in"><span class="co"># random effects model that automatically models a correlation between</span></span>
-<span class="r-in"><span class="co"># both parameters.</span></span>
-<span class="r-in"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span class="r-in">             method<span class="op">=</span><span class="st">"random"</span>,</span>
-<span class="r-in">             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span>
-<span class="r-in">             link<span class="op">=</span><span class="st">"identity"</span>,</span>
-<span class="r-in">             <span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
+<span class="r-in"><span><span class="co"># relative effects modelled on Emax and ED50 with a</span></span></span>
+<span class="r-in"><span><span class="co"># random effects model that automatically models a correlation between</span></span></span>
+<span class="r-in"><span><span class="co"># both parameters.</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">mbnma.write</span><span class="op">(</span>fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>,</span></span>
+<span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span></span>
+<span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span>,</span></span>
+<span class="r-in"><span>             <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials w[i,1] &lt;- 0 delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] ~ dnorm(md[i,k], taud[i,k]) md[i,k] &lt;- DR[i,k] + sw[i,k] taud[i,k] &lt;- tau * 2*(k-1)/k w[i,k] &lt;- delta[i,k] - DR[i,k] sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1) } } for (k in 2:Nagent){ # Priors on relative treatment effects mult[1:2,k] ~ dmnorm(d.prior[], inv.R[1:2, 1:2]) ed50[k] &lt;- mult[2,k] s.beta.2[k] &lt;- ed50[k] emax[k] &lt;- mult[1,k] s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  for (p in 1:2) { d.prior[p] &lt;- 0 }  inv.R ~ dwish(omega[,], 2) sd ~ dunif(0, 5) tau &lt;- pow(sd, -2) # Model ends }</span>
 </code></pre></div>
     </div>
@@ -195,7 +216,7 @@ by specifying the relative scale of variances between the dose-response paramete
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>

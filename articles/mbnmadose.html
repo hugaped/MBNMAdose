@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
       </span>
     </div>
 
@@ -74,7 +74,7 @@
       <h1 data-toc-skip>MBNMAdose for dose-response Model-Based Network Meta-Analysis</h1>
                         <h4 data-toc-skip class="author">Hugo Pedder</h4>
             
-            <h4 data-toc-skip class="date">2022-03-16</h4>
+            <h4 data-toc-skip class="date">2022-10-31</h4>
       
       
       <div class="hidden name"><code>mbnmadose.Rmd</code></div>
@@ -186,7 +186,7 @@
 </h3>
 <p><code>ssri</code> is from a systematic review examining the efficacy of different doses of SSRI antidepressant drugs and placebo <span class="citation">(Furukawa et al. 2019)</span>. The response to treatment is defined as a 50% reduction in depressive symptoms after 8 weeks (4-12 week range) follow-up. The dataset includes 60 RCTs comparing 5 different SSRIs with placebo.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span>, digits<span class="op">=</span><span class="fl">2</span><span class="op">)</span> </code></pre></div>
+<code class="sourceCode R"><span><span class="fu">kable</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span>, digits<span class="op">=</span><span class="fl">2</span><span class="op">)</span> </span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">studyID</th>
@@ -477,20 +477,20 @@
 </h2>
 <p>Before embarking on an analysis, the first step is to have a look at the raw data. Two features (network connectivity and dose-response relationship) are particularly important for MBNMA. For this we want to get our dataset into the right format for the package. We can do this using <code><a href="../reference/mbnma.network.html">mbnma.network()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Using the triptans dataset</span>
-<span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span>
-<span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span>
-<span class="co">#&gt; Number of treatments: 23 </span>
-<span class="co">#&gt; Number of agents: 8 </span>
-<span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 4 (3, 6)</span>
-<span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Using the triptans dataset</span></span>
+<span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span></span>
+<span><span class="co">#&gt; Number of treatments: 23 </span></span>
+<span><span class="co">#&gt; Number of agents: 8 </span></span>
+<span><span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 4 (3, 6)</span></span>
+<span><span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span></code></pre></div>
 <p>This function takes a dataset with the columns:</p>
 <ul>
 <li>
@@ -548,92 +548,92 @@
 <p>In <code>MBNMAdose</code> these plots are generated using <code>igraph</code>, and can be plotted by calling <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>. The generated plots are objects of <code>class("igraph")</code> meaning that, in addition to the options specified in <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>, various <code>igraph</code> functions can subsequently be used to make more detailed edits to them.</p>
 <p>Within these network plots, vertices are automatically aligned in a circle (as the default) and can be tidied by shifting the label distance away from the nodes.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Prepare data using the triptans dataset</span>
-<span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span>
-<span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span>
-<span class="co">#&gt; Number of treatments: 23 </span>
-<span class="co">#&gt; Number of agents: 8 </span>
-<span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 4 (3, 6)</span>
-<span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-
-<span class="co"># Draw network plot</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Prepare data using the triptans dataset</span></span>
+<span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span></span>
+<span><span class="co">#&gt; Number of treatments: 23 </span></span>
+<span><span class="co">#&gt; Number of agents: 8 </span></span>
+<span><span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 4 (3, 6)</span></span>
+<span><span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span></span>
+<span><span class="co"># Draw network plot</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 <p>If some vertices are not connected to the network reference treatment through any pathway of head-to-head evidence, a warning will be given. The nodes that are coloured white represent these disconnected vertices.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Prepare data using the gout dataset</span>
-<span class="va">goutnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">gout</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">goutnet</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 10 </span>
-<span class="co">#&gt; Number of treatments: 19 </span>
-<span class="co">#&gt; Number of agents: 6 </span>
-<span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 5 (3, 6)</span>
-<span class="co">#&gt; Agent-level network is <span style="color: #BB0000; font-weight: bold;">DISCONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co">#&gt; Treatment-level network is <span style="color: #BB0000; font-weight: bold;">DISCONNECTED</span><span style="font-weight: bold;"> </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Prepare data using the gout dataset</span></span>
+<span><span class="va">goutnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">gout</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">goutnet</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 10 </span></span>
+<span><span class="co">#&gt; Number of treatments: 19 </span></span>
+<span><span class="co">#&gt; Number of agents: 6 </span></span>
+<span><span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 5 (3, 6)</span></span>
+<span><span class="co">#&gt; Agent-level network is <span style="color: #BB0000; font-weight: bold;">DISCONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co">#&gt; Treatment-level network is <span style="color: #BB0000; font-weight: bold;">DISCONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; Allo_245</span>
-<span class="co">#&gt; Allo_256</span>
-<span class="co">#&gt; Allo_300</span>
-<span class="co">#&gt; Allo_400</span>
-<span class="co">#&gt; Benz_50</span>
-<span class="co">#&gt; Benz_139</span>
-<span class="co">#&gt; Benz_143</span>
-<span class="co">#&gt; Benz_200</span>
-<span class="co">#&gt; Febu_40</span>
-<span class="co">#&gt; Febu_80</span>
-<span class="co">#&gt; Febu_120</span>
-<span class="co">#&gt; RDEA_100</span>
-<span class="co">#&gt; RDEA_200</span>
-<span class="co">#&gt; RDEA_400</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; Allo_245</span></span>
+<span><span class="co">#&gt; Allo_256</span></span>
+<span><span class="co">#&gt; Allo_300</span></span>
+<span><span class="co">#&gt; Allo_400</span></span>
+<span><span class="co">#&gt; Benz_50</span></span>
+<span><span class="co">#&gt; Benz_139</span></span>
+<span><span class="co">#&gt; Benz_143</span></span>
+<span><span class="co">#&gt; Benz_200</span></span>
+<span><span class="co">#&gt; Febu_40</span></span>
+<span><span class="co">#&gt; Febu_80</span></span>
+<span><span class="co">#&gt; Febu_120</span></span>
+<span><span class="co">#&gt; RDEA_100</span></span>
+<span><span class="co">#&gt; RDEA_200</span></span>
+<span><span class="co">#&gt; RDEA_400</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <p>However, whilst at the treatment-level (specific dose of a specific agent), many of these vertices are disconnected, at the agent level they are connected (via different doses of the same agent), meaning that <em>via the dose-response relationship</em> it is possible to estimate results.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot at the agent-level</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; RDEA</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot at the agent-level</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; RDEA</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <p>One agent (RDEA) is still not connected to the network, but <code>MBNMAdose</code> allows agents to connect via a placebo response <em>even if they do not include placebo in a head-to-head trial</em> (see [Linking disconnected treatments via the dose-response relationship]).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, doselink <span class="op">=</span> <span class="fl">2</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>
-<span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span>
-<span class="co">#&gt;                    function with 1 degrees of freedom</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, doselink <span class="op">=</span> <span class="fl">2</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
+<span><span class="co">#&gt;                    function with 1 degrees of freedom</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 <p>It is also possible to plot a network at the treatment level but to colour the doses by the agent that they belong to.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Colour vertices by agent</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, v.color <span class="op">=</span> <span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; Allo_245</span>
-<span class="co">#&gt; Allo_256</span>
-<span class="co">#&gt; Allo_300</span>
-<span class="co">#&gt; Allo_400</span>
-<span class="co">#&gt; Benz_50</span>
-<span class="co">#&gt; Benz_139</span>
-<span class="co">#&gt; Benz_143</span>
-<span class="co">#&gt; Benz_200</span>
-<span class="co">#&gt; Febu_40</span>
-<span class="co">#&gt; Febu_80</span>
-<span class="co">#&gt; Febu_120</span>
-<span class="co">#&gt; RDEA_100</span>
-<span class="co">#&gt; RDEA_200</span>
-<span class="co">#&gt; RDEA_400</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Colour vertices by agent</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, v.color <span class="op">=</span> <span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; Allo_245</span></span>
+<span><span class="co">#&gt; Allo_256</span></span>
+<span><span class="co">#&gt; Allo_300</span></span>
+<span><span class="co">#&gt; Allo_400</span></span>
+<span><span class="co">#&gt; Benz_50</span></span>
+<span><span class="co">#&gt; Benz_139</span></span>
+<span><span class="co">#&gt; Benz_143</span></span>
+<span><span class="co">#&gt; Benz_200</span></span>
+<span><span class="co">#&gt; Febu_40</span></span>
+<span><span class="co">#&gt; Febu_80</span></span>
+<span><span class="co">#&gt; Febu_120</span></span>
+<span><span class="co">#&gt; RDEA_100</span></span>
+<span><span class="co">#&gt; RDEA_200</span></span>
+<span><span class="co">#&gt; RDEA_400</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 <p>Several further options exist to allow for inclusion of disconnected treatments, such as assuming some sort of common effect among agents within the same class. This is discussed in more detail later in the vignette.</p>
 </div>
@@ -642,55 +642,55 @@
 </h3>
 <p>In order to consider which functional forms may be appropriate for modelling the dose-response relationship, it is useful to look at results from a “split” network meta-analysis (NMA), in which each dose of an agent is considered as separate and unrelated (i.e. we are not assuming any dose-response relationship). The <code><a href="../reference/nma.run.html">nma.run()</a></code> function performs a simple NMA, and by default it drops studies that are disconnected at the treatment-level (since estimates for these will be very uncertain if included).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Run a random effect split NMA using the alogliptin dataset</span>
-<span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span>
-<span class="va">nma.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Run a random effect split NMA using the alogliptin dataset</span></span>
+<span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
+<span><span class="va">nma.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span>
-<span class="co">#&gt; $jagsresult</span>
-<span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp6v0Osl/file43d622e1ee0f", fit using jags,</span>
-<span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
-<span class="co">#&gt;  n.sims = 3000 iterations saved</span>
-<span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="co">#&gt; d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d[2]        -0.455   0.091   -0.638   -0.515   -0.454   -0.394   -0.273 1.001</span>
-<span class="co">#&gt; d[3]        -0.654   0.046   -0.744   -0.683   -0.655   -0.626   -0.563 1.002</span>
-<span class="co">#&gt; d[4]        -0.709   0.046   -0.799   -0.740   -0.710   -0.680   -0.614 1.001</span>
-<span class="co">#&gt; d[5]        -0.758   0.087   -0.922   -0.816   -0.760   -0.701   -0.579 1.002</span>
-<span class="co">#&gt; d[6]        -0.677   0.167   -1.003   -0.788   -0.675   -0.567   -0.343 1.001</span>
-<span class="co">#&gt; sd           0.123   0.028    0.075    0.104    0.120    0.140    0.182 1.001</span>
-<span class="co">#&gt; totresdev   46.819   9.885   29.257   39.720   46.135   53.227   68.483 1.001</span>
-<span class="co">#&gt; deviance  -124.495   9.885 -142.057 -131.594 -125.179 -118.087 -102.831 1.002</span>
-<span class="co">#&gt;           n.eff</span>
-<span class="co">#&gt; d[1]          1</span>
-<span class="co">#&gt; d[2]       3000</span>
-<span class="co">#&gt; d[3]       1700</span>
-<span class="co">#&gt; d[4]       3000</span>
-<span class="co">#&gt; d[5]       1700</span>
-<span class="co">#&gt; d[6]       2800</span>
-<span class="co">#&gt; sd         3000</span>
-<span class="co">#&gt; totresdev  3000</span>
-<span class="co">#&gt; deviance   3000</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span>
-<span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="co">#&gt; pD = 36.6 and DIC = -88.6</span>
-<span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $trt.labs</span>
-<span class="co">#&gt; [1] "Placebo_0"       "alogliptin_6.25" "alogliptin_12.5" "alogliptin_25"  </span>
-<span class="co">#&gt; [5] "alogliptin_50"   "alogliptin_100" </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $UME</span>
-<span class="co">#&gt; [1] FALSE</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; attr(,"class")</span>
-<span class="co">#&gt; [1] "nma"</span>
-
-<span class="co"># Draw plot of NMA estimates plotted by dose</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $jagsresult</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpSsz3D0/file47cc1325ed1d", fit using jags,</span></span>
+<span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
+<span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
+<span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
+<span><span class="co">#&gt; d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d[2]        -0.455   0.089   -0.632   -0.515   -0.457   -0.395   -0.273 1.001</span></span>
+<span><span class="co">#&gt; d[3]        -0.654   0.046   -0.742   -0.685   -0.655   -0.623   -0.561 1.002</span></span>
+<span><span class="co">#&gt; d[4]        -0.709   0.045   -0.796   -0.740   -0.709   -0.679   -0.620 1.001</span></span>
+<span><span class="co">#&gt; d[5]        -0.761   0.085   -0.924   -0.819   -0.761   -0.705   -0.593 1.001</span></span>
+<span><span class="co">#&gt; d[6]        -0.685   0.169   -1.011   -0.800   -0.686   -0.577   -0.329 1.002</span></span>
+<span><span class="co">#&gt; sd           0.123   0.028    0.075    0.103    0.121    0.140    0.184 1.002</span></span>
+<span><span class="co">#&gt; totresdev   47.386   9.587   30.597   40.581   46.638   53.458   67.822 1.001</span></span>
+<span><span class="co">#&gt; deviance  -123.928   9.587 -140.717 -130.733 -124.676 -117.856 -103.492 1.001</span></span>
+<span><span class="co">#&gt;           n.eff</span></span>
+<span><span class="co">#&gt; d[1]          1</span></span>
+<span><span class="co">#&gt; d[2]       2900</span></span>
+<span><span class="co">#&gt; d[3]       1300</span></span>
+<span><span class="co">#&gt; d[4]       3000</span></span>
+<span><span class="co">#&gt; d[5]       2600</span></span>
+<span><span class="co">#&gt; d[6]       1000</span></span>
+<span><span class="co">#&gt; sd         1700</span></span>
+<span><span class="co">#&gt; totresdev  2100</span></span>
+<span><span class="co">#&gt; deviance   2100</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
+<span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
+<span><span class="co">#&gt; pD = 36.9 and DIC = -87.8</span></span>
+<span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $trt.labs</span></span>
+<span><span class="co">#&gt; [1] "Placebo_0"       "alogliptin_6.25" "alogliptin_12.5" "alogliptin_25"  </span></span>
+<span><span class="co">#&gt; [5] "alogliptin_50"   "alogliptin_100" </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $UME</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; attr(,"class")</span></span>
+<span><span class="co">#&gt; [1] "nma"</span></span>
+<span></span>
+<span><span class="co"># Draw plot of NMA estimates plotted by dose</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
 <p>In the alogliptin dataset there appears to be a dose-response relationship, and it also appears to be non-linear.</p>
 <p>One additional use of <code><a href="../reference/nma.run.html">nma.run()</a></code> is that is can be used after fitting an MBNMA to ensure that fitting a dose-response function is not leading to poorer model fit than when conducting a conventional NMA. Comparing the total residual deviance between NMA and MBNMA models is useful to identify if introducing a dose-response relationship is leading to poorer model fit. However, it is important to note that if treatments are disconnected in the NMA and have been dropped (<code>drop.discon=TRUE</code>), there will be fewer observations present in the dataset, which will subsequently lead to lower pD and lower residual deviance, meaning that model fit statistics from NMA and MBNMA may not be directly comparable.</p>
@@ -746,128 +746,128 @@
 </h4>
 <p>An example MBNMA of the triptans dataset using an Emax dose-response function and common treatment effects that pool relative effects for each agent separately on both Emax and ED50 parameters follows:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Run an Emax dose-response MBNMA</span>
-<span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span>, 
-                   method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>
-<span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span>
-<span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Run an Emax dose-response MBNMA</span></span>
+<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span>, </span>
+<span>                   method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span></span>
+<span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Print neat summary of output</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; Dose-response MBNMA</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span>Dose-response function: emax</span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; Pooling method</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Method: Correlation modelled between relative effect dose-response parametersRandom effects estimated for relative effects</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span>
-<span class="co">#&gt; Between-study SD for relative effects        0.244 (0.161, 0.333)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
-<span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span>
-<span class="co">#&gt; |eletriptan   |emax[2]   | 2.5864| 2.1469| 3.2582|</span>
-<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8317| 1.4827| 2.4117|</span>
-<span class="co">#&gt; |frovatriptan |emax[4]   | 1.9523| 1.2803| 3.3867|</span>
-<span class="co">#&gt; |almotriptan  |emax[5]   | 1.8361| 1.3052| 3.1432|</span>
-<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.0992| 1.5627| 3.1407|</span>
-<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0792| 0.4218| 2.2481|</span>
-<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.4828| 1.8594| 3.9745|</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Parameter modelled on exponential scale to ensure it takes positive values</span>
-<span class="co">#&gt; on the natural scale</span>
-<span class="co">#&gt; Pooling: relative effects for each agent</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span>
-<span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span>
-<span class="co">#&gt; |eletriptan   |ed50[2]   | -0.6451| -1.2760| -0.0289|</span>
-<span class="co">#&gt; |sumatriptan  |ed50[3]   | -0.5039| -1.3825|  0.2663|</span>
-<span class="co">#&gt; |frovatriptan |ed50[4]   | -0.4594| -1.5938|  0.5782|</span>
-<span class="co">#&gt; |almotriptan  |ed50[5]   | -0.2784| -1.2189|  0.7669|</span>
-<span class="co">#&gt; |zolmitriptan |ed50[6]   | -0.3683| -1.2729|  0.4978|</span>
-<span class="co">#&gt; |naratriptan  |ed50[7]   | -0.1355| -1.3858|  1.0842|</span>
-<span class="co">#&gt; |rizatriptan  |ed50[8]   | -0.5830| -1.5005|  0.3889|</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span>
-<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 121.9</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Deviance = 1094.9</span>
-<span class="co">#&gt; Residual deviance = 191.8</span>
-<span class="co">#&gt; Deviance Information Criterion (DIC) = 1216.9</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Print neat summary of output</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; Dose-response MBNMA</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span>Dose-response function: emax</span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; Pooling method</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Method: Correlation modelled between relative effect dose-response parametersRandom effects estimated for relative effects</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span></span>
+<span><span class="co">#&gt; Between-study SD for relative effects        0.239 (0.157, 0.333)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span></span>
+<span><span class="co">#&gt; |eletriptan   |emax[2]   | 2.5980| 2.1459| 3.2355|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8328| 1.5030| 2.3985|</span></span>
+<span><span class="co">#&gt; |frovatriptan |emax[4]   | 1.9928| 1.3110| 3.4081|</span></span>
+<span><span class="co">#&gt; |almotriptan  |emax[5]   | 1.8513| 1.2915| 3.0805|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |emax[6]   | 2.0997| 1.5877| 3.0249|</span></span>
+<span><span class="co">#&gt; |naratriptan  |emax[7]   | 1.1020| 0.4795| 2.2578|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 2.5406| 1.9179| 3.9647|</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Parameter modelled on exponential scale to ensure it takes positive values</span></span>
+<span><span class="co">#&gt; on the natural scale</span></span>
+<span><span class="co">#&gt; Pooling: relative effects for each agent</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
+<span><span class="co">#&gt; |eletriptan   |ed50[2]   | -0.6183| -1.2682| -0.0477|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |ed50[3]   | -0.4919| -1.3062|  0.2260|</span></span>
+<span><span class="co">#&gt; |frovatriptan |ed50[4]   | -0.4319| -1.4976|  0.6798|</span></span>
+<span><span class="co">#&gt; |almotriptan  |ed50[5]   | -0.2355| -1.2965|  0.7493|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |ed50[6]   | -0.3502| -1.1956|  0.4580|</span></span>
+<span><span class="co">#&gt; |naratriptan  |ed50[7]   | -0.1366| -1.2832|  1.0993|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |ed50[8]   | -0.5300| -1.4707|  0.3754|</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 123.6</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance = 1094.7</span></span>
+<span><span class="co">#&gt; Residual deviance = 191.6</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1218.4</span></span></code></pre></div>
 <p>In this example the <code>emax</code> parameters are the maximum efficacy that can be achieved for each agent. The <code>ed50</code> parameters are the the dose at which 50% of the maximum efficacy is achieved for each agent. Results for ED50 are given on the log scale as it is constrained to be greater than zero. <code>sd</code> corresponds to the between-study SD (included because <code>method="random"</code>).</p>
 <p>Instead of estimating a separate relative effect for each agent, a simpler dose-response model that makes stronger assumptions could estimate a single parameter across the whole network for ED50, but still estimate a separate effect for each agent for Emax:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Emax model with single parameter estimated for Emax</span>
-<span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span>, 
-                  method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>
-<span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span>
-<span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Emax model with single parameter estimated for Emax</span></span>
+<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span>, </span>
+<span>                  method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span></span>
+<span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">emax</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; Dose-response MBNMA</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span>Dose-response function: emax</span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; Pooling method</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Method: Random effects estimated for relative effects</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span>
-<span class="co">#&gt; Between-study SD for relative effects        0.242 (0.155, 0.333)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
-<span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span>
-<span class="co">#&gt; |eletriptan   |emax[2]   | 2.8302| 2.3384| 3.5120|</span>
-<span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8898| 1.5979| 2.2946|</span>
-<span class="co">#&gt; |frovatriptan |emax[4]   | 2.0849| 1.3542| 2.9901|</span>
-<span class="co">#&gt; |almotriptan  |emax[5]   | 1.7629| 1.3349| 2.3391|</span>
-<span class="co">#&gt; |zolmitriptan |emax[6]   | 2.1072| 1.7037| 2.6583|</span>
-<span class="co">#&gt; |naratriptan  |emax[7]   | 1.0318| 0.4361| 1.7029|</span>
-<span class="co">#&gt; |rizatriptan  |emax[8]   | 2.7030| 2.1797| 3.4840|</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Parameter modelled on exponential scale to ensure it takes positive values</span>
-<span class="co">#&gt; on the natural scale</span>
-<span class="co">#&gt; Pooling: single parameter across all agents in the network</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Parameter |  Median|    2.5%| 97.5%|</span>
-<span class="co">#&gt; |:---------|-------:|-------:|-----:|</span>
-<span class="co">#&gt; |ed50      | -0.3796| -0.8773| 0.118|</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
-<span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span>
-<span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 119.5</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Deviance = 1094.4</span>
-<span class="co">#&gt; Residual deviance = 191.3</span>
-<span class="co">#&gt; Deviance Information Criterion (DIC) = 1213.9</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">emax</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; Dose-response MBNMA</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ========================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span>Dose-response function: emax</span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; Pooling method</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Method: Random effects estimated for relative effects</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span></span>
+<span><span class="co">#&gt; Between-study SD for relative effects        0.236 (0.159, 0.325)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|  97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|------:|------:|------:|</span></span>
+<span><span class="co">#&gt; |eletriptan   |emax[2]   | 2.8060| 2.3491| 3.4423|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |emax[3]   | 1.8776| 1.6078| 2.2501|</span></span>
+<span><span class="co">#&gt; |frovatriptan |emax[4]   | 2.0531| 1.4161| 2.9084|</span></span>
+<span><span class="co">#&gt; |almotriptan  |emax[5]   | 1.7541| 1.3264| 2.3055|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |emax[6]   | 2.0997| 1.6670| 2.6755|</span></span>
+<span><span class="co">#&gt; |naratriptan  |emax[7]   | 1.0160| 0.4480| 1.6614|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 2.6664| 2.1756| 3.4291|</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Parameter modelled on exponential scale to ensure it takes positive values</span></span>
+<span><span class="co">#&gt; on the natural scale</span></span>
+<span><span class="co">#&gt; Pooling: single parameter across all agents in the network</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Parameter |  Median|    2.5%|  97.5%|</span></span>
+<span><span class="co">#&gt; |:---------|-------:|-------:|------:|</span></span>
+<span><span class="co">#&gt; |ed50      | -0.4069| -0.8791| 0.0901|</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
+<span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 123.4</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Deviance = 1096.2</span></span>
+<span><span class="co">#&gt; Residual deviance = 193.1</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1219.6</span></span></code></pre></div>
 <p>In this example <code>ed50</code> only has a single parameter, which corresponds to the dose at which 50% of the maximum efficacy is achieved, assumed to be equal across all agents in the network.</p>
 </div>
 <div class="section level4">
@@ -891,19 +891,19 @@
 <p>Class effects can only be applied to dose-response parameters which vary by agent. In <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code> they are supplied as a list, in which each element is named following the name of the corresponding dose-response parameter as defined in the dose-response function. The names will therefore differ when using wrapper functions for <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>. The class effect for each dose-response parameter can be either <code>"common"</code>, in which the effects for each agent within the same class are constrained to a common class effect, or <code>"random"</code>, in which the effects for each agent within the same class are assumed to be randomly distributed around a shared class mean.</p>
 <p>When working with class effects in <code>MBNMAdose</code> a variable named <code>class</code> must be included in the original data frame provided to <code><a href="../reference/mbnma.network.html">mbnma.network()</a></code>. Below we assign a class for two similar agents in the dataset - Naproxcinod and Naproxen. We will estimate separate effects for all other agents, so we set their classes to be equal to their agents.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Using the osteoarthritis dataset</span>
-<span class="va">pain.df</span> <span class="op">&lt;-</span> <span class="va">osteopain</span>
-
-<span class="co"># Set class equal to agent for all agents</span>
-<span class="va">pain.df</span><span class="op">$</span><span class="va">class</span> <span class="op">&lt;-</span> <span class="va">pain.df</span><span class="op">$</span><span class="va">class</span>
-
-<span class="co"># Set a shared class (NSAID) only for Naproxcinod and Naproxen</span>
-<span class="va">pain.df</span><span class="op">$</span><span class="va">class</span><span class="op">[</span><span class="va">pain.df</span><span class="op">$</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> 
-  <span class="st">"NSAID"</span>
-
-<span class="co"># Run a restricted cubic spline MBNMA with a random class effect on beta.1</span>
-<span class="va">classnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">pain.df</span><span class="op">)</span>
-<span class="va">splines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">classnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.1<span class="op">=</span><span class="st">"random"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Using the osteoarthritis dataset</span></span>
+<span><span class="va">pain.df</span> <span class="op">&lt;-</span> <span class="va">osteopain</span></span>
+<span></span>
+<span><span class="co"># Set class equal to agent for all agents</span></span>
+<span><span class="va">pain.df</span><span class="op">$</span><span class="va">class</span> <span class="op">&lt;-</span> <span class="va">pain.df</span><span class="op">$</span><span class="va">class</span></span>
+<span></span>
+<span><span class="co"># Set a shared class (NSAID) only for Naproxcinod and Naproxen</span></span>
+<span><span class="va">pain.df</span><span class="op">$</span><span class="va">class</span><span class="op">[</span><span class="va">pain.df</span><span class="op">$</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="st">"NSAID"</span></span>
+<span></span>
+<span><span class="co"># Run a restricted cubic spline MBNMA with a random class effect on beta.1</span></span>
+<span><span class="va">classnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">pain.df</span><span class="op">)</span></span>
+<span><span class="va">splines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">classnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.1<span class="op">=</span><span class="st">"random"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Mean class effects are given in the output as <code>D.ed50</code>/<code>D.1</code> parameters. These can be interpreted as the effect of each class for Emax parameters (<code>beta.1</code>). Note the number of <code>D.ed50</code> parameters is therefore equal to the number of classes defined in the dataset.</p>
 <p>If we had specified that the class effects were <code>"random"</code>, each treatment effect for Emax (<code>beta.1</code>) would be assumed to be randomly distributed around its class mean with SD given in the output as <code>sd.D.ed50</code>/<code>sd.D.1</code>.</p>
 <p>Mean class effects are represented in the output by the upper case name of the dose-response parameter they correspond to. In this case, <code>BETA.1</code> is the class effects on <code>beta.1</code>, the first spline coefficient. The SD of the class effect is the SD of agents within a class for the dose-response parameter they correspond to. In this case <code>sd.BETA.1</code> is the within-class SD for <code>beta.1</code>.</p>
@@ -927,20 +927,20 @@
 <p>Different dose-response functions can be used for different agents within the network. This allows for the modelling of more complex dose-response functions in agents for which there are many doses available, and less complex functions in agents for which there are fewer doses available. Note that these models are typically less computationally stable than single dose-response function models, and they are likely to benefit less from modelling correlation between multiple dose-response parameters since there are fewer agents informing correlations between each dose-response parameter.</p>
 <p>This can be modeled using the <code><a href="../reference/dmulti.html">dmulti()</a></code> dose-response function and assigning a list of objects of class <code>"dosefun"</code> to it. Each element in the list corresponds to an agent in the network (the order of which should be the same as the order of agents in the <code>"mbnma.network"</code> object). A dose-response function for Placebo should be included in the list, though which function is used is typically irrelevant since evaluating the function at dose=0 will typically equal 0.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Using the depression SSRI dataset</span>
-<span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span>
-
-<span class="va">dr.funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dmulti.html">dmulti</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  <span class="st">"Placebo"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,
-  <span class="st">"citalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,
-  <span class="st">"escitalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,
-  <span class="st">"fluoxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,
-  <span class="st">"paroxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,
-  <span class="st">"sertraline"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
-  <span class="op">)</span><span class="op">)</span>
-
-<span class="va">multifun</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="va">dr.funs</span>, method<span class="op">=</span><span class="st">"common"</span>, n.iter<span class="op">=</span><span class="fl">50000</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">multifun</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Using the depression SSRI dataset</span></span>
+<span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dr.funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dmulti.html">dmulti</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Placebo"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="st">"citalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="st">"escitalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="st">"fluoxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="st">"paroxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
+<span>  <span class="st">"sertraline"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">multifun</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="va">dr.funs</span>, method<span class="op">=</span><span class="st">"common"</span>, n.iter<span class="op">=</span><span class="fl">50000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">multifun</span><span class="op">)</span></span></code></pre></div>
 <p>Because an MBNMA model with a linear dose-response function (<code>dpoly(degree=1)</code>) is mathematically equivalent to a standard NMA model, using agent-specific dose-response functions allows analysis of datasets that both include multiple doses of different drugs <em>and</em> interventions for which a dose-response relationship is not realistic (e.g. surgery) or difficult to assume (e.g. psychotherapy, exercise interventions). Interventions without a dose-response relationship can be coded in the dataset as different agents, each of which should be assigned a dose of 1, and these can then be modeled using a linear dose-response relationship, whilst agents with a plausible dose-response can be assigned a function that appropriately captures their dose-response relationship.</p>
 </div>
 <div class="section level4">
@@ -949,13 +949,13 @@
 <p>For a more flexible dose-response shape, various different splines can be fitted to the data by using <code><a href="../reference/dspline.html">dspline()</a></code>. This model is very flexible and can allow for a variety of non-monotonic dose-response relationships, though parameters can be difficult to interpret.</p>
 <p>To fit this model, the number/location of <code>knots</code> (the points at which the different spline pieces meet) should be specified. If a single number is given, it represents the the number of knots to be equally spaced across the dose range of each agent. Alternatively several probabilities can be given that represent the quantiles of the dose range for each agent at which knots should be located.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span>
-<span class="co"># ...is equivalent to </span>
-<span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span>
-
-<span class="co"># Using a natural cubic spline on the SSRI dataset</span>
-<span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span>
-<span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co"># ...is equivalent to </span></span>
+<span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Using a natural cubic spline on the SSRI dataset</span></span>
+<span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span></span>
+<span><span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="correlation-between-dose-response-parameters">Correlation between dose-response parameters<a class="anchor" aria-label="anchor" href="#correlation-between-dose-response-parameters"></a>
@@ -980,27 +980,27 @@
 <p>Users may wish to change these, perhaps in order to use more/less informative priors, but also because the default prior distributions in some models may lead to errors when compiling/updating models.</p>
 <p>If the model fails during compilation/updating (i.e. due to a problem in JAGS), <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code> will generate an error and return a list of arguments that <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code> used to generate the model. Within this (as within a model that has run successfully), the priors used by the model (in JAGS syntax) are stored within <code>"model.arg"</code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">$</span><span class="va">model.arg</span><span class="op">$</span><span class="va">priors</span><span class="op">)</span>
-<span class="co">#&gt; $mu</span>
-<span class="co">#&gt; [1] "dnorm(0,0.001)"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $sd</span>
-<span class="co">#&gt; [1] "dunif(0, 6.021)"</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $inv.R</span>
-<span class="co">#&gt; [1] "dwish(omega[,], 2)"</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mbnma</span><span class="op">$</span><span class="va">model.arg</span><span class="op">$</span><span class="va">priors</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $mu</span></span>
+<span><span class="co">#&gt; [1] "dnorm(0,0.001)"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $sd</span></span>
+<span><span class="co">#&gt; [1] "dunif(0, 6.021)"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $inv.R</span></span>
+<span><span class="co">#&gt; [1] "dwish(omega[,], 2)"</span></span></code></pre></div>
 <p>In this way a model can first be run with vague priors and then rerun with different priors, perhaps to allow successful computation, perhaps to provide more informative priors, or perhaps to run a sensitivity analysis with different priors. Increasing the precision of prior distributions only a little can also often improve convergence considerably.</p>
 <p>To change priors within a model, a list of replacements can be provided to <code>priors</code> in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>. The name of each element is the name of the parameter to change (without indices) and the value of the element is the JAGS distribution to use for the prior. This can include censoring or truncation if desired. Only the priors to be changed need to be specified - priors for parameters that aren’t specified will take default values.</p>
 <p>For example, if we want to use tighter priors for the half-normal SD parameters we could increase the precision:</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Define replacement prior</span>
-<span class="va">new.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>
-  sd <span class="op">=</span> <span class="st">"dnorm(0, 1) T(0,)"</span>
-  <span class="op">)</span>
-
-<span class="co"># Run an MBNMA model with new priors</span>
-<span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,
-                   priors<span class="op">=</span><span class="va">new.priors</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Define replacement prior</span></span>
+<span><span class="va">new.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  sd <span class="op">=</span> <span class="st">"dnorm(0, 1) T(0,)"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Run an MBNMA model with new priors</span></span>
+<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span>
+<span>                   priors<span class="op">=</span><span class="va">new.priors</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="pd-effective-number-of-parameters">pD (effective number of parameters)<a class="anchor" aria-label="anchor" href="#pd-effective-number-of-parameters"></a>
@@ -1031,66 +1031,66 @@
 </h3>
 <p>One of the strengths of dose-response MBNMA is that it allows treatments to be connected in a network that might otherwise be disconnected, by linking up different doses of the same agent via the dose-response relationship <span class="citation">(Pedder, Dias, Bennetts, et al. 2021)</span>. To illustrate this we can generate a version of the gout dataset which excludes placebo (to artificially disconnect the network):</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Generate dataset without placebo</span>
-<span class="va">noplac.gout</span> <span class="op">&lt;-</span> 
-  <span class="va">gout</span><span class="op">[</span><span class="op">!</span><span class="va">gout</span><span class="op">$</span><span class="va">studyID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2001</span>, <span class="fl">3102</span><span class="op">)</span>,<span class="op">]</span> <span class="co"># Drop two-arm placebo studies</span>
-<span class="va">noplac.gout</span> <span class="op">&lt;-</span> 
-  <span class="va">noplac.gout</span><span class="op">[</span><span class="va">noplac.gout</span><span class="op">$</span><span class="va">agent</span><span class="op">!=</span><span class="st">"Plac"</span>,<span class="op">]</span> <span class="co"># Drop placebo arm from multi-arm studies</span>
-
-<span class="co"># Create mbnma.network object</span>
-<span class="va">noplac.net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">noplac.gout</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Generate dataset without placebo</span></span>
+<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">gout</span><span class="op">[</span><span class="op">!</span><span class="va">gout</span><span class="op">$</span><span class="va">studyID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2001</span>, <span class="fl">3102</span><span class="op">)</span>,<span class="op">]</span> <span class="co"># Drop two-arm placebo studies</span></span>
+<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="va">noplac.gout</span><span class="op">[</span><span class="va">noplac.gout</span><span class="op">$</span><span class="va">agent</span><span class="op">!=</span><span class="st">"Plac"</span>,<span class="op">]</span> <span class="co"># Drop placebo arm from multi-arm studies</span></span>
+<span></span>
+<span><span class="co"># Create mbnma.network object</span></span>
+<span><span class="va">noplac.net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">noplac.gout</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot network</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, label.distance<span class="op">=</span><span class="fl">5</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; Allo_300</span>
-<span class="co">#&gt; Allo_400</span>
-<span class="co">#&gt; Arha_400</span>
-<span class="co">#&gt; Arha_600</span>
-<span class="co">#&gt; Benz_50</span>
-<span class="co">#&gt; Benz_200</span>
-<span class="co">#&gt; Febu_40</span>
-<span class="co">#&gt; Febu_80</span>
-<span class="co">#&gt; Febu_120</span>
-<span class="co">#&gt; RDEA_100</span>
-<span class="co">#&gt; RDEA_200</span>
-<span class="co">#&gt; RDEA_400</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot network</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, label.distance<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; Allo_300</span></span>
+<span><span class="co">#&gt; Allo_400</span></span>
+<span><span class="co">#&gt; Arha_400</span></span>
+<span><span class="co">#&gt; Arha_600</span></span>
+<span><span class="co">#&gt; Benz_50</span></span>
+<span><span class="co">#&gt; Benz_200</span></span>
+<span><span class="co">#&gt; Febu_40</span></span>
+<span><span class="co">#&gt; Febu_80</span></span>
+<span><span class="co">#&gt; Febu_120</span></span>
+<span><span class="co">#&gt; RDEA_100</span></span>
+<span><span class="co">#&gt; RDEA_200</span></span>
+<span><span class="co">#&gt; RDEA_400</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-26-1.png" width="672"></p>
 <p>This results in a very disconnected network, and if we were to conduct a conventional “split” NMA (whereby different doses of an agent are considered to be independent), we would only be able to estimate relative effects for a very small number of treatments. However, if we assume a dose-response relationship then these different doses can be connected via this relationship, and we can connect up more treatments and agents in the network.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Network plot at the agent level illustrates how doses can connect using MBNMA</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; Arha</span>
-<span class="co">#&gt; RDEA</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Network plot at the agent level illustrates how doses can connect using MBNMA</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; Arha</span></span>
+<span><span class="co">#&gt; RDEA</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-27-1.png" width="672"></p>
 <p>There are still two agents that do not connect to the network because they involve comparisons of different doses of the same agent. However, multiple doses of an agent within a study allow us to estimate the dose-response relationship and tell us something about the placebo (dose = 0) response - the number of different doses of an agent within a study will determine the degrees of freedom with which we are able to estimate a given dose-response function. Although the placebo response is not estimated directly in the MBNMA framework (it is modelled as a nuisance parameter), it allows us to connect the dose-response function estimated for an agent in one study, with that in another.</p>
 <p>To visualise this, we can use the <code>doselink</code> argument in <code>plot(mbnma.network)</code>. The integer given to this argument indicates the minimum number of doses from which a dose-response function could be estimated, and is equivalent to the number of parameters in the desired dose-response function plus one. For example for an exponential function, we would require at least two doses on a dose-response curve (including placebo), since this would allow one degree of freedom with which to estimate the one-parameter dose-response function. By modifying the <code>doselink</code> argument we can determine the complexity of a dose-response function that we might expect to be able to estimate whilst still connecting all agents within the network.</p>
 <p>If placebo is not included in the original dataset then this argument will also add a node for placebo to illustrate the connection.</p>
 <div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Network plot assuming connectivity via two doses</span>
-<span class="co"># Allows estimation of a single-parameter dose-response function</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,
-     doselink<span class="op">=</span><span class="fl">2</span><span class="op">)</span>
-<span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span>
-<span class="co">#&gt;                    function with 1 degrees of freedom</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Network plot assuming connectivity via two doses</span></span>
+<span><span class="co"># Allows estimation of a single-parameter dose-response function</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>     doselink<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
+<span><span class="co">#&gt;                    function with 1 degrees of freedom</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-28-1.png" width="672"></p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># Network plot assuming connectivity via three doses</span>
-<span class="co"># Allows estimation of a two-parameter dose-response function</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,
-     doselink<span class="op">=</span><span class="fl">3</span><span class="op">)</span>
-<span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span>
-<span class="co">#&gt; to the network reference:</span>
-<span class="co">#&gt; Allo</span>
-<span class="co">#&gt; Arha</span>
-<span class="co">#&gt; Benz</span>
-<span class="co">#&gt; Febu</span>
-<span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span>
-<span class="co">#&gt;                    function with 2 degrees of freedom</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Network plot assuming connectivity via three doses</span></span>
+<span><span class="co"># Allows estimation of a two-parameter dose-response function</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>     doselink<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
+<span><span class="co">#&gt; to the network reference:</span></span>
+<span><span class="co">#&gt; Allo</span></span>
+<span><span class="co">#&gt; Arha</span></span>
+<span><span class="co">#&gt; Benz</span></span>
+<span><span class="co">#&gt; Febu</span></span>
+<span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
+<span><span class="co">#&gt;                    function with 2 degrees of freedom</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-28-2.png" width="672"></p>
 <p>In this way we can fully connect up treatments in an otherwise disconnected network, though unless informative prior information is used this will be limited by the number of doses of agents within included studies. See Pedder et al. <span class="citation">(2021)</span> for more details on this.</p>
 </div>
@@ -1102,89 +1102,89 @@
 <p>In the case of MBNMA, it may be useful to compare the fit of a non-parametric model to that of a parametric dose-response function, to ensure that fitting a parametric dose-response function does not lead to significantly poorer model fit.</p>
 <p>When fitting a non-parametric dose-response model, it is important to correctly choose the expected <code>direction</code> of the monotonic response, otherwise it can lead to computation error.</p>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">nonparam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dnonparam.html">dnonparam</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"increasing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>
-<span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span>
-<span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">nonparam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dnonparam.html">dnonparam</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"increasing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nonparam</span><span class="op">)</span>
-<span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp6v0Osl/file43d627de6207", fit using jags,</span>
-<span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
-<span class="co">#&gt;  n.sims = 3000 iterations saved</span>
-<span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="co">#&gt; d.1[1,1]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[1,2]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,2]     1.187   0.183    0.812    1.069    1.192    1.311    1.543 1.002</span>
-<span class="co">#&gt; d.1[3,2]     1.738   0.120    1.496    1.658    1.739    1.819    1.973 1.002</span>
-<span class="co">#&gt; d.1[4,2]     2.039   0.145    1.770    1.938    2.037    2.134    2.330 1.002</span>
-<span class="co">#&gt; d.1[1,3]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,3]     0.947   0.143    0.637    0.858    0.962    1.049    1.185 1.001</span>
-<span class="co">#&gt; d.1[3,3]     1.115   0.087    0.937    1.057    1.116    1.171    1.287 1.002</span>
-<span class="co">#&gt; d.1[4,3]     1.254   0.115    1.041    1.173    1.251    1.333    1.482 1.001</span>
-<span class="co">#&gt; d.1[5,3]     1.458   0.087    1.289    1.399    1.458    1.517    1.628 1.006</span>
-<span class="co">#&gt; d.1[1,4]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,4]     1.242   0.210    0.823    1.100    1.237    1.387    1.658 1.008</span>
-<span class="co">#&gt; d.1[3,4]     1.631   0.328    1.060    1.398    1.609    1.839    2.330 1.003</span>
-<span class="co">#&gt; d.1[1,5]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,5]     0.622   0.240    0.139    0.455    0.631    0.799    1.062 1.011</span>
-<span class="co">#&gt; d.1[3,5]     1.040   0.125    0.801    0.958    1.037    1.123    1.293 1.001</span>
-<span class="co">#&gt; d.1[4,5]     1.458   0.210    1.064    1.315    1.457    1.595    1.872 1.001</span>
-<span class="co">#&gt; d.1[1,6]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,6]     0.758   0.315    0.111    0.529    0.788    1.001    1.289 1.010</span>
-<span class="co">#&gt; d.1[3,6]     1.241   0.117    1.011    1.165    1.239    1.323    1.463 1.001</span>
-<span class="co">#&gt; d.1[4,6]     1.542   0.189    1.206    1.405    1.530    1.664    1.938 1.001</span>
-<span class="co">#&gt; d.1[5,6]     1.875   0.268    1.394    1.685    1.852    2.048    2.442 1.002</span>
-<span class="co">#&gt; d.1[6,6]     2.886   0.590    1.860    2.461    2.836    3.270    4.141 1.002</span>
-<span class="co">#&gt; d.1[1,7]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,7]     0.553   0.206    0.147    0.412    0.548    0.689    0.965 1.007</span>
-<span class="co">#&gt; d.1[3,7]     1.010   0.310    0.468    0.788    0.989    1.212    1.676 1.003</span>
-<span class="co">#&gt; d.1[1,8]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="co">#&gt; d.1[2,8]     0.511   0.314    0.028    0.258    0.482    0.723    1.167 1.005</span>
-<span class="co">#&gt; d.1[3,8]     1.269   0.161    0.948    1.164    1.273    1.378    1.575 1.005</span>
-<span class="co">#&gt; d.1[4,8]     1.614   0.105    1.408    1.543    1.613    1.685    1.825 1.002</span>
-<span class="co">#&gt; sd           0.262   0.047    0.175    0.230    0.261    0.293    0.359 1.013</span>
-<span class="co">#&gt; totresdev  188.546  19.596  152.690  175.029  187.794  201.378  229.440 1.009</span>
-<span class="co">#&gt; deviance  1091.652  19.596 1055.796 1078.135 1090.900 1104.484 1132.546 1.010</span>
-<span class="co">#&gt;           n.eff</span>
-<span class="co">#&gt; d.1[1,1]      1</span>
-<span class="co">#&gt; d.1[1,2]      1</span>
-<span class="co">#&gt; d.1[2,2]   1200</span>
-<span class="co">#&gt; d.1[3,2]   1600</span>
-<span class="co">#&gt; d.1[4,2]   1800</span>
-<span class="co">#&gt; d.1[1,3]      1</span>
-<span class="co">#&gt; d.1[2,3]   3000</span>
-<span class="co">#&gt; d.1[3,3]   3000</span>
-<span class="co">#&gt; d.1[4,3]   2100</span>
-<span class="co">#&gt; d.1[5,3]    370</span>
-<span class="co">#&gt; d.1[1,4]      1</span>
-<span class="co">#&gt; d.1[2,4]    270</span>
-<span class="co">#&gt; d.1[3,4]    910</span>
-<span class="co">#&gt; d.1[1,5]      1</span>
-<span class="co">#&gt; d.1[2,5]    640</span>
-<span class="co">#&gt; d.1[3,5]   3000</span>
-<span class="co">#&gt; d.1[4,5]   3000</span>
-<span class="co">#&gt; d.1[1,6]      1</span>
-<span class="co">#&gt; d.1[2,6]    620</span>
-<span class="co">#&gt; d.1[3,6]   2200</span>
-<span class="co">#&gt; d.1[4,6]   3000</span>
-<span class="co">#&gt; d.1[5,6]   1600</span>
-<span class="co">#&gt; d.1[6,6]   2200</span>
-<span class="co">#&gt; d.1[1,7]      1</span>
-<span class="co">#&gt; d.1[2,7]   3000</span>
-<span class="co">#&gt; d.1[3,7]   1900</span>
-<span class="co">#&gt; d.1[1,8]      1</span>
-<span class="co">#&gt; d.1[2,8]   1100</span>
-<span class="co">#&gt; d.1[3,8]    450</span>
-<span class="co">#&gt; d.1[4,8]   1300</span>
-<span class="co">#&gt; sd          190</span>
-<span class="co">#&gt; totresdev   260</span>
-<span class="co">#&gt; deviance    240</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span>
-<span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="co">#&gt; pD = 127.0 and DIC = 1217.9</span>
-<span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nonparam</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpSsz3D0/file47cc560605f7", fit using jags,</span></span>
+<span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
+<span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
+<span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
+<span><span class="co">#&gt; d.1[1,1]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[1,2]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,2]     1.187   0.177    0.837    1.069    1.186    1.309    1.526 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,2]     1.731   0.119    1.496    1.650    1.731    1.809    1.969 1.005</span></span>
+<span><span class="co">#&gt; d.1[4,2]     2.032   0.145    1.761    1.932    2.026    2.128    2.327 1.006</span></span>
+<span><span class="co">#&gt; d.1[1,3]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,3]     0.956   0.140    0.636    0.873    0.971    1.055    1.192 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,3]     1.119   0.084    0.957    1.063    1.118    1.174    1.288 1.001</span></span>
+<span><span class="co">#&gt; d.1[4,3]     1.260   0.114    1.047    1.181    1.254    1.338    1.485 1.001</span></span>
+<span><span class="co">#&gt; d.1[5,3]     1.459   0.086    1.297    1.402    1.457    1.517    1.630 1.001</span></span>
+<span><span class="co">#&gt; d.1[1,4]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,4]     1.243   0.207    0.836    1.105    1.242    1.376    1.653 1.002</span></span>
+<span><span class="co">#&gt; d.1[3,4]     1.622   0.315    1.063    1.404    1.600    1.819    2.301 1.004</span></span>
+<span><span class="co">#&gt; d.1[1,5]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,5]     0.617   0.236    0.121    0.459    0.628    0.788    1.041 1.002</span></span>
+<span><span class="co">#&gt; d.1[3,5]     1.034   0.122    0.791    0.951    1.033    1.116    1.273 1.002</span></span>
+<span><span class="co">#&gt; d.1[4,5]     1.443   0.211    1.045    1.297    1.438    1.583    1.869 1.001</span></span>
+<span><span class="co">#&gt; d.1[1,6]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,6]     0.776   0.307    0.127    0.566    0.817    1.007    1.274 1.004</span></span>
+<span><span class="co">#&gt; d.1[3,6]     1.245   0.113    1.027    1.167    1.245    1.318    1.473 1.001</span></span>
+<span><span class="co">#&gt; d.1[4,6]     1.553   0.188    1.228    1.419    1.540    1.672    1.961 1.001</span></span>
+<span><span class="co">#&gt; d.1[5,6]     1.881   0.271    1.422    1.679    1.863    2.063    2.449 1.002</span></span>
+<span><span class="co">#&gt; d.1[6,6]     2.943   0.605    1.901    2.502    2.911    3.328    4.238 1.003</span></span>
+<span><span class="co">#&gt; d.1[1,7]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,7]     0.554   0.206    0.152    0.413    0.557    0.696    0.953 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,7]     1.010   0.303    0.478    0.794    0.987    1.204    1.651 1.001</span></span>
+<span><span class="co">#&gt; d.1[1,8]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
+<span><span class="co">#&gt; d.1[2,8]     0.503   0.314    0.030    0.249    0.466    0.726    1.174 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,8]     1.268   0.158    0.956    1.158    1.273    1.374    1.567 1.004</span></span>
+<span><span class="co">#&gt; d.1[4,8]     1.610   0.100    1.412    1.542    1.609    1.675    1.806 1.001</span></span>
+<span><span class="co">#&gt; sd           0.256   0.047    0.167    0.224    0.255    0.287    0.352 1.008</span></span>
+<span><span class="co">#&gt; totresdev  190.233  19.770  153.635  176.537  189.371  202.994  231.128 1.004</span></span>
+<span><span class="co">#&gt; deviance  1093.339  19.770 1056.741 1079.643 1092.477 1106.100 1134.234 1.004</span></span>
+<span><span class="co">#&gt;           n.eff</span></span>
+<span><span class="co">#&gt; d.1[1,1]      1</span></span>
+<span><span class="co">#&gt; d.1[1,2]      1</span></span>
+<span><span class="co">#&gt; d.1[2,2]   2600</span></span>
+<span><span class="co">#&gt; d.1[3,2]    440</span></span>
+<span><span class="co">#&gt; d.1[4,2]    370</span></span>
+<span><span class="co">#&gt; d.1[1,3]      1</span></span>
+<span><span class="co">#&gt; d.1[2,3]   3000</span></span>
+<span><span class="co">#&gt; d.1[3,3]   3000</span></span>
+<span><span class="co">#&gt; d.1[4,3]   3000</span></span>
+<span><span class="co">#&gt; d.1[5,3]   3000</span></span>
+<span><span class="co">#&gt; d.1[1,4]      1</span></span>
+<span><span class="co">#&gt; d.1[2,4]   1200</span></span>
+<span><span class="co">#&gt; d.1[3,4]    580</span></span>
+<span><span class="co">#&gt; d.1[1,5]      1</span></span>
+<span><span class="co">#&gt; d.1[2,5]   3000</span></span>
+<span><span class="co">#&gt; d.1[3,5]   1500</span></span>
+<span><span class="co">#&gt; d.1[4,5]   2800</span></span>
+<span><span class="co">#&gt; d.1[1,6]      1</span></span>
+<span><span class="co">#&gt; d.1[2,6]    950</span></span>
+<span><span class="co">#&gt; d.1[3,6]   2500</span></span>
+<span><span class="co">#&gt; d.1[4,6]   2100</span></span>
+<span><span class="co">#&gt; d.1[5,6]   1400</span></span>
+<span><span class="co">#&gt; d.1[6,6]   1300</span></span>
+<span><span class="co">#&gt; d.1[1,7]      1</span></span>
+<span><span class="co">#&gt; d.1[2,7]   3000</span></span>
+<span><span class="co">#&gt; d.1[3,7]   3000</span></span>
+<span><span class="co">#&gt; d.1[1,8]      1</span></span>
+<span><span class="co">#&gt; d.1[2,8]   3000</span></span>
+<span><span class="co">#&gt; d.1[3,8]    650</span></span>
+<span><span class="co">#&gt; d.1[4,8]   2100</span></span>
+<span><span class="co">#&gt; sd          250</span></span>
+<span><span class="co">#&gt; totresdev   550</span></span>
+<span><span class="co">#&gt; deviance    570</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
+<span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
+<span><span class="co">#&gt; pD = 125.9 and DIC = 1218.4</span></span>
+<span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span></code></pre></div>
 <p>In the output from non-parametric models, <code>d.1</code> parameters represent the relative effect for each treatment (specific dose of a specific agent) versus the reference treatment, similar to in a standard Network Meta-Analysis. The first index of <code>d</code> represents the dose identifier, and the second index represents the agent identifier. Information on the specific values of the doses is not included in the model, as only the ordering of them (lowest to highest) is important.</p>
 <p>Note that some post-estimation functions (e.g. ranking, prediction) cannot be performed on non-parametric models within the package.</p>
 </div>
@@ -1194,23 +1194,23 @@
 </h2>
 <p>For looking at post-estimation in MBNMA we will demonstrate using results from an Emax MBNMA on the triptans dataset unless specified otherwise:</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span>
-<span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
-<span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span><span class="op">)</span> 
-<span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span>
-<span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></span>
+<span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span></span>
+<span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="deviance-plots">Deviance plots<a class="anchor" aria-label="anchor" href="#deviance-plots"></a>
 </h3>
 <p>To assess how well a model fits the data, it can be useful to look at a plot of the contributions of each data point to the residual deviance. This can be done using <code><a href="../reference/devplot.html">devplot()</a></code>. As individual deviance contributions are not automatically monitored in <code>parameters.to.save</code>, this might require the model to be automatically run for additional iterations.</p>
 <p>Results can be plotted either as a scatter plot (<code>plot.type="scatter"</code>) or a series of boxplots (<code>plot.type="box"</code>).</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot boxplots of residual deviance contributions (scatterplot is the default)</span>
-<span class="fu"><a href="../reference/devplot.html">devplot</a></span><span class="op">(</span><span class="va">trip.emax</span>, plot.type <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span>
-<span class="co">#&gt; `resdev` not monitored in mbnma$parameters.to.save.</span>
-<span class="co">#&gt; additional iterations will be run in order to obtain results for `resdev`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot boxplots of residual deviance contributions (scatterplot is the default)</span></span>
+<span><span class="fu"><a href="../reference/devplot.html">devplot</a></span><span class="op">(</span><span class="va">trip.emax</span>, plot.type <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `resdev` not monitored in mbnma$parameters.to.save.</span></span>
+<span><span class="co">#&gt; additional iterations will be run in order to obtain results for `resdev`</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-31-1.png" width="672"></p>
 <p>From these plots we can see that whilst the model fit does not seem to be systematically non-linear (which would suggest an alternative dose-response function may be a better fit), residual deviance is high at a dose of 1 for eletriptan, and at 2 for sumatriptan. This may indicate that fitting random effects may allow for additional variability in response which may improve the model fit.</p>
 <p>If saved to an object, the output of <code><a href="../reference/devplot.html">devplot()</a></code> contains the results for individual deviance contributions, and this can be used to identify any extreme outliers.</p>
@@ -1220,10 +1220,10 @@
 </h3>
 <p>Another approach for assessing model fit can be to plot the fitted values, using <code><a href="../reference/fitplot.html">fitplot()</a></code>. As with <code><a href="../reference/devplot.html">devplot()</a></code>, this may require running additional model iterations to monitor <code>theta</code>.</p>
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot fitted and observed values with treatment labels</span>
-<span class="fu"><a href="../reference/fitplot.html">fitplot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span>
-<span class="co">#&gt; `theta` not monitored in mbnma$parameters.to.save.</span>
-<span class="co">#&gt; additional iterations will be run in order to obtain results</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot fitted and observed values with treatment labels</span></span>
+<span><span class="fu"><a href="../reference/fitplot.html">fitplot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `theta` not monitored in mbnma$parameters.to.save.</span></span>
+<span><span class="co">#&gt; additional iterations will be run in order to obtain results</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-32-1.png" width="672"></p>
 <p>Fitted values are plotted as connecting lines and observed values in the original dataset are plotted as points. These plots can be used to identify if the model fits the data well for different agents and at different doses along the dose-response function.</p>
 </div>
@@ -1232,7 +1232,7 @@
 </h3>
 <p>Forest plots can be easily generated from MBNMA models using the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method on an <code>"mbnma"</code> object. By default this will plot a separate panel for each dose-response parameter in the model. Forest plots can only be generated for parameters which are modelled using relative effects and that vary by agent/class.</p>
 <div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-33-1.png" width="672"></p>
 </div>
 <div class="section level3">
@@ -1241,138 +1241,138 @@
 <p>It may be of interest to calculate relative effects between different doses of agents to obtain outputs that are more similar to those from standard NMA. Relative effects can take the form of odds ratios, mean differences or rate ratios, depending on the likelihood and link function used in a model. Estimating relative effects can be particularly helpful for dose-response functions where parameter interpretation can be challenging (e.g. splines, fractional polynomials).</p>
 <p>The <code><a href="../reference/get.relative.html">get.relative()</a></code> function allows for calculation of relative effects between any doses of agents as specified by the user. This includes doses not available in the original dataset, as these can be estimated via the dose-response relationship. Optional arguments allow for calculation of 95% prediction intervals rather than 95% credible intervals (the default), and for the conversion of results from the log to the natural scale. The resulting relative effects can also be ranked (see <a href="#ranking">Ranking</a> for more details).</p>
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Specify treatments (agents and doses) for which to estimate relative effects</span>
-<span class="va">treats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Placebo"</span><span class="op">=</span><span class="fl">0</span>,
-               <span class="st">"eletriptan"</span><span class="op">=</span> <span class="fl">1</span>,
-               <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">2</span>,
-               <span class="st">"almotriptan"</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span>
-
-<span class="co"># Print relative effects on the natural scale</span>
-<span class="va">rels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.relative.html">get.relative</a></span><span class="op">(</span><span class="va">trip.emax</span>, treatments <span class="op">=</span> <span class="va">treats</span>, eform<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span>
-<span class="co">#&gt; <span style="font-weight: bold;">============================================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; Relative treatment comparisons (95% credible intervals)</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; ============================================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; </span></span>
-<span class="co">#&gt;     Placebo_0     0.18 (0.16, 0.21) 0.25 (0.22, 0.27) 0.36 (0.31, 0.42)</span>
-<span class="co">#&gt;  5.5 (4.8, 6.3)     eletriptan_1     1.4 (1.2, 1.6)     2 (1.7, 2.4)   </span>
-<span class="co">#&gt;   4 (3.6, 4.5)    0.74 (0.64, 0.85)   sumatriptan_2    1.5 (1.2, 1.7)  </span>
-<span class="co">#&gt;  2.8 (2.4, 3.2)    0.5 (0.42, 0.6)  0.68 (0.59, 0.8)    almotriptan_1</span>
-
-<span class="co"># Rank relative effects</span>
-<span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; Ranking of dose-response MBNMA</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Includes ranking of relative effects between treatments from dose-response MBNMA</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; 4 agents/classes/predictions ranked with negative responses being <span style="color: #BB0000; font-weight: bold;">`worse`</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Relative Effects ranking</span> (from best to worst)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Treatment     | Mean| Median| 2.5%| 97.5%|</span>
-<span class="co">#&gt; |:-------------|----:|------:|----:|-----:|</span>
-<span class="co">#&gt; |Placebo_0     |    1|      1|    1|     1|</span>
-<span class="co">#&gt; |almotriptan_1 |    2|      2|    2|     2|</span>
-<span class="co">#&gt; |sumatriptan_2 |    3|      3|    3|     3|</span>
-<span class="co">#&gt; |eletriptan_1  |    4|      4|    4|     4|</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Specify treatments (agents and doses) for which to estimate relative effects</span></span>
+<span><span class="va">treats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Placebo"</span><span class="op">=</span><span class="fl">0</span>,</span>
+<span>               <span class="st">"eletriptan"</span><span class="op">=</span> <span class="fl">1</span>,</span>
+<span>               <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">2</span>,</span>
+<span>               <span class="st">"almotriptan"</span><span class="op">=</span><span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Print relative effects on the natural scale</span></span>
+<span><span class="va">rels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.relative.html">get.relative</a></span><span class="op">(</span><span class="va">trip.emax</span>, treatments <span class="op">=</span> <span class="va">treats</span>, eform<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">============================================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; Relative treatment comparisons (95% credible intervals)</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ============================================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
+<span><span class="co">#&gt;     Placebo_0     0.18 (0.16, 0.21) 0.25 (0.23, 0.28) 0.36 (0.32, 0.42)</span></span>
+<span><span class="co">#&gt;  5.5 (4.8, 6.3)     eletriptan_1     1.4 (1.2, 1.6)     2 (1.6, 2.4)   </span></span>
+<span><span class="co">#&gt;   4 (3.6, 4.4)    0.74 (0.64, 0.85)   sumatriptan_2    1.5 (1.2, 1.7)  </span></span>
+<span><span class="co">#&gt;  2.8 (2.4, 3.2)   0.5 (0.42, 0.61)  0.69 (0.59, 0.8)    almotriptan_1</span></span>
+<span></span>
+<span><span class="co"># Rank relative effects</span></span>
+<span><span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; Ranking of dose-response MBNMA</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Includes ranking of relative effects between treatments from dose-response MBNMA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; 4 agents/classes/predictions ranked with negative responses being <span style="color: #BB0000; font-weight: bold;">`worse`</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Relative Effects ranking</span> (from best to worst)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Treatment     | Mean| Median| 2.5%| 97.5%|</span></span>
+<span><span class="co">#&gt; |:-------------|----:|------:|----:|-----:|</span></span>
+<span><span class="co">#&gt; |Placebo_0     |    1|      1|    1|     1|</span></span>
+<span><span class="co">#&gt; |almotriptan_1 |    2|      2|    2|     2|</span></span>
+<span><span class="co">#&gt; |sumatriptan_2 |    3|      3|    3|     3|</span></span>
+<span><span class="co">#&gt; |eletriptan_1  |    4|      4|    4|     4|</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="ranking">Ranking<a class="anchor" aria-label="anchor" href="#ranking"></a>
 </h3>
 <p>Rankings can be calculated for different dose-response parameters from MBNMA models by using <code><a href="../reference/rank.html">rank()</a></code> on an <code>"mbnma"</code> object. Any parameter monitored in an MBNMA model that varies by agent/class can be ranked. A vector of these is assigned to <code>params</code>. <code>lower_better</code> indicates whether negative responses should be ranked as “better” (<code>TRUE</code>) or “worse” (<code>FALSE</code>).</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">trip.emax</span>, lower_better <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span>
-<span class="co">#&gt; </span>
-<span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; Ranking of dose-response MBNMA</span></span>
-<span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Includes ranking of relative effects from dose-response MBNMA:</span>
-<span class="co">#&gt; <span style="font-weight: bold;">emax ed50</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; 7 agents/classes/predictions ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax ranking</span> (from best to worst)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span>
-<span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span>
-<span class="co">#&gt; |naratriptan  | 1.14|      1|    1|     3|</span>
-<span class="co">#&gt; |sumatriptan  | 2.88|      3|    2|     5|</span>
-<span class="co">#&gt; |almotriptan  | 3.56|      3|    2|     7|</span>
-<span class="co">#&gt; |frovatriptan | 3.73|      4|    1|     7|</span>
-<span class="co">#&gt; |zolmitriptan | 4.35|      4|    2|     7|</span>
-<span class="co">#&gt; |rizatriptan  | 5.88|      6|    4|     7|</span>
-<span class="co">#&gt; |eletriptan   | 6.46|      7|    5|     7|</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 ranking</span> (from best to worst)</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span>
-<span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span>
-<span class="co">#&gt; |eletriptan   | 2.60|      2|    1|     6|</span>
-<span class="co">#&gt; |sumatriptan  | 2.98|      3|    1|     6|</span>
-<span class="co">#&gt; |rizatriptan  | 3.40|      3|    1|     7|</span>
-<span class="co">#&gt; |frovatriptan | 3.94|      4|    1|     7|</span>
-<span class="co">#&gt; |zolmitriptan | 4.33|      5|    1|     7|</span>
-<span class="co">#&gt; |naratriptan  | 5.34|      6|    1|     7|</span>
-<span class="co">#&gt; |almotriptan  | 5.41|      6|    1|     7|</span>
-<span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span>
-<span class="co">#&gt; $emax</span>
-<span class="co">#&gt;     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="co">#&gt; 1   eletriptan 6.456667 0.7382212    5   6   7   7     7</span>
-<span class="co">#&gt; 2  sumatriptan 2.882667 0.9006497    2   2   3   3     5</span>
-<span class="co">#&gt; 3 frovatriptan 3.731667 1.5609215    1   2   4   5     7</span>
-<span class="co">#&gt; 4  almotriptan 3.557000 1.4443383    2   2   3   5     7</span>
-<span class="co">#&gt; 5 zolmitriptan 4.349000 1.1881370    2   4   4   5     7</span>
-<span class="co">#&gt; 6  naratriptan 1.144000 0.6224091    1   1   1   1     3</span>
-<span class="co">#&gt; 7  rizatriptan 5.879000 0.9818420    4   5   6   7     7</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; $ed50</span>
-<span class="co">#&gt;     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="co">#&gt; 1   eletriptan 2.603333 1.409013    1   1   2   4     6</span>
-<span class="co">#&gt; 2  sumatriptan 2.982000 1.525708    1   2   3   4     6</span>
-<span class="co">#&gt; 3 frovatriptan 3.935333 2.007941    1   2   4   6     7</span>
-<span class="co">#&gt; 4  almotriptan 5.409333 1.601239    1   5   6   7     7</span>
-<span class="co">#&gt; 5 zolmitriptan 4.332333 1.785390    1   3   5   6     7</span>
-<span class="co">#&gt; 6  naratriptan 5.342000 1.876933    1   4   6   7     7</span>
-<span class="co">#&gt; 7  rizatriptan 3.395667 1.770167    1   2   3   5     7</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">trip.emax</span>, lower_better <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; Ranking of dose-response MBNMA</span></span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; ================================</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Includes ranking of relative effects from dose-response MBNMA:</span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold;">emax ed50</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; 7 agents/classes/predictions ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax ranking</span> (from best to worst)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span></span>
+<span><span class="co">#&gt; |naratriptan  | 1.22|      1|    1|     4|</span></span>
+<span><span class="co">#&gt; |sumatriptan  | 2.85|      3|    1|     5|</span></span>
+<span><span class="co">#&gt; |almotriptan  | 3.58|      3|    2|     7|</span></span>
+<span><span class="co">#&gt; |frovatriptan | 3.69|      4|    1|     7|</span></span>
+<span><span class="co">#&gt; |zolmitriptan | 4.33|      4|    2|     7|</span></span>
+<span><span class="co">#&gt; |rizatriptan  | 5.90|      6|    3|     7|</span></span>
+<span><span class="co">#&gt; |eletriptan   | 6.43|      7|    5|     7|</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 ranking</span> (from best to worst)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span></span>
+<span><span class="co">#&gt; |eletriptan   | 2.62|      2|    1|     6|</span></span>
+<span><span class="co">#&gt; |sumatriptan  | 2.97|      3|    1|     6|</span></span>
+<span><span class="co">#&gt; |rizatriptan  | 3.39|      3|    1|     7|</span></span>
+<span><span class="co">#&gt; |frovatriptan | 3.82|      4|    1|     7|</span></span>
+<span><span class="co">#&gt; |zolmitriptan | 4.34|      5|    1|     7|</span></span>
+<span><span class="co">#&gt; |naratriptan  | 5.41|      6|    1|     7|</span></span>
+<span><span class="co">#&gt; |almotriptan  | 5.44|      6|    1|     7|</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $emax</span></span>
+<span><span class="co">#&gt;     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span></span>
+<span><span class="co">#&gt; 1   eletriptan 6.425667 0.7611402    5   6   7   7     7</span></span>
+<span><span class="co">#&gt; 2  sumatriptan 2.846000 0.9280290    1   2   3   3     5</span></span>
+<span><span class="co">#&gt; 3 frovatriptan 3.687333 1.5473755    1   2   4   5     7</span></span>
+<span><span class="co">#&gt; 4  almotriptan 3.582667 1.4193324    2   2   3   5     7</span></span>
+<span><span class="co">#&gt; 5 zolmitriptan 4.333333 1.2061124    2   4   4   5     7</span></span>
+<span><span class="co">#&gt; 6  naratriptan 1.223667 0.8831194    1   1   1   1     4</span></span>
+<span><span class="co">#&gt; 7  rizatriptan 5.901333 0.9986311    3   5   6   7     7</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $ed50</span></span>
+<span><span class="co">#&gt;     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%</span></span>
+<span><span class="co">#&gt; 1   eletriptan 2.616667 1.395602    1   1   2   4     6</span></span>
+<span><span class="co">#&gt; 2  sumatriptan 2.974333 1.520892    1   2   3   4     6</span></span>
+<span><span class="co">#&gt; 3 frovatriptan 3.824333 2.033926    1   2   4   6     7</span></span>
+<span><span class="co">#&gt; 4  almotriptan 5.444333 1.564305    1   5   6   7     7</span></span>
+<span><span class="co">#&gt; 5 zolmitriptan 4.338000 1.768464    1   3   5   6     7</span></span>
+<span><span class="co">#&gt; 6  naratriptan 5.414000 1.840217    1   4   6   7     7</span></span>
+<span><span class="co">#&gt; 7  rizatriptan 3.388333 1.754392    1   2   3   5     7</span></span></code></pre></div>
 <p>The output is an object of <code>class("mbnma.rank")</code>, containing a list for each ranked parameter in <code>params</code>, which consists of a summary table of rankings and raw information on agent/class (depending on argument given to <code>level</code>) ranking and probabilities. The summary median ranks with 95% credible intervals can be simply displayed using <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</p>
 <p>Histograms for ranking results can also be plotted using the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method, which takes the raw MCMC ranking results stored in <code>mbnma.rank</code> and plots the number of MCMC iterations the parameter value for each treatment was ranked a particular position.</p>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Ranking histograms for Emax</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Ranking histograms for Emax</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-36-1.png" width="672"></p>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># Ranking histograms for ED50</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"ed50"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span></span>
+<span><span class="co"># Ranking histograms for ED50</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"ed50"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-36-2.png" width="672"></p>
 <p>Alternatively, cumulative ranking plots for all parameters can be plotted simultaneously so as to be able to compare the effectiveness of different agents on different parameters. The surface under cumulative ranking curve (SUCRA) for each parameter can also be estimated by setting <code>sucra=TRUE</code>.</p>
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Cumulative ranking plot for both dose-response parameters</span>
-<span class="fu"><a href="../reference/cumrank.html">cumrank</a></span><span class="op">(</span><span class="va">ranks</span>, sucra<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Cumulative ranking plot for both dose-response parameters</span></span>
+<span><span class="fu"><a href="../reference/cumrank.html">cumrank</a></span><span class="op">(</span><span class="va">ranks</span>, sucra<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-37-1.png" width="672"></p>
-<pre><code><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span>
-<span class="co">#&gt;    agent        parameter sucra</span>
-<span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50       4.76</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax       1.04</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50       4.42</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax       4.61</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50       3.48</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax       3.76</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50       2.08</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax       3.93</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50       3.12</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax       3.15</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50       2.13</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax       5.89</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50       4.01</span>
-<span class="co">#&gt; <span style="color: #BCBCBC;">14</span> rizatriptan  emax       1.62</span></code></pre>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
+<span><span class="co">#&gt;    agent        parameter sucra</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50       4.75</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax       1.07</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50       4.43</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax       4.64</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50       3.58</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax       3.79</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50       2.04</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax       3.91</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50       3.12</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax       3.16</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50       2.06</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax       5.82</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50       4.02</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> rizatriptan  emax       1.60</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="prediction">Prediction<a class="anchor" aria-label="anchor" href="#prediction"></a>
@@ -1387,72 +1387,72 @@
 </ul>
 <p>Another approach is to estimate <code>E0</code> from a set of studies. These would ideally be studies of untreated/placebo-treated patients that closely resemble the population for which predictions are desired, and the studies may be observational. However, synthesising results from the placebo arms of trials in the original network is also possible. For this, <code>E0</code> is assigned a data frame of studies in the long format (one row per study arm) with the variables <code>studyID</code>, and a selection of <code>y</code>, <code>se</code>, <code>r</code>, <code>n</code> and <code>E</code> (depending on the likelihood used in the MBNMA model). <code>synth</code> can be set to <code>"fixed"</code> or <code>"random"</code> to indicate whether this synthesis should be fixed or random effects.</p>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">E0</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span><span class="op">==</span><span class="fl">0</span>,<span class="op">]</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">E0</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span><span class="op">==</span><span class="fl">0</span>,<span class="op">]</span></span></code></pre></div>
 <p>Additionally, it’s also necessary to specify the doses at which to predict responses. By default, <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> uses the maximum dose within the dataset for each agent, and predicts doses at a series of cut points. The number of cut points can be specified using <code>n.doses</code>, and the maximum dose to use for prediction for each agent can also be specified using <code>max.doses</code> (a named list of numeric values where element names correspond to agent names).</p>
 <p>An alternative approach is to predict responses at specific doses for specific agents using the argument <code>exact.doses</code>. As with <code>max.doses</code>, this is a named list in which element names correspond to agent names, but each element is a numeric vector in which each value within the vector is a dose at which to predict a response for the given agent.</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Predict 20 doses for each agent, with a stochastic distribution for E0</span>
-<span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Placebo"</span><span class="op">=</span><span class="fl">0</span>, 
-                  <span class="st">"eletriptan"</span><span class="op">=</span><span class="fl">3</span>,
-                  <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">3</span>,
-                  <span class="st">"almotriptan"</span><span class="op">=</span><span class="fl">3</span>,
-                  <span class="st">"zolmitriptan"</span><span class="op">=</span><span class="fl">3</span>,
-                  <span class="st">"naratriptan"</span><span class="op">=</span><span class="fl">3</span>,
-                  <span class="st">"rizatriptan"</span><span class="op">=</span><span class="fl">3</span><span class="op">)</span>
-
-<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="st">"rbeta(n, shape1=2, shape2=10)"</span>,
-                      max.doses<span class="op">=</span><span class="va">doses</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span>
-
-
-<span class="co"># Predict exact doses for two agents, and estimate E0 from the data</span>
-<span class="va">E0.data</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span><span class="op">==</span><span class="fl">0</span>,<span class="op">]</span>
-<span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"eletriptan"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>,
-                  <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Predict 20 doses for each agent, with a stochastic distribution for E0</span></span>
+<span><span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"Placebo"</span><span class="op">=</span><span class="fl">0</span>, </span>
+<span>                  <span class="st">"eletriptan"</span><span class="op">=</span><span class="fl">3</span>,</span>
+<span>                  <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">3</span>,</span>
+<span>                  <span class="st">"almotriptan"</span><span class="op">=</span><span class="fl">3</span>,</span>
+<span>                  <span class="st">"zolmitriptan"</span><span class="op">=</span><span class="fl">3</span>,</span>
+<span>                  <span class="st">"naratriptan"</span><span class="op">=</span><span class="fl">3</span>,</span>
+<span>                  <span class="st">"rizatriptan"</span><span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="st">"rbeta(n, shape1=2, shape2=10)"</span>,</span>
+<span>                      max.doses<span class="op">=</span><span class="va">doses</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="co"># Predict exact doses for two agents, and estimate E0 from the data</span></span>
+<span><span class="va">E0.data</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span><span class="op">==</span><span class="fl">0</span>,<span class="op">]</span></span>
+<span><span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"eletriptan"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span>,</span>
+<span>                  <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="va">E0.data</span>,
-                      exact.doses<span class="op">=</span><span class="va">doses</span><span class="op">)</span>
-<span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="va">E0.data</span>,</span>
+<span>                      exact.doses<span class="op">=</span><span class="va">doses</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span></span></code></pre></div>
 <p>An object of class <code>"mbnma.predict"</code> is returned, which is a list of summary tables and MCMC prediction matrices for each treatment (combination of dose and agent). The <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method can be used to print mean posterior predictions at each time point for each treatment.</p>
 <div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span>
-<span class="co">#&gt;         agent dose      mean          sd      2.5%       25%       50%</span>
-<span class="co">#&gt; 1     Placebo    0 0.1239234 0.003314659 0.1175166 0.1216321 0.1238544</span>
-<span class="co">#&gt; 2  eletriptan    0 0.1239234 0.003314659 0.1175166 0.1216321 0.1238544</span>
-<span class="co">#&gt; 3  eletriptan    1 0.4372192 0.018748568 0.4015645 0.4241595 0.4370961</span>
-<span class="co">#&gt; 4  eletriptan    3 0.5554795 0.025962306 0.5048505 0.5382250 0.5544769</span>
-<span class="co">#&gt; 5 sumatriptan    0 0.1239234 0.003314659 0.1175166 0.1216321 0.1238544</span>
-<span class="co">#&gt; 6 sumatriptan    3 0.3878595 0.017311905 0.3545228 0.3761121 0.3879320</span>
-<span class="co">#&gt;         75%     97.5%</span>
-<span class="co">#&gt; 1 0.1261965 0.1303876</span>
-<span class="co">#&gt; 2 0.1261965 0.1303876</span>
-<span class="co">#&gt; 3 0.4501417 0.4742725</span>
-<span class="co">#&gt; 4 0.5731223 0.6070183</span>
-<span class="co">#&gt; 5 0.1261965 0.1303876</span>
-<span class="co">#&gt; 6 0.3992613 0.4228987</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
+<span><span class="co">#&gt;         agent dose      mean          sd      2.5%       25%       50%</span></span>
+<span><span class="co">#&gt; 1     Placebo    0 0.1238753 0.003252556 0.1176341 0.1216201 0.1239024</span></span>
+<span><span class="co">#&gt; 2  eletriptan    0 0.1238753 0.003252556 0.1176341 0.1216201 0.1239024</span></span>
+<span><span class="co">#&gt; 3  eletriptan    1 0.4362494 0.018627922 0.3998549 0.4237007 0.4359348</span></span>
+<span><span class="co">#&gt; 4  eletriptan    3 0.5553407 0.026324225 0.5042202 0.5371569 0.5554147</span></span>
+<span><span class="co">#&gt; 5 sumatriptan    0 0.1238753 0.003252556 0.1176341 0.1216201 0.1239024</span></span>
+<span><span class="co">#&gt; 6 sumatriptan    3 0.3870121 0.016976614 0.3540855 0.3753936 0.3867494</span></span>
+<span><span class="co">#&gt;         75%     97.5%</span></span>
+<span><span class="co">#&gt; 1 0.1260526 0.1303685</span></span>
+<span><span class="co">#&gt; 2 0.1260526 0.1303685</span></span>
+<span><span class="co">#&gt; 3 0.4488801 0.4733048</span></span>
+<span><span class="co">#&gt; 4 0.5729142 0.6082486</span></span>
+<span><span class="co">#&gt; 5 0.1260526 0.1303685</span></span>
+<span><span class="co">#&gt; 6 0.3980735 0.4213533</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="plotting-predicted-responses">Plotting predicted responses<a class="anchor" aria-label="anchor" href="#plotting-predicted-responses"></a>
 </h3>
 <p>Predicted responses can also be plotted using the <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> method on an object of <code>class("mbnma.predict")</code>. The predicted responses are joined by a line to form the dose-response curve for each agent predicted, with 95% credible intervals (CrI). Therefore, when plotting the response it is important to predict a sufficient number of doses (using <code>n.doses</code>) to get a smooth curve.</p>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Predict responses using default doses up to the maximum of each agent in the dataset</span>
-<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="fl">0.2</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Predict responses using default doses up to the maximum of each agent in the dataset</span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="fl">0.2</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-42-1.png" width="672"></p>
 <p>Shaded counts of the number of studies in the original dataset that investigate each dose of an agent can be plotted over the 95% CrI for each treatment by setting <code>disp.obs = TRUE</code>, though this requires that the original <code>"mbnma.network"</code> object used to estimate the MBNMA be provided via <code>network</code>.</p>
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, disp.obs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="co">#&gt; 66 placebo arms in the dataset are not shown within the plots</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, disp.obs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 66 placebo arms in the dataset are not shown within the plots</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-43-1.png" width="672"></p>
 <p>This can be used to identify any extrapolation/interpretation of the dose-response that might be occurring for a particular agent. As you can see, more observations typically leads to tighter 95% CrI for the predicted response at a particular point along the dose-response curve.</p>
 <p>We can also plot the results of a “split” Network Meta-Analysis (NMA) in which all doses of an agent are assumed to be independent. As with <code>disp.obs</code> we also need to provide the original <code>mbnma.network</code> object to be able to estimate this, and we can also specify if we want to perform a common or random effects NMA using <code>method</code>. Treatments that are only connected to the network via the dose-response relationship (rather than by a direct head-to-head comparison) will not be included.</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span>
-<span class="va">alog.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>
-<span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">alog.emax</span>, E0<span class="op">=</span><span class="fl">0</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, overlay.split <span class="op">=</span> <span class="cn">TRUE</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
+<span><span class="va">alog.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">alog.emax</span>, E0<span class="op">=</span><span class="fl">0</span>, n.dose<span class="op">=</span><span class="fl">20</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, overlay.split <span class="op">=</span> <span class="cn">TRUE</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-44-1.png" width="672"></p>
 <p>By plotting these, as well as observing how responses can be extrapolated/interpolated, we can also see which doses are likely to be providing most information to the dose-response relationship. The tighter 95% CrI on the predicted responses from the MBNMA also show that modelling the dose-response function also gives some additional precision even at doses for which there is information available.</p>
 <p>More detailed documentation can be accessed using <code><a href="../reference/plot.mbnma.predict.html">?plot.mbnma.predict</a></code>.</p>
@@ -1463,12 +1463,12 @@
 <p>Predicted responses from an object of <code>class("mbnma.predict")</code> can also be ranked using the <code><a href="../reference/rank.html">rank()</a></code> method. As when applied to an object of <code>class("mbnma")</code>, this method will rank parameters (in this case predictions) in order from either highest to lowest (<code>direction=1</code>) or lowest to highest (<code>direction=-1</code>), and return an object of <code>class("mbnma.rank")</code>.</p>
 <p>If there have been predictions at dose = 0 for several agents only one of these will be included in the rankings, in order to avoid duplication (since the predicted response at dose = 0 is the same for all agents).</p>
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="fl">0.2</span>, n.doses<span class="op">=</span><span class="fl">4</span>,
-                max.doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"eletriptan"</span><span class="op">=</span><span class="fl">5</span>, <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">5</span>, 
-                              <span class="st">"frovatriptan"</span><span class="op">=</span><span class="fl">5</span>, <span class="st">"zolmitriptan"</span><span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0<span class="op">=</span><span class="fl">0.2</span>, n.doses<span class="op">=</span><span class="fl">4</span>,</span>
+<span>                max.doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"eletriptan"</span><span class="op">=</span><span class="fl">5</span>, <span class="st">"sumatriptan"</span><span class="op">=</span><span class="fl">5</span>, </span>
+<span>                              <span class="st">"frovatriptan"</span><span class="op">=</span><span class="fl">5</span>, <span class="st">"zolmitriptan"</span><span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-45-1.png" width="672"></p>
 </div>
 </div>
@@ -1490,10 +1490,10 @@
 <li>Individual relative effects may differ in magnitude or (more severely) in direction for different treatment comparisons between UME and NMA models.</li>
 </ul>
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Using the alogliptin dataset</span>
-<span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span>
-<span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>
-<span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Using the alogliptin dataset</span></span>
+<span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
+<span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Model</th>
@@ -1503,21 +1503,21 @@
 <tbody>
 <tr class="odd">
 <td align="left">NMA</td>
-<td align="right">46.17</td>
-<td align="left">0.12 (0.075, 0.18)</td>
+<td align="right">46.60</td>
+<td align="left">0.12 (0.073, 0.18)</td>
 </tr>
 <tr class="even">
 <td align="left">UME</td>
-<td align="right">45.76</td>
-<td align="left">0.14 (0.087, 0.21)</td>
+<td align="right">45.42</td>
+<td align="left">0.14 (0.085, 0.22)</td>
 </tr>
 </tbody>
 </table>
 <p>As both the residual deviances and between-study SDs are similar, this would suggest that there is no evidence of inconsistency in this network, though comparing results for individual comparisons from the models can also be useful.</p>
 <p>Deviance-deviance plots <span class="citation">(Dias et al. 2013)</span> can be compared between different models to investigate the fit of different data points. This can be done for two different models at a time using <code><a href="../reference/devdev.html">devdev()</a></code>:</p>
 <div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Compares residual deviance contributions from NMA and UME models</span>
-<span class="fu"><a href="../reference/devdev.html">devdev</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">ume</span>, dev.type<span class="op">=</span><span class="st">"resdev"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Compares residual deviance contributions from NMA and UME models</span></span>
+<span><span class="fu"><a href="../reference/devdev.html">devdev</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">ume</span>, dev.type<span class="op">=</span><span class="st">"resdev"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mbnmadose_files/figure-html/unnamed-chunk-48-1.png" width="672"></p>
 <p>In Pedder et al. <span class="citation">(2021)</span> we suggest comparing the following models using these plots to evaluate consistency in MBNMA:</p>
 <ol style="list-style-type: decimal">
@@ -1535,19 +1535,19 @@
 <p>The complexity of the dose-response relationship fitted and the amount of indirect evidence available will also affect the number of comparisons on which node-splitting is possible <span class="citation">(Pedder, Dias, Boucher, et al. 2021)</span>. If there is only limited indirect dose-response information for a given comparison (e.g. only two doses available for the agents in the comparison), then only a simpler dose-response function (e.g. exponential) can be fitted. The values given in <code>inconsistency.loops()$path</code> can give an indication as to the number of doses available for each comparison. For example, <code>drparams 3 4</code> would indicate that the indirect evidence is estimated only via the dose-response relationship, and that within the indirect evidence there are three doses available for estimating the dose-response of the agent in <code>t1</code> of the comparison, and four doses available for estimating the dose-responses of the agent in <code>t2</code> of the comparison. This means that a three-parameter dose-response function would be the most complex function that could be used when node-splitting this comparison.</p>
 <p>As several models have to be run for each closed loop of treatments, node-splitting can take some time to run, and it therefore is not shown for the purposes of this vignette.</p>
 <div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Using the psoriasis dataset (&gt;75% improvement in PASI score)</span>
-<span class="va">psoriasis</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">psoriasis</span><span class="op">$</span><span class="va">r75</span>
-<span class="va">psorinet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">psoriasis</span><span class="op">)</span>
-
-<span class="co"># Identify comparisons on which node-splitting is possible</span>
-<span class="va">splitcomps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">psorinet</span><span class="op">$</span><span class="va">data.ab</span>, incldr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">splitcomps</span><span class="op">)</span>
-
-<span class="co"># If we want to fit an Emax dose-response function, there is insufficient</span>
-<span class="co">#indirect evidence in all but the first 6 comparisons</span>
-<span class="va">nodesplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit</a></span><span class="op">(</span><span class="va">psorinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, comparisons<span class="op">=</span><span class="va">splitcomps</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,<span class="op">]</span>, method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Using the psoriasis dataset (&gt;75% improvement in PASI score)</span></span>
+<span><span class="va">psoriasis</span><span class="op">$</span><span class="va">r</span> <span class="op">&lt;-</span> <span class="va">psoriasis</span><span class="op">$</span><span class="va">r75</span></span>
+<span><span class="va">psorinet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">psoriasis</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Identify comparisons on which node-splitting is possible</span></span>
+<span><span class="va">splitcomps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">psorinet</span><span class="op">$</span><span class="va">data.ab</span>, incldr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">splitcomps</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># If we want to fit an Emax dose-response function, there is insufficient</span></span>
+<span><span class="co">#indirect evidence in all but the first 6 comparisons</span></span>
+<span><span class="va">nodesplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit</a></span><span class="op">(</span><span class="va">psorinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, comparisons<span class="op">=</span><span class="va">splitcomps</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,<span class="op">]</span>, method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nodesplit</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nodesplit</span><span class="op">)</span></span></code></pre></div>
 <p>Performing the <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method on an object of <code>class("nodesplit")</code> prints a summary of the node-split results to the console, whilst the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method will return a data frame of posterior summaries for direct and indirect estimates for each split treatment comparison.</p>
 <p>The nodesplit object itself is a list with results for each treatment comparison that has been split. There is a lot of information within the results, but the most useful (and easily interpretable) elements are:</p>
 <ul>
@@ -1562,11 +1562,11 @@
 </ul>
 <p>It is possible to generate different plots of each nodesplit comparison using <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># Plot forest plots of direct, indirect and pooled (MBNMA) results for each comparison</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span>
-
-<span class="co"># Plot posterior densities of direct and indirect results for each nodesplit comparisons</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Plot forest plots of direct, indirect and pooled (MBNMA) results for each comparison</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Plot posterior densities of direct and indirect results for each nodesplit comparisons</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -1662,7 +1662,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
