@@ -1,3 +1,15 @@
+# MBNMAdose 0.4.2
+
+## Additions/changes
+- Fractional polynomial powers in `dfpoly()` can only take numeric values from set defined in Jansen 2015.
+- Added `calc.edx()` to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the 
+maximum response (Emax) is reached)
+
+## Bug fixes
+- Fixed issue with duplication of studyIDs in `getjagsdata()`
+- Fixed bug with studyID labels in `fitplot()` and `devplot()`
+
+
 # MBNMAdose 0.4.1
 
 ## Additions/changes
