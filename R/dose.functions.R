@@ -455,10 +455,8 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'   assigned a numeric value (see details).
 #' @param beta.2 Pooling for the 2nd fractional polynomial coefficient. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
-#' @param power.1 Pooling for the 1st fractional polynomial power (\eqn{\gamma_1}). Can take `"common"`, `"random"` or be
-#'   assigned a numeric value (see details).
-#' @param power.2 Pooling for the 2nd fractional polynomial power (\eqn{\gamma_2}). Can take `"common"`, `"random"` or be
-#'   assigned a numeric value (see details).
+#' @param power.1 Value for the 1st fractional polynomial power (\eqn{\gamma_1}). Must take any numeric value in the set `-2, -1, -0.5, 0, 0.5, 1, 2, 3`.
+#' @param power.2 Value for the 2nd fractional polynomial power (\eqn{\gamma_2}). Must take any numeric value in the set `-2, -1, -0.5, 0, 0.5, 1, 2, 3`.
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -502,16 +500,20 @@ dpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' dfpoly(beta.1="rel", power.1=0.5)
 #'
 #' # 2nd order fractional polynomial with relative effects for coefficients
-#' # and a common and random pooling for the 1st and 2nd power respectively
+#' # and a value of -0.5 and 2 for the 1st and 2nd powers respectively
 #' dfpoly(degree=2, beta.1="rel", beta.2="rel",
-#'   power.1="common", power.2="random")
+#'   power.1=-0.5, power.2=2)
 #'
 #' @export
 dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
-                   power.1="common", power.2="common") {
+                   power.1=0, power.2=0) {
 
   # Run checks
+  argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 2, add=argcheck)
+  checkmate::assertChoice(get(paste0("power.", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
+  checkmate::assertChoice(get(paste0("power.", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
   paramscoef <- list(beta.1=beta.1, beta.2=beta.2)
   paramspower <- list(power.1=power.1, beta.4=power.2)
