@@ -280,3 +280,53 @@ rescale.link <- function(x, direction="link", link="logit") {
   }
   return(x)
 }
+
+
+
+
+
+#' Calculates values for EDx, the dose at which x% of the maximal response (Emax)
+#' is reached
+#'
+#' @inheritParams devplot
+#' @param x A numeric value between 0 and 100 for the dose at which x% of the maximal response (Emax)
+#' should be calculated
+#'
+#' @return A data frame of posterior EDx summary values for each agent
+#'
+#' @export
+calc.edx <- function(mbnma, x=50) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertNumeric(x, len = 1, lower = 0, upper = 100, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  if (!"emax" %in% mbnma$model.arg$fun$name) {
+    stop("mbnma must be estimated using fun=demax()")
+  }
+
+  if (length(mbnma$model.arg$fun$name)>1) {
+    stop("calc.edx cannot be used for agent-specific MBNMA models")
+  }
+
+  if ("hill" %in% mbnma$model.arg$fun$params) {
+    edx <- exp(mbnma$BUGSoutput$sims.list$ed50) * ((x/(100-x)) ^ (1/mbnma$BUGSoutput$sims.list$hill))
+  } else {
+    edx <- exp(mbnma$BUGSoutput$sims.list$ed50) * (x/(100-x))
+  }
+
+  agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
+  output <- data.frame()>demax
+  for (i in seq_along(agents)) {
+    quant <- stats::quantile(edx[,i], probs=c(0.025,0.25,0.5,0.75,0.975), na.rm=TRUE)
+    df <- data.frame("agent"=agents[i],
+                     "mean"=mean(edx[,i]),
+                     "sd"=stats::sd(edx[,i]), stringsAsFactors = TRUE
+    )
+    output <- rbind(output, cbind(df, t(quant)))
+  }
+
+  return(output)
+}
