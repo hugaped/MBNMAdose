@@ -38,7 +38,7 @@
 #' @param omega A scale matrix for the inverse-Wishart prior for the covariance matrix used
 #' to model the correlation between dose-response parameters (see Details for dose-response functions). `omega` must
 #' be a symmetric positive definite matrix with dimensions equal to the number of dose-response parameters modelled using
-#' relative effects (`"rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 1
+#' relative effects (`"rel"`). If left as `NULL` (the default) a diagonal matrix with elements equal to 100
 #' is used.
 #' @param priors A named list of parameter values (without indices) and
 #'   replacement prior distribution values given as strings
@@ -359,7 +359,7 @@ mbnma.run <- function(network,
   if (cor==TRUE & is.null(omega)) {
     relparam <- fun$apool %in% "rel" & !names(fun$apool) %in% names(class.effect)
     if (sum(relparam)>1) {
-      omega <- diag(rep(1,sum(relparam)))
+      omega <- diag(rep(100,sum(relparam)))
     }
   }
 
