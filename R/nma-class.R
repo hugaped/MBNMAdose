@@ -13,7 +13,9 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'
 #' Results can be plotted either as a single forest plot, or facetted by agent
 #' and plotted with increasing dose in order to identify potential dose-response
-#' relationships.
+#' relationships. If Placebo (or any agents with dose=0) is included in the network
+#' then this will be used as the reference treatment, but if it is not then results
+#' will be plotted versus the network reference used in the NMA object (`x`).
 #'
 #' @param x An object of `class("nma")`
 #' @param bydose A boolean object indicating whether to plot responses with dose
