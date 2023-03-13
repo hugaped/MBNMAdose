@@ -87,15 +87,15 @@ make no assumptions regarding dose-response , or to estimate split results for \
 Results can also be compared between consistency (\code{UME=FALSE}) and inconsistency
 (\code{UME=TRUE}) models to test the validity of the consistency assumption at the treatment-level.
 }
-\section{Methods (by generic)}{
+\section{Functions}{
 \itemize{
-\item \code{plot}: Plot outputs from treatment-level NMA models
+\item \code{plot(nma)}: Plot outputs from treatment-level NMA models
 
 Results can be plotted either as a single forest plot, or facetted by agent
 and plotted with increasing dose in order to identify potential dose-response
 relationships.
-}}
 
+}}
 \examples{
 \donttest{
 # Run random effects NMA on the alogliptin dataset

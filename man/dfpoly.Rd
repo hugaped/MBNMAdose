@@ -4,13 +4,7 @@
 \alias{dfpoly}
 \title{Fractional polynomial dose-response function}
 \usage{
-dfpoly(
-  degree = 1,
-  beta.1 = "rel",
-  beta.2 = "rel",
-  power.1 = "common",
-  power.2 = "common"
-)
+dfpoly(degree = 1, beta.1 = "rel", beta.2 = "rel", power.1 = 0, power.2 = 0)
 }
 \arguments{
 \item{degree}{The degree of the fractional polynomial as defined in  \insertCite{royston1994;textual}{MBNMAdose}}
@@ -21,11 +15,9 @@ assigned a numeric value (see details).}
 \item{beta.2}{Pooling for the 2nd fractional polynomial coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
 
-\item{power.1}{Pooling for the 1st fractional polynomial power (\eqn{\gamma_1}). Can take \code{"common"}, \code{"random"} or be
-assigned a numeric value (see details).}
+\item{power.1}{Value for the 1st fractional polynomial power (\eqn{\gamma_1}). Must take any numeric value in the set \verb{-2, -1, -0.5, 0, 0.5, 1, 2, 3}.}
 
-\item{power.2}{Pooling for the 2nd fractional polynomial power (\eqn{\gamma_2}). Can take \code{"common"}, \code{"random"} or be
-assigned a numeric value (see details).}
+\item{power.2}{Value for the 2nd fractional polynomial power (\eqn{\gamma_2}). Must take any numeric value in the set \verb{-2, -1, -0.5, 0, 0.5, 1, 2, 3}.}
 }
 \value{
 An object of \code{class("dosefun")}
@@ -72,9 +64,9 @@ using the \code{priors} argument in \code{mbnma.run()}.
 dfpoly(beta.1="rel", power.1=0.5)
 
 # 2nd order fractional polynomial with relative effects for coefficients
-# and a common and random pooling for the 1st and 2nd power respectively
+# and a value of -0.5 and 2 for the 1st and 2nd powers respectively
 dfpoly(degree=2, beta.1="rel", beta.2="rel",
-  power.1="common", power.2="random")
+  power.1=-0.5, power.2=2)
 
 }
 \references{

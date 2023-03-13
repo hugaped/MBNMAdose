@@ -35,7 +35,7 @@ between relative effects. Must be kept as \code{"wishart"}}
 \item{omega}{A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between dose-response parameters (see Details for dose-response functions). \code{omega} must
 be a symmetric positive definite matrix with dimensions equal to the number of dose-response parameters modelled using
-relative effects (\code{"rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 1
+relative effects (\code{"rel"}). If left as \code{NULL} (the default) a diagonal matrix with elements equal to 100
 is used.}
 
 \item{om}{a list with two elements that report the maximum relative (\code{"rel"}) and maximum absolute (\code{"abs"}) efficacies

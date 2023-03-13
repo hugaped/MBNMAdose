@@ -69,9 +69,9 @@ of posterior densities for direct and indirect evidence.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{plot}: Plot outputs from treatment-level nodesplit models
-}}
+\item \code{plot(nma.nodesplit)}: Plot outputs from treatment-level nodesplit models
 
+}}
 \examples{
 \donttest{
 # Using the triptans data

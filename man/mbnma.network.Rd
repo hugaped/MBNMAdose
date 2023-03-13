@@ -127,9 +127,9 @@ be included.
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{plot}: Generate a network plot
-}}
+\item \code{plot(mbnma.network)}: Generate a network plot
 
+}}
 \examples{
 # Create an mbnma.network object from the data
 network <- mbnma.network(triptans)

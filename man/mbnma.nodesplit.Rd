@@ -76,11 +76,11 @@ The S3 method \code{plot()} on an \code{nodesplit} object generates either
 forest plots of posterior medians and 95\\\% credible intervals, or density plots
 of posterior densities for direct and indirect evidence.
 }
-\section{Methods (by generic)}{
+\section{Functions}{
 \itemize{
-\item \code{plot}: Plot outputs from treatment-level nodesplit MBNMA models
-}}
+\item \code{plot(nodesplit)}: Plot outputs from treatment-level nodesplit MBNMA models
 
+}}
 \examples{
 \donttest{
 # Using the triptans data

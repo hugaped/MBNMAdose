@@ -93,8 +93,6 @@ Useful links:
 
 Other contributors:
 \itemize{
-  \item Daniel Gallardo Gomez (\href{https://orcid.org/0000-0002-3029-026X}{ORCID}) [reviewer]
-  \item Lujin Li [reviewer]
   \item Adil Karim [contributor]
 }
 
