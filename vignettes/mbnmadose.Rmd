@@ -876,6 +876,8 @@ An HTML document with all the above convergence plots can easily be generated fo
 
 Two steps may improve convergence when using `MBNMAdose`. One step is to run models for more iterations (this can be done using the `n.iter` argument in `mbnma.run()`). It can take time for MCMC chains to converge, particularly for non-linear models with limited data. It is important to note that chains should only be monitored *after* they have converged - increasing the number of burn-in iterations ensures that this is the case (using the `n.burnin` argument in `mbnma.run()`). Another method to improve convergence is by providing more information to the model via informative priors.
 
+For a detailed review of MCMC convergence assessment see Sinharay [-@sinharay].
+
 
 ## Summary
 
