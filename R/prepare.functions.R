@@ -1360,7 +1360,7 @@ check.network <- function(g, reference=1) {
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.dose A number indicating the maximum dose between which to calculate the spline function.
-#' @param knots The number/location of knots. If a single integer is given it indicates the number of knots (they will
+#' @param knots The number/location of internal knots. If a single integer is given it indicates the number of knots (they will
 #'   be equally spaced across the range of doses *for each agent*). If a numeric vector is given it indicates the quantiles of the knots as
 #'   a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
 #'   is 100mg/d, `knots=c(0.1,0.5)` would indicate knots should be fitted at 10mg/d and 50mg/d.
