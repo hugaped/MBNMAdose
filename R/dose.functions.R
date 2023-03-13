@@ -511,8 +511,9 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 2, add=argcheck)
-  checkmate::assertChoice(get(paste0("power.", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
-  checkmate::assertChoice(get(paste0("power.", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
+  for (i in 1:2) {
+    checkmate::assertChoice(get(paste0("power.", i)), choices=c(-2,-1,-0.5,0,0.5,1,2,3), add=argcheck)
+  }
   checkmate::reportAssertions(argcheck)
 
   paramscoef <- list(beta.1=beta.1, beta.2=beta.2)
