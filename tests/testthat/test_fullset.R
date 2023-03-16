@@ -51,6 +51,19 @@ for (dat in seq_along(alldfs)) {
     n.iter=500
     pd <- "pv"
 
+    # NMA
+    nma <- nma.run(network, method="random", pd=pd, n.iter=500)
+    expect_error(plot(nma), NA)
+
+    # Nonparm MBNMA
+    mbnma <- mbnma.run(network, fun=dnonparam(), method="common",
+                       pd=pd, n.iter=n.iter)
+    expect_error(plot(mbnma), NA)
+    expect_error(summary(mbnma), "does not work with non-parametric")
+    expect_error(predict(mbnma), "does not work with non-parametric")
+    expect_error(rank(mbnma), "cannot currently be performed for non-parametric")
+    expect_error(get.relative(mbnma), "cannot be used on non-parametric")
+
     # Single parameter DR functions
     result <- mbnma.run(network, fun=dpoly(degree=1), method="common",
                         pd="plugin", n.iter=n.iter)
