@@ -899,7 +899,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         if (addsd==TRUE) {
           mat <- matrix(nrow=length(chunk), ncol=2)
           mat[,1] <- chunk
-          mat[,2] <- object$BUGSoutput$sims.list[["sd"]]
+          mat[,2] <- stats::median(object$BUGSoutput$sims.list[["sd"]])
           chunk <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
         }
 

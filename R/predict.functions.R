@@ -31,7 +31,7 @@ get.model.vals <- function(mbnma) {
       # Incorporates SD from between-study SD for ABSOLUTE pooling
       mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
       mat[,1] <- res.mat[[names(fun$apool)[i]]]
-      mat[,2] <- res.mat[[paste0("sd.", names(fun$apool)[i])]]
+      mat[,2] <- stats::median(res.mat[[paste0("sd.", names(fun$apool)[i])]])
       mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
 
       temp <- as.vector(mat)
