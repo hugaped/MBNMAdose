@@ -324,6 +324,16 @@ With some dose-response functions (e.g. splines, fractional polynomials) paramet
 
 Several additional arguments can be given to `mbnma.run()` that require further explanation.
 
+### Link functions for `likelihood=="normal"`
+
+For data with normal likelihood, users are likely to typically analyse data using an identity link function, the default given to the `link` argument in `mbnma.run()` when `likelihood="normal"`. This assumes an additive treatment effect (e.g. mean difference).
+
+However, by specifying `link="log"` a user can model a log link and therefore assume a multiplicative treatment effect. For continuous data this models the treatment effect as a Ratio of Means (RoM) [@friedrich2011]. This also provides an advantage as the treatment effect is scale independent (i.e. studies measuring the same outcome using different measurement scales can be analysed simultaneously). However, within-study treatment effects must all be of the same direction (either positive or negative), and change from baseline measures must be adjusted so that they are also expressed as RoMs (log(follow-up) - log(baseline)) to avoid combining additive and multiplicative assumptions within the same analysis.
+
+An alternative approach for modelling a measurement scale-independent treatment effect whilst still assuming additive treatment effects is to perform the analysis using Standardised Mean Differences (SMD). Whilst not strictly a different link function, this can be specified using `link="smd"`. Currently, `MBNMAdose` standardises treatment effects using the pooled standard deviation (SD) in each study. The resulting treatment effects are reported in units of SD as SMDs.
+
+A more robust approach to minimise bias from estimation of within-study SD would be to use a single reference SD for standardisation of each scale included in the dataset. This is something `MBNMAdose` will incorporate in the future. For further details of analysis of continuous data that include discussion of both RoM and SMD see [@GMD2].
+
 #### Class effects
 
 Similar effects between agents within the network can be modelled using class effects. This requires assuming that different agents have some sort of common class effect, perhaps due to similar mechanisms of action. Advantages of this is that class effects can be used to connect agents that might otherwise be disconnected from the network, and they can also provide additional information on agents that might otherwise have insufficient data available to estimate a desired dose-response. The drawback is that this requires making additional assumptions regarding similarity of efficacy.
