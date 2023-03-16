@@ -4,11 +4,12 @@
 - Fractional polynomial powers in `dfpoly()` can only take numeric values from set defined in Jansen 2015.
 - Added `calc.edx()` to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the 
 maximum response (Emax) is reached)
+- `get.relative()` now allows simultaneous comparison of two models in a single league table - can be used to compare MBNMA models with different dose-response functions, or MBNMA and NMA models, or NMA models that assume consistency versus those that use Unrelated Mean Effects.
 
 ## Bug fixes
 - Fixed issue with duplication of studyIDs in `getjagsdata()`
 - Fixed bug with studyID labels in `fitplot()` and `devplot()`
-
+- Fixed issue and documentation with splines to highlight that knot limits should not be specified
 
 # MBNMAdose 0.4.1
 
