@@ -74,6 +74,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(rank(result), NA)
     expect_error(predict(result), NA)
     expect_error(suppressWarnings(summary(result)), NA)
+    expect_identical(sort(network$studyID), sort(result$model.arg$jagsdata$studyID))
 
 
     result <- mbnma.run(network, fun=dexp(), method="random",
