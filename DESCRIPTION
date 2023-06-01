@@ -35,7 +35,6 @@ Imports:
     checkmate (>= 1.8.5),
     Rdpack (>= 0.11-0),
     igraph (>= 1.1.2),
-    rgeos (>= 0.5-2),
     reshape2 (>= 1.4.3)
 Suggests:
     overlapping (>= 1.5.0),
@@ -47,7 +46,9 @@ Suggests:
     crayon (>= 1.3.4),
     forestplot (>= 1.10),
     ggdist (>= 2.4.0),
+    zoo (>= 1.8-8),
     lspline (>= 1.0-0),
+    netmeta,
     knitr,
     rmarkdown
 SystemRequirements: JAGS (>= 4.3.0) (https://mcmc-jags.sourceforge.net/)

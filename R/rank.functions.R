@@ -80,14 +80,9 @@ sumrank <- function(rank.mat) {
 
 
 calcauc <- function(df) {
-  str <- paste(paste(c(df$Var1[1], df$Var1, df$Var1[nrow(df)], df$Var1[1]),
-                     c(0, df$value, 0, 0),
-                     sep=" "),
-               collapse=",")
-  str <- paste0("POLYGON((", str, "))")
 
-  polygon <- rgeos::readWKT(str)
-  auc <- rgeos::gArea(polygon)
+  id <- order(df$Var1)
+  auc <- sum(diff(df$Var1[id])*zoo::rollmean(df$value[id],2))
 
   return(auc)
 }
