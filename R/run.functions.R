@@ -16,6 +16,12 @@
 #'   dose-response. See Details.
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
 #'   should be modelled with between-study heterogeneity or not (see details).
+#' @param regress.vars A one sided summation formula of effect modifiers (variables that
+#'  interact with the treatment effect) to incorporate using Network Meta-Regression.
+#'  E.g. `~ population + age`
+#' @param regress.effect Indicates whether effect modification should be assumed to be
+#'  `"common"` (assumed to be equal), `"random"` (assumed to be exchangeable) or
+#'  `"independent"` (all estimated independently) for each agent versus placebo.
 #' @param class.effect A list of named strings that determines which dose-response
 #'   parameters to model with a class effect and what that effect should be
 #'   (`"common"` or `"random"`). Element names should match dose-response parameter names.
