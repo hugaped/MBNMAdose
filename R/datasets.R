@@ -202,3 +202,24 @@
 #' \insertAllCited{}
 #'
 "ssri"
+
+
+
+
+
+#' Studies of wound closure methods to reduce Surgical Site Infections (SSI)
+#'
+#' A dataset from an ongoing systematic review examining the efficacy of different wound closure methods to reduce surgical
+#' site infections (SSI). The outcome is binary and represents the number of patients who experienced a SSI. The dataset
+#' includes 129 RCTs comparing 16 different interventions in 6 classes. This dataset is primarily used to illustrate
+#' how `MBNMAdose` can be used to perform different types of network meta-analysis without dose-response information.
+#'
+#' @format A data frame in long format (one row per arm and study), with 281 rows and 6 variables:
+#' * `studyID` Study identifiers
+#' * `Year` Year of publication
+#' * `n` Numeric data indicating the number of participants randomised
+#' * `r` Numeric data indicating the number of participants who achieved >50% improvement in depression symptoms
+#' * `trt` Treatment names, given as character data
+#' * `class` Class names, given as character data
+#'
+"ssi_closure"
