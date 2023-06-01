@@ -71,7 +71,7 @@ of Mawdsley et al. (2016)
 <span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
 <span>  class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  UME <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  cor <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  cor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parameters.to.save <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pd <span class="op">=</span> <span class="st">"pd.kl"</span>,</span>
@@ -138,7 +138,7 @@ functions are fitted.</p></dd>
 <dd><p>A scale matrix for the inverse-Wishart prior for the covariance matrix used
 to model the correlation between dose-response parameters (see Details for dose-response functions). <code>omega</code> must
 be a symmetric positive definite matrix with dimensions equal to the number of dose-response parameters modelled using
-relative effects (<code>"rel"</code>). If left as <code>NULL</code> (the default) a diagonal matrix with elements equal to 1
+relative effects (<code>"rel"</code>). If left as <code>NULL</code> (the default) a diagonal matrix with elements equal to 100
 is used.</p></dd>
 
 
@@ -386,7 +386,17 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span><span class="co"># with random treatment effects</span></span></span>
 <span class="r-in"><span><span class="co"># with a probit link function</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dfpoly.html">dfpoly</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>, link<span class="op">=</span><span class="st">"probit"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in paste0("power.", i):</span> object 'i' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fit a user-defined function (quadratic)</span></span></span>
 <span class="r-in"><span><span class="va">fun.def</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">(</span><span class="va">beta.1</span> <span class="op">*</span> <span class="va">dose</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">beta.2</span> <span class="op">*</span> <span class="op">(</span><span class="va">dose</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -398,8 +408,8 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 78</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3705</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 84</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3691</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -436,8 +446,8 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4135</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -455,8 +465,8 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 145</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4047</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 80</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4022</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -514,7 +524,6 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `normal` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `identity` based on assigned value for `likelihood`</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Class effects cannot be modelled with correlation between dose-response relative effects - correlation will be ignored</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -531,16 +540,27 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Obtain priors from a fractional polynomial function</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in paste0("power.", i):</span> object 'i' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">model.arg</span><span class="op">$</span><span class="va">priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $mu</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.001)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ed50</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $beta.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.001)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $EMAX</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.001)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dunif(0, 6.021)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Change the prior distribution for the power</span></span></span>
@@ -549,7 +569,18 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">1</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span></span>
 <span class="r-in"><span>              priors<span class="op">=</span><span class="va">newpriors</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in paste0("power.", i):</span> object 'i' not found</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4103</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">########## Sampler options ##########</span></span></span>
@@ -645,8 +676,8 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -656,37 +687,37 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print R2jags output and summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpZoSBOO/file403f7bff97cd", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpQaimRh/file17b6cba2dd", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.001   0.158    1.701    1.895    1.998    2.108    2.320 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.310   0.089    1.143    1.250    1.309    1.368    1.487 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.688   0.311    1.090    1.478    1.686    1.898    2.316 1.012</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.347   0.188    0.999    1.222    1.343    1.475    1.726 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.436   0.151    1.143    1.333    1.435    1.537    1.740 1.006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.750   0.286    0.197    0.558    0.745    0.944    1.335 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.292   0.174    1.959    2.170    2.287    2.409    2.644 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.371   0.044    0.291    0.341    0.369    0.400    0.466 1.005</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  183.725  18.717  149.528  170.562  182.992  195.991  221.955 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1086.831  18.717 1052.634 1073.668 1086.098 1099.097 1125.061 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.007   0.148    1.715    1.908    2.003    2.108    2.294 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.311   0.090    1.139    1.253    1.310    1.371    1.487 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.690   0.311    1.093    1.482    1.684    1.890    2.319 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.356   0.187    1.001    1.227    1.357    1.482    1.720 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.444   0.145    1.155    1.346    1.442    1.544    1.726 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.737   0.293    0.155    0.535    0.735    0.939    1.309 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.299   0.174    1.964    2.181    2.296    2.415    2.652 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.368   0.044    0.288    0.337    0.367    0.397    0.465 1.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  183.666  18.561  149.064  170.888  183.079  195.673  222.096 1.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1086.772  18.561 1052.170 1073.994 1086.185 1098.779 1125.202 1.008</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]    1100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]    1200</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]     170</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]    1900</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     350</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd          540</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   850</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    840</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]    1300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]    1400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]    1600</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]     800</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]    1500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd          300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   360</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    330</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 846.3 and DIC = 1932.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 931.9 and DIC = 2018.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
@@ -701,7 +732,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Parameter					Median (95%CrI)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">-----------------------------------------------------------------------</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.369 (0.291, 0.466)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.367 (0.288, 0.465)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">rate dose-response parameter results</span></span>
@@ -710,22 +741,22 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:------------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 1.9978| 1.7007| 2.3204|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3092| 1.1425| 1.4866|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6861| 1.0897| 2.3160|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3435| 0.9985| 1.7257|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4353| 1.1429| 1.7395|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7447| 0.1969| 1.3353|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2867| 1.9594| 2.6437|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 2.0034| 1.7155| 2.2945|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3103| 1.1388| 1.4870|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6844| 1.0935| 2.3191|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3571| 1.0007| 1.7196|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4423| 1.1546| 1.7263|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7354| 0.1548| 1.3095|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2961| 1.9640| 2.6518|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Effective number of parameters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 846.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 931.9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1932.4 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 2018.1 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -748,7 +779,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

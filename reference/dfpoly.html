@@ -57,13 +57,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dfpoly</span><span class="op">(</span></span>
-<span>  degree <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  beta.1 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.2 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  power.1 <span class="op">=</span> <span class="st">"common"</span>,</span>
-<span>  power.2 <span class="op">=</span> <span class="st">"common"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dfpoly</span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span>, beta.1 <span class="op">=</span> <span class="st">"rel"</span>, beta.2 <span class="op">=</span> <span class="st">"rel"</span>, power.1 <span class="op">=</span> <span class="fl">0</span>, power.2 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -83,13 +77,11 @@ assigned a numeric value (see details).</p></dd>
 
 
 <dt>power.1</dt>
-<dd><p>Pooling for the 1st fractional polynomial power (\(\gamma_1\)). Can take <code>"common"</code>, <code>"random"</code> or be
-assigned a numeric value (see details).</p></dd>
+<dd><p>Value for the 1st fractional polynomial power (\(\gamma_1\)). Must take any numeric value in the set <code>-2, -1, -0.5, 0, 0.5, 1, 2, 3</code>.</p></dd>
 
 
 <dt>power.2</dt>
-<dd><p>Pooling for the 2nd fractional polynomial power (\(\gamma_2\)). Can take <code>"common"</code>, <code>"random"</code> or be
-assigned a numeric value (see details).</p></dd>
+<dd><p>Value for the 2nd fractional polynomial power (\(\gamma_2\)). Must take any numeric value in the set <code>-2, -1, -0.5, 0, 0.5, 1, 2, 3</code>.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -134,13 +126,68 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># 1st order fractional polynomial a value of 0.5 for the power</span></span></span>
 <span class="r-in"><span><span class="fu">dfpoly</span><span class="op">(</span>beta.1<span class="op">=</span><span class="st">"rel"</span>, power.1<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in paste0("power.", i):</span> object 'i' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "fpoly"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ~beta.1 * ifelse(dose &gt; 0, ifelse(power.1 == 0, log(dose), dose^power.1), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     0)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dffe748048&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "beta.1"  "power.1"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $nparam</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "s.beta.1[agent[i,k]] * ifelse(dose[i,k]&gt;0, ifelse(s.beta.2[agent[i,k]]==0, log(dose[i,k]), dose[i,k]^s.beta.2[agent[i,k]]), 0)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  beta.1 power.1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "rel"   "0.5" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $bname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   beta.1  power.1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "beta.1" "beta.2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dosefun"</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2nd order fractional polynomial with relative effects for coefficients</span></span></span>
-<span class="r-in"><span><span class="co"># and a common and random pooling for the 1st and 2nd power respectively</span></span></span>
+<span class="r-in"><span><span class="co"># and a value of -0.5 and 2 for the 1st and 2nd powers respectively</span></span></span>
 <span class="r-in"><span><span class="fu">dfpoly</span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span>, beta.1<span class="op">=</span><span class="st">"rel"</span>, beta.2<span class="op">=</span><span class="st">"rel"</span>,</span></span>
-<span class="r-in"><span>  power.1<span class="op">=</span><span class="st">"common"</span>, power.2<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in paste0("power.", i):</span> object 'i' not found</span>
+<span class="r-in"><span>  power.1<span class="op">=</span><span class="op">-</span><span class="fl">0.5</span>, power.2<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "fpoly"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ~beta.1 * ifelse(dose &gt; 0, ifelse(beta.3 == 0, log(dose), dose^beta.3), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     0) + (beta.2 * ifelse(beta.4 == beta.3, ifelse(dose &gt; 0, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     ifelse(beta.4 == 0, log(dose)^2, (dose^beta.4) * log(dose)), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     0), ifelse(dose &gt; 0, ifelse(beta.4 == 0, log(dose), dose^beta.4), </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     0)))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dffbf773b8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "beta.1"  "beta.2"  "power.1" "power.2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $nparam</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "s.beta.1[agent[i,k]] * ifelse(dose[i,k]&gt;0, ifelse(s.beta.3[agent[i,k]]==0, log(dose[i,k]), dose[i,k]^s.beta.3[agent[i,k]]), 0) + (s.beta.2[agent[i,k]] * ifelse(s.beta.4[agent[i,k]]==s.beta.3[agent[i,k]], ifelse(dose[i,k]&gt;0, ifelse(s.beta.4[agent[i,k]]==0, log(dose[i,k])^2, (dose[i,k]^s.beta.4[agent[i,k]]) * log(dose[i,k])), 0), ifelse(dose[i,k]&gt;0, ifelse(s.beta.4[agent[i,k]]==0, log(dose[i,k]), dose[i,k]^s.beta.4[agent[i,k]]), 0)))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  beta.1  beta.2 power.1 power.2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   "rel"   "rel"  "-0.5"     "2" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $bname</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   beta.1   beta.2  power.1  power.2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> "beta.1" "beta.2" "beta.3" "beta.4" </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dosefun"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
@@ -156,7 +203,7 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

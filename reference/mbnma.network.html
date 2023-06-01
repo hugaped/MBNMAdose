@@ -65,7 +65,7 @@ to this object.</p>
 <span>  level <span class="op">=</span> <span class="st">"treatment"</span>,</span>
 <span>  v.color <span class="op">=</span> <span class="st">"connect"</span>,</span>
 <span>  doselink <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  layout <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_in_circle.html" class="external-link">in_circle</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  layout <span class="op">=</span> <span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_in_circle.html" class="external-link">in_circle</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  remove.loops <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  edge.scale <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  v.scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -109,8 +109,8 @@ to placebo via dose-response relationships will not be included.</p></dd>
 <dd><p>An igraph layout specification. This is a function specifying an igraph
 layout that determines the arrangement of the vertices (nodes). The default
 <code>igraph::as_circle()</code> arranged vertices in a circle. Two other useful layouts for
-network plots are: <code><a href="https://rdrr.io/pkg/igraph/man/layout_as_star.html" class="external-link">igraph::as_star()</a></code>, <code><a href="https://rdrr.io/pkg/igraph/man/layout_with_fr.html" class="external-link">igraph::with_fr()</a></code>. Others can be found
-in <code><a href="https://rdrr.io/pkg/igraph/man/layout_.html" class="external-link">layout_</a></code></p></dd>
+network plots are: <code><a href="https://r.igraph.org/reference/layout_as_star.html" class="external-link">igraph::as_star()</a></code>, <code><a href="https://r.igraph.org/reference/layout_with_fr.html" class="external-link">igraph::with_fr()</a></code>. Others can be found
+in <code><a href="https://r.igraph.org/reference/layout_.html" class="external-link">layout_</a></code></p></dd>
 
 
 <dt>remove.loops</dt>
@@ -200,7 +200,7 @@ that correspond to the new class codes.</p></li>
 network plot that shows how different treatments are connected within the
 network via study comparisons. This can be used to identify how direct and
 indirect evidence are informing different treatment comparisons. Depends on
-<code><a href="https://rdrr.io/pkg/igraph/man/aaa-igraph-package.html" class="external-link">igraph</a></code>.</p>
+<code><a href="https://r.igraph.org/reference/aaa-igraph-package.html" class="external-link">igraph</a></code>.</p>
 <p>Agents/classes for arms that have dose = 0 will be relabelled as <code>"Placebo"</code>.
 Missing values (<code>NA</code>) cannot be included in the dataset. Single arm studies cannot
 be included.</p>
@@ -208,7 +208,7 @@ be included.</p>
     <div id="methods-by-generic-">
     <h2>Methods (by generic)</h2>
     
-<ul><li><p><code>plot</code>: Generate a network plot</p></li>
+<ul><li><p><code>plot(mbnma.network)</code>: Generate a network plot</p></li>
 </ul></div>
 
     <div id="ref-examples">
@@ -245,7 +245,7 @@ be included.</p>
 <span class="r-plt img"><img src="mbnma.network-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Arrange network plot in a star with the reference treatment in the centre</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/igraph/man/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.network-6.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">#### Plot a network with no placebo data included ####</span></span></span>
@@ -276,7 +276,7 @@ be included.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>       4 Cady G 2006           351   200     1 rizatriptan </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>       5 Cady G 2006           167    52     0 placebo     </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>       5 Cady G 2006           331   195     1 rizatriptan </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># … with 172 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 172 more rows</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define network</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu">mbnma.network</span><span class="op">(</span><span class="va">triptans</span>, description<span class="op">=</span><span class="st">"Example network"</span><span class="op">)</span></span></span>
@@ -310,7 +310,7 @@ be included.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
