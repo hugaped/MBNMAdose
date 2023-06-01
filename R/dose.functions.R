@@ -122,6 +122,132 @@ dexp <- function(emax="rel", onset=NULL) {
 
 
 
+#' Integrated Two-Component Prediction (ITP) function
+#'
+#' Similar parameterisation to the Emax model but with non-asymptotic maximal effect (Emax). Proposed
+#' by proposed by \insertCite{fumanner;textual}{MBNMAdose}
+#'
+#' @param emax Pooling for Emax  parameter. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
+#' @param rate Pooling for Rate parameter. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
+#'
+#' @return An object of `class("dosefun")`
+#'
+#' @details
+#'
+#' Emax represents the maximum response.
+#' Rate represents the rate at which a change in the dose of the drug leads to
+#' a change in the effect
+#'
+#' \deqn{{E_{max}}\times\frac{(1-exp(-{rate}\times{x}))}{(1-exp(-{rate}\times{max(x)}))}}
+#'
+#'
+#' @section Dose-response parameters:
+#'
+#' | \strong{Argument} | \strong{Model specification} |
+#' | ----------------- | ---------------------------- |
+#' | `"rel"` | Implies that \emph{relative} effects should be pooled for this dose-response parameter separately for each agent in the network. |
+#' | `"common"` | Implies that all agents share the same common effect for this dose-response parameter. |
+#' | `"random"` | Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents. |
+#' | `numeric()` | Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value. |
+#'
+#' When relative effects are modelled on more than one dose-response parameter,
+#' correlation between them is automatically estimated using a vague inverse-Wishart prior.
+#' This prior can be made slightly more informative by specifying the scale matrix `omega`
+#' and by changing the degrees of freedom of the inverse-Wishart prior
+#' using the `priors` argument in `mbnma.run()`.
+#'
+#'
+#' @references
+#'   \insertAllCited
+#'
+#' @examples
+#' # Model a common effect on rate
+#' ditp(emax="rel", rate="common")
+#'
+#' @export
+ditp <- function(emax="rel", rate="rel", p.expon=FALSE) {
+
+  params <- list(emax=emax, rate=rate)
+  for (i in seq_along(params)) {
+    if (!is.null(params[[i]])) {
+      err <- TRUE
+      if (length(params[[i]])==1) {
+        if (any(c("rel", "common", "random") %in% params[[i]])) {
+          err <- FALSE
+        } else if (is.numeric(params[[i]])) {
+          err <- FALSE
+        }
+      }
+      if (err) {
+        stop(paste0(names(params)[i], " must take either 'rel', 'common', 'random' or be assigned a numeric value"))
+      }
+    }
+  }
+
+  # Define dose-response function
+  if (p.expon==TRUE) {
+    fun <- ~ emax * (1 - exp(-exp(rate)*dose)) / (1 - exp(-exp(rate)*max(dose)))
+    jags <- "s.beta.1 * ((1-exp(-exp(s.beta.2)*dose[i,k])) / (1-exp(-exp(s.beta.2)*maxdose)))"
+
+  } else if (p.expon==FALSE) {
+    fun <- ~ emax * (1 - exp(-rate*dose)) / (1 - exp(-rate*max(dose)))
+    jags <- "s.beta.1 * ((1-exp(-s.beta.2*dose[i,k])) / (1-exp(-s.beta.2*maxdose)))"
+  }
+
+  for (i in seq_along(params)) {
+    jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
+  }
+
+
+  f <- function(dose, beta.1, beta.2) {
+    y <- beta.1 * (1-exp(-beta.2*dose)) / (1-exp(-beta.2*max(dose)))
+    return(y)
+  }
+
+  if (emax=="rel") {
+    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
+  } else if (emax=="abs" & method.emax=="random") {
+    jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
+  }
+  if (rate=="rel") {
+    jags <- gsub("beta\\.2", "beta.2[i,k]", jags)
+  } else if (rate=="abs" & method.rate=="random") {
+    jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
+  }
+
+
+  # Generate output values
+  paramnames <- c("emax", "rate")
+  nparam <- 2
+
+  apool <- c(emax, rate)
+  bname <- paste0("beta.", 1:nparam)
+
+  names(apool) <- paramnames
+  names(bname) <- paramnames
+
+  if (!any("rel" %in% apool)) {
+    stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
+  }
+
+  out <- list(name="itp", fun=fun,
+              params=paramnames, nparam=nparam, jags=jags,
+              apool=apool, bname=bname, p.expon=FALSE)
+  class(out) <- "dosefun"
+
+  if (p.expon==TRUE) {
+    message("'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale")
+  }
+
+  return(out)
+}
+
+
+
+
+
 
 #' Log-linear (exponential) dose-response function
 #'
