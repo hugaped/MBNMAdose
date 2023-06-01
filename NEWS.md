@@ -5,6 +5,7 @@
 - Added `calc.edx()` to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the 
 maximum response (Emax) is reached)
 - `get.relative()` now allows simultaneous comparison of two models in a single league table - can be used to compare MBNMA models with different dose-response functions, or MBNMA and NMA models, or NMA models that assume consistency versus those that use Unrelated Mean Effects.
+- Plots of predictions look prettier
 
 ## Bug fixes
 - Fixed issue with duplication of studyIDs in `getjagsdata()`

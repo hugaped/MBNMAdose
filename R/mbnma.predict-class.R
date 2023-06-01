@@ -297,16 +297,32 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
   # Add overlayed lines and legends
   g <- g +
-    ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% Interval")) +
-    ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% Interval")) +
-    ggplot2::geom_line(ggplot2::aes(linetype="Posterior Median"))
+    ggplot2::geom_line(ggplot2::aes(linetype="MBNMA"))
 
+  if (disp.obs==TRUE) {
+    g <- g +
+      ggplot2::geom_line(ggplot2::aes(y=`2.5%`, linetype="95% Interval")) +
+      ggplot2::geom_line(ggplot2::aes(y=`97.5%`, linetype="95% Interval"))
+  } else {
+    g <- g +
+      ggplot2::geom_ribbon(ggplot2::aes(ymin=`2.5%`, ymax=`97.5%`, fill="MBNMA"),
+                           alpha=0.2)
+  }
+
+  # Create aesthetics
+  linetypevals <- c("MBNMA"="solid",
+                    "95% Interval"="dashed")
+
+  fillvals <- c("MBNMA"="blue",
+                "95% Interval"="black")
+
+  g <- g +
+    ggplot2::scale_linetype_manual(name="", values=linetypevals) +
+    ggplot2::scale_fill_manual(name="", values=fillvals)
+
+  # Add facets and labels and theme
   g <- g + ggplot2::facet_wrap(~agent, scales=scales) +
-    ggplot2::labs(y="Predicted response", x="Dose")
-
-  g <- g + ggplot2::scale_linetype_manual(name="",
-                                          values=c("Posterior Median"="solid",
-                                                   "95% Interval"="dashed")) +
+    ggplot2::labs(y="Predicted response", x="Dose") +
     theme_mbnma()
 
   return(g)
