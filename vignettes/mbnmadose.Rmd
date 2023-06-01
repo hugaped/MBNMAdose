@@ -871,6 +871,17 @@ plot(nodesplit, plot.type="forest")
 plot(nodesplit, plot.type="density")
 ```
 
+## Model Selection
+
+Detailed description of model selection based on statistical measures such as Deviance Information Criterion (DIC) and residual deviance is outside the scope of this vignette. However, the following approach for model identification and selection is recommended, which also gives details on model fit statistics used for comparison:
+
+1. Identify candidate dose-response functions based on plotted results of split NMA (`plot.nma()`) and clinical/biological reasoning
+2. Compare candidate dose-response functions fitted with common relative treatment effects (`mbnma.run(..., method="common")`)
+3. If no candidate dose-response functions converge successfully, additional modelling assumptions can be made to strengthen inference, provided they are clinically justifiable (e.g. class effects, agent-specific dose-response functions, correlation between dose-response parameters)
+4. Compare selected common effects model to the same model fitted with random effects (`mbnma.run(..., method="random")`)
+
+Finally the validity of the consistency assumption should be explored in the selected final model (see [Consistency Testing] and Pedder et al. [-@pedder2021cons]). 
+
 ## MCMC Convergence
 
 `MBNMAdose` runs Bayesian models in JAGS, which uses Markov Chain Monte Carlo (MCMC) simulation. However, the validity of results is reliant on the MCMC chains having converged successfully on the posterior densities of all parameters in the model. For highly parameterised models run on relatively limited data, as is often the case with MBNMA models, convergence can often be an challenge. Note that convergence is *necessary* to be able to compare models and evaluate model fit. However, successful convergence *does not* imply good model fit.
