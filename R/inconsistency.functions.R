@@ -580,9 +580,10 @@ check.indirect.drops <- function(df, comp) {
   for (study in seq_along(studies)) {
     subset <- df[df$studyID==studies[study],]
     if (all(comp %in% subset$treatment)) {
-      if (subset$narm[1]<=2) {
+      # if (subset$narm[1]<=2) {
+      if (dplyr::n_distinct(subset$treatment)<=2) {
         dropID <- append(dropID, subset$studyID[1])
-      } else if (subset$narm[1]>2) {
+      } else if (dplyr::n_distinct(subset$treatment)>2) {
         dropcomp <- append(dropcomp, subset$studyID[1])
       }
     }
