@@ -16,9 +16,11 @@
 #'   dose-response. See Details.
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
 #'   should be modelled with between-study heterogeneity or not (see details).
-#' @param regress.vars A one sided summation formula of effect modifiers (variables that
-#'  interact with the treatment effect) to incorporate using Network Meta-Regression.
-#'  E.g. `~ population + age`
+#' @param regress.vars A character vector of effect modifiers (variables that
+#'  interact with the treatment effect) to incorporate using Network Meta-Regression
+#'  (E.g. `c("population", "age")`). Effects modifiers must be named numeric variables
+#'  in `network$data.ab` and must be identical within a study. Factor effect modifiers
+#'  should only be incorporated as a series of named binary dummy variables.
 #' @param regress.effect Indicates whether effect modification should be assumed to be
 #'  `"common"` (assumed to be equal), `"random"` (assumed to be exchangeable) or
 #'  `"independent"` (all estimated independently) for each agent versus placebo.
@@ -297,6 +299,8 @@
 mbnma.run <- function(network,
                       fun=dloglin(),
                       method="common",
+                      regress.vars=NULL,
+                      regress.effect="common",
                       class.effect=list(), UME=FALSE,
                       cor=FALSE,
                       omega=NULL,
@@ -332,6 +336,11 @@ mbnma.run <- function(network,
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link, warnings=TRUE)
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
+
+  # Check regression
+  if (!is.null(regress.vars)) {
+    check.regress(network=network, regress.vars=regress.vars)
+  }
 
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
   if (n.iter==n.burnin) {
@@ -378,6 +387,7 @@ mbnma.run <- function(network,
     # Write JAGS model code
     model <- mbnma.write(fun=fun,
                          method=method,
+                         regress.vars=regress.vars, regress.effect=regress.effect,
                          class.effect=class.effect, UME=UME,
                          cor=cor, omega=omega,
                          om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood),
@@ -410,7 +420,7 @@ mbnma.run <- function(network,
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
-      gen.parameters.to.save(fun=fun, model=model)
+      gen.parameters.to.save(fun=fun, model=model, regress.vars = regress.vars)
   }
 
   # Add nodes to monitor to calculate plugin pd
@@ -426,7 +436,7 @@ mbnma.run <- function(network,
   }
 
   # Set boolean for presence of class effects in model
-  class <- ifelse(length(class.effect)>0, TRUE, FALSE)
+  class <- ifelse(length(class.effect)>0 | "class" %in% regress.effect, TRUE, FALSE)
 
   # Change doses to dose indices for non-parametric models
   if ("nonparam" %in% fun$name) {
@@ -439,6 +449,7 @@ mbnma.run <- function(network,
   #### Run jags model ####
 
   result.jags <- mbnma.jags(data.ab, model,
+                            regress.vars=regress.vars, regress.effect=regress.effect,
                             class=class, omega=omega,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link, fun=fun,
@@ -468,6 +479,7 @@ mbnma.run <- function(network,
                     "jagsdata"=jagsdata,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
+                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
                     "class.effect"=class.effect,
                     "cor"=cor,
                     "omega"=omega,
@@ -499,7 +511,9 @@ mbnma.run <- function(network,
 
 
 mbnma.jags <- function(data.ab, model,
-                       class=FALSE, omega=NULL,
+                       class=FALSE,
+                       regress.vars=NULL, regress.effect="common",
+                       omega=NULL,
                        likelihood=NULL, link=NULL, fun=NULL,
                        nodesplit=NULL, jagsdata=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
@@ -525,6 +539,7 @@ mbnma.jags <- function(data.ab, model,
   # For MBNMAdose
   if (is.null(jagsdata)) {
     jagsdata <- getjagsdata(data.ab, class=class,
+                            regress.vars=regress.vars, regress.effect=regress.effect,
                             likelihood=likelihood, link=link, fun=fun,
                             nodesplit=nodesplit)
 
@@ -677,7 +692,7 @@ gen.init <- function(jagsdata, fun) {
 #'
 #' @inheritParams mbnma.run
 #' @param model A JAGS model written as a character object
-gen.parameters.to.save <- function(fun, model) {
+gen.parameters.to.save <- function(fun, model, regress.vars) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
   # model is a JAGS model written as a character object
@@ -726,6 +741,17 @@ gen.parameters.to.save <- function(fun, model) {
       parameters.to.save <- parameters.to.save[!parameters.to.save %in% paste0("beta.",i)]
     }
   }
+
+  for (i in seq_along(regress.vars)) {
+    # Save B
+    parameters.to.save <- append(parameters.to.save, paste0("B.", regress.vars[i]))
+
+    # save sd.B
+    if (any(grepl("sd\\.B\\.", model))) {
+      parameters.to.save <- append(parameters.to.save, paste0("sd.B.", regress.vars[i]))
+    }
+  }
+
 
   # Include nonparametric
   if ("nonparam" %in% fun$name) {

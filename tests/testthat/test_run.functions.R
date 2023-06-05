@@ -238,6 +238,73 @@ for (dat in seq_along(alldfs)) {
     expect_equal(names(update), c("study", "arm", "mean"))
 
   })
+
+  if (datanam[dat]=="ssri") {
+
+    test_that(paste("regression functions run correctly for:", datanam), {
+
+      # Edit dataset
+      ssri2 <- ssri %>% dplyr::mutate(
+        rob=(as.numeric(factor(bias))-2)^2, # Make RoB binary (with moderate as reference)
+        class=dplyr::case_when(agent %in% c("citalopram", "escitalopram") ~ "alopram",
+                               agent %in% c("fluoxetine", "paroxetine") ~ "xetine",
+                               TRUE ~ "Inactive"
+                               )
+        )
+
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  regress.vars = c("rob"),
+                  regress.effect = "common",
+                  n.iter=n.iter)
+        , NA)
+
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  regress.vars = c("rob"),
+                  regress.effect = "agent",
+                  n.iter=n.iter)
+        , NA)
+
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  regress.vars = c("rob"),
+                  regress.effect = "random",
+                  n.iter=n.iter)
+        , NA)
+
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  regress.vars = c("rob"),
+                  regress.effect = "independent",
+                  n.iter=n.iter)
+        , NA)
+
+
+      # Class effects
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  class.effect = list("beta.1"="random"),
+                  regress.vars = c("rob"),
+                  regress.effect = "class",
+                  n.iter=n.iter)
+        , NA)
+
+      expect_error(
+        mbnma.run(mbnma.network(ssri2),
+                  dfpoly(degree=2),
+                  regress.vars = c("rob"),
+                  regress.effect = "class",
+                  n.iter=n.iter)
+        , NA)
+    })
+
+  }
 }
 
 

@@ -533,6 +533,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE,
+                        regress.vars=NULL, regress.effect="common",
                         likelihood=check.likelink(data.ab)$likelihood,
                         link=check.likelink(data.ab)$link,
                         level="agent", fun=NULL, nodesplit=NULL) {
@@ -541,6 +542,7 @@ getjagsdata <- function(data.ab, class=FALSE,
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
+  checkmate::assertCharacter(regress.vars, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::assertClass(fun, "dosefun", null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
@@ -551,6 +553,13 @@ getjagsdata <- function(data.ab, class=FALSE,
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Check and assign level
+  if (level=="treatment" | any(c("random", "independent") %in% regress.effect)) {
+    incltrt <- TRUE
+  } else {
+    incltrt <- FALSE
+  }
+
   df <- data.ab
 
   # Create vector of variable names for which data will be required
@@ -558,7 +567,9 @@ getjagsdata <- function(data.ab, class=FALSE,
 
   if (level=="agent") {
     varnames <- append(varnames, c("dose", "agent"))
-  } else if (level=="treatment") {
+  }
+
+  if (incltrt==TRUE) {
     varnames <- append(varnames, c("treatment"))
   }
 
@@ -655,18 +666,6 @@ getjagsdata <- function(data.ab, class=FALSE,
         doses$degree <- unique(fun$degree[fun$name %in% splineopt])
       }
 
-      # TEST
-      # nknot <- max(unlist(lapply(fun$knots, length)), na.rm = TRUE)
-      #
-      # # If this dose not work unhash section below and hash this instead
-      # knotposvec <- fun$knots[fun$posvec]
-      #
-      # temp <- matrix(nrow=nrow(doses), ncol=nknot)
-      # for (r in 1:nrow(temp)) {
-      #   temp[r,1:length(knotposvec[[doses$agent[r]]])] <- knotposvec[[doses$agent[r]]]
-      # }
-      # doses$knots <- temp
-
       # If there are multiple spline knots
       if (length(unique(fun$knots)[!is.na(unique(fun$knots))])>1) {
         nknot <- max(unlist(lapply(fun$knots, length)), na.rm = TRUE)
@@ -757,12 +756,6 @@ getjagsdata <- function(data.ab, class=FALSE,
 
         dosespline$spline <- splinemat
 
-        # dosespline <- doses %>% dplyr::group_by(agent) %>%
-        #   dplyr::mutate(spline=genspline(dose,
-        #                                              spline=unique(splinefun),
-        #                                              knots=unique(knots),
-        #                                              degree=unique(degree)))
-
         matsize <- ncol(dosespline$spline)
       }
 
@@ -776,7 +769,9 @@ getjagsdata <- function(data.ab, class=FALSE,
 
     }
 
-  } else if (level=="treatment") {
+  }
+
+  if (incltrt==TRUE) {
     datalist[["NT"]] <- max(df$treatment)
 
     datalist[["treatment"]] <- matrix(rep(NA, max(as.numeric(df$studyID))*max(df$arm)),
@@ -826,7 +821,9 @@ getjagsdata <- function(data.ab, class=FALSE,
                                              df$arm==k,
                                            grepl("spline$", colnames(df))]
         }
-      } else if (level=="treatment") {
+      }
+
+      if (incltrt==TRUE) {
         datalist[["treatment"]][i,k] <- max(df$treatment[as.numeric(df$studyID)==i &
                                                    df$arm==k])
       }
@@ -864,6 +861,19 @@ getjagsdata <- function(data.ab, class=FALSE,
     datalist[["f"]] <- matrix(fun$posvec[datalist$agent],
                               nrow=nrow(datalist$agent),
                               ncol=ncol(datalist$agent))
+  }
+
+  # Add meta-regression data
+  if (!is.null(regress.vars)) {
+
+    # Just take 1st row of each study
+    vars.df <- df %>% dplyr::group_by(studyID) %>%
+      dplyr::slice(1)
+
+    vars <- regress.vars
+    for (i in seq_along(vars)) {
+      datalist[[vars[i]]] <- vars.df[[vars[i]]]
+    }
   }
 
   return(datalist)
@@ -1545,4 +1555,53 @@ calcom <- function(data.ab, link, likelihood, buffer=1.2) {
   abs <- abs*buffer
 
   return(list(rel=round(rel, 3), abs=round(abs,3)))
+}
+
+
+
+#' Checks meta-regression variables are specified correctly
+#'
+#' Returns error if variables are not specified correctly
+#'
+#' @noRd
+check.regress <- function(network, regress.vars=NULL) {
+
+  # Run Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(network, "mbnma.network", add=argcheck)
+  checkmate::assertCharacter(regress.vars, null.ok=TRUE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  vars <- regress.vars
+
+  # Check vars doesn't include protected object names
+  protvar <- c("beta", "class")
+  if (any(protvar %in% vars)) {
+    stop(paste0("Cannot use the following protected object names: ",
+                paste(protvar[protvar %in% vars], sep=", ")))
+  }
+
+  # Check all vars are in network
+  if (!all(vars %in% names(network$data.ab))) {
+    stop("Effect modifiers specified in `regress.vars` not present in dataset (network$data.ab)")
+  }
+
+  # Check all vars are consistent within studies
+  check.df <- network$data.ab %>%
+    dplyr::select(studyID, vars) %>%
+    unique(.) %>%
+    dplyr::group_by(studyID) %>%
+    dplyr::mutate(dupl=dplyr::n())
+
+  if (any(check.df$dupl>1)) {
+    stop(paste0("Effect modifiers specified in `regress.vars` vary within the following studies:\n",
+                paste(check.df$studyID[check.df$dupl>1], collapse="\n")))
+  }
+
+  # Check that vars are all numeric
+  for (i in seq_along(vars)) {
+    if (!all(is.numeric(check.df[[vars[i]]]))) {
+      stop("All variables specified in `regress.vars` must be numeric: `", paste0(vars[i], "` is not numeric"))
+    }
+  }
 }

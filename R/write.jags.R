@@ -68,6 +68,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @export
 mbnma.write <- function(fun=dloglin(),
                         method="common",
+                        regress.vars=NULL, regress.effect="common",
                         cor=TRUE, cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
                         class.effect=list(), UME=FALSE,
@@ -87,10 +88,11 @@ mbnma.write <- function(fun=dloglin(),
 
   write.check(fun=fun,
               method=method, cor.prior=cor.prior,
+              regress.effect=regress.effect,
               omega=omega, om=om,
               class.effect=class.effect, UME=UME)
 
-  model <- write.model(class.effect=class.effect, UME=UME)
+  model <- write.model(UME=UME)
 
   # Add dose-response function
   dosefun <- write.dose.fun(fun=fun, UME=UME)
@@ -113,6 +115,11 @@ mbnma.write <- function(fun=dloglin(),
   # Add correlation between dose-response parameters
   model <- write.cor(model, fun=fun, method=method, cor=cor, omega=omega,
                      class.effect=class.effect, UME=UME)
+
+  # Add regression components
+  model <- write.regress(model,
+                         regress.vars=regress.vars, regress.effect=regress.effect,
+                         om=om)
 
   # Drop empty loops
   model <- remove.loops(model)
@@ -139,6 +146,7 @@ mbnma.write <- function(fun=dloglin(),
 #'
 write.check <- function(fun=dloglin(),
                         method="common",
+                        regress.effect="common",
                         UME=FALSE,
                         cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
@@ -150,6 +158,8 @@ write.check <- function(fun=dloglin(),
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(fun, "dosefun", null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertChoice(regress.effect, choices=c("common", "random", "agent", "class", "independent"),
+                          null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
@@ -192,6 +202,13 @@ write.check <- function(fun=dloglin(),
     }
   }
 
+  # # Checks use of regress.effect="class"
+  # if ("class" %in% regress.effect) {
+  #   if (length(class.effect)==0) {
+  #     stop("Class effects must be modelled to assume effect modification by class (regress.effect='class')")
+  #   }
+  # }
+
   if (!is.null(omega)) {
     if (length(class.effect)>0) {
       #warning("Class effects cannot be modelled with correlation between time-course relative effects - 'omega' will be ignored")
@@ -228,7 +245,7 @@ write.check <- function(fun=dloglin(),
 #' @examples
 #' model <- write.model()
 #' cat(model)
-write.model <- function(UME=FALSE, class.effect=list()) {
+write.model <- function(UME=FALSE) {
 
   model <- c(
     start= "model{ 			# Begin Model Code",
@@ -240,14 +257,14 @@ write.model <- function(UME=FALSE, class.effect=list()) {
     te="for(k in 2:narm[i]){ # Treatment effects",
     "}",
     "}",
-    trt.prior="for (k in 2:Nagent){ # Priors on relative treatment effects",
+    agent.prior="for (k in 2:Nagent){ # Priors on relative agent effects",
+    "}",
+    class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
+    "}",
+    trt.prior="for (k in 2:NT){ # Priors on relative treatment effects",
     "}"
     )
 
-  if (length(class.effect)>0) {
-    model <- append(model,  c(class.prior="for (k in 2:Nclass){ # Priors on relative class effects",
-                              "}"))
-  }
   if (UME==TRUE) {
     model <- append(model, c(ume.prior.ref="for (k in 1:Nagent){ # UME prior ref",
                              "}",
@@ -392,7 +409,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL) {
   transfer <- "psi[i,k] <- theta[i,k]"
 
   glm <- c("psi[i,k] <- theta[i,k]",
-           "theta[i,k] <- mu[i] + delta[i,k]")
+           glm="theta[i,k] <- mu[i] + delta[i,k]")
   if (!link %in% c("identity", "smd")) {
     glm <- gsub("(psi\\[i,k\\])(.+)", paste0(link, "(\\1)\\2"), glm)
   }
@@ -517,14 +534,14 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
                   "for (c in 2:maxdose[k]) {",
                   "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(d.1[c-1,k],)",
                   "}")
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
     } else if ("decreasing" %in% fun$direction) {
       insert <- c("d.1[1,k] <- 0",
                   "for (c in 2:maxdose[k]) {",
                   "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])",
                   "}")
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
     } else {
       stop("direction must be specified as either 'increasing' or 'decreasing' in dnonparam()")
     }
@@ -541,7 +558,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
 
           insert <- paste0("s.beta.", i, "[k] <- ", pname, "[k]")
-          model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+          model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
         }
 
         # If class effects are modelled for this parameter
@@ -551,11 +568,11 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
           if (class.effect[[pname]]=="common") {
             insert <- paste0(pname, "[k]  <- ", toupper(pname), "[class[k]]")
-            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
           } else if (class.effect[[pname]]=="random") {
             insert <- paste0(pname, "[k]  ~ dnorm(", toupper(pname), "[class[k]], tau.", toupper(pname), ")")
-            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
             insert <- c(ifelse(om$rel>0,
                                paste0("sd.", toupper(pname), " ~ dunif(0, ", om$rel, ")"),
@@ -566,7 +583,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
         } else {
           if (UME==FALSE) {
             insert <- paste0(pname, "[k] ~ dnorm(0,0.001)")
-            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
           } else if (UME==TRUE) {
             insert <- c(paste0("s.beta.", i, "[k,c] <- ", pname, "[k,c]"),
@@ -589,7 +606,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           if (fun$apool[i] %in% "random") {
 
             insert <- paste0("s.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
-            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
             insert <- c(ifelse(om$abs>0,
                                paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
@@ -599,7 +616,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
           } else if (fun$apool[i] %in% "common") {
             insert <- paste0("s.beta.", i, "[k] <- ", pname)
-            model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+            model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
           }
 
         } else if (UME==TRUE) {
@@ -633,7 +650,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
 
           insert <- paste0("s.beta.", i, "[k] <- ", pname)
-          model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=insert)
+          model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
         } else if (UME==TRUE) {
           insert <- paste0("s.beta.", i, "[k,k] <- 0")
@@ -649,6 +666,98 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
       }
     }
   }
+
+  return(model)
+}
+
+
+
+
+
+#' Adds sections of JAGS code for meta-regression parameters
+#'
+#' @inheritParams mbnma.run
+#' @inheritParams get.prior
+#' @noRd
+#'
+#' @return A character vector of JAGS MBNMA model code that includes regression
+#'   parameter components of the model
+#'
+write.regress <- function(model, regress.vars, regress.effect, om) {
+
+  vars <- regress.vars
+  #glm <- model[grep("mu\\[i\\] \\+ delta\\[i\\,k\\]", model)]
+  glm <- model["glm"]
+
+  if (any(c("common", "agent", "class") %in% regress.effect)) {
+    level <- "agent"
+
+  } else if (any(c("random", "independent") %in% regress.effect)) {
+    level <- "treatment"
+  }
+
+  for (i in seq_along(vars)) {
+
+    # Add zero value for b[1]
+    bzero <- paste0("b.", vars[i], "[1] <- 0")
+    model <- model.insert(model, pos=which(names(model)=="start"), x=bzero)
+
+    # Add regression component to GLM
+    modstr <- paste0("((b.", vars[i], "[", level, "[i,k]]-b.", vars[i], "[", level, "[i,1]]) * " , vars[i], "[i])")
+    glm <- paste(glm, "+", modstr)
+
+    # Add assumption for regress effect (no need to add for agent since that is default if level==agent)
+    if ("common" %in% regress.effect) {
+      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i])
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+
+      bprior <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
+      model <- model.insert(model, pos=which(names(model)=="end"), x=bprior)
+
+    } else if ("random" %in% regress.effect) {
+      beffect <- paste0("b.", vars[i], "[k] ~ dnorm(B.", vars[i], ", prec.B.", vars[i], ")")
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
+
+      bprior <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
+      model <- model.insert(model, pos=which(names(model)=="end"), x=bprior)
+
+    } else if ("independent" %in% regress.effect) {
+      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
+
+      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=bprior)
+
+    } else if ("agent" %in% regress.effect) {
+      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+
+      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=bprior)
+
+    } else if ("class" %in% regress.effect) {
+      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[class[k]]")
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+
+      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
+      model <- model.insert(model, pos=which(names(model)=="class.prior"), x=bprior)
+
+    } else {
+      stop(paste0("regress.vars[", i, "] is incorrectly specified"))
+    }
+
+
+    # Add prior for sd.B
+    if ("random" %in% regress.effect) {
+      sdbprior <- c(paste0("sd.B.", vars[i], " ~ dunif(0,", om$rel, ")"),
+                    paste0("prec.B.", vars[i], " <- pow(sd.B.", vars[i], ", -2)")
+      )
+      model <- model.insert(model, pos=which(names(model)=="end"), x=sdbprior)
+    }
+  }
+
+  # Replace GLM
+  model["glm"] <- glm
 
   return(model)
 }
@@ -829,7 +938,7 @@ add.nodesplit <- function(model) {
 #' @noRd
 remove.loops <- function(model) {
 
-  segs <- c("trt.prior")
+  segs <- c("agent.prior", "trt.prior", "class.prior")
 
   for (i in seq_along(segs)) {
     pos <- which(names(model)==segs[i])
@@ -978,7 +1087,7 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
   }
 
   # Remove delta
-  model <- gsub("(.+<- mu\\[i\\])( \\+ delta\\[i,k\\])", "\\1", model)
+  model["glm"] <- gsub("\\+ delta\\[i,k\\]", "", model["glm"])
 
   return(model)
 }
