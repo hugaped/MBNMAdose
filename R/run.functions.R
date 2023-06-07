@@ -379,22 +379,6 @@ mbnma.run <- function(network,
     }
   }
 
-  # Define model arguments
-  model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
-                    "fun"=fun,
-                    "jagscode"=result.jags$model,
-                    "jagsdata"=jagsdata,
-                    "method"=method,
-                    "likelihood"=likelihood, "link"=link,
-                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
-                    "class.effect"=class.effect,
-                    "cor"=cor,
-                    "omega"=omega,
-                    "UME"=UME,
-                    #"parallel"=parallel,
-                    "pd"=pd,
-                    "priors"=get.prior(model))
-
   if (is.null(model.file)) {
 
     # Write JAGS model code
@@ -485,6 +469,22 @@ mbnma.run <- function(network,
     result$BUGSoutput$DIC <- fitstats$dic
   }
 
+  # Define model arguments
+  model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
+                    "fun"=fun,
+                    "jagscode"=result.jags$model,
+                    "jagsdata"=jagsdata,
+                    "method"=method,
+                    "likelihood"=likelihood, "link"=link,
+                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
+                    "class.effect"=class.effect,
+                    "cor"=cor,
+                    "omega"=omega,
+                    "UME"=UME,
+                    #"parallel"=parallel,
+                    "pd"=pd,
+                    "priors"=get.prior(model))
+
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
@@ -551,12 +551,6 @@ mbnma.jags <- function(data.ab, model,
       # Generate monotonically increasing/decreasing initial values
       # Check for user-defined initial values
       if (!("inits" %in% names(args))) {
-        # if (grepl("T\\(d\\.1\\[c-1,k\\],\\)", model)) {
-        #   fun="nonparam.up"
-        # } else if (grepl("T\\(,d\\.1\\[c-1,k\\]\\)", model)) {
-        #   fun=="nonparam.down"
-        # }
-
         args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
       }
     }
