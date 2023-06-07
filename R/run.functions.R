@@ -311,10 +311,7 @@ mbnma.run <- function(network,
                       n.iter=20000, n.chains=3,
                       n.burnin=floor(n.iter/2), n.thin=max(1, floor((n.iter - n.burnin) / 1000)),
                       autojags=FALSE, Rhat=1.05, n.update=10,
-                      beta.1="rel",
-                      beta.2="rel", beta.3="rel", beta.4="rel", user.fun=NULL,
-                      model.file=NULL, jagsdata=NULL,
-                      arg.params=NULL, ...
+                      model.file=NULL, jagsdata=NULL, ...
 ) {
 
   # Run checks
@@ -324,13 +321,13 @@ mbnma.run <- function(network,
   checkmate::assertChoice(pd, choices=c("pv", "pd.kl", "plugin", "popt"), null.ok=FALSE, add=argcheck)
   #checkmate::assertLogical(parallel, len=1, null.ok=FALSE, any.missing=FALSE, add=argcheck)
   checkmate::assertLogical(cor, len=1, add=argcheck)
-  checkmate::assertList(arg.params, unique=TRUE, null.ok=TRUE, add=argcheck)
   checkmate::assertList(priors, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  args <- as.list(environment())
+
   # Check fun
-  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                   user.fun=user.fun)
+  fun <- check.fun(fun=fun, network=network)
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link, warnings=TRUE)
@@ -381,6 +378,22 @@ mbnma.run <- function(network,
       stop("Non-parametric dose-response models must currently include placebo - due to be updated in subsequent versions")
     }
   }
+
+  # Define model arguments
+  model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
+                    "fun"=fun,
+                    "jagscode"=result.jags$model,
+                    "jagsdata"=jagsdata,
+                    "method"=method,
+                    "likelihood"=likelihood, "link"=link,
+                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
+                    "class.effect"=class.effect,
+                    "cor"=cor,
+                    "omega"=omega,
+                    "UME"=UME,
+                    #"parallel"=parallel,
+                    "pd"=pd,
+                    "priors"=get.prior(model))
 
   if (is.null(model.file)) {
 
@@ -472,21 +485,6 @@ mbnma.run <- function(network,
     result$BUGSoutput$DIC <- fitstats$dic
   }
 
-  # Add variables for other key model characteristics (for predict and plot functions)
-  model.arg <- list("parameters.to.save"=assigned.parameters.to.save,
-                    "fun"=fun,
-                    "jagscode"=result.jags$model,
-                    "jagsdata"=jagsdata,
-                    "method"=method,
-                    "likelihood"=likelihood, "link"=link,
-                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
-                    "class.effect"=class.effect,
-                    "cor"=cor,
-                    "omega"=omega,
-                    "UME"=UME,
-                    #"parallel"=parallel,
-                    "pd"=pd,
-                    "priors"=get.prior(model))
   result[["model.arg"]] <- model.arg
   result[["type"]] <- "dose"
   result[["network"]] <- network
@@ -1026,56 +1024,30 @@ check.likelink <- function(data.ab, likelihood=NULL, link=NULL, warnings=FALSE) 
 #' @inheritParams mbnma.network
 #'
 #' @noRd
-check.fun <- function(fun, network, beta.1, beta.2, beta.3, beta.4, user.fun) {
+check.fun <- function(fun, network) {
 
   checkmate::assertClass(network, "mbnma.network")
+  checkmate::assertClass(fun, "dosefun")
 
-  if ("character" %in% class(fun)) {
-    if (length(fun)>1) {
-      stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
+  if (length(fun[["name"]])>1) {
+    if (length(fun[["posvec"]])!=length(network$agents)) {
+      stop("Number of agent-specific dose-response functions in dmulti() must be equal to the number of agents in network$agents")
     }
-    if (fun=="linear") {
-      fun <- dpoly(degree=1, beta.1=beta.1)
-    } else if (fun=="exponential") {
-      fun <- dexp()
-    } else if (fun=="emax") {
-      fun <- demax(emax=beta.1, ed50=beta.2)
-    } else if (fun=="emax.hill") {
-      fun <- demax(emax=beta.1, ed50=beta.2, hill=beta.3)
-    } else if (fun=="user") {
-      fun <- duser(fun=user.str, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
-    } else if (fun=="nonparam.up") {
-      fun <- dnonparam(direction="increasing")
-    } else if (fun=="nonparam.down") {
-      fun <- dnonparam(direction="decreasing")
-    } else if (fun=="user") {
-      fun <- duser(fun=user.fun, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
-    } else {
-      stop("'fun' must be an object of class('dosefun') or a list containing objects of class('dosefun')")
-    }
-  } else if ("dosefun" %in% class(fun)) {
-    if (length(fun[["name"]])>1) {
-      if (length(fun[["posvec"]])!=length(network$agents)) {
-        stop("Number of agent-specific dose-response functions in dmulti() must be equal to the number of agents in network$agents")
+    if (!is.null(fun[["agents"]])) {
+      err <- which(is.na(match(fun$agents, network$agents)))
+      if (length(err)>1) {
+        stop(paste0("Agent names specified in dmulti() are not in network object:\n",
+                    paste(fun$agents[err], collapse="\t")))
       }
-      if (!is.null(fun[["agents"]])) {
-        err <- which(is.na(match(fun$agents, network$agents)))
-        if (length(err)>1) {
-          stop(paste0("Agent names specified in dmulti() are not in network object:\n",
-                      paste(fun$agents[err], collapse="\t")))
-        }
 
-        # Order of agents must be same as in network
-        err <- match(fun$agents, network$agents)
-        if (!all(err==1:length(fun$agents))) {
-          stop("Agent names specified in dmulti() must be ordered the same as agents in network object")
-        }
+      # Order of agents must be same as in network
+      err <- match(fun$agents, network$agents)
+      if (!all(err==1:length(fun$agents))) {
+        stop("Agent names specified in dmulti() must be ordered the same as agents in network object")
       }
     }
-    fun <- fun
-  } else {
-    stop("'fun' has been incorrectly specified")
   }
+
   return(fun)
 }
 
