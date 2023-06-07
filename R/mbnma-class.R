@@ -950,37 +950,13 @@ summary.mbnma <- function(object, digits=4, ...) {
   rhat.warning(object)
 
   ##### Overall section #####
-
-  # Print title
-  cat(crayon::bold("========================================\nDose-response MBNMA\n========================================\n\n"))
-
-  # Print DR function
-  if (length(object$model.arg$fun$name)==1) {
-    cat(paste("Dose-response function:", object$model.arg$fun$name, sep=" "))
-  } else if (length(object$model.arg$fun$name)>1) {
-    drtab <- matrix(object$model.arg$fun$name[object$model.arg$fun$posvec],
-                    ncol=1)
-
-    paramvec <- sapply(object$model.arg$fun$posvec, FUN = function(x) {
-      paste(names(object$model.arg$fun$paramlist[[x]]), collapse=", ")
-    })
-
-    drtab <- cbind(drtab, paramvec)
-
-    fun.df <- data.frame(Agents=object$network$agents,
-                         Function=drtab[,1],
-                         Parameters=drtab[,2])
-
-    cat("Dose-response functions:")
-    print(knitr::kable(fun.df))
-  }
-
-  if (any(object$model.arg$fun$name == "user")) {
-    cat("\nuser.fun:", unique(object$model.arg$jags[object$model.arg$fun$name %in% "user"]))
-  }
+  print.overall.str(object)
 
   # Print method section
   cat(print.method.sect(object))
+
+  # Print regression section
+  print.regress.str(object, digits=digits)
 
   # Print treatment-level section
   print.treat.str(object, digits=digits)
