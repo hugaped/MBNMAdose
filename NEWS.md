@@ -1,6 +1,8 @@
 # MBNMAdose 0.4.2
 
 ## Additions/changes
+- Network Meta-Regression: Effect modifiers can now be incorporated using `regress.vars` argument in `mbnma.run()`. Various sharing assumptions for effects can be specified in `regress.effect`.
+- Predictions can be estimated for class effect models
 - Fractional polynomial powers in `dfpoly()` can only take numeric values from set defined in Jansen 2015.
 - Added `calc.edx()` to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the 
 maximum response (Emax) is reached)
