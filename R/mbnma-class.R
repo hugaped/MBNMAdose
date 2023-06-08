@@ -711,9 +711,9 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
 
   # Set model arguments
-  if (length(object$model.arg$class.effect)>0) {
-    stop("predict() currently does not work with models that use class effects")
-  }
+  # if (length(object$model.arg$class.effect)>0) {
+  #   stop("predict() currently does not work with models that use class effects")
+  # }
   if ("nonparam" %in% object$model.arg$fun$name) {
     stop("predict() does not work with non-parametric dose-response functions")
   }
