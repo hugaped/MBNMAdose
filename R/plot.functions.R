@@ -215,7 +215,7 @@ alpha.scale <- function(n.cut, col="blue") {
 #' @inheritParams disp.obs
 #' @noRd
 overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), method="common",
-                          likelihood="binomial", link="logit", ...) {
+                          likelihood="binomial", link="logit", lim="cred", ...) {
 
   # Check/assign link and likelihood
   likelink <- check.likelink(network$data.ab, likelihood=likelihood, link=link)
@@ -245,6 +245,13 @@ overlay.split <- function(g, network, E0=unique(g$data$`50%`[g$data$dose==0]), m
   trtvec <- trtvec[agentvec %in% g$data$agent]
   agentvec <- agentvec[agentvec %in% g$data$agent]
 
+  # Add between-study SD
+  if (lim=="pred" & method=="random") {
+    mat <- array(dim = c(nrow(splitmat), ncol(splitmat), 2))
+    mat[,,1] <- splitmat
+    mat[,,2] <- stats::median(splitNMA$jagsresult$BUGSoutput$sims.list$sd)
+    splitmat <- apply(mat, MARGIN=c(1,2), FUN=function(x) stats::rnorm(1, x[1], x[2]))
+  }
 
   # Ensure E0 is correct length to add to splitmat
   if (length(E0)<nrow(splitmat)) {
