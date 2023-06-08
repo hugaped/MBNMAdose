@@ -434,12 +434,16 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
         list("summary"=sumrank(rank.mat),
              "prob.matrix"=prob.mat,
              "rank.matrix"=rank.mat,
-             "cum.matrix"=cum.mat,
-             "lower_better"=lower_better)
+             "cum.matrix"=cum.mat)
 
     }
   }
   class(rank.result) <- "mbnma.rank"
+
+  attributes(rank.result) <- list("lower_better"=lower_better,
+                                  "level"=level
+                                  "regress.vals"=NULL
+                                  )
 
   if (length(rank.result)==0) {
     stop(paste0("There are no parameters saved in the model that vary by ", level))
