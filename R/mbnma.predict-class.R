@@ -241,7 +241,7 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
   # Overlay.split cannot work with regression
   if (overlay.split==TRUE & "regress.vals" %in% names(x)) {
     warning(paste0("MBNMA model incorporates meta-regression to account for effect modifiers,\n",
-    "whilst split NMA results do not. This may cause mismatches in results"))
+    "whilst split NMA results will average across them. This may cause mismatches in results"))
   }
 
   # Check agent.labs and that the number of labels there are is correct
