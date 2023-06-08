@@ -238,6 +238,11 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
   sum.pred <- summary(x)
   sum.df <- sum.pred
 
+  # Overlay.split cannot work with regression
+  if (overlay.split==TRUE & "regress.vals" %in% names(x)) {
+    stop("Split NMA results cannot currently be plotted with predictions\nthat incorporate meta-regression covariates")
+  }
+
   # Check agent.labs and that the number of labels there are is correct
   if (!is.null(agent.labs)) {
     if ("Placebo" %in% names(x[["predicts"]])) {
@@ -291,7 +296,8 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
     g <- overlay.split(g=g, network=network, E0=x$E0, method=method,
                        likelihood = x[["likelihood"]],
-                       link = x[["link"]])
+                       link = x[["link"]],
+                       lim = x[["lim"]])
 
   }
 
@@ -387,16 +393,35 @@ print.mbnma.predict <- function(x, ...) {
     named.a <- FALSE
   }
 
-  head <- crayon::bold("=====================\nPredicted doses\n=====================\n")
-  info <- vector()
-  for (i in seq_along(agents)) {
-    doses <- sum.df$dose[sum.df$agent==agents[i]]
-    if (named.a==FALSE) {
-      info <- append(info, paste0(crayon::bold(paste0("Agent ", i, ": ")), paste(doses, collapse=", ")))
-    } else {
-      info <- append(info, paste0(crayon::bold(paste0(agents[i], ": ")), paste(doses, collapse=", ")))
-    }
+  cat(crayon::bold("========================\nSummary of Predictions\n========================"))
+
+  # Add dose range
+  dose.df <- data.frame("agent"=names(x$predicts),
+                        "mindose"=sapply(x$predicts, function(x) {
+                          min(as.numeric(names(x)))
+                        }),
+                        "maxdose"=sapply(x$predicts, function(x) {
+                          max(as.numeric(names(x)))
+                        }),
+                        "ndoses"=sapply(x$predicts, function(x) {
+                          length(names(x))
+                        }))
+
+  rownames(dose.df) <- NULL
+  print(knitr::kable(dose.df, col.names = c("Agent", "Min dose", "Max dose", "N doses"), ...))
+  cat("\n")
+
+  if (x$lim=="pred") {
+    cat("Predictions incorporate estimate of between-study SD\n")
   }
-  out <- c(head, info)
-  cat(paste(out, collapse="\n"), ...)
+
+  # Add regression note
+  if ("regress.vals" %in% names(x)) {
+    cat("\nPredictions made using the following interaction (effect modification) values:")
+    reg.df <- data.frame("efmod"=names(x$regress.vals), "vals"=x$regress.vals)
+    rownames(reg.df) <- NULL
+    print(knitr::kable(reg.df, col.names = c("Effect modifier", "Value"), ...))
+    cat("\n")
+  }
+
 }
