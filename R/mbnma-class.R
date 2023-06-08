@@ -937,11 +937,14 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
   output <- list("predicts"=predict.result,
                  "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link,
-                 "network"=object$network, "E0"=E0)
+                 "network"=object$network, "lim"=lim, "E0"=E0)
 
-  if (!is.null(regress.vals)) {
-    output$regress.vals <- regress.vals
+  # Add 0 values for missing regression values
+  if (is.null(regress.vals) & !is.null(object$model.arg$regress.vars)) {
+    regress.vals <- rep(0, length(object$model.arg$regress.vars))
+    names(regress.vals) <- object$model.arg$regress.vars
   }
+  output$regress.vals <- regress.vals
 
   class(output) <- "mbnma.predict"
 
