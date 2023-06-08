@@ -22,8 +22,10 @@
 #'  in `network$data.ab` and must be identical within a study. Factor effect modifiers
 #'  should only be incorporated as a series of named binary dummy variables.
 #' @param regress.effect Indicates whether effect modification should be assumed to be
-#'  `"common"` (assumed to be equal), `"random"` (assumed to be exchangeable) or
-#'  `"independent"` (all estimated independently) for each agent versus placebo.
+#'  `"common"` (assumed to be equal versus Placebo throughout the network),
+#'  `"random"` (assumed to be exchangeable versus Placebo throughout the network),
+#'  `"agent"` (assumed to be equal versus Placebo within each agent), or
+#'  `"class"` (assumed to be equal versus Placebo within each class).
 #' @param class.effect A list of named strings that determines which dose-response
 #'   parameters to model with a class effect and what that effect should be
 #'   (`"common"` or `"random"`). Element names should match dose-response parameter names.

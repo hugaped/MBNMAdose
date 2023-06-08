@@ -158,7 +158,7 @@ write.check <- function(fun=dloglin(),
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(fun, "dosefun", null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
-  checkmate::assertChoice(regress.effect, choices=c("common", "random", "agent", "class", "independent"),
+  checkmate::assertChoice(regress.effect, choices=c("common", "random", "agent", "class"),
                           null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
   if (method=="random") {
@@ -201,13 +201,6 @@ write.check <- function(fun=dloglin(),
       stop("`class.effect` elements must be either `common` or `random`")
     }
   }
-
-  # # Checks use of regress.effect="class"
-  # if ("class" %in% regress.effect) {
-  #   if (length(class.effect)==0) {
-  #     stop("Class effects must be modelled to assume effect modification by class (regress.effect='class')")
-  #   }
-  # }
 
   if (!is.null(omega)) {
     if (length(class.effect)>0) {
