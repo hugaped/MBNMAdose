@@ -330,3 +330,68 @@ calc.edx <- function(mbnma, x=50) {
 
   return(output)
 }
+
+
+
+
+
+#' Get MBNMA model values for regression parameters
+#'
+#' @param sum Logical object to indicate whether resulting covariate and regressor
+#'  values should be summed so that they can be easily added to predictions.
+#' @inheritParams predict.mbnma
+#' @noRd
+get.regress.vals <- function(mbnma, regress.vals, sum=TRUE) {
+
+  # Run checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertClass(mbnma, "mbnma", add=argcheck)
+  checkmate::assertNumeric(regress.vals, names="named", add=argcheck)
+  checkmate::reportAssertions(argcheck)
+
+  # Define level
+  if ("agent" %in% mbnma$model.arg$regress.effect) {
+    labs <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
+  } else if ("class" %in% mbnma$model.arg$regress.effect) {
+    labs <- mbnma$network$classes[mbnma$network$classes!="Placebo"]
+  } else {
+    labs <- NULL
+  }
+
+  outlist <- list()
+  outval <- 0
+  for (i in seq_along(regress.vals)) {
+    res.mat <- as.matrix(mbnma$BUGSoutput$sims.list[[paste0("B.", names(regress.vals)[i])]])
+    colnames(res.mat) <- labs
+
+    if ("random" %in% mbnma$model.arg$regress.effect) {
+      sd.reg <- stats::median(mbnma$BUGSoutput$sims.list[[paste0("sd.B.", names(regress.vals)[i])]])
+
+      # Incorporates SD from random covariate-by-treatment interaction
+      mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
+      mat[,1] <- res.mat
+      mat[,2] <- sd.reg
+      res.mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
+    }
+
+    # Multiply matrix cols out so that there is one for each agent
+    if ("class" %in% mbnma$model.arg$regress.effect) {
+      classvec <- mbnma$network$classkey$class[mbnma$network$classkey$class!="Placebo"]
+      res.mat <- res.mat[,as.character(classvec)]
+
+    } else if (any(c("common", "random") %in% mbnma$model.arg$regress.effect)) {
+      res.mat <- res.mat[,rep(1, length(mbnma$network$agents[mbnma$network$agents!="Placebo"]))]
+    }
+
+    # Multiply covariate x variable
+    regef <- regress.vals[i] * res.mat
+    outlist[[names(regress.vals)[i]]] <- regef
+    outval <- outval + (regef)
+  }
+
+  if (sum==TRUE) {
+    return(outval)
+  } else if (sum==FALSE) {
+    return(outlist)
+  }
+}

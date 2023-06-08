@@ -492,6 +492,10 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #'   has been provided for it. Using `"random"` rather
 #'   than `"fixed"` for `synth` will result in wider 95\\% CrI for predictions.
 #' @param lim Specifies calculation of either 95% credible intervals (`lim="cred"`) or 95% prediction intervals (`lim="pred"`).
+#' @param regress.vals A named numeric vector of effect modifier values at which results should
+#'   be predicted. Named elements must match variable names specified in `regress.vars` within
+#'   the MBNMA model.
+#'
 #' @param ... Arguments to be sent to [R2jags::jags()] for synthesis of the network
 #'   reference treatment effect (using [ref.synth()])
 #'
@@ -592,6 +596,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 #' @export
 predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
                           E0=0.2, synth="fixed", lim="cred",
+                          regress.vals=NULL,
                           ...) {
   ######## CHECKS ########
 
@@ -603,10 +608,18 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   checkmate::assertInt(n.doses, lower=2, add=argcheck)
   checkmate::assertChoice(synth, choices=c("random", "fixed"), add=argcheck)
   checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
+  checkmate::assertNumeric(regress.vals, names = "named", null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   agents <- object$model$data()$agent
   mbnma.agents <- object$network[["agents"]]
+
+  # Check regress.vals
+  if (!is.null(regress.vals)) {
+    if (!all(object$model.arg$regress.vars %in% names(regress.vals))) {
+      stop("'regress.vals' must contain a named regressor value for each variable\nspecified in object$model.arg$regress.vars")
+    }
+  }
 
   # Checks for doses
   doses <- NULL
@@ -738,9 +751,10 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   # Get dose-response parameter estimates
   betaparams <- get.model.vals(object)
 
-  # betas <- assignfuns(object$model.arg$fun, object$network$agents, object$model.arg$user.fun,
-  #                     ifelse(is.null(object$model.arg$arg.fun), FALSE, TRUE))
-
+  # Get regression parameter estimates and multiply by regress.vals
+  if (!is.null(regress.vals)) {
+    regress <- get.regress.vals(object, regress.vals, sum=TRUE)
+  }
 
   # Identify E0
   if (is.null(E0)) {
@@ -840,6 +854,11 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
         tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
 
+        # Add regression
+        if (!is.null(regress.vals)) {
+          tempDR <- paste0(tempDR, " + regress")
+        }
+
         dose <- doses[[i]][k]
         if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
@@ -919,6 +938,10 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   output <- list("predicts"=predict.result,
                  "likelihood"=object$model.arg$likelihood, "link"=object$model.arg$link,
                  "network"=object$network, "E0"=E0)
+
+  if (!is.null(regress.vals)) {
+    output$regress.vals <- regress.vals
+  }
 
   class(output) <- "mbnma.predict"
 
