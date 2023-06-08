@@ -285,7 +285,7 @@ rescale.link <- function(x, direction="link", link="logit") {
 
 
 
-#' Calculates values for EDx, the dose at which x% of the maximal response (Emax)
+#' Calculates values for EDx from an Emax model, the dose at which x% of the maximal response (Emax)
 #' is reached
 #'
 #' @inheritParams devplot
