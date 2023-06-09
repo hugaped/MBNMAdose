@@ -141,9 +141,9 @@ rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
                  "lower_better"=lower_better)
   result <- list("Predictions"=result)
 
-  class(result) <- "mbnma.rank"
-
-  attributes(result) <- list("lower_better"=lower_better,
+  attributes(result) <- list("class"="mbnma.rank",
+                             "names"=names(result),
+                             "lower_better"=lower_better,
                              "level"="predictions",
                              "regress.vals"=x$regress.vals
   )
