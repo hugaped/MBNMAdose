@@ -371,7 +371,7 @@ get.regress.vals <- function(mbnma, regress.vals, sum=TRUE) {
       mat <- matrix(nrow=mbnma$BUGSoutput$n.sims, ncol=2)
       mat[,1] <- res.mat
       mat[,2] <- sd.reg
-      res.mat <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
+      res.mat <- as.matrix(apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2])))
     }
 
     # Multiply matrix cols out so that there is one for each agent
