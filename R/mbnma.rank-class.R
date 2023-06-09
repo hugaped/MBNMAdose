@@ -177,17 +177,24 @@ print.mbnma.rank <- function(x, ...) {
     if (length(relef)>1) {
       add <- "Includes ranking of relative treatment effects from dose-response MBNMA:"
       add <- paste(add,
-                   crayon::bold(paste(relef, collapse="\t")),
+                   crayon::bold(paste(relef, collapse="\t")), "",
                    sep="\n")
       intro <- c(intro, add)
     }
     if (length(classef)>0) {
       add <- "Includes ranking of relative class effects from dose-response MBNMA:"
       add <- paste(add,
-                   crayon::bold(paste(classef, collapse="\t")),
+                   crayon::bold(paste(classef, collapse="\t")), "",
                    sep="\n")
       intro <- c(intro, add)
     }
+  }
+
+  # Regression
+  if ("regress.vals" %in% names(attrs)) {
+    intro <- c(intro,
+               paste0("Rankings generated from a model adjusting for the following effect modififers:\n",
+                      paste(crayon::bold(names(attrs$regress.vals)), collapse="\t")))
   }
 
   rankinfo <- paste(nrow(x[[1]]$summary), level.str, "ranked", sep=" ")
