@@ -951,14 +951,6 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
     }
   }
 
-  # If treatments is not specified use the max dose of each agent in the dataset
-  # if (length(treatments)==0) {
-  #   jagsdat <- mbnma$model.arg$jagsdata
-  #   for (i in seq_along(mbnma$network$agents)) {
-  #     treatments[[mbnma$network$agents[i]]] <- max(jagsdat$dose[jagsdat$agent==i], na.rm=TRUE)
-  #   }
-  # }
-
   # If treatments is not specified use the treatments in the dataset for lower.diag
   if (length(treatments)==0) {
     if ("mbnma" %in% class(lower.diag)) {
