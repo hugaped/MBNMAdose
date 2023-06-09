@@ -439,11 +439,18 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
     }
   }
 
+  if (!is.null(x$model.arg$regress.vars)) {
+    regress.vals <- rep(0, length(x$model.arg$regress.vars))
+    names(regress.vals) <- x$model.arg$regress.vars
+  } else {
+    regress.vals <- NULL
+  }
+
   attributes(rank.result) <- list("class"="mbnma.rank",
                                   "names"=names(rank.result),
                                   "lower_better"=lower_better,
                                   "level"=level,
-                                  "regress.vals"=NULL
+                                  "regress.vals"=regress.vals
                                   )
 
   if (length(rank.result)==0) {
