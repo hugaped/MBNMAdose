@@ -248,7 +248,7 @@ for (dat in seq_along(alldfs)) {
         rob=(as.numeric(factor(bias))-2)^2, # Make RoB binary (with moderate as reference)
         class=dplyr::case_when(agent %in% c("citalopram", "escitalopram") ~ "alopram",
                                agent %in% c("fluoxetine", "paroxetine") ~ "xetine",
-                               TRUE ~ "Inactive"
+                               TRUE ~ "Sertraline"
                                )
         )
 
