@@ -135,10 +135,17 @@ rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
   }))
   colnames(rank.mat) <- treats
 
+  # Probability matrix
+  prob.mat <- calcprob(rank.mat, treats=treats)
+
+  # Calculate cumulative ranking probabilities
+  cum.mat <- apply(prob.mat, MARGIN=2,
+                   FUN=function(col) {cumsum(col)})
+
   result <- list("summary"=sumrank(rank.mat),
-                 "prob.matrix"=calcprob(rank.mat, treats=treats),
+                 "prob.matrix"=prob.mat,
                  "rank.matrix"=rank.mat,
-                 "lower_better"=lower_better)
+                 "cum.matrix"=cum.mat)
   result <- list("Predictions"=result)
 
   attributes(result) <- list("class"="mbnma.rank",
