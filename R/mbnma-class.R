@@ -628,7 +628,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
   # Check regress.vals
   if (!is.null(regress.vals)) {
-    if (!all(object$model.arg$regress.vars %in% names(regress.vals))) {
+    if (!setequal(object$model.arg$regress.vars, names(regress.vals))) {
       stop("'regress.vals' must contain a named regressor value for each variable\nspecified in object$model.arg$regress.vars")
     }
   }
