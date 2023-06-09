@@ -146,14 +146,25 @@ summary.mbnma.rank <- function(object, ...) {
 print.mbnma.rank <- function(x, ...) {
   checkmate::assertClass(x, "mbnma.rank")
 
+  attrs <- attributes(x)
+
   head <- crayon::bold("\n================================\nRanking of dose-response MBNMA\n================================")
 
+  if ("predictions" %in% attrs$level) {
+    level.str <- "predictions"
+  } else if ("agent" %in% attrs$level) {
+    level.str <- "agents"
+  } else if ("class" %in% attrs$level) {
+    level.str <- "classes"
+  }
+
   intro <- c()
-  if ("Predictions" %in% names(x)) {
-    intro <- c(intro, "Includes ranking of predictions from dose-response MBNMA")
-  } else if ("Relative Effects" %in% names(x)) {
-    intro <- c(intro, "Includes ranking of relative effects between treatments from dose-response MBNMA")
-  } else {
+
+  if ("predictions" %in% attrs$level) {
+    intro <- c(intro, paste0("Includes ranking of predictions from dose-response MBNMA"))
+  }
+
+  if (any(c("agent", "class") %in% attrs$level)) {
     relef <- vector()
     classef <- vector()
     for (i in seq_along(names(x))) {
@@ -164,14 +175,14 @@ print.mbnma.rank <- function(x, ...) {
       }
     }
     if (length(relef)>1) {
-      add <- "Includes ranking of relative effects from dose-response MBNMA:"
+      add <- "Includes ranking of relative treatment effects from dose-response MBNMA:"
       add <- paste(add,
                    crayon::bold(paste(relef, collapse="\t")),
                    sep="\n")
       intro <- c(intro, add)
     }
     if (length(classef)>0) {
-      add <- "Includes ranking of class effects from dose-response MBNMA:"
+      add <- "Includes ranking of relative class effects from dose-response MBNMA:"
       add <- paste(add,
                    crayon::bold(paste(classef, collapse="\t")),
                    sep="\n")
@@ -179,11 +190,10 @@ print.mbnma.rank <- function(x, ...) {
     }
   }
 
-
-  rankinfo <- paste(nrow(x[[1]]$summary), "agents/classes/predictions ranked", sep=" ")
-  if (x[[1]]$lower_better==FALSE) {
+  rankinfo <- paste(nrow(x[[1]]$summary), level.str, "ranked", sep=" ")
+  if (attrs$lower_better==FALSE) {
     rankinfo <- paste(rankinfo, "with positive responses being", crayon::green(crayon::bold("`better`")), sep=" ")
-  } else if (x[[1]]$lower_better==TRUE) {
+  } else if (attrs$lower_better==TRUE) {
     rankinfo <- paste(rankinfo, "with negative responses being", crayon::red(crayon::bold("`worse`")), sep=" ")
   }
 
