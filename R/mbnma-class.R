@@ -438,10 +438,11 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 
     }
   }
-  class(rank.result) <- "mbnma.rank"
 
-  attributes(rank.result) <- list("lower_better"=lower_better,
-                                  "level"=level
+  attributes(rank.result) <- list("class"="mbnma.rank",
+                                  "names"=names(rank.result),
+                                  "lower_better"=lower_better,
+                                  "level"=level,
                                   "regress.vals"=NULL
                                   )
 
@@ -858,11 +859,6 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
         tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
 
-        # Add regression
-        if (!is.null(regress.vals)) {
-          tempDR <- paste0(tempDR, " + regress")
-        }
-
         dose <- doses[[i]][k]
         if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
@@ -910,6 +906,12 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
             }
 
           }
+        }
+
+        # Add regression
+        if (!is.null(regress.vals)) {
+          tempDR <- paste0(tempDR, " + reg")
+          reg <- regress[,colnum]
         }
 
         # Evaluate dose-response string for prediction
