@@ -31,6 +31,12 @@ for (dat in seq_along(alldfs)) {
 
   print(datanam)
 
+  # Add sdscale to osteopain
+  if (datanam[dat]=="osteopain") {
+    dataset$standsd <- 2
+    dataset$standsd[dataset$studyID %in% c(1:5)] <- 1.5
+  }
+
   ### Datasets ####
   network <- mbnma.network(dataset)
 
@@ -51,13 +57,19 @@ for (dat in seq_along(alldfs)) {
     n.iter=500
     pd <- "pv"
 
+    if (datanam[dat]=="osteopain") {
+      sdscale <- TRUE
+    } else {
+      sdscale <- FALSE
+    }
+
     # NMA
-    nma <- nma.run(network, method="random", pd=pd, n.iter=500)
+    nma <- nma.run(network, method="random", pd=pd, n.iter=500, sdscale=sdscale)
     expect_error(plot(nma), NA)
 
     # Nonparm MBNMA
     mbnma <- mbnma.run(network, fun=dnonparam(), method="common",
-                       pd=pd, n.iter=n.iter)
+                       pd=pd, n.iter=n.iter, sdscale=sdscale)
     expect_error(plot(mbnma), NA)
     expect_error(summary(mbnma), "does not work with non-parametric")
     expect_error(predict(mbnma), "does not work with non-parametric")
@@ -66,7 +78,7 @@ for (dat in seq_along(alldfs)) {
 
     # Single parameter DR functions
     result <- mbnma.run(network, fun=dpoly(degree=1), method="common",
-                        pd="plugin", n.iter=n.iter)
+                        pd="plugin", n.iter=n.iter, sdscale=sdscale)
     expect_equal(class(result), c("mbnma", "rjags"))
     expect_equal("beta.1" %in% result$parameters.to.save, TRUE)
     expect_equal(result$model.arg$pd, "plugin")
@@ -78,7 +90,7 @@ for (dat in seq_along(alldfs)) {
 
 
     result <- mbnma.run(network, fun=dexp(), method="random",
-                        pd="pd.kl", n.iter=n.iter)
+                        pd="pd.kl", n.iter=n.iter, sdscale=sdscale)
     expect_equal(class(result), c("mbnma", "rjags"))
     expect_equal("sd" %in% result$parameters.to.save, TRUE)
     expect_error(plot(result), NA)
@@ -91,7 +103,8 @@ for (dat in seq_along(alldfs)) {
 
     if ("class" %in% names(dataset)) {
       result <- expect_warning(mbnma.run(netclass, fun=dexp(), method="common",
-                          pd="popt", class.effect = list(emax="random"), n.iter=n.iter))
+                          pd="popt", class.effect = list(emax="random"), n.iter=n.iter,
+                          sdscale=sdscale))
       expect_equal(class(result), c("mbnma", "rjags"))
       expect_equal("EMAX" %in% result$parameters.to.save, TRUE)
       expect_equal("sd.EMAX" %in% result$parameters.to.save, TRUE)
@@ -109,7 +122,7 @@ for (dat in seq_along(alldfs)) {
 
     # Two parameter DR functions
     result <- mbnma.run(network, fun=demax(), method="common",
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c("emax", "ed50") %in% result$parameters.to.save), TRUE)
     expect_error(plot(result), NA)
     expect_error(rank(result), NA)
@@ -120,7 +133,7 @@ for (dat in seq_along(alldfs)) {
 
 
     result <- mbnma.run(network, fun=demax(ed50="common"), method="random",
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal("sd" %in% result$parameters.to.save, TRUE)
     expect_equal("ed50" %in% rownames(result$BUGSoutput$summary), TRUE)
     expect_error(plot(result), NA)
@@ -131,12 +144,12 @@ for (dat in seq_along(alldfs)) {
 
     if ("class" %in% names(dataset)) {
       expect_error(mbnma.run(netclass, fun=demax(), method="random",
-                             class.effect=list(fakeparam="common")), "corresponding to dose-response parameters")
+                             class.effect=list(fakeparam="common"), sdscale=sdscale), "corresponding to dose-response parameters")
 
       expect_warning(mbnma.run(netclass, fun=demax(), method="random",
-                               class.effect=list(ed50="common"), n.iter=n.iter, pd=pd))
+                               class.effect=list(ed50="common"), n.iter=n.iter, pd=pd, sdscale=sdscale))
       result <- suppressWarnings(mbnma.run(netclass, fun=demax(), method="random",
-                          class.effect=list(ed50="common"), n.iter=n.iter, pd=pd))
+                          class.effect=list(ed50="common"), n.iter=n.iter, pd=pd, sdscale=sdscale))
       expect_equal(all(c("emax", "ED50", "ed50", "sd") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result), NA)
@@ -147,7 +160,7 @@ for (dat in seq_along(alldfs)) {
 
 
     result <- mbnma.run(network, fun=demax(ed50="random"), method="common",
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c("emax", "ed50", "sd.ed50") %in% result$parameters.to.save), TRUE)
     expect_error(plot(result), NA)
     expect_error(rank(result), NA)
@@ -157,7 +170,8 @@ for (dat in seq_along(alldfs)) {
 
     # Three parameter DR function
     result <- mbnma.run(network, fun=demax(emax="rel", ed50="random", hill="common"),
-                        method="random", n.iter=n.iter, pd=pd, priors = list(hill="dunif(-3,3)"))
+                        method="random", n.iter=n.iter, pd=pd, priors = list(hill="dunif(-3,3)"),
+                        sdscale=sdscale)
     expect_equal(all(c("emax", "sd", "ed50", "sd.ed50", "hill") %in% result$parameters.to.save), TRUE)
     expect_error(plot(result), NA)
     expect_error(rank(result), NA)
@@ -165,7 +179,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(suppressWarnings(summary(result)), NA)
 
     result <- mbnma.run(network, fun=dspline(type="ns", knots=3, beta.1="rel", beta.2="random", beta.3="common"),
-                        method="random", n.iter=n.iter, pd=pd)
+                        method="random", n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c("beta.1", "beta.2", "sd.beta.2", "sd", "beta.3") %in% result$parameters.to.save), TRUE)
     expect_equal(any(grepl("spline", result$model.arg$jagscode)), TRUE)
     expect_error(plot(result), NA)
@@ -176,7 +190,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(suppressWarnings(summary(result)), NA)
 
     result <- mbnma.run(network, fun=demax(ed50="random", hill=0.2),
-                        parameters.to.save = "psi",
+                        parameters.to.save = "psi", sdscale=sdscale,
                         method="random", n.iter=n.iter, pd=pd)
     expect_equal("psi" %in% result$parameters.to.save, TRUE)
     expect_equal("d.1" %in% result$parameters.to.save, FALSE)
@@ -190,7 +204,7 @@ for (dat in seq_along(alldfs)) {
 
     # Splines and polynomials
     result <- mbnma.run(network, fun=dspline(type="bs", knots=2, beta.1="common", beta.2 = "rel", beta.3="random"),
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c("beta.1", "beta.2", "sd.beta.3", "beta.3") %in% result$parameters.to.save), TRUE)
     expect_equal(all(c("sd") %in% result$parameters.to.save), FALSE)
     expect_error(plot(result), NA)
@@ -199,7 +213,7 @@ for (dat in seq_along(alldfs)) {
     expect_error(suppressWarnings(summary(result)), NA)
 
     result <- mbnma.run(network, fun=dspline(type="ns", knots=c(0.2,0.5), beta.1="common", beta.2 = "rel", beta.3="random"),
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c("beta.1", "beta.2") %in% result$parameters.to.save), TRUE)
     expect_equal(all(c("sd", "beta.3") %in% result$parameters.to.save), FALSE)
     expect_error(plot(result), NA)
@@ -211,7 +225,7 @@ for (dat in seq_along(alldfs)) {
 
     if (!datanam %in% "osteopain") {
       result <- mbnma.run(network, fun=dpoly(degree=3, beta.1="common", beta.2 = "rel", beta.3="random"),
-                          method="random", n.iter=n.iter, pd=pd)
+                          method="random", n.iter=n.iter, pd=pd, sdscale=sdscale)
       expect_equal(all(c("beta.1", "beta.2", "sd.beta.3", "beta.3", "sd") %in% result$parameters.to.save), TRUE)
       expect_error(plot(result), NA)
       expect_error(rank(result), NA)
@@ -224,34 +238,35 @@ for (dat in seq_along(alldfs)) {
     expect_equal(result$model.arg$omega, NULL)
 
     result <- mbnma.run(network, fun=dpoly(degree=3, beta.1="rel", beta.2 = "rel", beta.3="random"),
-                        method="random", n.iter=n.iter, pd=pd)
+                        method="random", n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal("inv.R" %in% names(result$model.arg$priors), TRUE)
     expect_equal(ncol(result$model.arg$omega), 2)
     expect_error(get.relative(result), NA)
 
 
     omega <- matrix(c(10,2,2,10), byrow = TRUE, ncol=2)
-    result <- mbnma.run(network, fun=demax(), omega=omega, n.iter=n.iter, pd=pd)
+    result <- mbnma.run(network, fun=demax(), omega=omega, n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(ncol(result$model.arg$omega), 2)
     expect_equal(result$model.arg$omega[1,1], omega[1,1])
 
     omega <- matrix(c(10,4,2,10), byrow = TRUE, ncol=2)
-    expect_error(mbnma.run(network, fun=demax(), omega=omega, n.iter=n.iter, pd=pd), "omega must be")
+    expect_error(mbnma.run(network, fun=demax(), omega=omega, n.iter=n.iter, pd=pd,
+                           sdscale=sdscale), "omega must be")
 
-    result <- mbnma.run(network, fun=demax(), cor=FALSE, n.iter=n.iter, pd=pd)
+    result <- mbnma.run(network, fun=demax(), cor=FALSE, n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal("inv.R" %in% names(result$model.arg$priors), FALSE)
 
 
     # Test UME
     result <- mbnma.run(network, fun=dpoly(degree=3, beta.1="random", beta.2 = "rel", beta.3="rel"),
-                        method="random", n.iter=n.iter, pd=pd, UME=TRUE)
+                        method="random", n.iter=n.iter, pd=pd, UME=TRUE, sdscale=sdscale)
     expect_equal(all(c("beta.1", "beta.2", "sd.beta.1", "beta.3", "sd") %in% result$parameters.to.save), TRUE)
     expect_equal(any(grepl("beta\\.2\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.3\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.1\\[2,1\\]", rownames(result$BUGSoutput$summary))), FALSE)
 
     result <- mbnma.run(network, fun=dspline(knots=c(0.1, 0.3), type="ls"),
-                        n.iter=n.iter, pd=pd, UME=TRUE)
+                        n.iter=n.iter, pd=pd, UME=TRUE, sdscale=sdscale)
     expect_equal(any(grepl("beta\\.2\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.3\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
     expect_equal(any(grepl("beta\\.1\\[2,1\\]", rownames(result$BUGSoutput$summary))), TRUE)
@@ -267,8 +282,10 @@ for (dat in seq_along(alldfs)) {
 
     # Link functions
     if (datanam %in% c("triptans", "psoriasis90", "ssri")) {
-      expect_error(mbnma.run(network, fun=demax(), link="probit", n.iter=n.iter, pd=pd), NA)
-      result <- mbnma.run(network, fun=dfpoly(degree=2), link="cloglog", n.iter=n.iter, pd=pd)
+      expect_error(mbnma.run(network, fun=demax(), link="probit", n.iter=n.iter, pd=pd,
+                             sdscale=sdscale), NA)
+      result <- mbnma.run(network, fun=dfpoly(degree=2), link="cloglog", n.iter=n.iter, pd=pd,
+                          sdscale=sdscale)
       expect_equal(result$model.arg$link, "cloglog")
 
       expect_error(plot(result), NA)
@@ -280,12 +297,15 @@ for (dat in seq_along(alldfs)) {
     } else if (datanam %in% c("osteopain", "gout")) {
 
       if (datanam %in% "gout") {
-        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), "must be included in data\\.ab")
+        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd",
+                               n.iter=n.iter, pd=pd, sdscale=sdscale), "must be included in data\\.ab")
       } else if (datanam %in% "osteopain") {
-        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd", n.iter=n.iter, pd=pd), NA)
+        expect_error(mbnma.run(network, fun=dspline(knots=2, type="bs"), link="smd",
+                               n.iter=n.iter, pd=pd, sdscale=sdscale), NA)
       }
 
-      result <- suppressWarnings(mbnma.run(network, fun=dexp(), link="log", n.iter=n.iter, pd=pd))
+      result <- suppressWarnings(mbnma.run(network, fun=dexp(), link="log", n.iter=n.iter, pd=pd,
+                                           sdscale=sdscale))
       expect_equal(result$model.arg$link, "log")
 
       expect_error(plot(result), NA)
@@ -303,7 +323,8 @@ for (dat in seq_along(alldfs)) {
     if (grepl("noplac", datanam)) {
       expect_error(mbnma.run(network, fun=dnonparam()), "must currently include placebo")
     } else {
-      result <- mbnma.run(network, fun=dnonparam(direction = "decreasing"), method="random", n.iter=n.iter, pd=pd)
+      result <- mbnma.run(network, fun=dnonparam(direction = "decreasing"), method="random",
+                          n.iter=n.iter, pd=pd, sdscale=sdscale)
       expect_equal("d.1[1,1]" %in% rownames(result$BUGSoutput$summary), TRUE)
       expect_equal("sd" %in% result$parameters.to.save, TRUE)
       expect_error(summary(result))
@@ -315,10 +336,10 @@ for (dat in seq_along(alldfs)) {
 
     # Changing priors
     result <- mbnma.run(network, fun=demax(), method="random",
-                        n.iter=n.iter, pd=pd)
+                        n.iter=n.iter, pd=pd, sdscale=sdscale)
     prior <- list(sd="dunif(0,5)", inv.R="dwish(omega[,],5)")
     runprior <- mbnma.run(network, fun=demax(), method="random",
-                          n.iter=n.iter, pd=pd, priors = prior)
+                          n.iter=n.iter, pd=pd, priors = prior, sdscale=sdscale)
     expect_equal(runprior$model.arg$priors$sd, prior$sd)
     expect_equal(runprior$model.arg$priors$inv.R, prior$inv.R)
     expect_equal(result$model.arg$priors$inv.R!=runprior$model.arg$priors$inv.R, TRUE)
@@ -335,7 +356,7 @@ for (dat in seq_along(alldfs)) {
       ))
 
     multifun <- mbnma.run(network, fun=mult,
-                          n.iter=n.iter, pd=pd)
+                          n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(length(multifun$model.arg$fun$name)>1, TRUE)
     expect_equal(all(c("beta.1", "beta.2", "emax", "ed50", "emax.4") %in% multifun$parameters.to.save), TRUE)
     expect_error(get.relative(multifun), NA)
@@ -351,7 +372,7 @@ for (dat in seq_along(alldfs)) {
       ))
 
     multifun <- mbnma.run(network, fun=mult,
-                          method="random", n.iter=n.iter, pd=pd)
+                          method="random", n.iter=n.iter, pd=pd, sdscale=sdscale)
     expect_equal(all(c(paste0("beta.", c(1:6)), "power.1", "power.2", "sd") %in% multifun$parameters.to.save), TRUE)
     expect_equal(length(multifun$model.arg$fun$name)>1, TRUE)
 
@@ -368,7 +389,7 @@ for (dat in seq_along(alldfs)) {
                      list(dspline("ns", knots=0.5)),
                      rep(list(dloglin()), length(network$agents)-3)
     ))
-    multifun <- mbnma.run(network, fun=mult, n.iter=n.iter)
+    multifun <- mbnma.run(network, fun=mult, n.iter=n.iter, sdscale=sdscale)
     expect_equal(all(c("rate", paste0("beta.", c(1,2,3,5,6))) %in% multifun$parameters.to.save), TRUE)
     expect_error(plot(multifun), NA)
     expect_error(rank(get.relative(multifun)), NA)
