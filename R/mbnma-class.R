@@ -315,7 +315,7 @@ rank.mbnma <- function(x, params=NULL, lower_better=TRUE, level="agent", to.rank
 
   # Cannot rank dmulti() models
   if (length(x$model.arg$fun$name)>1) {
-    stop("Ranking cannot be performed for models with agent-specific dose-response functions\nTry ranking of get.relative() results instead")
+    stop("Ranking cannot be performed for models with agent-specific dose-response functions\nTry ranking of relative effects instead (generated using get.relative())")
   }
 
   # Change agent/class to agents/classes
