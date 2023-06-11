@@ -629,7 +629,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   # Check regress.vals
   if (!is.null(regress.vals)) {
     if (!setequal(object$model.arg$regress.vars, names(regress.vals))) {
-      stop("'regress.vals' must contain a named regressor value for each variable\nspecified in object$model.arg$regress.vars")
+      stop("'regress.vals' must contain a named regressor value for each variable\nspecified in the MBNMA model (object$model.arg$regress.vars)")
     }
   }
 
@@ -647,6 +647,21 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     if (!"Placebo" %in% names(doses) & length(doses)!=length(object$network$agents)) {
       doses <- c("Placebo"=0, doses)
     }
+
+    # Merge list elements if they have the same agent name
+    newdoses <- list()
+    for (i in seq_along(doses)) {
+      if (names(doses)[i] %in% names(doses)[-i]) {
+
+        drop <- which(names(doses) %in% names(doses)[i])[-1]
+
+        for (k in seq_along(drop)) {
+          doses[[i]] <- sort(append(doses[[i]], doses[[drop[k]]]))
+        }
+        doses <- doses[-drop]
+      }
+    }
+
   } else if (!is.null(max.doses)) {
     doses <- max.doses
 
