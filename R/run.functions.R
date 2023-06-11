@@ -41,6 +41,8 @@
 #'   an identity link function, or be assigned the value `"smd"` for modelling Standardised Mean Differences using an
 #'   identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
+#' @param sdscale Logical object to indicate whether to write a model that specifies a reference SD
+#'  for standardising when modelling using Standardised Mean Differences (`link="smd"`)
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters. This is
 #' automatically set to `FALSE` if class effects are modelled or if multiple dose-response
@@ -304,6 +306,7 @@ mbnma.run <- function(network,
                       regress.vars=NULL,
                       regress.effect="common",
                       class.effect=list(), UME=FALSE,
+                      sdscale=FALSE,
                       cor=FALSE,
                       omega=NULL,
                       parameters.to.save=NULL,
@@ -339,6 +342,13 @@ mbnma.run <- function(network,
   # Check regression
   if (!is.null(regress.vars)) {
     check.regress(network=network, regress.vars=regress.vars)
+  }
+
+  # Check sdscale
+  if (sdscale==TRUE) {
+    if (!"sdscale" %in% names(network$data.ab)) {
+      stop("'standsd' must be a named variable in network$data.ab if sdscale==TRUE")
+    }
   }
 
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
@@ -388,6 +398,7 @@ mbnma.run <- function(network,
                          method=method,
                          regress.vars=regress.vars, regress.effect=regress.effect,
                          class.effect=class.effect, UME=UME,
+                         sdscale=sdscale,
                          cor=cor, omega=omega,
                          om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood),
                          likelihood=likelihood, link=link
@@ -449,7 +460,7 @@ mbnma.run <- function(network,
 
   result.jags <- mbnma.jags(data.ab, model,
                             regress.vars=regress.vars, regress.effect=regress.effect,
-                            class=class, omega=omega,
+                            class=class, omega=omega, sdscale=sdscale,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link, fun=fun,
                             jagsdata=jagsdata,
@@ -483,6 +494,7 @@ mbnma.run <- function(network,
                     "cor"=cor,
                     "omega"=omega,
                     "UME"=UME,
+                    "sdscale"=sdscale,
                     #"parallel"=parallel,
                     "pd"=pd,
                     "priors"=get.prior(model))
@@ -511,7 +523,7 @@ mbnma.run <- function(network,
 
 
 mbnma.jags <- function(data.ab, model,
-                       class=FALSE,
+                       class=FALSE, sdscale=FALSE,
                        regress.vars=NULL, regress.effect="common",
                        omega=NULL,
                        likelihood=NULL, link=NULL, fun=NULL,
@@ -532,13 +544,14 @@ mbnma.jags <- function(data.ab, model,
   checkmate::assertNumeric(Rhat, lower=1, add=argcheck)
   checkmate::assertNumeric(n.update, lower=1, add=argcheck)
   checkmate::assertList(jagsdata, null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(sdscale, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   args <- list(...)
 
   # For MBNMAdose
   if (is.null(jagsdata)) {
-    jagsdata <- getjagsdata(data.ab, class=class,
+    jagsdata <- getjagsdata(data.ab, class=class, sdscale=sdscale,
                             regress.vars=regress.vars, regress.effect=regress.effect,
                             likelihood=likelihood, link=link, fun=fun,
                             nodesplit=nodesplit)
