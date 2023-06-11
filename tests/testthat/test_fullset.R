@@ -423,7 +423,14 @@ for (dat in seq_along(alldfs)) {
                          n.iter=n.iter)
 
       mbnma.class1 <- mbnma.run(mbnma.network(ssri2),
-                         dfpoly(degree=2),
+                                fun=dmulti(list(
+                                  dfpoly(degree=2),
+                                  dfpoly(degree=2),
+                                  dfpoly(degree=1),
+                                  dfpoly(degree=2),
+                                  dfpoly(degree=2),
+                                  dfpoly(degree=2)
+                                )),
                          regress.vars = c("rob"),
                          regress.effect = "class",
                          n.iter=n.iter)
@@ -473,15 +480,27 @@ for (dat in seq_along(alldfs)) {
         expect_error(print(ranksreg), NA)
 
         # Rank MBNMA
-        if (length(modlist[[mod]]$model.arg$class.effect)>0) {
-          ranks <- rank(modlist[[mod]], level="class")
-        } else {
-          ranks <- rank(modlist[[mod]], level="agent")
+        if (length(modlist[[mod]]$model.arg$fun$name)==1) {
+          if (length(modlist[[mod]]$model.arg$class.effect)>0) {
+            ranks <- rank(modlist[[mod]], level="class")
+          } else {
+            ranks <- rank(modlist[[mod]], level="agent")
+          }
+
+          expect_error(plot(ranks), NA)
+          expect_error(cumrank(ranks), NA)
+          expect_error(print(ranks), NA)
         }
 
-        expect_error(plot(ranks), NA)
-        expect_error(cumrank(ranks), NA)
-        expect_error(print(ranks), NA)
+        # Get relative
+        if (mod<length(modlist)) {
+          rels <- get.relative(lower.diag = modlist[[mod]],
+                               upper.diag = modlist[[mod+1]],
+                               regress.vals=c("rob"=runif(1,-3,3)),
+                               lim="pred")
+        }
+        expect_error(print(rels), NA)
+
 
       }
 
