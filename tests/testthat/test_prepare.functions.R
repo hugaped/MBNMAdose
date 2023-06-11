@@ -66,6 +66,18 @@ for (dat in seq_along(alldfs)) {
       expect_silent(mbnma.validate.data(df.class))
     }
 
+    if ("y" %in% names(dataset)) {
+      new.df <- dataset
+      new.df$standsd <- 0.5
+
+      expect_silent(mbnma.validate.data(new.df))
+
+      df.err <- new.df
+      df.err$standsd[1] <- 2
+
+      expect_error(mbnma.validate.data(df.err), "must be identical within each study")
+    }
+
   })
 
 
