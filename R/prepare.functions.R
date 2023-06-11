@@ -29,6 +29,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' for poisson data.
 #' * `class` An optional column indicating a particular class code. Agents with the same identifier
 #' must also have the same class code.
+#' * `standsd` An optional column of numeric data indicating reference SDs used to standardise
+#' treatment effects when modelling using Standardised Mean Differences (SMD).
 #' @param description Optional. Short description of the network.
 #'
 #' @details Agents/classes for arms that have dose = 0 will be relabelled as `"Placebo"`.
@@ -98,6 +100,7 @@ mbnma.network <- function(data.ab, description="Network") {
 #' * Checks that studies have at least two arms (if `single.arm = FALSE`)
 #' * Checks that each study includes at least two treatments
 #' * Checks that agent names do not include underscores
+#' * Checks that standsd values are consistent within a study
 #'
 #' @return An error if checks are not passed. Runs silently if checks are passed
 mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
@@ -270,6 +273,16 @@ mbnma.validate.data <- function(data.ab, single.arm=FALSE) {
       if (!all(data.ab$class>0)) {
         stop("Class codes in dataset must be numbered sequentially from 1")
       }
+    }
+  }
+
+  # Check that standardising SDs are consistent within each study
+  if ("standsd" %in% names(data.ab)) {
+    stansd.df <- data.ab %>% dplyr::select(studyID, standsd) %>%
+      unique(.)
+
+    if (nrow(stansd.df)!=length(unique(stansd.df$studyID))) {
+      stop("Standardising SDs in `data.ab$standsd` must be identical within each study")
     }
   }
 
@@ -532,7 +545,7 @@ recode.agent <- function(data.ab, level="agent") {
 #' jagsdat <- getjagsdata(network$data.ab, level="treatment")
 #'
 #' @export
-getjagsdata <- function(data.ab, class=FALSE,
+getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
                         regress.vars=NULL, regress.effect="common",
                         likelihood=check.likelink(data.ab)$likelihood,
                         link=check.likelink(data.ab)$link,
@@ -546,6 +559,7 @@ getjagsdata <- function(data.ab, class=FALSE,
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::assertClass(fun, "dosefun", null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
+  checkmate::assertLogical(sdscale, len = 1, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check/assign link and likelihood
@@ -577,6 +591,10 @@ getjagsdata <- function(data.ab, class=FALSE,
     varnames <- append(varnames, "class")
   }
 
+  if (sdscale==TRUE) {
+    varnames <- append(varnames, "pool.sd")
+  }
+
   # Add variables depending on likelihood
   if (likelihood == "binomial") {
     datavars <- c("r", "n")
@@ -594,7 +612,7 @@ getjagsdata <- function(data.ab, class=FALSE,
 
   # Check required variables are in df
   if (!all(varnames %in% names(df))) {
-    msg <- paste0("Variables are missing from dataset:\n",
+    msg <- paste0("Required variables are missing from dataset:\n",
                   paste(varnames[!(varnames %in% names(df))], collapse="\n"))
     stop(msg)
   }
@@ -792,6 +810,10 @@ getjagsdata <- function(data.ab, class=FALSE,
     datalist[["class"]] <- classcode
   }
 
+  if (sdscale==TRUE) {
+    datalist[["pool.sd"]] <- vector()
+  }
+
   # Add empty matrix indicating which data points contribute to direct/indirect in node-split model
   if (!is.null(nodesplit)) {
     datalist[["split.ind"]] <- datalist[["agent"]]
@@ -802,6 +824,11 @@ getjagsdata <- function(data.ab, class=FALSE,
   for (i in 1:max(as.numeric(df$studyID))) {
     datalist[["studyID"]] <- append(datalist[["studyID"]], df$studynam[as.numeric(df$studyID)==i &
                                                                          df$arm==1])
+
+    if (sdscale==TRUE) {
+      datalist[["pool.sd"]] <- append(datalist[["pool.sd"]], df$sdscale[as.numeric(df$studyID)==i &
+                                                                           df$arm==1])
+    }
 
     for (k in 1:max(df$arm[df$studyID==i])) {
       for (m in seq_along(datavars)) {
