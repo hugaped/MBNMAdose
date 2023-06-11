@@ -16,8 +16,6 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' meta-analysis (MBNMA).
 #'
 #' @inheritParams mbnma.run
-#' @param refsd Logical object to indicate whether to write a model that specifies a reference SD
-#'  for standardising when modelling using Standardised Mean Differences (`link="smd"`)
 #' @param cor.prior NOT CURRENTLY IN USE - indicates the prior distribution to use for the correlation/covariance
 #' between relative effects. Must be kept as `"wishart"`
 #' @param om a list with two elements that report the maximum relative (`"rel"`) and maximum absolute (`"abs"`) efficacies
@@ -71,7 +69,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 mbnma.write <- function(fun=dloglin(),
                         method="common",
                         regress.vars=NULL, regress.effect="common",
-                        refsd=FALSE,
+                        sdscale=FALSE,
                         cor=TRUE, cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
                         class.effect=list(), UME=FALSE,
@@ -93,7 +91,7 @@ mbnma.write <- function(fun=dloglin(),
               method=method, cor.prior=cor.prior,
               regress.effect=regress.effect,
               omega=omega, om=om,
-              refsd=refsd,
+              sdscale=sdscale,
               class.effect=class.effect, UME=UME)
 
   model <- write.model(UME=UME)
@@ -108,7 +106,7 @@ mbnma.write <- function(fun=dloglin(),
 
 
   # Add likelihood
-  model <- write.likelihood(model, likelihood=likelihood, link=link, refsd=refsd)
+  model <- write.likelihood(model, likelihood=likelihood, link=link, sdscale=sdscale)
 
   # Add treatment delta effects
   model <- write.delta(model, method=method, om=om)
@@ -151,7 +149,7 @@ mbnma.write <- function(fun=dloglin(),
 write.check <- function(fun=dloglin(),
                         method="common",
                         regress.effect="common",
-                        UME=FALSE, refsd=FALSE,
+                        UME=FALSE, sdscale=FALSE,
                         cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
                         user.fun=NULL,
@@ -165,7 +163,7 @@ write.check <- function(fun=dloglin(),
   checkmate::assertChoice(regress.effect, choices=c("common", "random", "agent", "class"),
                           null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
-  checkmate::assertLogical(refsd, null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(sdscale, null.ok=FALSE, add=argcheck)
   if (method=="random") {
     checkmate::assertChoice(cor.prior, choices=c("wishart", "rho"))
   }
@@ -384,7 +382,7 @@ model.insert <- function(a, pos, x){
 #' @return A character object of JAGS MBNMA model code that includes likelihood
 #'   components of the model
 #'
-write.likelihood <- function(model, likelihood="binomial", link=NULL, refsd=FALSE) {
+write.likelihood <- function(model, likelihood="binomial", link=NULL, sdscale=FALSE) {
 
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertChoice(likelihood, choices=c("binomial", "normal", "poisson"), add=argcheck)
@@ -419,7 +417,7 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL, refsd=FALS
     glm[1] <- paste0(glm[1], " * pool.sd[i]")
 
     # Add SMD components
-    if (refsd==FALSE) {
+    if (sdscale==FALSE) {
       smd.sub <- c(
         "sd.study[i,k] <- se[i,k] * pow(n[i,k],0.5)",
         "nvar[i,k] <- (n[i,k]-1) * pow(sd.study[i,k],2)"
