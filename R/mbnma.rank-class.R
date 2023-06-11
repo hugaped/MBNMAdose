@@ -156,12 +156,16 @@ print.mbnma.rank <- function(x, ...) {
     level.str <- "agents"
   } else if ("class" %in% attrs$level) {
     level.str <- "classes"
+  } else if ("relefs" %in% attrs$level) {
+    level.str <- "relefs"
   }
 
   intro <- c()
 
   if ("predictions" %in% attrs$level) {
     intro <- c(intro, paste0("Includes ranking of predictions from dose-response MBNMA"))
+  } else if ("relefs" %in% attrs$level) {
+    intro <- c(intro, paste0("Includes ranking of relative effects"))
   }
 
   if (any(c("agent", "class") %in% attrs$level)) {
