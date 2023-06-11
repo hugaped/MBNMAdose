@@ -383,4 +383,109 @@ for (dat in seq_along(alldfs)) {
                              class.effect = list(beta.2="common")), "single dose-response function")
     }
   })
+
+  if (datanam[dat]=="ssri") {
+
+    test_that(paste("regression functions run correctly for:", datanam), {
+
+      skip_on_appveyor()
+      skip_on_ci()
+      skip_on_cran()
+
+      n.iter=500
+      pd <- "pv"
+
+      # Edit dataset
+      ssri2 <- ssri %>% dplyr::mutate(
+        rob=(as.numeric(factor(bias))-2)^2, # Make RoB binary (with moderate as reference)
+        class=dplyr::case_when(agent %in% c("citalopram", "escitalopram") ~ "alopram",
+                               agent %in% c("fluoxetine", "paroxetine") ~ "xetine",
+                               TRUE ~ "Sertraline"
+        )
+      )
+
+      mbnma.com <- mbnma.run(mbnma.network(ssri2),
+                         dfpoly(degree=2),
+                         regress.vars = c("rob"),
+                         regress.effect = "common",
+                         n.iter=n.iter)
+
+      mbnma.agent <- mbnma.run(mbnma.network(ssri2),
+                         dfpoly(degree=2),
+                         regress.vars = c("rob"),
+                         regress.effect = "agent",
+                         n.iter=n.iter)
+
+      mbnma.ran <- mbnma.run(mbnma.network(ssri2),
+                         dfpoly(degree=2),
+                         regress.vars = c("rob"),
+                         regress.effect = "random",
+                         n.iter=n.iter)
+
+      mbnma.class1 <- mbnma.run(mbnma.network(ssri2),
+                         dfpoly(degree=2),
+                         regress.vars = c("rob"),
+                         regress.effect = "class",
+                         n.iter=n.iter)
+
+      mbnma.class2 <- mbnma.run(mbnma.network(ssri2),
+                         dfpoly(degree=2),
+                         class.effect = list(beta.1="random"),
+                         regress.vars = c("rob"),
+                         regress.effect = "common",
+                         n.iter=n.iter)
+
+      modlist <- list(mbnma.com, mbnma.agent, mbnma.ran, mbnma.class1, mbnma.class2)
+
+      for (mod in seq_along(modlist)) {
+
+        # Predict
+        pred <- predict(modlist[[mod]])
+        predreg <- predict(modlist[[mod]], regress.vals=c("rob"=runif(1,-3,3)))
+
+        expect_error(predict(modlist[[mod]], regress.vals=c("pop"=1)), "must contain a named regressor")
+
+        # Plot predict
+        expect_error(plot(pred), NA)
+        expect_error(plot(predreg), NA)
+
+        expect_warning(plot(pred, overlay.split = TRUE), "mismatches in results")
+
+        # Print predict
+        expect_error(print(pred), NA)
+        expect_error(print(predreg), NA)
+
+        # Summary predict
+        expect_error(summary(pred), NA)
+        expect_error(summary(predreg), NA)
+
+        # Rank predict
+        ranks <- rank(pred)
+        ranksreg <- rank(predreg)
+
+        expect_error(plot(ranks), NA)
+        expect_error(plot(ranksreg), NA)
+
+        expect_error(cumrank(ranks), NA)
+        expect_error(cumrank(ranksreg), NA)
+
+        expect_error(print(ranks), NA)
+        expect_error(print(ranksreg), NA)
+
+        # Rank MBNMA
+        if (length(modlist[[mod]]$model.arg$class.effect)>0) {
+          ranks <- rank(modlist[[mod]], level="class")
+        } else {
+          ranks <- rank(modlist[[mod]], level="agent")
+        }
+
+        expect_error(plot(ranks), NA)
+        expect_error(cumrank(ranks), NA)
+        expect_error(print(ranks), NA)
+
+      }
+
+
+    })
+  }
 }
