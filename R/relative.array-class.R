@@ -13,11 +13,12 @@
 #' @export
 print.relative.array <- function(x, digits=2, ...) {
 
+  attrs <- attributes(x)
   xmat <- x$relarray
 
-  if (x$lim=="cred") {
+  if (attrs$lim=="cred") {
     lim <- "credible"
-  } else if (x$lim=="pred") {
+  } else if (attrs$lim=="pred") {
     lim <- "prediction"
   }
 
