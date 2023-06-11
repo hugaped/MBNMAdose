@@ -825,6 +825,467 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 
 
 
+
+# get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
+#                          lower.direction="colvrow", upper.direction="rowvcol",
+#                          eform=FALSE, lim="cred",
+#                          mbnma=NULL) {
+#
+#   # Run checks
+#   argcheck <- checkmate::makeAssertCollection()
+#   checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
+#   checkmate::assertList(treatments, null.ok=FALSE, add=argcheck)
+#   checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
+#   checkmate::assertChoice(lower.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
+#   checkmate::assertChoice(upper.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
+#   checkmate::reportAssertions(argcheck)
+#
+#   if (!is.null(mbnma)) {
+#     lower.diag <- mbnma
+#     warning("'mbnma' argument is deprecated in version >=4.2\n'lower.diag' will be assigned to 'mbnma'")
+#   }
+#
+#   # Check classes
+#   if (!any(class(lower.diag) %in% c("mbnma", "nma")) | !any(class(upper.diag) %in% c("mbnma", "nma"))) {
+#     stop("lower.diag and upper.diag must have class 'mbnma' or 'nma'")
+#   }
+#
+#   if ("mbnma" %in% class(lower.diag)) {
+#     lower.class <- "mbnma"
+#   } else if ("nma" %in% class(lower.diag)) {
+#     lower.class <- "nma"
+#   }
+#
+#   if ("mbnma" %in% class(upper.diag)) {
+#     upper.class <- "mbnma"
+#   } else if ("nma" %in% class(upper.diag)) {
+#     upper.class <- "nma"
+#   }
+#
+#   modlist <- list(lower.diag, upper.diag)
+#   mbnma.ind <- which(sapply(modlist, function(x) {class(x)[1]}) %in% "mbnma")
+#   nma.ind <- which(sapply(modlist, function(x) {class(x)[1]}) %in% "nma")
+#
+#   for (mod in seq_along(mbnma.ind)) {
+#
+#     # Cannot use with MBNMA UME
+#     if (modlist[[mbnma.ind[mod]]]$model.arg$UME==TRUE) {
+#       stop("get.relative() cannot be used on unrelated mean effects (UME=TRUE) MBNMA models")
+#     }
+#
+#     # Cannot use with nonparam
+#     if ("nonparam" %in% modlist[[mbnma.ind[mod]]]$model.arg$fun$name) {
+#       stop("get.relative() cannot be used on non-parametric MBNMA models")
+#     }
+#
+#     # Ensure prediction intervals are used where appropriate with MBNMA
+#     if (lim=="pred" & modlist[[mbnma.ind[mod]]]$model.arg$method=="random") {
+#       addsd <- TRUE
+#
+#       if (!"sd" %in% modlist[[mbnma.ind[mod]]]$parameters.to.save) {
+#         stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
+#       }
+#
+#     } else {
+#       addsd <- FALSE
+#     }
+#   }
+#
+#   # For NMA models (if no MBNMA models present)
+#   if (length(mbnma.ind)==0) {
+#     if (lim=="pred") {
+#       addsd <- TRUE
+#     } else {
+#       addsd <- FALSE
+#     }
+#   }
+#
+#   # If treatments is not specified use the treatments in the dataset for lower.diag
+#   if (length(treatments)==0) {
+#     if ("mbnma" %in% class(lower.diag)) {
+#       treatments <- lower.diag$network$treatments
+#     } else if ("nma" %in% class(lower.diag)) {
+#       treatments <- lower.diag$trt.labs
+#     }
+#
+#     agents <- gsub("(^.+)(_)(.+$)", "\\1", treatments)
+#     doses <- gsub("(^.+)(_)(.+$)", "\\3", treatments)
+#
+#     treatments <- list()
+#     for (i in seq_along(unique(agents))) {
+#       treatments[[unique(agents)[i]]] <- as.numeric(doses[which(agents %in% unique(agents)[i])])
+#     }
+#   }
+#
+#   if (length(unlist(treatments))<2) {
+#     stop("`treatments` must include at least two agents/doses to estimate relative\neffects between them")
+#   }
+#
+#   for (mod in seq_along(mbnma.ind)) {
+#     if (!all(names(treatments) %in% modlist[[mbnma.ind[mod]]]$network$agents)) {
+#       stop("names(treatments) are not all named agents in lower.diag or upper.diag\nget.relative() can only estimate MBNMA relative effects for agents included in MBNMA models")
+#     }
+#   }
+#
+#   # If NMA model present
+#   if (length(nma.ind)>0) {
+#
+#     treatments.nma <- vector()
+#     for (i in seq_along(treatments)) {
+#       for (k in seq_along(treatments[[i]])) {
+#         treatments.nma <- append(treatments.nma, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
+#       }
+#     }
+#
+#     for (mod in seq_along(nma.ind)) {
+#
+#       if (!all(names(treatments.nma) %in% modlist[[nma.ind[mod]]]$trt.labs)) {
+#         stop("'treatments' are not all in named treatments in lower.diag or upper.diag\nget.relative() can only estimate NMA relative effects for treatments included in NMA models")
+#       }
+#     }
+#   }
+#
+#   # Change `placebo` to dose=0 of an agent
+#   if ("Placebo" %in% names(treatments)) {
+#     temptrts <- names(treatments)[names(treatments)!="Placebo"]
+#     treatments[[temptrts[1]]] <- c(0, treatments[[temptrts[1]]])
+#     treatments$Placebo <- NULL
+#
+#     # Reorder so placebo is at start
+#     if (length(nma.ind)>0) {
+#       treatments.nma <- c("Placebo_0", treatments.nma[-which(treatments.nma %in% "Placebo_0")])
+#     }
+#   }
+#
+#   # Generate array of relative effects between all treatments in network
+#   if ("mbnma" %in% class(lower.diag)) {
+#     lower.nsims <- lower.diag$BUGSoutput$n.sims
+#   } else {
+#     lower.nsims <- lower.diag$jagsresult$BUGSoutput$n.sims
+#   }
+#   if ("mbnma" %in% class(upper.diag)) {
+#     upper.nsims <- upper.diag$BUGSoutput$n.sims
+#   } else {
+#     upper.nsims <- upper.diag$jagsresult$BUGSoutput$n.sims
+#   }
+#   nsims <- min(lower.nsims, upper.nsims)
+#   rel <- array(dim=c(length(unlist(treatments)), length(unlist(treatments)), nsims))
+#
+#   # Generate chunks of relative effects for each model and treatment comparison
+#   for (mod in seq_along(modlist)) {
+#
+#     # For MBNMA models
+#     if ("mbnma" %in% class(modlist[[mod]])) {
+#
+#       mbnma <- modlist[[mod]]
+#
+#       # Identify dose-response function used in mbnma
+#       DR <- suppressMessages(
+#         write.dose.fun(fun=mbnma$model.arg$fun, effect="abs")[[1]])
+#       DR <- gsub("(^.+<-)(.+)", "\\2", DR)
+#       DR <- gsub("s\\.", "", DR) # Could remove if needed
+#       if (length(mbnma$model.arg$fun$name)>1) {
+#         DR <- DR[-1]
+#       }
+#
+#       # Get dose-response parameter values
+#       betaparams <- get.model.vals(mbnma)
+#
+#       trtnew <- treatments
+#
+#       # Generate spline basis matrix if required
+#       splineopt <- c("rcs", "bs", "ns", "ls")
+#       fun <- mbnma$model.arg$fun
+#
+#       # Get indices of non-placebo agents
+#       index <- match(names(trtnew), mbnma$network$agents[!mbnma$network$agents %in% "Placebo"])
+#
+#       # If there are multiple DR functions
+#       if ("posvec" %in% names(fun)) {
+#         posvec <- fun$posvec
+#
+#         # Remove 1st element if Placebo in network
+#         if ("Placebo" %in% mbnma$network$agents) {
+#           posvec <- posvec[-1]
+#         }
+#       } else {
+#         posvec <- rep(1, max(index))
+#       }
+#       for (i in seq_along(index)) {
+#
+#         if (fun$name[posvec[index[i]]] %in% splineopt) {
+#           trtnew[[i]] <- genspline(trtnew[[i]],
+#                                    spline = fun$name[posvec[index[i]]],
+#                                    knots=fun$knots[[posvec[index[i]]]],
+#                                    degree = fun$degree[posvec[index[i]]],
+#                                    max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==which(names(trtnew)[i] == mbnma$network$agents)]))
+#         }
+#       }
+#
+#       # Create list of treatments with doses
+#       trtlist <- list()
+#       for (i in seq_along(trtnew)) {
+#         if (is.matrix(trtnew[[i]])) { # Allows for splines
+#           for (k in 1:nrow(trtnew[[i]])) {
+#             trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], as.vector(trtnew[[i]][k,]))
+#           }
+#         } else {
+#           for (k in seq_along(trtnew[[i]])) {
+#             trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], trtnew[[i]][k])
+#           }
+#         }
+#       }
+#
+#       for (i in 1:(length(trtlist)-1)) {
+#         for (k in (i+1):length(trtlist)) {
+#
+#           agnum.i <- which(mbnma$network$agents %in% trtlist[[i]][[1]])
+#           agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
+#
+#           # Account for lack of placebo
+#           if (!"Placebo_0" %in% mbnma$network$treatments & length(fun$name)==1) {
+#             agnum.i <- agnum.i+1
+#             agnum.k <- agnum.k+1
+#           }
+#           agnum <- c(agnum.i, agnum.k)
+#
+#           # For agent-specific dose-response functions
+#           if (length(mbnma$model.arg$fun$name)>1) {
+#             posi <- mbnma$model.arg$fun$posvec[agnum.i]
+#             tempDR1 <- DR[posi]
+#
+#             posk <- mbnma$model.arg$fun$posvec[agnum.k]
+#             tempDR2 <- DR[posk]
+#
+#             pos <- c(posi, posk)
+#           } else {
+#             tempDR1 <- DR
+#             tempDR2 <- DR
+#           }
+#
+#           DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), tempDR1)
+#           DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]][1], DR1)
+#
+#           DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), tempDR2)
+#           DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]][1], DR2)
+#
+#           # Replace spline
+#           for (m in 1:length(betaparams)) {
+#             DR1 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR1)
+#             DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[k]][[2]][m], DR2)
+#           }
+#
+#           for (beta in seq_along(betaparams)) {
+#             assign(names(betaparams)[beta], betaparams[[beta]])
+#
+#             if (length(mbnma$model.arg$fun$name)==1) {
+#               if (!is.matrix(betaparams[[beta]])) {
+#                 DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
+#                 DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+#               }
+#             } else {
+#
+#               if (is.matrix(betaparams[[beta]])) {
+#
+#                 DRcomb <- c(DR1, DR2)
+#                 for (m in 1:2) {
+#                   # Look for correct column index for each beta param
+#                   veci <- mbnma$model.arg$fun$posvec[1:agnum[m]]
+#                   veci <- table(veci)[names(table(veci))==pos[m]]
+#
+#                   if (names(veci)=="1") {
+#                     # Check if placebo in dataset
+#                     if (mbnma$network$agents[1]=="Placebo") {
+#                       veci <- veci - 1
+#                     }
+#                   }
+#
+#                   # Swap index in DR1 for veci
+#                   DRcomb[m] <- gsub(paste0("(", names(betaparams)[beta], "\\[,)([0-9]+\\])"),
+#                                     paste0("\\1", veci, "]"), DRcomb[m])
+#                 }
+#                 DR1 <- DRcomb[1]
+#                 DR2 <- DRcomb[2]
+#
+#               } else if (is.vector(betaparams[[beta]])) {
+#                 # Remove indices from DR
+#                 DR1 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
+#                 DR2 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+#               }
+#             }
+#           }
+#
+#           chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
+#
+#           if (length(rel)<=1) {stop("length(rel)<=1")}
+#
+#           # Incorporate between-study SD
+#           if (addsd==TRUE) {
+#             mat <- matrix(nrow=length(chunk), ncol=2)
+#             mat[,1] <- chunk
+#             mat[,2] <- stats::median(mbnma$BUGSoutput$sims.list[["sd"]])  # Use median to avoid MCMC error
+#             chunk <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
+#           }
+#
+#           # Ensure length(chunk) matches nsims
+#           if (length(chunk)!=nsims) {
+#             chunk <- sample(chunk, size=nsims)
+#           }
+#
+#           if (mod==2) {
+#             rel[i,k,] <- chunk
+#           } else if (mod==1) {
+#             rel[k,i,] <- -chunk
+#           } else {
+#             stop("error in length(modlist)")
+#           }
+#         }
+#       }
+#
+#       # For NMA models
+#     } else if ("nma" %in% class(modlist[[mod]])) {
+#
+#       nma <- modlist[[mod]]
+#
+#       for (i in 1:(length(treatments.nma)-1)) {
+#         for (k in (i+1):length(treatments.nma)) {
+#           nmat.i <- which(nma$trt.labs %in% treatments.nma[i])
+#           nmat.k <- which(nma$trt.labs %in% treatments.nma[k])
+#
+#           if (nma$UME==FALSE) {
+#             chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i] - nma$jagsresult$BUGSoutput$sims.list$d[,nmat.k]
+#             skip <- FALSE
+#           } else if (nma$UME==TRUE) {
+#             chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i,nmat.k]
+#
+#             if (sd(chunk.nma)>90) {
+#               chunk.nma <- NA # No direct evidence
+#               skip <- TRUE
+#             } else {
+#               skip <- FALSE
+#             }
+#           }
+#
+#           if (skip==FALSE) {
+#             # Ensures NMA also uses prediction intervals (if method="random")
+#             if (addsd==TRUE) {
+#               if ("sd" %in% nma$jagsresult$parameters.to.save) {
+#                 chunk.nma <- apply(chunk.nma, MARGIN=1, FUN=function(x) stats::rnorm(1, x, nma$jagsresult$BUGSoutput$median$sd))
+#               }
+#             }
+#
+#             # Ensure length(chunk) matches nsims
+#             if (length(chunk.nma)!=nsims) {
+#               chunk.nma <- sample(chunk.nma, size=nsims)
+#             }
+#           }
+#
+#           if (mod==2) {
+#             rel[i,k,] <- chunk.nma
+#           } else if (mod==1) {
+#             rel[k,i,] <- -chunk.nma
+#           } else {
+#             stop("error in length(modlist)")
+#           }
+#         }
+#       }
+#     }
+#   }
+#
+#   # Set direction of effects
+#   for (i in 1:(ncol(rel)-1)) {
+#     for (k in (i+1):nrow(rel)) {
+#       if (lower.direction=="rowvcol") {
+#         rel[k,i,] <- -rel[k,i,]
+#       }
+#       if (upper.direction=="rowvcol") {
+#         rel[i,k,] <- -rel[i,k,]
+#       }
+#       if (i==k) {
+#         rel[i,k,] <- 0
+#       }
+#     }
+#   }
+#
+#   trtnames <- vector()
+#   for (i in seq_along(treatments)) {
+#     for (k in seq_along(treatments[[i]])) {
+#       # Change dose=0 back to `placebo` if needed
+#       if (treatments[[i]][k]==0) {
+#         trtnames <- append(trtnames, paste("Placebo", 0, sep="_"))
+#       } else {
+#         trtnames <- append(trtnames, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
+#       }
+#     }
+#   }
+#
+#   rownames(rel) <- trtnames
+#   colnames(rel) <- trtnames
+#
+#   if (eform==FALSE) {
+#     outmat <- rel
+#   } else {
+#     outmat <- exp(rel)
+#   }
+#
+#
+#   ######### Summary matrixes ######
+#
+#   xmat <- outmat
+#
+#   meanmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
+#   semat <- meanmat
+#   medmat <- meanmat
+#   l95mat <- medmat
+#   u95mat <- medmat
+#   sum.df <- data.frame(comparison=NA, mean=NA, sd=NA, l95=NA, med=NA, u95=NA)
+#
+#   for (i in 1:nrow(xmat)) {
+#     for (k in 1:ncol(xmat)) {
+#       if (!is.na(xmat[i,k,1])) {
+#         meanmat[i,k] <- mean(xmat[i,k,])
+#         semat[i,k] <- stats::sd(xmat[i,k,])
+#         medmat[i,k] <- stats::median(xmat[i,k,])
+#         l95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.025)
+#         u95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.975)
+#
+#         if (k>i) {
+#           sum.df <- dplyr::add_row(sum.df,
+#                                    comparison = paste0(trtnames[i], " vs ", trtnames[k]),
+#                                    mean=meanmat[i,k],
+#                                    sd=semat[i,k],
+#                                    l95=l95mat[i,k],
+#                                    med=medmat[i,k],
+#                                    u95=u95mat[i,k]
+#           )
+#         }
+#       }
+#     }
+#   }
+#   sum.df <- sum.df[-1,]
+#   names(sum.df) <- c("comparison", "mean", "sd", "2.5%", "50%", "97.5%")
+#
+#   sumlist <- list("mean"=meanmat, "se"=semat, "median"=medmat, "lower95"=l95mat, "upper95"=u95mat)
+#
+#   for (i in seq_along(sumlist)) {
+#     dimnames(sumlist[[i]])[[1]] <- dimnames(xmat)[[1]]
+#     dimnames(sumlist[[i]])[[2]] <- dimnames(xmat)[[2]]
+#   }
+#
+#   out <- list("data.frame"=sum.df, "relarray"=outmat)
+#   out <- c(out, sumlist)
+#
+#   attributes(out) <- list("class"="relative.array",
+#                           "names"=names(out),
+#                           "lim"=lim)
+#
+#   return(out)
+# }
+
+
+
+
+
 #' Calculates league table of effects between treatments in MBNMA and/or NMA models
 #'
 #' @param lower.diag An S3 object either of class `"mbnma"` generated by running
@@ -884,467 +1345,6 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #'
 #' @export
 get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
-                         lower.direction="colvrow", upper.direction="rowvcol",
-                         eform=FALSE, lim="cred",
-                         mbnma=NULL) {
-
-  # Run checks
-  argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
-  checkmate::assertList(treatments, null.ok=FALSE, add=argcheck)
-  checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
-  checkmate::assertChoice(lower.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
-  checkmate::assertChoice(upper.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
-  checkmate::reportAssertions(argcheck)
-
-  if (!is.null(mbnma)) {
-    lower.diag <- mbnma
-    warning("'mbnma' argument is deprecated in version >=4.2\n'lower.diag' will be assigned to 'mbnma'")
-  }
-
-  # Check classes
-  if (!any(class(lower.diag) %in% c("mbnma", "nma")) | !any(class(upper.diag) %in% c("mbnma", "nma"))) {
-    stop("lower.diag and upper.diag must have class 'mbnma' or 'nma'")
-  }
-
-  if ("mbnma" %in% class(lower.diag)) {
-    lower.class <- "mbnma"
-  } else if ("nma" %in% class(lower.diag)) {
-    lower.class <- "nma"
-  }
-
-  if ("mbnma" %in% class(upper.diag)) {
-    upper.class <- "mbnma"
-  } else if ("nma" %in% class(upper.diag)) {
-    upper.class <- "nma"
-  }
-
-  modlist <- list(lower.diag, upper.diag)
-  mbnma.ind <- which(sapply(modlist, function(x) {class(x)[1]}) %in% "mbnma")
-  nma.ind <- which(sapply(modlist, function(x) {class(x)[1]}) %in% "nma")
-
-  for (mod in seq_along(mbnma.ind)) {
-
-    # Cannot use with MBNMA UME
-    if (modlist[[mbnma.ind[mod]]]$model.arg$UME==TRUE) {
-      stop("get.relative() cannot be used on unrelated mean effects (UME=TRUE) MBNMA models")
-    }
-
-    # Cannot use with nonparam
-    if ("nonparam" %in% modlist[[mbnma.ind[mod]]]$model.arg$fun$name) {
-      stop("get.relative() cannot be used on non-parametric MBNMA models")
-    }
-
-    # Ensure prediction intervals are used where appropriate with MBNMA
-    if (lim=="pred" & modlist[[mbnma.ind[mod]]]$model.arg$method=="random") {
-      addsd <- TRUE
-
-      if (!"sd" %in% modlist[[mbnma.ind[mod]]]$parameters.to.save) {
-        stop(crayon::red("'sd' not included in parameters.to.save - cannot calculate prediction intervals"))
-      }
-
-    } else {
-      addsd <- FALSE
-    }
-  }
-
-  # For NMA models (if no MBNMA models present)
-  if (length(mbnma.ind)==0) {
-    if (lim=="pred") {
-      addsd <- TRUE
-    } else {
-      addsd <- FALSE
-    }
-  }
-
-  # If treatments is not specified use the treatments in the dataset for lower.diag
-  if (length(treatments)==0) {
-    if ("mbnma" %in% class(lower.diag)) {
-      treatments <- lower.diag$network$treatments
-    } else if ("nma" %in% class(lower.diag)) {
-      treatments <- lower.diag$trt.labs
-    }
-
-    agents <- gsub("(^.+)(_)(.+$)", "\\1", treatments)
-    doses <- gsub("(^.+)(_)(.+$)", "\\3", treatments)
-
-    treatments <- list()
-    for (i in seq_along(unique(agents))) {
-      treatments[[unique(agents)[i]]] <- as.numeric(doses[which(agents %in% unique(agents)[i])])
-    }
-  }
-
-  if (length(unlist(treatments))<2) {
-    stop("`treatments` must include at least two agents/doses to estimate relative\neffects between them")
-  }
-
-  for (mod in seq_along(mbnma.ind)) {
-    if (!all(names(treatments) %in% modlist[[mbnma.ind[mod]]]$network$agents)) {
-      stop("names(treatments) are not all named agents in lower.diag or upper.diag\nget.relative() can only estimate MBNMA relative effects for agents included in MBNMA models")
-    }
-  }
-
-  # If NMA model present
-  if (length(nma.ind)>0) {
-
-    treatments.nma <- vector()
-    for (i in seq_along(treatments)) {
-      for (k in seq_along(treatments[[i]])) {
-        treatments.nma <- append(treatments.nma, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
-      }
-    }
-
-    for (mod in seq_along(nma.ind)) {
-
-      if (!all(names(treatments.nma) %in% modlist[[nma.ind[mod]]]$trt.labs)) {
-        stop("'treatments' are not all in named treatments in lower.diag or upper.diag\nget.relative() can only estimate NMA relative effects for treatments included in NMA models")
-      }
-    }
-  }
-
-  # Change `placebo` to dose=0 of an agent
-  if ("Placebo" %in% names(treatments)) {
-    temptrts <- names(treatments)[names(treatments)!="Placebo"]
-    treatments[[temptrts[1]]] <- c(0, treatments[[temptrts[1]]])
-    treatments$Placebo <- NULL
-
-    # Reorder so placebo is at start
-    if (length(nma.ind)>0) {
-      treatments.nma <- c("Placebo_0", treatments.nma[-which(treatments.nma %in% "Placebo_0")])
-    }
-  }
-
-  # Generate array of relative effects between all treatments in network
-  if ("mbnma" %in% class(lower.diag)) {
-    lower.nsims <- lower.diag$BUGSoutput$n.sims
-  } else {
-    lower.nsims <- lower.diag$jagsresult$BUGSoutput$n.sims
-  }
-  if ("mbnma" %in% class(upper.diag)) {
-    upper.nsims <- upper.diag$BUGSoutput$n.sims
-  } else {
-    upper.nsims <- upper.diag$jagsresult$BUGSoutput$n.sims
-  }
-  nsims <- min(lower.nsims, upper.nsims)
-  rel <- array(dim=c(length(unlist(treatments)), length(unlist(treatments)), nsims))
-
-  # Generate chunks of relative effects for each model and treatment comparison
-  for (mod in seq_along(modlist)) {
-
-    # For MBNMA models
-    if ("mbnma" %in% class(modlist[[mod]])) {
-
-      mbnma <- modlist[[mod]]
-
-      # Identify dose-response function used in mbnma
-      DR <- suppressMessages(
-        write.dose.fun(fun=mbnma$model.arg$fun, effect="abs")[[1]])
-      DR <- gsub("(^.+<-)(.+)", "\\2", DR)
-      DR <- gsub("s\\.", "", DR) # Could remove if needed
-      if (length(mbnma$model.arg$fun$name)>1) {
-        DR <- DR[-1]
-      }
-
-      # Get dose-response parameter values
-      betaparams <- get.model.vals(mbnma)
-
-      trtnew <- treatments
-
-      # Generate spline basis matrix if required
-      splineopt <- c("rcs", "bs", "ns", "ls")
-      fun <- mbnma$model.arg$fun
-
-      # Get indices of non-placebo agents
-      index <- match(names(trtnew), mbnma$network$agents[!mbnma$network$agents %in% "Placebo"])
-
-      # If there are multiple DR functions
-      if ("posvec" %in% names(fun)) {
-        posvec <- fun$posvec
-
-        # Remove 1st element if Placebo in network
-        if ("Placebo" %in% mbnma$network$agents) {
-          posvec <- posvec[-1]
-        }
-      } else {
-        posvec <- rep(1, max(index))
-      }
-      for (i in seq_along(index)) {
-
-        if (fun$name[posvec[index[i]]] %in% splineopt) {
-          trtnew[[i]] <- genspline(trtnew[[i]],
-                                   spline = fun$name[posvec[index[i]]],
-                                   knots=fun$knots[[posvec[index[i]]]],
-                                   degree = fun$degree[posvec[index[i]]],
-                                   max.dose=max(mbnma$network$data.ab$dose[mbnma$network$data.ab$agent==which(names(trtnew)[i] == mbnma$network$agents)]))
-        }
-      }
-
-      # Create list of treatments with doses
-      trtlist <- list()
-      for (i in seq_along(trtnew)) {
-        if (is.matrix(trtnew[[i]])) { # Allows for splines
-          for (k in 1:nrow(trtnew[[i]])) {
-            trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], as.vector(trtnew[[i]][k,]))
-          }
-        } else {
-          for (k in seq_along(trtnew[[i]])) {
-            trtlist[[length(trtlist)+1]] <- list(names(trtnew)[i], trtnew[[i]][k])
-          }
-        }
-      }
-
-      for (i in 1:(length(trtlist)-1)) {
-        for (k in (i+1):length(trtlist)) {
-
-          agnum.i <- which(mbnma$network$agents %in% trtlist[[i]][[1]])
-          agnum.k <- which(mbnma$network$agents %in% trtlist[[k]][[1]])
-
-          # Account for lack of placebo
-          if (!"Placebo_0" %in% mbnma$network$treatments & length(fun$name)==1) {
-            agnum.i <- agnum.i+1
-            agnum.k <- agnum.k+1
-          }
-          agnum <- c(agnum.i, agnum.k)
-
-          # For agent-specific dose-response functions
-          if (length(mbnma$model.arg$fun$name)>1) {
-            posi <- mbnma$model.arg$fun$posvec[agnum.i]
-            tempDR1 <- DR[posi]
-
-            posk <- mbnma$model.arg$fun$posvec[agnum.k]
-            tempDR2 <- DR[posk]
-
-            pos <- c(posi, posk)
-          } else {
-            tempDR1 <- DR
-            tempDR2 <- DR
-          }
-
-          DR1 <- gsub("agent\\[i,k\\]", paste0(",", agnum.i-1), tempDR1)
-          DR1 <- gsub("dose\\[i,k\\]", trtlist[[i]][[2]][1], DR1)
-
-          DR2 <- gsub("agent\\[i,k\\]", paste0(",", agnum.k-1), tempDR2)
-          DR2 <- gsub("dose\\[i,k\\]", trtlist[[k]][[2]][1], DR2)
-
-          # Replace spline
-          for (m in 1:length(betaparams)) {
-            DR1 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[i]][[2]][m], DR1)
-            DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[k]][[2]][m], DR2)
-          }
-
-          for (beta in seq_along(betaparams)) {
-            assign(names(betaparams)[beta], betaparams[[beta]])
-
-            if (length(mbnma$model.arg$fun$name)==1) {
-              if (!is.matrix(betaparams[[beta]])) {
-                DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
-                DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
-              }
-            } else {
-
-              if (is.matrix(betaparams[[beta]])) {
-
-                DRcomb <- c(DR1, DR2)
-                for (m in 1:2) {
-                  # Look for correct column index for each beta param
-                  veci <- mbnma$model.arg$fun$posvec[1:agnum[m]]
-                  veci <- table(veci)[names(table(veci))==pos[m]]
-
-                  if (names(veci)=="1") {
-                    # Check if placebo in dataset
-                    if (mbnma$network$agents[1]=="Placebo") {
-                      veci <- veci - 1
-                    }
-                  }
-
-                  # Swap index in DR1 for veci
-                  DRcomb[m] <- gsub(paste0("(", names(betaparams)[beta], "\\[,)([0-9]+\\])"),
-                                    paste0("\\1", veci, "]"), DRcomb[m])
-                }
-                DR1 <- DRcomb[1]
-                DR2 <- DRcomb[2]
-
-              } else if (is.vector(betaparams[[beta]])) {
-                # Remove indices from DR
-                DR1 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
-                DR2 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
-              }
-            }
-          }
-
-          chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
-
-          if (length(rel)<=1) {stop("length(rel)<=1")}
-
-          # Incorporate between-study SD
-          if (addsd==TRUE) {
-            mat <- matrix(nrow=length(chunk), ncol=2)
-            mat[,1] <- chunk
-            mat[,2] <- stats::median(mbnma$BUGSoutput$sims.list[["sd"]])  # Use median to avoid MCMC error
-            chunk <- apply(mat, MARGIN=1, FUN=function(x) stats::rnorm(1, x[1], x[2]))
-          }
-
-          # Ensure length(chunk) matches nsims
-          if (length(chunk)!=nsims) {
-            chunk <- sample(chunk, size=nsims)
-          }
-
-          if (mod==2) {
-            rel[i,k,] <- chunk
-          } else if (mod==1) {
-            rel[k,i,] <- -chunk
-          } else {
-            stop("error in length(modlist)")
-          }
-        }
-      }
-
-      # For NMA models
-    } else if ("nma" %in% class(modlist[[mod]])) {
-
-      nma <- modlist[[mod]]
-
-      for (i in 1:(length(treatments.nma)-1)) {
-        for (k in (i+1):length(treatments.nma)) {
-          nmat.i <- which(nma$trt.labs %in% treatments.nma[i])
-          nmat.k <- which(nma$trt.labs %in% treatments.nma[k])
-
-          if (nma$UME==FALSE) {
-            chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i] - nma$jagsresult$BUGSoutput$sims.list$d[,nmat.k]
-            skip <- FALSE
-          } else if (nma$UME==TRUE) {
-            chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i,nmat.k]
-
-            if (sd(chunk.nma)>90) {
-              chunk.nma <- NA # No direct evidence
-              skip <- TRUE
-            } else {
-              skip <- FALSE
-            }
-          }
-
-          if (skip==FALSE) {
-            # Ensures NMA also uses prediction intervals (if method="random")
-            if (addsd==TRUE) {
-              if ("sd" %in% nma$jagsresult$parameters.to.save) {
-                chunk.nma <- apply(chunk.nma, MARGIN=1, FUN=function(x) stats::rnorm(1, x, nma$jagsresult$BUGSoutput$median$sd))
-              }
-            }
-
-            # Ensure length(chunk) matches nsims
-            if (length(chunk.nma)!=nsims) {
-              chunk.nma <- sample(chunk.nma, size=nsims)
-            }
-          }
-
-          if (mod==2) {
-            rel[i,k,] <- chunk.nma
-          } else if (mod==1) {
-            rel[k,i,] <- -chunk.nma
-          } else {
-            stop("error in length(modlist)")
-          }
-        }
-      }
-    }
-  }
-
-  # Set direction of effects
-  for (i in 1:(ncol(rel)-1)) {
-    for (k in (i+1):nrow(rel)) {
-      if (lower.direction=="rowvcol") {
-        rel[k,i,] <- -rel[k,i,]
-      }
-      if (upper.direction=="rowvcol") {
-        rel[i,k,] <- -rel[i,k,]
-      }
-      if (i==k) {
-        rel[i,k,] <- 0
-      }
-    }
-  }
-
-  trtnames <- vector()
-  for (i in seq_along(treatments)) {
-    for (k in seq_along(treatments[[i]])) {
-      # Change dose=0 back to `placebo` if needed
-      if (treatments[[i]][k]==0) {
-        trtnames <- append(trtnames, paste("Placebo", 0, sep="_"))
-      } else {
-        trtnames <- append(trtnames, paste(names(treatments)[i], treatments[[i]][k], sep="_"))
-      }
-    }
-  }
-
-  rownames(rel) <- trtnames
-  colnames(rel) <- trtnames
-
-  if (eform==FALSE) {
-    outmat <- rel
-  } else {
-    outmat <- exp(rel)
-  }
-
-
-  ######### Summary matrixes ######
-
-  xmat <- outmat
-
-  meanmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
-  semat <- meanmat
-  medmat <- meanmat
-  l95mat <- medmat
-  u95mat <- medmat
-  sum.df <- data.frame(comparison=NA, mean=NA, sd=NA, l95=NA, med=NA, u95=NA)
-
-  for (i in 1:nrow(xmat)) {
-    for (k in 1:ncol(xmat)) {
-      if (!is.na(xmat[i,k,1])) {
-        meanmat[i,k] <- mean(xmat[i,k,])
-        semat[i,k] <- stats::sd(xmat[i,k,])
-        medmat[i,k] <- stats::median(xmat[i,k,])
-        l95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.025)
-        u95mat[i,k] <- stats::quantile(xmat[i,k,], probs = 0.975)
-
-        if (k>i) {
-          sum.df <- dplyr::add_row(sum.df,
-                                   comparison = paste0(trtnames[i], " vs ", trtnames[k]),
-                                   mean=meanmat[i,k],
-                                   sd=semat[i,k],
-                                   l95=l95mat[i,k],
-                                   med=medmat[i,k],
-                                   u95=u95mat[i,k]
-          )
-        }
-      }
-    }
-  }
-  sum.df <- sum.df[-1,]
-  names(sum.df) <- c("comparison", "mean", "sd", "2.5%", "50%", "97.5%")
-
-  sumlist <- list("mean"=meanmat, "se"=semat, "median"=medmat, "lower95"=l95mat, "upper95"=u95mat)
-
-  for (i in seq_along(sumlist)) {
-    dimnames(sumlist[[i]])[[1]] <- dimnames(xmat)[[1]]
-    dimnames(sumlist[[i]])[[2]] <- dimnames(xmat)[[2]]
-  }
-
-  out <- list("data.frame"=sum.df, "relarray"=outmat)
-  out <- c(out, sumlist)
-
-  attributes(out) <- list("class"="relative.array",
-                          "names"=names(out),
-                          "lim"=lim)
-
-  return(out)
-}
-
-
-
-
-
-
-get.relative.new <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
                          lower.direction="colvrow", upper.direction="rowvcol",
                          regress.vals=NULL,
                          eform=FALSE, lim="cred",
