@@ -591,10 +591,6 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     varnames <- append(varnames, "class")
   }
 
-  if (sdscale==TRUE) {
-    varnames <- append(varnames, "pool.sd")
-  }
-
   # Add variables depending on likelihood
   if (likelihood == "binomial") {
     datavars <- c("r", "n")
@@ -606,7 +602,13 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     stop("`likelihood` can be either `binomial`, `poisson`, or `normal`")
   }
   if (link=="smd") {
-    datavars <- append(datavars, "n")
+    if (sdscale==TRUE) {
+      # Use refernce SD for standardising
+      varnames <- append(varnames, "standsd")
+    } else {
+      # Use pooled study-specific SD for standardising
+      datavars <- append(datavars, "n")
+    }
   }
   varnames <- append(varnames, datavars)
 
@@ -826,7 +828,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
                                                                          df$arm==1])
 
     if (sdscale==TRUE) {
-      datalist[["pool.sd"]] <- append(datalist[["pool.sd"]], df$sdscale[as.numeric(df$studyID)==i &
+      datalist[["pool.sd"]] <- append(datalist[["pool.sd"]], df$standsd[as.numeric(df$studyID)==i &
                                                                            df$arm==1])
     }
 

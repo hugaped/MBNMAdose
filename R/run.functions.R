@@ -42,7 +42,8 @@
 #'   identity link function. If left as `NULL` the link function will be automatically assigned based
 #'   on the likelihood.
 #' @param sdscale Logical object to indicate whether to write a model that specifies a reference SD
-#'  for standardising when modelling using Standardised Mean Differences (`link="smd"`)
+#'  for standardising when modelling using Standardised Mean Differences. Specifying `sdscale=TRUE`
+#'  will therefore only modify the model if link function is set to SMD (`link="smd"`).
 #' @param cor A boolean object that indicates whether correlation should be modelled
 #' between relative effect dose-response parameters. This is
 #' automatically set to `FALSE` if class effects are modelled or if multiple dose-response
@@ -346,10 +347,15 @@ mbnma.run <- function(network,
 
   # Check sdscale
   if (sdscale==TRUE) {
-    if (!"sdscale" %in% names(network$data.ab)) {
-      stop("'standsd' must be a named variable in network$data.ab if sdscale==TRUE")
+    if (link!="smd") {
+      sdscale <- FALSE
     }
   }
+  # if (sdscale==TRUE) {
+  #   if (!"standsd" %in% names(network$data.ab)) {
+  #     stop("'standsd' must be a named variable in network$data.ab if sdscale==TRUE")
+  #   }
+  # }
 
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
   if (n.iter==n.burnin) {
