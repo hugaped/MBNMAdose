@@ -818,7 +818,7 @@ write.cov.mat <- function(model, sufparams, corprior="wishart",
                           omega=NULL, UME=FALSE) {
 
   if (UME==FALSE) {
-    priorloc <- "trt.prior"
+    priorloc <- "agent.prior"
     index <- "k"
   } else if (UME==TRUE) {
     priorloc <- "ume.prior"
