@@ -1,6 +1,7 @@
 # MBNMAdose 0.4.2
 
 ## Additions/changes
+- Reference SDs can now be used when modelling using SMDs to avoid using study-specific SDs, which can be problematic.
 - Network Meta-Regression: Effect modifiers can now be incorporated using `regress.vars` argument in `mbnma.run()`. Various sharing assumptions for effects can be specified in `regress.effect`.
 - Predictions can be estimated for class effect models
 - Fractional polynomial powers in `dfpoly()` can only take numeric values from set defined in Jansen 2015.
