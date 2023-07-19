@@ -246,7 +246,6 @@ write.model <- function(UME=FALSE) {
   model <- c(
     start= "model{ 			# Begin Model Code",
     study="for(i in 1:NS){ # Run through all NS trials",
-    "mu[i] ~ dnorm(0,0.001)",
     arm="for (k in 1:narm[i]){ # Run through all arms within a study",
     "}",
     "resstudydev[i] <- sum(resdev[i, 1:narm[i]])",
@@ -475,6 +474,11 @@ write.likelihood <- function(model, likelihood="binomial", link=NULL, sdscale=FA
 #'
 write.delta <- function(model, method="common", om) {
 
+  priors <- default.priors(om=om)
+
+  # Add mu
+  model <- model.insert(model, pos=which(names(model)=="study"), x=priors[["mu"]])
+
   # Add to model
   # Add deltas and everything
   if (method %in% c("common", "random")) {
@@ -492,10 +496,7 @@ write.delta <- function(model, method="common", om) {
       model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
       model <- model.insert(model, pos=which(names(model)=="end"), x=c(
         #"sd ~ dnorm(0,0.0025) T(0,)",
-        ifelse(om$rel>0,
-               paste0("sd ~ dunif(0, ", om$rel, ")"),
-               paste0("sd ~ dunif(", om$rel, ", 0)")
-               ),
+        priors[["sd"]],
         "tau <- pow(sd, -2)"
       ))
     } else {
@@ -524,20 +525,22 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
                        class.effect=list(), UME=FALSE
 ) {
 
+  priors <- default.priors(fun=fun, UME=UME, om=om)
+
   if ("nonparam" %in% fun$name) {
     model <- model.insert(model, pos=which(names(model)=="start"), x="d.1[1,1] <- 0")
 
     if ("increasing" %in% fun$direction) {
       insert <- c("d.1[1,k] <- 0",
                   "for (c in 2:maxdose[k]) {",
-                  "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(d.1[c-1,k],)",
+                  priors[["nonparam"]],
                   "}")
       model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
     } else if ("decreasing" %in% fun$direction) {
       insert <- c("d.1[1,k] <- 0",
                   "for (c in 2:maxdose[k]) {",
-                  "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001) T(,d.1[c-1,k])",
+                  priors[["nonparam"]],
                   "}")
       model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
     } else {
@@ -552,7 +555,11 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
       if (fun$apool[i] %in% "rel") {
         # Convert s.beta to d.
         if (UME==FALSE) {
-          insert <- paste0("s.beta.", i, "[1] <- 0")
+          if (pname %in% "ed50") {
+            insert <- paste0("s.beta.", i, "[1] <- 0.00001") # To avoid numerical error with non-negative params
+          } else {
+            insert <- paste0("s.beta.", i, "[1] <- 0")
+          }
           model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
 
           insert <- paste0("s.beta.", i, "[k] <- ", pname, "[k]")
@@ -561,7 +568,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
         # If class effects are modelled for this parameter
         if (pname %in% names(class.effect)) {
-          insert <- paste0(toupper(pname), "[k] ~ dnorm(0,0.001)")
+          insert <- priors[[toupper(pname)]]
           model <- model.insert(model, pos=which(names(model)=="class.prior"), x=insert)
 
           if (class.effect[[pname]]=="common") {
@@ -572,20 +579,18 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0(pname, "[k]  ~ dnorm(", toupper(pname), "[class[k]], tau.", toupper(pname), ")")
             model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
-            insert <- c(ifelse(om$rel>0,
-                               paste0("sd.", toupper(pname), " ~ dunif(0, ", om$rel, ")"),
-                               paste0("sd.", toupper(pname), " ~ dunif(", om$rel, ", 0)")),
+            insert <- c(priors[[paste0("sd.", toupper(pname))]],
                         paste0("tau.", toupper(pname), " <- pow(sd.", toupper(pname), ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
           }
         } else {
           if (UME==FALSE) {
-            insert <- paste0(pname, "[k] ~ dnorm(0,0.001)")
+            insert <- priors[[pname]]
             model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
           } else if (UME==TRUE) {
             insert <- c(paste0("s.beta.", i, "[k,c] <- ", pname, "[k,c]"),
-                        paste0(pname, "[k,c] ~ dnorm(0,0.001)"))
+                        priors[[pname]])
             model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
 
             insert <- c(paste0("s.beta.", i, "[k,k] <- 0"),
@@ -594,8 +599,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           }
         }
       } else if (fun$apool[i] %in% c("common", "random")) {
-        insert <- paste0(pname, " ~ dnorm(0,0.001)")
-        model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
+        model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[pname]])
 
         if (UME==FALSE) {
           insert <- paste0("s.beta.", i, "[1] <- 0")
@@ -606,9 +610,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0("s.beta.", i, "[k] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
-            insert <- c(ifelse(om$abs>0,
-                               paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
-                               paste0("sd.", pname, " ~ dunif(", om$abs, ", 0)")),
+            insert <- c(priors[[paste0("sd.", pname)]],
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -626,9 +628,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0("s.beta.", i, "[k,c] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
 
-            insert <- c(ifelse(om$abs>0,
-                               paste0("sd.", pname, " ~ dunif(0,", om$abs, ")"),
-                               paste0("sd.", pname, " ~ dunif(", om$abs, ", 0)")),
+            insert <- c(priors[[paste0("sd.", toupper(pname))]],
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
@@ -683,6 +683,8 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 #'
 write.regress <- function(model, regress.vars, regress.effect, om) {
 
+  priors <- default.priors(regress.vars=regress.vars, regress.effect=regress.effect, om=om)
+
   vars <- regress.vars
   #glm <- model[grep("mu\\[i\\] \\+ delta\\[i\\,k\\]", model)]
   glm <- model["glm"]
@@ -709,36 +711,31 @@ write.regress <- function(model, regress.vars, regress.effect, om) {
       beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i])
       model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
 
-      bprior <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
-      model <- model.insert(model, pos=which(names(model)=="end"), x=bprior)
+      model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
 
     } else if ("random" %in% regress.effect) {
       beffect <- paste0("b.", vars[i], "[k] ~ dnorm(B.", vars[i], ", prec.B.", vars[i], ")")
       model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
 
-      bprior <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
-      model <- model.insert(model, pos=which(names(model)=="end"), x=bprior)
+      model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
 
     } else if ("independent" %in% regress.effect) {
       beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
       model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
 
-      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=bprior)
+      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=priors[[paste0("B.", vars[i])]])
 
     } else if ("agent" %in% regress.effect) {
       beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
       model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
 
-      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
-      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=bprior)
+      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=priors[[paste0("B.", vars[i])]])
 
     } else if ("class" %in% regress.effect) {
       beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[class[k]]")
       model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
 
-      bprior <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
-      model <- model.insert(model, pos=which(names(model)=="class.prior"), x=bprior)
+      model <- model.insert(model, pos=which(names(model)=="class.prior"), x=priors[[paste0("B.", vars[i])]])
 
     } else {
       stop(paste0("regress.vars[", i, "] is incorrectly specified"))
@@ -747,7 +744,7 @@ write.regress <- function(model, regress.vars, regress.effect, om) {
 
     # Add prior for sd.B
     if ("random" %in% regress.effect) {
-      sdbprior <- c(paste0("sd.B.", vars[i], " ~ dunif(0,", om$rel, ")"),
+      sdbprior <- c(priors[[paste0("sd.B.", vars[i])]],
                     paste0("prec.B.", vars[i], " <- pow(sd.B.", vars[i], ", -2)")
       )
       model <- model.insert(model, pos=which(names(model)=="end"), x=sdbprior)
@@ -908,6 +905,8 @@ write.cov.mat <- function(model, sufparams, corprior="wishart",
 #' @noRd
 add.nodesplit <- function(model) {
 
+  priors <- default.priors()
+
   # If method=="common"
   if (any(grepl("delta\\[i\\,k\\] <-", model))) {
 
@@ -923,7 +922,7 @@ add.nodesplit <- function(model) {
   }
 
   # Add prior for direct
-  model <- model.insert(model, pos=which(names(model)=="end"), "direct ~ dnorm(0,0.0001)")
+  model <- model.insert(model, pos=which(names(model)=="end"), priors[["direct"]])
 
   return(model)
 }
@@ -958,9 +957,12 @@ remove.loops <- function(model) {
 #' @noRd
 write.nma <- function(method="common", likelihood="binomial", link="logit", om,
                       UME=FALSE) {
+
+  priors <- default.priors(UME=UME, om=om)
+
   model <- c(start="model{ 			# Begin Model Code",
              study="for(i in 1:NS){ # Run through all NS trials",
-             "mu[i] ~ dnorm(0,0.001)",
+             priors[["mu"]],
              "delta[i,1] <- 0",
              arm="for (k in 1:narm[i]){ # Run through all arms within a study",
              "}",
@@ -996,11 +998,8 @@ write.nma <- function(method="common", likelihood="binomial", link="logit", om,
 
     model <- model.insert(model, pos=which(names(model)=="study"), x="w[i,1] <- 0")
 
-    insert <- c("tau <- pow(sd,-2)",
-
-                ifelse(om$rel>0,
-                       paste0("sd ~ dunif(0, ", om$rel, ")"),
-                       paste0("sd ~ dunif(", om$rel, ", 0)")))
+    insert <- c(priors[["sd"]],
+                "tau <- pow(sd,-2)")
     model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
 
@@ -1017,7 +1016,7 @@ write.nma <- function(method="common", likelihood="binomial", link="logit", om,
   # Add treatment effect priors and make UME changes
   if (UME==FALSE) {
     te.prior <- c("for (k in 2:NT){ # Priors on relative treatment effects",
-                  "d[k] ~ dnorm(0,0.0001)",
+                  priors[["d"]],
                   "}")
 
   } else if (UME==TRUE) {
@@ -1030,7 +1029,7 @@ write.nma <- function(method="common", likelihood="binomial", link="logit", om,
     te.prior <- c("for (k in 1:NT) { d[k,k] <- 0 }",
                   "for (c in 1:(NT-1)) {",
                   "for (k in (c+1):NT) {",
-                  "d[k,c] ~ dnorm(0,0.0001)",
+                  priors[["d"]],
                   "}",
                   "}")
   }
@@ -1088,4 +1087,103 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
   model["glm"] <- gsub("\\+ delta\\[i,k\\]", "", model["glm"])
 
   return(model)
+}
+
+
+
+
+
+
+#' Sets default priors for JAGS model code
+#'
+#' This function creates JAGS code snippets for default MBNMA model priors.
+#'
+#' @inheritParams mb.run
+#'
+#' @return A list, each element of which is a named JAGS snippet
+#'   corresponding to a prior in the MBNMA JAGS code.
+#'
+#' @examples
+#' \donttest{
+#' default.priors(fun=demax())
+#' }
+#'
+#' @export
+default.priors <- function(fun=dloglin(), UME=FALSE,
+                           regress.vars=NULL, regress.effect="common",
+                           om=list("rel"=5, "abs"=10)) {
+
+  sufparams <- which(fun$apool=="rel")
+
+  priors <- list(
+    rho = "rho ~ dunif(0,1)",
+    mu = "mu[i] ~ dnorm(0,0.0001)",
+    direct = "direct ~ dnorm(0,0.0001)" # For nodesplit
+  )
+
+  priors[["sd"]] <- ifelse(om$rel>0,
+                           paste0("sd ~ dunif(0, ", om$rel, ")"),
+                           paste0("sd ~ dunif(", om$rel, ", 0)")
+                           )
+
+  # Non-parametric
+  if ("nonparam" %in% fun$name) {
+    temp <- "d.1[c,k] ~ dnorm(d.1[c-1,k],0.0001)"
+    if (fun$direction=="increasing") {
+      temp <- paste(temp, "T(d.1[c-1,k],)", sep=" ")
+    } else {
+      temp <- paste(temp, "T(,d.1[c-1,k])", sep=" ")
+    }
+    priors[["nonparam"]] <- temp
+  }
+
+  for (i in seq_along(fun$params)) {
+    pname <- fun$params[i]
+
+    if (any(c("common", "random") %in% fun$apool[i])) {
+      priors[[pname]] <- paste0(pname, " ~ dnorm(0,0.0001)")
+    } else {
+      priors[[pname]] <- paste0(pname, "[k] ~ dnorm(0,0.0001)")
+    }
+
+    priors[[toupper(pname)]] <- paste0(toupper(pname), "[k] ~ dnorm(0,0.0001)")
+
+
+    priors[[paste0("sd.", pname)]] <- ifelse(om$rel>0,
+                                             paste0("sd.", pname, " ~ dunif(0, ", om$rel, ")"),
+                                             paste0("sd.", pname, " ~ dunif(", om$rel, ", 0)"))
+    priors[[paste0("sd.", toupper(pname))]] <- ifelse(om$rel>0,
+                                                      paste0("sd.", toupper(pname), " ~ dunif(0, ", om$rel, ")"),
+                                                      paste0("sd.", toupper(pname), " ~ dunif(", om$rel, ", 0)"))
+
+    # For priors with truncated normal
+    if (pname %in% c("ed50")) {
+      priors[[pname]] <- paste(priors[[pname]], "T(0,)")
+      priors[[toupper(pname)]] <- paste(priors[[toupper(pname)]], "T(0,)")
+    }
+
+    # For UME models
+    if (UME==TRUE) {
+      priors[[pname]] <- gsub("\\[k\\]", "[k,c]", priors[[pname]])
+      priors[[toupper(pname)]] <- gsub("\\[k\\]", "[k,c]", priors[[toupper(pname)]])
+    }
+  }
+
+  for (i in seq_along(regress.vars)) {
+    if ("common" %in% regress.effect) {
+      priors[[paste0("B.", vars[i])]] <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
+    } else {
+      priors[[paste0("B.", vars[i])]] <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")
+    }
+
+    priors[[paste0("sd.B.", vars[i])]] <- paste0("sd.B.", vars[i], " ~ dunif(0,", om$rel, ")")
+  }
+
+  # For NMA models
+  priors[["d"]] <- "d[k] ~ dnorm(0,0.0001)"
+  if (UME==TRUE) {
+    priors[["d"]] <- "d[k,c] ~ dnorm(0,0.0001)"
+  }
+
+  return(priors)
 }
