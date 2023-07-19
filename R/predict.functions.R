@@ -312,13 +312,13 @@ calc.edx <- function(mbnma, x=50) {
   }
 
   if ("hill" %in% mbnma$model.arg$fun$params) {
-    edx <- exp(mbnma$BUGSoutput$sims.list$ed50) * ((x/(100-x)) ^ (1/mbnma$BUGSoutput$sims.list$hill))
+    edx <- mbnma$BUGSoutput$sims.list$ed50 * ((x/(100-x)) ^ (1/mbnma$BUGSoutput$sims.list$hill))
   } else {
-    edx <- exp(mbnma$BUGSoutput$sims.list$ed50) * (x/(100-x))
+    edx <- mbnma$BUGSoutput$sims.list$ed50 * (x/(100-x))
   }
 
   agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
-  output <- data.frame()>demax
+  output <- data.frame()
   for (i in seq_along(agents)) {
     quant <- stats::quantile(edx[,i], probs=c(0.025,0.25,0.5,0.75,0.975), na.rm=TRUE)
     df <- data.frame("agent"=agents[i],

@@ -57,9 +57,9 @@ print.treat.str <- function(mbnma, digits=3, ...) {
     sect.head <- crayon::bold(paste(headbeta, "dose-response parameter results\n\n", sep=" "))
     cat(crayon::underline(sect.head))
 
-    if (fun$params[i] %in% c("ed50", "hill")) {
-      cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
-    }
+    # if (fun$params[i] %in% c("ed50", "hill")) {
+    #   cat("Parameter modelled on exponential scale to ensure it takes positive values\non the natural scale\n")
+    # }
 
     agents <- mbnma$network$agents[mbnma$network$agents!="Placebo"]
 
