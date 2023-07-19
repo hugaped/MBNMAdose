@@ -9,7 +9,7 @@
 maximum response (Emax) is reached)
 - `get.relative()` now allows simultaneous comparison of two models in a single league table - can be used to compare MBNMA models with different dose-response functions, or MBNMA and NMA models, or NMA models that assume consistency versus those that use Unrelated Mean Effects.
 - Plots of predictions look prettier
-- Dose-response parameters that were previously modelled on an exponential scale (`ed50`, `hill`, `rate`) are now on the natural scale and are assigned truncated normal default priors
+- Dose-response parameters that were previously modelled on an exponential scale (`ed50`, `hill`, `onset`) are now on the natural scale and are assigned truncated normal default priors
 
 ## Bug fixes
 - Fixed issue with duplication of studyIDs in `getjagsdata()`
