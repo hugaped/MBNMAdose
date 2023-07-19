@@ -1634,3 +1634,35 @@ check.regress <- function(network, regress.vars=NULL) {
     }
   }
 }
+
+
+
+#' Convert normal distribution parameters to corresponding log-normal distribution parameters
+#'
+#' Converts mean and variance of normal distribution to the parameters for a log-normal
+#' distribution with the same mean and variance
+#'
+#' @param m Mean of the normal distribution
+#' @param v Variance of the normal distribution
+#'
+#' @return A vector of length two. The first element is the mean and the second element is the variance
+#' of the log-normal distribution
+#'
+#' @examples
+#'
+#' norm <- rnorm(1000, mean=5, sd=2)
+#' params <- norm2lnorm(5, 2^2)
+#' lnorm <- rlnorm(1000, meanlog=params[1], sdlog=params[2]^0.5)
+#'
+#' # Mean and SD of lnorm is equivalent to mean and sd of norm
+#' mean(lnorm)
+#' sd(lnorm)
+#'
+#' @export
+norm2lnorm <- function(m, v) {
+
+  mean <- log(m) - log((v/(m^2))+1) /2
+  var <- log((v/(m^2)) +1)
+
+  return(c(mean, var))
+}
