@@ -555,7 +555,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
       if (fun$apool[i] %in% "rel") {
         # Convert s.beta to d.
         if (UME==FALSE) {
-          if (pname %in% "ed50") {
+          if (pname %in% c("ed50", onset) | (pname %in% "rate" & "ditp" %in% fun$name)) {
             insert <- paste0("s.beta.", i, "[1] <- 0.00001") # To avoid numerical error with non-negative params
           } else {
             insert <- paste0("s.beta.", i, "[1] <- 0")
@@ -1157,7 +1157,7 @@ default.priors <- function(fun=dloglin(), UME=FALSE,
                                                       paste0("sd.", toupper(pname), " ~ dunif(", om$rel, ", 0)"))
 
     # For priors with truncated normal
-    if (pname %in% c("ed50")) {
+    if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "ditp" %in% fun$name)) {
       priors[[pname]] <- paste(priors[[pname]], "T(0,)")
       priors[[toupper(pname)]] <- paste(priors[[toupper(pname)]], "T(0,)")
     }

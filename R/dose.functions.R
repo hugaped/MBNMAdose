@@ -13,7 +13,7 @@
 #' \eqn{emax\times{(1-exp(-x))}}
 #'
 #' 2-parameter model:
-#' \eqn{emax\times{(1-exp(exp(onset)*-x))}}
+#' \eqn{emax\times{(1-exp(onset*-x))}}
 #'
 #' where emax is the maximum efficacy of an agent and rate is the speed
 #'
@@ -47,7 +47,7 @@
 #' dexp(onset="rel")
 #'
 #' @export
-dexp <- function(emax="rel", onset=NULL) {
+dexp <- function(emax="rel", onset=NULL, p.expon=FALSE) {
 
   # Run checks
   params <- list(emax=emax, onset=onset)
@@ -76,18 +76,31 @@ dexp <- function(emax="rel", onset=NULL) {
     jags <- "s.beta.1 * (1 - exp(- dose[i,k]))"
 
   } else {
-    fun <- ~ emax * (1 - exp(exp(onset) * -dose))
-    jags <- "s.beta.1 * (1 - exp(exp(s.beta.2) * - dose[i,k]))"
+    if (p.expon==TRUE) {
+      fun <- ~ emax * (1 - exp(exp(onset) * -dose))
+      jags <- "s.beta.1 * (1 - exp(exp(s.beta.2) * - dose[i,k]))"
+    } else if (p.expon==FALSE) {
+      fun <- ~ emax * (1 - exp(onset * -dose))
+      jags <- "s.beta.1 * (1 - exp(s.beta.2 * - dose[i,k]))"
+    }
   }
 
   for (i in seq_along(params)) {
     jags <- gsub(paste0("s\\.beta\\.", i), paste0("s.beta.",i,"[agent[i,k]]"), jags)
   }
 
-  f <- function(dose, beta.1, beta.2=0) {
-    y <- beta.1 * (1-exp(exp(onset)*-dose))
-    return(y)
+  if (p.expon==TRUE) {
+    f <- function(dose, beta.1, beta.2=0) {
+      y <- beta.1 * (1-exp(exp(onset)*-dose))
+      return(y)
+    }
+  } else if (p.expon==FALSE) {
+    f <- function(dose, beta.1, beta.2=0) {
+      y <- beta.1 * (1-exp(onset*-dose))
+      return(y)
+    }
   }
+
 
 
   # Generate output values
@@ -113,7 +126,9 @@ dexp <- function(emax="rel", onset=NULL) {
               apool=apool, bname=bname)
   class(out) <- "dosefun"
 
-  message("'onset' parameters are on exponential scale to ensure they take positive values on the natural scale")
+  if (p.expon==TRUE) {
+    message("'onset' parameters are on exponential scale to ensure they take positive values on the natural scale")
+  }
 
   return(out)
 }
@@ -324,6 +339,8 @@ dloglin <- function() {
 #'   assigned a numeric value (see details).
 #' @param hill Pooling for Hill parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
+#' @param p.expon A logical object to indicate whether `ed50` and `hill` parameters should be
+#'  expressed within the dose-response function on an exponential scale
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -334,10 +351,10 @@ dloglin <- function() {
 #' exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
 #'
 #' Without Hill parameter:
-#' \deqn{\frac{E_{max}\times{x}}{e^{ET_{50}}+x}}
+#' \deqn{\frac{E_{max}\times{x}}{ET_{50}+x}}
 #'
 #' With Hill parameter:
-#' \deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
+#' \deqn{\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}}+x^{hill}}}
 #'
 #'
 #' @section Dose-response parameters:
@@ -367,7 +384,7 @@ dloglin <- function() {
 #' demax(hill="common")
 #'
 #' @export
-demax <- function(emax="rel", ed50="rel", hill=NULL) {
+demax <- function(emax="rel", ed50="rel", hill=NULL, p.expon=FALSE) {
 
   # Run checks
   params <- list(emax=emax, ed50=ed50, hill=hill)
@@ -389,12 +406,22 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
     }
   }
 
-  if (!is.null(hill)) {
-    fun <- ~ (emax * (dose ^ hill)) / ((exp(ed50) ^ hill) + (dose ^ hill))
-    jags <- "(s.beta.1 * (dose[i,k] ^ exp(s.beta.3))) / ((exp(s.beta.2) ^ exp(s.beta.3)) + (dose[i,k] ^ exp(s.beta.3)))"
-  } else if (is.null(hill)) {
-    fun <- ~ (emax * dose) / (exp(ed50) + dose)
-    jags <- "(s.beta.1 * dose[i,k]) / (exp(s.beta.2) + dose[i,k])"
+  if (p.expon==TRUE) {
+    if (!is.null(hill)) {
+      fun <- ~ (emax * (dose ^ hill)) / ((exp(ed50) ^ hill) + (dose ^ hill))
+      jags <- "(s.beta.1 * (dose[i,k] ^ exp(s.beta.3))) / ((exp(s.beta.2) ^ exp(s.beta.3)) + (dose[i,k] ^ exp(s.beta.3)))"
+    } else if (is.null(hill)) {
+      fun <- ~ (emax * dose) / (exp(ed50) + dose)
+      jags <- "(s.beta.1 * dose[i,k]) / (exp(s.beta.2) + dose[i,k])"
+    }
+  } else {
+    if (!is.null(hill)) {
+      fun <- ~ (emax * (dose ^ hill)) / ((ed50 ^ hill) + (dose ^ hill))
+      jags <- "(s.beta.1 * (dose[i,k] ^ s.beta.3)) / ((s.beta.2 ^ s.beta.3) + (dose[i,k] ^ s.beta.3))"
+    } else if (is.null(hill)) {
+      fun <- ~ (emax * dose) / (ed50 + dose)
+      jags <- "(s.beta.1 * dose[i,k]) / (s.beta.2 + dose[i,k])"
+    }
   }
 
   for (i in seq_along(params)) {
@@ -403,7 +430,7 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
 
 
   f <- function(dose, beta.1, beta.2, beta.3) {
-    y <- (beta.1 * (dose ^ beta.3) ) / ((exp(beta.2) ^ beta.3) + (dose ^ beta.3))
+    y <- (beta.1 * (dose ^ beta.3) ) / ((beta.2 ^ beta.3) + (dose ^ beta.3))
     return(y)
   }
 
@@ -433,11 +460,14 @@ demax <- function(emax="rel", ed50="rel", hill=NULL) {
               apool=apool, bname=bname)
   class(out) <- "dosefun"
 
-  message("'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale")
+  if (p.expon==TRUE) {
+    message("'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale")
 
-  if (!is.null(hill)) {
-    message("'hill' parameters are on exponential scale to ensure they take positive values on the natural scale")
+    if (!is.null(hill)) {
+      message("'hill' parameters are on exponential scale to ensure they take positive values on the natural scale")
+    }
   }
+
   return(out)
 }
 
