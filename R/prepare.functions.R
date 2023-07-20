@@ -1403,6 +1403,9 @@ check.network <- function(g, reference=1) {
 #'   be equally spaced across the range of doses *for each agent*). If a numeric vector is given it indicates the quantiles of the knots as
 #'   a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
 #'   is 100mg/d, `knots=c(0.1,0.5)` would indicate knots should be fitted at 10mg/d and 50mg/d.
+#' @param boundaries A positive numeric vector of length 2 that represents the doses at which to anchor the B-spline or natural
+#' cubic spline basis matrix. This allows data to extend beyond the boundary knots, or for the basis parameters to not depend on `x`.
+#' The default (`boundaries=NULL`) is the range of `x`.
 #'
 #' @return A spline basis matrix with number of rows equal to `length(x)` and the number of columns equal to the number
 #' of coefficients in the spline.
@@ -1422,7 +1425,7 @@ check.network <- function(g, reference=1) {
 #' genspline(x, spline="ls", knots=3)
 #'
 #' @export
-genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
+genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), boundaries=NULL){
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
@@ -1483,13 +1486,17 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x)){
       knots <- stats::quantile(0:max.dose, probs = knots)
     }
 
+    if (is.null(boundaries)) {
+      boundaries <- range(x0)
+    }
+
     # Generate spline basis matrix
     if (spline=="bs") {
-      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree)
+      splinedesign <- splines::bs(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
     # } else if (spline=="rcs") {
     #   splinedesign <- Hmisc::rcspline.eval(x0, knots = knots, inclx = TRUE)
     } else if (spline=="ns") {
-      splinedesign <- splines::ns(x=x0, knots=knots)
+      splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
 
     } else if (spline=="ls") {
       splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
