@@ -1,0 +1,139 @@
+---
+title: "MBNMAdose outputs: Relative effects, forest plots and rankings"
+author: "Hugo Pedder"
+date: "`r Sys.Date()`"
+output:
+  knitr:::html_vignette:
+    toc: TRUE
+bibliography: REFERENCES.bib
+vignette: >
+  %\VignetteIndexEntry{MBNMAdose}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(MBNMAdose)
+#devtools::load_all()
+library(rmarkdown)
+library(knitr)
+library(dplyr)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  include=TRUE,
+  tidy.opts=list(width.cutoff=80),
+  tidy=TRUE
+)
+```
+
+For looking at outputs from MBNMAdose we will demonstrate using
+results from an Emax MBNMA on the triptans dataset:
+
+```{r, results="hide"}
+tripnet <- mbnma.network(triptans)
+trip.emax <- mbnma.run(tripnet, fun=demax(emax="rel", ed50="rel")) 
+```
+
+## Estimating relative effects
+
+It may be of interest to calculate relative effects between different
+doses of agents to obtain outputs that are more similar to those from
+standard NMA. A benefit of dose-response MBNMA is that relative effects between doses that have not been explored in trials can still be compared. 
+
+Relative effects can take the form of odds ratios, mean
+differences or rate ratios, depending on the likelihood and link
+function used in a model. Estimating relative effects can be
+particularly helpful for dose-response functions where parameter
+interpretation can be challenging (e.g. splines, fractional
+polynomials).
+
+The `get.relative()` function allows for calculation of relative effects
+between any doses of agents as specified by the user. This includes
+doses not available in the original dataset, as these can be estimated
+via the dose-response relationship. Optional arguments allow for
+relative effects to be estimated at specific effect modifier values (if
+meta-regression incorporated into MBNMA model), calculation of 95%
+prediction intervals rather than 95% credible intervals (the default),
+and for the conversion of results from the log to the natural scale. The
+resulting relative effects can also be ranked (see [Ranking] for more
+details).
+
+```{r}
+# Specify treatments (agents and doses) for which to estimate relative effects
+treats <- list("Placebo"=0,
+               "eletriptan"= 1,
+               "sumatriptan"=2,
+               "almotriptan"=1)
+
+# Print relative effects on the natural scale
+rels <- get.relative(trip.emax, treatments = treats, eform=TRUE)
+print(rels)
+
+# Rank relative effects
+rank(rels)
+```
+
+
+## Forest plots
+
+Forest plots can be easily generated from MBNMA models using the
+`plot()` method on an `"mbnma"` object. By default this will plot a
+separate panel for each dose-response parameter in the model. Forest
+plots can only be generated for parameters which are modelled using
+relative effects and that vary by agent/class.
+
+```{r, results="hide"}
+plot(trip.emax)
+```
+
+
+## Ranking
+
+Rankings can be calculated for different dose-response parameters from
+MBNMA models by using `rank()` on an `"mbnma"` object. Any parameter
+monitored in an MBNMA model that varies by agent/class can be ranked. A
+vector of these is assigned to `params`. `lower_better` indicates
+whether negative responses should be ranked as "better" (`TRUE`) or
+"worse" (`FALSE`).
+
+```{r}
+ranks <- rank(trip.emax, lower_better = FALSE)
+print(ranks)
+summary(ranks)
+```
+
+The output is an object of `class("mbnma.rank")`, containing a list for
+each ranked parameter in `params`, which consists of a summary table of
+rankings and raw information on agent/class (depending on argument given
+to `level`) ranking and probabilities. The summary median ranks with 95%
+credible intervals can be simply displayed using `summary()`.
+
+Histograms for ranking results can also be plotted using the `plot()`
+method, which takes the raw MCMC ranking results stored in `mbnma.rank`
+and plots the number of MCMC iterations the parameter value for each
+treatment was ranked a particular position.
+
+```{r}
+# Ranking histograms for Emax
+plot(ranks, params = "emax")
+
+# Ranking histograms for ED50
+plot(ranks, params = "ed50")
+```
+
+Alternatively, cumulative ranking plots for all parameters can be
+plotted simultaneously so as to be able to compare the effectiveness of
+different agents on different parameters. The surface under cumulative
+ranking curve (SUCRA) for each parameter can also be estimated by
+setting `sucra=TRUE`.
+
+```{r}
+# Cumulative ranking plot for both dose-response parameters
+cumrank(ranks, sucra=TRUE)
+```
+
+## References

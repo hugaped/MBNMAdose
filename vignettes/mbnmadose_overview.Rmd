@@ -1,0 +1,174 @@
+---
+title: "MBNMAdose: Package Overview"
+author: "Hugo Pedder"
+date: "`r Sys.Date()`"
+output:
+  knitr:::html_vignette:
+    toc: TRUE
+bibliography: REFERENCES.bib
+vignette: >
+  %\VignetteIndexEntry{MBNMAdose}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(MBNMAdose)
+#devtools::load_all()
+library(rmarkdown)
+library(knitr)
+library(dplyr)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  include=TRUE,
+  tidy.opts=list(width.cutoff=80),
+  tidy=TRUE
+)
+```
+
+## Introduction
+
+This vignette demonstrates how to use `MBNMAdose` to perform Model-Based
+Network Meta-Analysis (MBNMA) of studies with multiple doses of
+different agents by accounting for the dose-response relationship. This
+can connect disconnected networks via the dose-response relationship and
+the placebo response, improve precision of estimated effects and allow
+interpolation/extrapolation of predicted response based on the
+dose-response relationship.
+
+Modelling the dose-response relationship also avoids the "lumping" of
+different doses of an agent which is often done in Network Meta-Analysis
+(NMA) and can introduce additional heterogeneity or inconsistency. All
+models and analyses are implemented in a Bayesian framework, following
+an extension of the standard NMA methodology presented by [@lu2004] and
+are run in JAGS *(version 4.3.0 or later is required)* [-@jags]. For
+full details of dose-response MBNMA methodology see Mawdsley et al.
+[-@mawdsley2016]. Throughout this vignette we refer to a **treatment**
+as a specific **dose** or a specific **agent**
+
+This package has been developed alongside `MBNMAtime`, a package that
+allows users to perform time-course MBNMA to incorporate multiple time
+points within different studies. However, *they should not be loaded
+into R at the same time* as there are a number of functions with shared
+names that perform similar tasks yet are specific to dealing with either
+time-course *or* dose-response data.
+
+### Workflow within the package
+
+Functions within `MBNMAdose` follow a clear pattern of use:
+
+1.  Load your data into the correct format using `mbnma.network()` and explore potential relationships ([Exploring the data][1-dataexploration.html])
+2.  Perform a dose-response MBNMA using `mbnma.run()` ([Performing a dose-response MBNMA][2-runmbnmadose.html])
+3.  Test for consistency at the treatment-level using functions like
+    `nma.nodesplit()` and `nma.run()` ([Checking for consistency][3-consistencychecking.html])
+4.  Examine model outputs, such as relative effects, forest plots and treatment rankings ([Model outputs][4-outputs.html])
+5.  Use your model to predict responses using `predict()` ([Predictions][5-predictions.html])
+
+At each of these stages there are a number of informative plots that can
+be generated to help understand the data and to make decisions regarding
+model fitting.
+
+## Datasets Included in the Package
+
+### Triptans for migraine pain relief
+
+`triptans` is from a systematic review of interventions for pain relief
+in migraine [@thorlund2014]. The outcome is binary, and represents (as
+aggregate data) the number of participants who were headache-free at 2
+hours. Data are from patients who had had at least one migraine attack,
+who were not lost to follow-up, and who did not violate the trial
+protocol. The dataset includes 70 Randomised-Controlled Trials (RCTs),
+comparing 7 triptans with placebo. Doses are standardised as relative to
+a "common" dose, and in total there are 23 different treatments
+(combination of dose and agent). `triptans` is a data frame in long
+format (one row per arm and study), with the variables `studyID`,
+`AuthorYear`, `N`, `r`, `dose` and `agent`.
+
+```{r, echo=FALSE}
+kable(head(triptans), digits=2) 
+```
+
+### Biologics for treatment of moderate-to-severe psoriasis
+
+There are 3 psoriasis datasets from a systematic review of RCTs
+comparing biologics at different doses and placebo [@warren2019]. Each
+dataset contains a different binary outcome, all based on the number of
+patients experiencing degrees of improvement on the Psoriasis Area and
+Severity Index (PASI) measured at 12 weeks follow-up. Each dataset
+contains information on the number of participants who achieved
+$\geq75\%$ (`psoriasis75`), $\geq90\%$ (`psoriasis90`), or $100\%$
+(`psoriasis100`).
+
+### Selective Serotonin Reuptake Inhibitors (SSRIs) for major depression
+
+`ssri` is from a systematic review examining the efficacy of different
+doses of SSRI antidepressant drugs and placebo [@furukawa2019]. The
+response to treatment is defined as a 50% reduction in depressive
+symptoms after 8 weeks (4-12 week range) follow-up. The dataset includes
+60 RCTs comparing 5 different SSRIs with placebo.
+
+```{r, echo=TRUE}
+kable(head(ssri), digits=2) 
+```
+
+### Interventions for Serum Uric Acid (SUA) reduction in gout
+
+`gout` is from a systematic review of interventions for lowering Serum
+Uric Acid (SUA) concentration in patients with gout *[not published
+previously]*. The outcome is continuous, and aggregate data responses
+correspond to the mean change from baseline in SUA in mg/dL at 2 weeks
+follow-up. The dataset includes 10 Randomised-Controlled Trials (RCTs),
+comparing 5 different agents, and placebo. Data for one agent (RDEA)
+arises from an RCT that is not placebo-controlled, and so is not
+connected to the network directly. In total there were 19 different
+treatments (combination of dose and agent). `gout` is a data frame in
+long format (one row per arm and study), with the variables `studyID`,
+`y`, `se`, `agent` and `dose`.
+
+```{r, echo=FALSE}
+kable(head(gout), digits=2) 
+```
+
+### Interventions for pain relief in osteoarthritis
+
+`osteopain` is from a systematic review of interventions for pain relief
+in osteoarthritis, used previously in Pedder et al. [-@pedder2019]. The
+outcome is continuous, and aggregate data responses correspond to the
+mean WOMAC pain score at 2 weeks follow-up. The dataset includes 18
+Randomised-Controlled Trials (RCTs), comparing 8 different agents with
+placebo. In total there were 26 different treatments (combination of
+dose and agent). The active treatments can also be grouped into 3
+different classes, within which they have similar mechanisms of action.
+`osteopain_2wkabs` is a data frame in long format (one row per arm and
+study), with the variables `studyID`, `agent`, `dose`, `class`, `y`,
+`se`, and `N`.
+
+```{r, echo=FALSE}
+kable(head(osteopain), digits=2) 
+```
+
+### Alogliptin for lowering blood glucose concentration in type II diabetes
+
+`alog_pcfb` is from a systematic review of Randomised-Controlled Trials
+(RCTs) comparing different doses of alogliptin with placebo
+[@langford2016]. The systematic review was simply performed and was
+intended to provide data to illustrate a statistical methodology rather
+than for clinical inference. Alogliptin is a treatment aimed at reducing
+blood glucose concentration in type II diabetes. The outcome is
+continuous, and aggregate data responses correspond to the mean change
+in HbA1c from baseline to follow-up in studies of at least 12 weeks
+follow-up. The dataset includes 14 RCTs, comparing 5 different doses of
+alogliptin with placebo, leading to 6 different treatments (combination
+of dose and agent) within the network. `alog_pcfb` is a data frame in
+long format (one row per arm and study), with the variables `studyID`,
+`agent`, `dose`, `y`, `se`, and `N`.
+
+```{r, echo=FALSE}
+kable(head(alog_pcfb), digits=2) 
+```
+
+## References

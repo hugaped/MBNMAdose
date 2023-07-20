@@ -1,0 +1,87 @@
+---
+title: "Class effect NMA analysis using MBNMAdose"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{NMA analysis using MBNMAdose}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MBNMAdose)
+library(tidyverse)
+```
+
+Although `MBNMAdose` is intended to be used for dose-response Model-Based Network Meta-Analysis (MBNMA), it can also be adapted to perform standard Network Meta-Analysis (NMA), and this allows users to take advantage of some of the additional features of `MBNMAdose`, such as modelling class effects, for use in standard NMA. As well as fitting class effect models, `MBNMAdose` also allows for nodes-splitting to check for consistency in these models.
+
+To illustrate how this can be done we will use a dataset of inhaled medications for Chronic Obstructive Pulmonary Disease (COPD) from the `netmeta` package (*REF*):
+
+```{r, loaddata}
+library(netmeta)
+data("Dong2013")
+
+# Rename column names to match those used in MBNMAdose
+Dong2013 <- Dong2013 %>% 
+  rename(studyID = id,
+         r = death,
+         n = randomized)
+```
+
+
+## Performing standard NMA using `mbnma.run()` with placebo
+
+The simplest use is in a network that includes a placebo treatment. In this dataset we do not have any dose-response information, so there is no value in performing a MBNMA. However, if we assume that every active treatment in the network is a separate "agent" with a dose of 1, and that the Placebo treatment has a dose of 0, then we can use the data in `MBNMAdose`, and by modelling a linear dose-response function we estimate parameters that are identical to a standard NMA model. 
+
+```{r}
+# Define agents and assign a dose of 1 to all agents
+Dong2013 <- Dong2013 %>% 
+  rename(agent=treatment) %>%
+  mutate(dose=case_when(agent=="Placebo" ~ 0,
+                        agent!="Placebo" ~ 1))
+```
+
+Note that if there is an intervention within the dataset that has been administered at multiple doses, you can force the dataset to be analysed either as a "split" network (in which different doses are assumed to have independent effects) by assigning each of them a separate `agent` name (e.g. "warfarinlow", "warfarinhigh"), or as a "lumped" network (in which different doses are assumed to have the same effect) by simply assigning both doses a dose of 1. Further details of "lumping" and "splitting" and the implications of these assumptions can be found in [@pedder2021cons].
+
+Once we have reassigned the doses within the dataset we can create an `"mbnma.network"` object and create a network plot:
+
+```{r, network.plot}
+network <- mbnma.network(Dong2013)
+
+summary(network)
+plot(network)
+```
+
+We can then use a linear dose-response MBNMA to analyse the data. The coefficients for the linear slope of the dose-response function are mathematically equivalent to the basic treatment effect parameters estimated in a standard NMA. Note that the results are equivalent in both models (allowing for Monte-Carlo error from the MCMC sampling). The only difference is that the placebo parameter (`beta.1[1]`) that is equal to zero is not given in the output.
+
+```{r, standard.nma}
+nma.linear <- mbnma.run(network, fun=dpoly(degree=1),
+                        n.iter=50000)
+
+nma <- nma.run(network, n.iter=50000)
+```
+
+
+## Performing standard NMA using `mbnma.run()` without placebo
+
+
+## Benefits of using `mbnma.run()`
+
+Now that we have shown how to specify a standard NMA model within the MBNMA framework in `mbnma.run()`, we can now use `MBNMAdose` to implement some more interesting models.
+
+
+### Standard NMA with class effects
+
+A class effects model can be implemented using the `class.effect` argument in `mbnma.run()`. We'll illustrate this with a dataset of XXX to reduce surgical site infections. The `class` variable is also included in the dataset, which indicates the class to which each treatment belongs to. 
+
+We can then investigate fitting a model that assumes a `"common"` class effect, in which all treatments within a class have the same effect, or a `"random"` class effect, which assumes that treatment-level effects are randomly distributed around a mean class effect with a standard deviation (SD) that is estimated within the model.
+
+Common and random class effect models can be compared using model fit statistics (e.g. Deviance Information Criterion) to identify which is the most parsimonious model. Note that within `MBNMAdose` when a random class effect is fitted this makes the assumption that all classes share the same within-class SD. This may not necessarily be valid, but relaxing this cannot currently be done in `MBNMAdose` and it requires specific JAGS code to be written.
+
+### Node-splitting - can this also be done with class effects? UME? 

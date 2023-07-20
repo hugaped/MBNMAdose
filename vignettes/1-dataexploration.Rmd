@@ -1,0 +1,218 @@
+---
+title: "MBNMAdose: Exploring the data"
+author: "Hugo Pedder"
+date: "`r Sys.Date()`"
+output:
+  knitr:::html_vignette:
+    toc: TRUE
+bibliography: REFERENCES.bib
+vignette: >
+  %\VignetteIndexEntry{MBNMAdose}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(MBNMAdose)
+#devtools::load_all()
+library(rmarkdown)
+library(knitr)
+library(dplyr)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5,
+  include=TRUE,
+  tidy.opts=list(width.cutoff=80),
+  tidy=TRUE
+)
+```
+
+## Exploring the data
+
+Before embarking on an analysis, the first step is to have a look at the
+raw data. Two features (network connectivity and dose-response
+relationship) are particularly important for MBNMA. For this we want to
+get our dataset into the right format for the package. We can do this
+using `mbnma.network()`.
+
+```{r}
+# Using the triptans dataset
+network <- mbnma.network(triptans)
+summary(network)
+```
+
+This function takes a dataset with the columns:
+
+-   `studyID` Study identifiers
+-   `agent` Agent identifiers (can be character, factor or numeric)
+-   `dose` Numeric data indicating the dose of the given agent within
+    the study arm
+-   `class` An optional column indicating a particular class code.
+    Agents with the same name/identifier must also have the same class
+    code.
+
+Depending on the type of data (and the likelihood) the following columns
+are required:
+
+-   Normal likelihood
+    -   `y` Numeric data indicating the mean response for a given study
+        arm
+    -   `se` Numeric data indicating the standard error for a given
+        study arm
+-   Binomial likelihood
+    -   `r` Numeric data indicating the number of responders in a given
+        study arm
+    -   `n` Numeric data indicating the total number of participants in
+        a given study arm
+-   Poisson likelihood
+    -   `r` Numeric data indicating the number of events in a given
+        study arm
+    -   `E` Numeric data indicating the total exposure time in a given
+        study arm
+
+It then performs the following checks on the data:
+
+-   The dataset has the required column names
+-   There are no missing values
+-   All doses are positive
+-   All SE, r, N and E are positive
+-   Class labels are consistent within each agent
+-   Studies have at least two arms
+-   Studies do not only compare the same agent at the same dose
+
+Finally it converts the data frame into an object of
+`class("mbnma.network")`, which contains indices for study arms, numeric
+variables for treatments, agents and classes, and stores a vector of
+treatment, agent and class names as an element within the object. By
+convention, agents are numbered alphabetically, though if the original
+data for agents is provided as a factor then the factor codes will be
+used. This then contains all the necessary information for subsequent
+`MBNMAdose` functions.
+
+### Examining network connectivity
+
+Examining how the evidence in the network is connected and identifying
+which studies compare which treatments/agents helps to understand which
+effects can be estimated, what information will be helping to inform
+those estimates, and whether linking via the dose-response relationship
+is possible if the network is disconnected at the treatment-level. The
+complexity of dose-response relationships that can be estimated is
+dependent on the number of doses of each agent available, so this is
+also important to know.
+
+Network plots can be plotted which shows which treatments/agents have
+been compared in head-to-head trials. Typically the thickness of
+connecting lines ("edges") is proportional to the number of studies that
+make a particular comparison and the size of treatment nodes
+("vertices") is proportional to the total number of patients in the
+network who were randomised to a given treatment/agent (provided `N` is
+included as a variable in the original dataset for `mbnma.network()`).
+
+In `MBNMAdose` these plots are generated using `igraph`, and can be
+plotted by calling `plot()`. The generated plots are objects of
+`class("igraph")` meaning that, in addition to the options specified in
+`plot()`, various `igraph` functions can subsequently be used to make
+more detailed edits to them.
+
+Within these network plots, vertices are automatically aligned in a
+circle (as the default) and can be tidied by shifting the label distance
+away from the nodes.
+
+```{r, error = TRUE, purl = FALSE}
+# Prepare data using the triptans dataset
+tripnet <- mbnma.network(triptans)
+summary(tripnet)
+
+# Draw network plot
+plot(tripnet)
+```
+
+If some vertices are not connected to the network reference treatment
+through any pathway of head-to-head evidence, a warning will be given.
+The nodes that are coloured white represent these disconnected vertices.
+
+```{r, message=FALSE, warning=FALSE}
+# Prepare data using the gout dataset
+goutnet <- mbnma.network(gout)
+summary(goutnet)
+```
+
+```{r}
+plot(goutnet, label.distance = 5)
+```
+
+However, whilst at the treatment-level (specific dose of a specific
+agent), many of these vertices are disconnected, at the agent level they
+are connected (via different doses of the same agent), meaning that *via
+the dose-response relationship* it is possible to estimate results.
+
+```{r}
+# Plot at the agent-level
+plot(goutnet, level="agent", label.distance = 6)
+```
+
+One agent (RDEA) is still not connected to the network, but `MBNMAdose`
+allows agents to connect via a placebo response *even if they do not
+include placebo in a head-to-head trial* (see [Linking disconnected
+treatments via the dose-response relationship]).
+
+```{r}
+# Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)
+plot(goutnet, level="agent", doselink = 2, remove.loops = TRUE, label.distance = 6)
+```
+
+It is also possible to plot a network at the treatment level but to
+colour the doses by the agent that they belong to.
+
+```{r, results="hide"}
+# Colour vertices by agent
+plot(goutnet, v.color = "agent", label.distance = 5)
+```
+
+Several further options exist to allow for inclusion of disconnected
+treatments, such as assuming some sort of common effect among agents
+within the same class. This is discussed in more detail later in the
+vignette.
+
+### Examining the dose-response relationship
+
+In order to consider which functional forms may be appropriate for
+modelling the dose-response relationship, it is useful to look at
+results from a "split" network meta-analysis (NMA), in which each dose
+of an agent is considered as separate and unrelated (i.e. we are not
+assuming any dose-response relationship). The `nma.run()` function
+performs a simple NMA, and by default it drops studies that are
+disconnected at the treatment-level (since estimates for these will be
+very uncertain if included).
+
+```{r, results="hide", message=FALSE, warning=FALSE}
+# Run a random effect split NMA using the alogliptin dataset
+alognet <- mbnma.network(alog_pcfb)
+nma.alog <- nma.run(alognet, method="random")
+```
+
+```{r}
+print(nma.alog)
+
+# Draw plot of NMA estimates plotted by dose
+plot(nma.alog)
+```
+
+In the alogliptin dataset there appears to be a dose-response
+relationship, and it also appears to be non-linear.
+
+One additional use of `nma.run()` is that is can be used after fitting
+an MBNMA to ensure that fitting a dose-response function is not leading
+to poorer model fit than when conducting a conventional NMA. Comparing
+the total residual deviance between NMA and MBNMA models is useful to
+identify if introducing a dose-response relationship is leading to
+poorer model fit. However, it is important to note that if treatments
+are disconnected in the NMA and have been dropped (`drop.discon=TRUE`),
+there will be fewer observations present in the dataset, which will
+subsequently lead to lower pD and lower residual deviance, meaning that
+model fit statistics from NMA and MBNMA may not be directly comparable.
+
+## References
