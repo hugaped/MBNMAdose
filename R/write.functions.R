@@ -160,7 +160,32 @@ replace.prior <- function(priors, model=NULL, mbnma=NULL) {
 
     line <- grep(paste0("^( +)?", names(priors)[i], ".+~"), model)
     state <- model[line]
-    model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
+
+    if (length(priors[[i]])==1) {
+      model[line] <- gsub("(^.+~ )(.+$)", paste0("\\1", priors[[i]]), state)
+
+    } else {
+      # What if length of priors[[i]]>1 ?
+      # Find previous { in code and add priors as new lines there
+
+      # Identifies loop above which to insert
+      insert <- max(grep("\\{", model)[grep("\\{", model) < line])
+
+      # Indentifies starting index in the loop (e.g. from 1: or 2:)
+      loopind <- as.numeric(gsub("\\D", "", model[insert]))
+
+      # Creates vector of priors
+      priors.insert <- paste0(names(priors)[i], "[",
+                              loopind:(length(priors[[i]])+loopind-1),
+                              "] ~ ", priors[[i]])
+
+      # Drop previous prior line
+      model <- model[-line]
+      model <- c(model[1:(insert-1)],
+                 priors.insert,
+                 model[insert:length(model)])
+
+    }
   }
 
   # Cut irrelevant section from JAGS code
