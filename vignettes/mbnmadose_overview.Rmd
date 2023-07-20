@@ -171,4 +171,14 @@ long format (one row per arm and study), with the variables `studyID`,
 kable(head(alog_pcfb), digits=2) 
 ```
 
+
+### Wound closure methods for reducing Surgical Site Infection (SSI)
+
+`ssi_closure` is from a systematic review examining the efficacy of different wound closure methods to reduce Surgical Site Infections (SSI).  The outcome is binary and represents the number of patients who experienced a SSI. The dataset includes 129 RCTs comparing 16 different interventions in 6 classes. This dataset is primarily used to illustrate how `MBNMAdose` can be used to perform different types of network meta-analysis without dose-response information. It is in long format (one row per study arm) and includes the variables `studyID`, `Year`, `n`, `r`, `trt` and `class`.
+
+```{r, echo=FALSE}
+kable(head(ssi_closure), digits=2) 
+```
+
+
 ## References
