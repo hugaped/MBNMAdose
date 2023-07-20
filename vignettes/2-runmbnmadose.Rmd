@@ -340,8 +340,8 @@ pain.df$class[pain.df$agent %in% c("Naproxcinod", "Naproxen")] <-
   "NSAID"
 
 # Run a restricted cubic spline MBNMA with a random class effect on beta.1
-classnet <- mbnma.network(pain.df)
-splines <- mbnma.run(classnet, fun=dspline(type="bs", knots=2), class.effect = list(beta.1="random"))
+painnet <- mbnma.network(pain.df)
+splines <- mbnma.run(painnet, fun=dspline(type="bs", knots=2), class.effect = list(beta.1="random"))
 ```
 
 Mean class effects are given in the output as `D.ed50`/`D.1` parameters.
@@ -571,6 +571,27 @@ new.priors <- list(
 emax <- mbnma.run(alognet, fun=demax(), method="random",
                    priors=new.priors)
 ```
+
+Different prior distributions can be assigned for different indices of a parameter by specifying the list element for a parameter as a character vector. This allows (for example) for the user to fit specific priors for specific agents. The length of this vector must be equal to the number of indices of the parameter. The ordering will also be important - for example for agent-specific priors the order of the elements within the vector must match the order of the agents in the network.
+
+For example for an Emax function we may have different prior beliefs about the ED50 parameter, as the dose scale will be different for different agents:
+
+```{r}
+ed50.priors <- list(ed50 = c("dnorm(100, 0.0025) T(0,)", # Prior for Celebrex
+                             "dnorm(20, 0.01) T(0,)", # Prior for Etoricoxib
+                             "dnorm(50, 0.0025) T(0,)", # Prior for Lumiracoxib
+                             "dnorm(500, 0.0004) T(0,)", # Prior for Naproxcinod
+                             "dnorm(500, 0.0004) T(0,)", # Prior for Naproxen
+                             "dnorm(35, 0.04) T(0,)", # Prior for Rofecoxib
+                             "dnorm(200, 0.0004) T(0,)", # Prior for Tramadol
+                             "dnorm(4, 0.04) T(0,)" # Prior for Valdecoxib
+                             ))
+
+# Using the osteoarthritis dataset
+mbnma <- mbnma.run(painnet, fun=demax(emax="rel", ed50="rel"),
+                   priors=ed50.priors)
+```
+
 
 #### pD (effective number of parameters)
 

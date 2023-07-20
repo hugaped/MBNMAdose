@@ -55,7 +55,8 @@
 #' is used.
 #' @param priors A named list of parameter values (without indices) and
 #'   replacement prior distribution values given as strings
-#'   **using distributions as specified in JAGS syntax** (see \insertCite{jagsmanual;textual}{MBNMAdose}).
+#'   **using distributions as specified in JAGS syntax** (see \insertCite{jagsmanual;textual}{MBNMAdose}). Note
+#'   that normal distributions in JAGS are specified as \deqn{N(\mu, prec)}, where \deqn{prec = 1 / {\sigma^2}}.
 #'
 #' @param pd Can take either:
 #'   * `pv` only pV will be reported (as automatically outputted by `R2jags`).
