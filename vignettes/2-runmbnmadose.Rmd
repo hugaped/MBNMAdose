@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Analysis using `mbnma.run()`
+# Analysis using `mbnma.run()`
 
 MBNMA is performed in `MBNMAdose` by applying `mbnma.run()`. A
 `"mbnma.network"` object must be provided as the data for `mbnma.run()`.
@@ -38,7 +38,7 @@ The key arguments within `mbnma.run()` involve specifying the functional
 form used to model the dose-response, and the dose-response parameters
 that comprise that functional form.
 
-#### Dose-response functions
+## Dose-response functions
 
 Various functional forms are implemented within `MBNMAdose`, that allow
 a variety of parameterizations and dose-response shapes. These are
@@ -102,7 +102,7 @@ to the agent in arm $k$ of study $i$.
     dose-response function to be fitted to each agent in the network
     (see [Agent-specific dose-response functions])
 
-#### Dose-response parameters
+## Dose-response parameters
 
 Dose-response parameters can be specified in different ways which
 affects the key parameters estimated by the model and implies different
@@ -140,7 +140,7 @@ between the dose-response parameters, which will typically improve
 estimation (provided the parameters are correlated...they usually are).
 This can be prevented by setting `cor=FALSE`.
 
-### Output
+## Output
 
 `mbnma.run()` returns an object of class `c("rjags", "mbnma")`.
 `summary()` provides posterior medians and 95% credible intervals
@@ -170,7 +170,7 @@ model. Model fit statistics for `pD` (effective number of parameters)
 and `DIC` (Deviance Information Criterion) are also reported, with an
 explanation as to how they have been calculated.
 
-#### Examples
+## Examples
 
 An example MBNMA of the triptans dataset using an Emax dose-response
 function and common treatment effects that pool relative effects for
@@ -213,7 +213,7 @@ In this example `ed50` only has a single parameter, which corresponds to
 the dose at which 50% of the maximum efficacy is achieved, assumed to be
 equal across all agents in the network.
 
-#### Parameter interpretation
+## Parameter interpretation
 
 Parameter interpretation depends both on the link scale on which the
 outcome is modeled, and on the dose-response function used in the model.
@@ -245,7 +245,7 @@ estimated between agents at specific doses, which is typically much more
 easily understandable and presentable (see [Estimating relative
 effects]).
 
-### Additional arguments for `mbnma.run()`
+## Additional arguments for `mbnma.run()`
 
 Several additional arguments can be given to `mbnma.run()` that require
 further explanation.
@@ -283,7 +283,7 @@ scale included in the dataset. This is something `MBNMAdose` will
 incorporate in the future. For further details of analysis of continuous
 data that include discussion of both RoM and SMD see [@GMD2].
 
-#### Class effects
+### Class effects
 
 Similar effects between agents within the network can be modelled using
 class effects. This requires assuming that different agents have some
@@ -361,7 +361,7 @@ The SD of the class effect is the SD of agents within a class for the
 dose-response parameter they correspond to. In this case `sd.BETA.1` is
 the within-class SD for `beta.1`.
 
-#### User-defined dose-response function
+### User-defined dose-response function
 
 Users can define their own dose-response function using `duser()` rather
 than using one of the functions provided in `MBNMAdose`. The
@@ -390,7 +390,7 @@ quadfun <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))|
 ```
 
-#### Agent-specific dose-response functions
+### Agent-specific dose-response functions
 
 Different dose-response functions can be used for different agents
 within the network. This allows for the modelling of more complex
@@ -427,7 +427,7 @@ multifun <- mbnma.run(depnet, fun=dr.funs, method="common", n.iter=50000)
 summary(multifun)
 ```
 
-##### Incorporating agents/interventions without a dose-response
+### Incorporating agents/interventions without a dose-response
 
 Because an MBNMA model with a linear dose-response function
 (`dpoly(degree=1)`) is mathematically equivalent to a standard NMA
@@ -443,7 +443,7 @@ can be assigned a function that appropriately captures their
 dose-response relationship. Further details of this approach can be
 found in the vignette on [NMA in `MBNMAdose`](nma_in_mbnmadose.html)
 
-#### Splines and `knots`
+### Splines and `knots`
 
 For a more flexible dose-response shape, various different splines can
 be fitted to the data by using `dspline()`. This model is very flexible
@@ -469,32 +469,12 @@ depnet <- mbnma.network(ssri)
 ns <- mbnma.run(depnet, fun=dspline(type="ns", knots=c(0.25,0.5,0.75)))
 ```
 
-#### Network meta-regression
 
-TO ADD - USE SSRI DATASET WITH FRACTIONAL POLYNOMIAL AS EXAMPLE AND
-BINARY BIAS - first convert bias to numeric and use mod risk as
-reference category - then use mbnma.run(ssrinet, fun=fpoly(degree=2),
-regress.vars=c("rob")) - Show with common (no evidence of regress),
-agent (evidence on agent 4 - fluoxetine) - show plots - Highlight risk
-of aggregation bias with non-identity link functions (Phillippo)
+### Correlation between dose-response parameters
 
-Note aggregation bias when modelling using non-identity link functions
-(refer to David's paper/thesis) Mention about centring variables, only
-taking binary or continuous (means that need to generate dummy variables
-from factors - can be done using model.matrix())
-
-One could envision a more complex model in which the interaction effect
-also varied by a dose-response relationship, rather than assuming an
-effect by agent/class or across the whole network. This would in
-principle contain fewer parameters than a fully independent interaction
-model (in which a separate regression covariate is estimated for each
-treatment in the dataset).
-
-#### Correlation between dose-response parameters
-
-`mbnma.run()` automatically models correlation between relative effects
-dose-response parameters. This can be prevented by specifying
-`cor=FALSE` in `mbnma.run()`. The correlation is modeled using a vague
+`mbnma.run()` can model correlation between relative effects
+dose-response parameters, allowing information on one parameter to inform the other(s). 
+This can be implemented by specifying `cor=TRUE` in `mbnma.run()`. The correlation is modeled using a vague
 Wishart prior, but this can be made more informative by specifying a
 scale matrix for the prior. This corresponds to the expectation of the
 Wishart prior. A different scale matrix can be given to the model in
@@ -502,7 +482,7 @@ Wishart prior. A different scale matrix can be given to the model in
 etc. dose-response parameter that has been modeled using relative
 effects (as specified in the dose-response function).
 
-#### Priors
+### Priors
 
 Default vague priors for the model are as follows:
 
@@ -593,7 +573,7 @@ mbnma <- mbnma.run(painnet, fun=demax(emax="rel", ed50="rel"),
 ```
 
 
-#### pD (effective number of parameters)
+### pD (effective number of parameters)
 
 The default value in for `pd` in `mbnma.run()` is `"pv"`, which uses the
 value automatically calculated in the `R2jags` package as
@@ -619,7 +599,7 @@ deviance [@plummer2008]. This adjustment allows for the fact that data
 used to estimate the model is the same as that used to assess its
 parsimony. It also requires running additional MCMC iterations.
 
-#### Arguments to be sent to JAGS
+### Arguments to be sent to JAGS
 
 In addition to the arguments specific to `mbnma.run()` it is also
 possible to use any arguments to be sent to `R2jags::jags()`. Most of
@@ -635,7 +615,7 @@ simulations in JAGS and may help with parameter convergence (see
     for 1 in every `n.thin` iterations per chain. This can be increased
     to reduce autocorrelation
 
-### Connecting networks via the dose-response relationship
+## Connecting networks via the dose-response relationship
 
 One of the strengths of dose-response MBNMA is that it allows treatments
 to be connected in a network that might otherwise be disconnected, by
@@ -717,7 +697,7 @@ used this will be limited by the number of doses of agents within
 included studies. See Pedder et al. [-@pedder2021] for more details on
 this.
 
-### Non-parametric dose-response functions
+## Non-parametric dose-response functions
 
 In addition to the parametric dose-response functions described above, a
 non-parametric monotonic dose-response relationship can also be
