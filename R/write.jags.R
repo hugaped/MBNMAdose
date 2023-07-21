@@ -20,6 +20,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' between relative effects. Must be kept as `"wishart"`
 #' @param om a list with two elements that report the maximum relative (`"rel"`) and maximum absolute (`"abs"`) efficacies
 #' on the link scale.
+#' @param regress.mat A Nstudy x Ncovariate design matrix of meta-regression covariates
 #'
 #' @return A single long character string containing the JAGS model generated
 #'   based on the arguments passed to the function.
@@ -68,7 +69,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #' @export
 mbnma.write <- function(fun=dloglin(),
                         method="common",
-                        regress.vars=NULL, regress.effect="common",
+                        regress.mat=NULL, regress.effect="common",
                         sdscale=FALSE,
                         cor=TRUE, cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
@@ -89,7 +90,7 @@ mbnma.write <- function(fun=dloglin(),
 
   write.check(fun=fun,
               method=method, cor.prior=cor.prior,
-              regress.effect=regress.effect,
+              regress.mat=regress.mat, regress.effect=regress.effect,
               omega=omega, om=om,
               sdscale=sdscale,
               class.effect=class.effect, UME=UME)
@@ -120,7 +121,7 @@ mbnma.write <- function(fun=dloglin(),
 
   # Add regression components
   model <- write.regress(model,
-                         regress.vars=regress.vars, regress.effect=regress.effect,
+                         regress.mat=regress.mat, regress.effect=regress.effect,
                          om=om)
 
   # Drop empty loops
@@ -148,6 +149,7 @@ mbnma.write <- function(fun=dloglin(),
 #'
 write.check <- function(fun=dloglin(),
                         method="common",
+                        regress.mat=NULL,
                         regress.effect="common",
                         UME=FALSE, sdscale=FALSE,
                         cor.prior="wishart",
@@ -160,6 +162,7 @@ write.check <- function(fun=dloglin(),
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(fun, "dosefun", null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertMatrix(regress.mat, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(regress.effect, choices=c("common", "random", "agent", "class"),
                           null.ok=FALSE, add=argcheck)
   checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
@@ -681,78 +684,87 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 #' @return A character vector of JAGS MBNMA model code that includes regression
 #'   parameter components of the model
 #'
-write.regress <- function(model, regress.vars, regress.effect, om) {
+write.regress <- function(model, regress.mat, regress.effect, om) {
 
-  priors <- default.priors(regress.vars=regress.vars, regress.effect=regress.effect, om=om)
+  if (!is.null(regress.mat)) {
+    priors <- default.priors(regress.mat=regress.mat, regress.effect=regress.effect, om=om)
 
-  vars <- regress.vars
-  #glm <- model[grep("mu\\[i\\] \\+ delta\\[i\\,k\\]", model)]
-  glm <- model["glm"]
+    vars <- colnames(regress.mat)
+    glm <- model["glm"]
 
-  if (any(c("common", "agent", "class") %in% regress.effect)) {
-    level <- "agent"
+    if (any(c("common", "agent", "class") %in% regress.effect)) {
+      level <- "agent"
 
-  } else if (any(c("random", "independent") %in% regress.effect)) {
-    level <- "treatment"
-  }
-
-  for (i in seq_along(vars)) {
+    } else if (any(c("random", "independent") %in% regress.effect)) {
+      level <- "treatment"
+    }
 
     # Add zero value for b[1]
-    bzero <- paste0("b.", vars[i], "[1] <- 0")
+    bzero <- paste0("b[1,1:nreg] <- rep(0,nreg)")
     model <- model.insert(model, pos=which(names(model)=="start"), x=bzero)
 
     # Add regression component to GLM
-    modstr <- paste0("((b.", vars[i], "[", level, "[i,k]]-b.", vars[i], "[", level, "[i,1]]) * " , vars[i], "[i])")
+    modstr <- paste0("((b[", level, "[i,k],]-b[", level, "[i,1],]) %*% regress.mat[i,])")
     glm <- paste(glm, "+", modstr)
 
-    # Add assumption for regress effect (no need to add for agent since that is default if level==agent)
-    if ("common" %in% regress.effect) {
-      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i])
-      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+    for (i in seq_along(vars)) {
 
-      model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
+      # Add zero value for b[1]
+      # bzero <- paste0("b.", vars[i], "[1] <- 0")
+      # model <- model.insert(model, pos=which(names(model)=="start"), x=bzero)
+      #
+      # # Add regression component to GLM
+      # modstr <- paste0("((b.", vars[i], "[", level, "[i,k]]-b.", vars[i], "[", level, "[i,1]]) * " , vars[i], "[i])")
+      # glm <- paste(glm, "+", modstr)
 
-    } else if ("random" %in% regress.effect) {
-      beffect <- paste0("b.", vars[i], "[k] ~ dnorm(B.", vars[i], ", prec.B.", vars[i], ")")
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
+      # Add assumption for regress effect (no need to add for agent since that is default if level==agent)
+      if ("common" %in% regress.effect) {
+        beffect <- paste0("b[k,", i, "] <- B.", vars[i])
+        model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
 
-      model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
+        model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
 
-    } else if ("independent" %in% regress.effect) {
-      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
+      } else if ("random" %in% regress.effect) {
+        beffect <- paste0("b[k,", i, "] ~ dnorm(B.", vars[i], ", prec.B.", vars[i], ")")
+        model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
 
-      model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=priors[[paste0("B.", vars[i])]])
+        model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[paste0("B.", vars[i])]])
 
-    } else if ("agent" %in% regress.effect) {
-      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[k]")
-      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+      } else if ("independent" %in% regress.effect) {
+        beffect <- paste0("b[k,", i, "] <- B.", vars[i], "[k]")
+        model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=beffect)
 
-      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=priors[[paste0("B.", vars[i])]])
+        model <- model.insert(model, pos=which(names(model)=="trt.prior"), x=priors[[paste0("B.", vars[i])]])
 
-    } else if ("class" %in% regress.effect) {
-      beffect <- paste0("b.", vars[i], "[k] <- B.", vars[i], "[class[k]]")
-      model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+      } else if ("agent" %in% regress.effect) {
+        beffect <- paste0("b[k,", i, "] <- B.", vars[i], "[k]")
+        model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
 
-      model <- model.insert(model, pos=which(names(model)=="class.prior"), x=priors[[paste0("B.", vars[i])]])
+        model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=priors[[paste0("B.", vars[i])]])
 
-    } else {
-      stop(paste0("regress.vars[", i, "] is incorrectly specified"))
+      } else if ("class" %in% regress.effect) {
+        beffect <- paste0("b[k,", i, "] <- B.", vars[i], "[class[k]]")
+        model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=beffect)
+
+        model <- model.insert(model, pos=which(names(model)=="class.prior"), x=priors[[paste0("B.", vars[i])]])
+
+      } else {
+        stop(paste0("regress.mat is incorrectly specified"))
+      }
+
+
+      # Add prior for sd.B
+      if ("random" %in% regress.effect) {
+        sdbprior <- c(priors[[paste0("sd.B.", vars[i])]],
+                      paste0("prec.B.", vars[i], " <- pow(sd.B.", vars[i], ", -2)")
+        )
+        model <- model.insert(model, pos=which(names(model)=="end"), x=sdbprior)
+      }
     }
 
-
-    # Add prior for sd.B
-    if ("random" %in% regress.effect) {
-      sdbprior <- c(priors[[paste0("sd.B.", vars[i])]],
-                    paste0("prec.B.", vars[i], " <- pow(sd.B.", vars[i], ", -2)")
-      )
-      model <- model.insert(model, pos=which(names(model)=="end"), x=sdbprior)
-    }
+    # Replace GLM
+    model["glm"] <- glm
   }
-
-  # Replace GLM
-  model["glm"] <- glm
 
   return(model)
 }
@@ -1110,7 +1122,7 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
 #'
 #' @export
 default.priors <- function(fun=dloglin(), UME=FALSE,
-                           regress.vars=NULL, regress.effect="common",
+                           regress.mat=NULL, regress.effect="common",
                            om=list("rel"=5, "abs"=10)) {
 
   sufparams <- which(fun$apool=="rel")
@@ -1169,8 +1181,9 @@ default.priors <- function(fun=dloglin(), UME=FALSE,
     }
   }
 
-  for (i in seq_along(regress.vars)) {
-    if ("common" %in% regress.effect) {
+  vars <- colnames(regress.mat)
+  for (i in seq_along(vars)) {
+    if (any(c("common", "random") %in% regress.effect)) {
       priors[[paste0("B.", vars[i])]] <- paste0("B.", vars[i], " ~ dnorm(0,0.0001)")
     } else {
       priors[[paste0("B.", vars[i])]] <- paste0("B.", vars[i], "[k] ~ dnorm(0,0.0001)")

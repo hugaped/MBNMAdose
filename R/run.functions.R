@@ -16,11 +16,13 @@
 #'   dose-response. See Details.
 #' @param method Can take either `"common"` or `"random"` to indicate whether relative effects
 #'   should be modelled with between-study heterogeneity or not (see details).
-#' @param regress.vars A character vector of effect modifiers (variables that
+#' @param regress A formula of effect modifiers (variables that
 #'  interact with the treatment effect) to incorporate using Network Meta-Regression
-#'  (E.g. `c("population", "age")`). Effects modifiers must be named numeric variables
-#'  in `network$data.ab` and must be identical within a study. Factor effect modifiers
-#'  should only be incorporated as a series of named binary dummy variables.
+#'  (E.g. `~ Population + Age`). All variables in the formula are modelled as interacting
+#'  with the treatment effect (i.e. prognostic variables cannot be included in this way).
+#'  Effects modifiers must be named variables in `network$data.ab` and must be identical
+#'  within a study. Factor and character effect modifiers will be converted to a series of
+#'  named dummy variables.
 #' @param regress.effect Indicates whether effect modification should be assumed to be
 #'  `"common"` (assumed to be equal versus Placebo throughout the network),
 #'  `"random"` (assumed to be exchangeable versus Placebo throughout the network),
@@ -305,7 +307,7 @@
 mbnma.run <- function(network,
                       fun=dloglin(),
                       method="common",
-                      regress.vars=NULL,
+                      regress=NULL,
                       regress.effect="common",
                       class.effect=list(), UME=FALSE,
                       sdscale=FALSE,
@@ -342,8 +344,10 @@ mbnma.run <- function(network,
   link <- likelink[["link"]]
 
   # Check regression
-  if (!is.null(regress.vars)) {
-    check.regress(network=network, regress.vars=regress.vars)
+  if (!is.null(regress)) {
+    regress.mat <- check.regress(network=network, regress=regress)
+  } else {
+    regress.mat <- NULL
   }
 
   # Check sdscale
@@ -403,7 +407,7 @@ mbnma.run <- function(network,
     # Write JAGS model code
     model <- mbnma.write(fun=fun,
                          method=method,
-                         regress.vars=regress.vars, regress.effect=regress.effect,
+                         regress.mat=regress.mat, regress.effect=regress.effect,
                          class.effect=class.effect, UME=UME,
                          sdscale=sdscale,
                          cor=cor, omega=omega,
@@ -437,7 +441,7 @@ mbnma.run <- function(network,
   assigned.parameters.to.save <- parameters.to.save
   if (is.null(parameters.to.save)) {
     parameters.to.save <-
-      gen.parameters.to.save(fun=fun, model=model, regress.vars = regress.vars)
+      gen.parameters.to.save(fun=fun, model=model, regress.mat = regress.mat)
   }
 
   # Add nodes to monitor to calculate plugin pd
@@ -466,7 +470,7 @@ mbnma.run <- function(network,
   #### Run jags model ####
 
   result.jags <- mbnma.jags(data.ab, model,
-                            regress.vars=regress.vars, regress.effect=regress.effect,
+                            regress=regress, regress.effect=regress.effect,
                             class=class, omega=omega, sdscale=sdscale,
                             parameters.to.save=parameters.to.save,
                             likelihood=likelihood, link=link, fun=fun,
@@ -496,7 +500,7 @@ mbnma.run <- function(network,
                     "jagsdata"=jagsdata,
                     "method"=method,
                     "likelihood"=likelihood, "link"=link,
-                    "regress.vars"=regress.vars, "regress.effect"=regress.effect,
+                    "regress"=regress, "regress.mat"=regress.mat, "regress.effect"=regress.effect,
                     "class.effect"=class.effect,
                     "cor"=cor,
                     "omega"=omega,
@@ -531,7 +535,7 @@ mbnma.run <- function(network,
 
 mbnma.jags <- function(data.ab, model,
                        class=FALSE, sdscale=FALSE,
-                       regress.vars=NULL, regress.effect="common",
+                       regress=NULL, regress.effect="common",
                        omega=NULL,
                        likelihood=NULL, link=NULL, fun=NULL,
                        nodesplit=NULL, jagsdata=NULL,
@@ -559,7 +563,7 @@ mbnma.jags <- function(data.ab, model,
   # For MBNMAdose
   if (is.null(jagsdata)) {
     jagsdata <- getjagsdata(data.ab, class=class, sdscale=sdscale,
-                            regress.vars=regress.vars, regress.effect=regress.effect,
+                            regress=regress, regress.effect=regress.effect,
                             likelihood=likelihood, link=link, fun=fun,
                             nodesplit=nodesplit)
 
@@ -705,8 +709,9 @@ gen.init <- function(jagsdata, fun) {
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams write.jags
 #' @param model A JAGS model written as a character object
-gen.parameters.to.save <- function(fun, model, regress.vars) {
+gen.parameters.to.save <- function(fun, model, regress.mat=NULL) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model
   #e.g. c(1, 2, 3) or c("emax", "et50")
   # model is a JAGS model written as a character object
@@ -715,6 +720,7 @@ gen.parameters.to.save <- function(fun, model, regress.vars) {
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertCharacter(model, min.len = 10, add=argcheck)
   checkmate::assertClass(fun, "dosefun", add=argcheck)
+  checkmate::assertMatrix(regress.mat, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
 
@@ -756,13 +762,13 @@ gen.parameters.to.save <- function(fun, model, regress.vars) {
     }
   }
 
-  for (i in seq_along(regress.vars)) {
+  for (i in seq_along(colnames(regress.mat))) {
     # Save B
-    parameters.to.save <- append(parameters.to.save, paste0("B.", regress.vars[i]))
+    parameters.to.save <- append(parameters.to.save, paste0("B.", colnames(regress.mat)[i]))
 
     # save sd.B
     if (any(grepl("sd\\.B\\.", model))) {
-      parameters.to.save <- append(parameters.to.save, paste0("sd.B.", regress.vars[i]))
+      parameters.to.save <- append(parameters.to.save, paste0("sd.B.", colnames(regress.mat)[i]))
     }
   }
 

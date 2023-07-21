@@ -628,8 +628,11 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
   # Check regress.vals
   if (!is.null(regress.vals)) {
-    if (!setequal(object$model.arg$regress.vars, names(regress.vals))) {
-      stop("'regress.vals' must contain a named regressor value for each variable\nspecified in the MBNMA model (object$model.arg$regress.vars)")
+    if (is.null(object$model.arg$regress.mat)) {
+      stop("'regress.vals' has been specified but 'object' is not a meta-regression model")
+    }
+    if (!setequal(colnames(object$model.arg$regress.mat), names(regress.vals))) {
+      stop(paste0("'regress.vals' must contain a single named regressor value for each covariate specified in the MBNMA model:\n", paste(colnames(object$model.arg$regress.mat), collapse="\n")))
     }
   }
 

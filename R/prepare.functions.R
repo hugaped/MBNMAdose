@@ -546,7 +546,7 @@ recode.agent <- function(data.ab, level="agent") {
 #'
 #' @export
 getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
-                        regress.vars=NULL, regress.effect="common",
+                        regress=NULL, regress.effect="common",
                         likelihood=check.likelink(data.ab)$likelihood,
                         link=check.likelink(data.ab)$link,
                         level="agent", fun=NULL, nodesplit=NULL) {
@@ -555,7 +555,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertDataFrame(data.ab, add=argcheck)
   checkmate::assertLogical(class, len=1, null.ok=FALSE, add=argcheck)
-  checkmate::assertCharacter(regress.vars, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(regress, null.ok=TRUE, add=argcheck)
   checkmate::assertChoice(level, choices=c("agent", "treatment"), null.ok=FALSE, add=argcheck)
   checkmate::assertClass(fun, "dosefun", null.ok=TRUE, add=argcheck)
   checkmate::assertNumeric(nodesplit, len=2, null.ok=TRUE, add=argcheck)
@@ -619,7 +619,10 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     stop(msg)
   }
 
-  df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
+  sort.df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
+  if (!identical(df, sort.df)) {
+    stop("Data formatting error: data.ab has been rearranged in mbnma.network object")
+  }
 
   df$studynam <- df$studyID
   df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
@@ -893,16 +896,23 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
   }
 
   # Add meta-regression data
-  if (!is.null(regress.vars)) {
+  if (!is.null(regress)) {
 
     # Just take 1st row of each study
-    vars.df <- df %>% dplyr::group_by(studyID) %>%
-      dplyr::slice(1)
+    reg.mat <- df %>% dplyr::group_by(studyID) %>%
+      dplyr::slice(1) %>%
+      stats::model.matrix(regress,.) # Create design matrix
 
-    vars <- regress.vars
-    for (i in seq_along(vars)) {
-      datalist[[vars[i]]] <- vars.df[[vars[i]]]
-    }
+    # Drop intercept
+    reg.mat <- reg.mat[,-1, drop=FALSE]
+
+    datalist[["regress.mat"]] <- reg.mat
+    datalist[["nreg"]] <- ncol(reg.mat)
+
+    # vars <- regress.vars
+    # for (i in seq_along(vars)) {
+    #   datalist[[vars[i]]] <- vars.df[[vars[i]]]
+    # }
   }
 
   return(datalist)
@@ -1600,15 +1610,15 @@ calcom <- function(data.ab, link, likelihood, buffer=1.2) {
 #' Returns error if variables are not specified correctly
 #'
 #' @noRd
-check.regress <- function(network, regress.vars=NULL) {
+check.regress <- function(network, regress=NULL) {
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertClass(network, "mbnma.network", add=argcheck)
-  checkmate::assertCharacter(regress.vars, null.ok=TRUE, add=argcheck)
+  checkmate::assertFormula(regress, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  vars <- regress.vars
+  vars <- all.vars(regress)
 
   # Check vars doesn't include protected object names
   protvar <- c("beta", "class")
@@ -1619,7 +1629,7 @@ check.regress <- function(network, regress.vars=NULL) {
 
   # Check all vars are in network
   if (!all(vars %in% names(network$data.ab))) {
-    stop("Effect modifiers specified in `regress.vars` not present in dataset (network$data.ab)")
+    stop("Effect modifiers specified in `regress` not present in dataset (network$data.ab)")
   }
 
   # Check all vars are consistent within studies
@@ -1630,16 +1640,27 @@ check.regress <- function(network, regress.vars=NULL) {
     dplyr::mutate(dupl=dplyr::n())
 
   if (any(check.df$dupl>1)) {
-    stop(paste0("Effect modifiers specified in `regress.vars` vary within the following studies:\n",
+    stop(paste0("Effect modifiers specified in `regress` vary within the following studies:\n",
                 paste(check.df$studyID[check.df$dupl>1], collapse="\n")))
   }
 
+  # Add meta-regression data
+  # Just take 1st row of each study
+  reg.mat <- network$data.ab %>% dplyr::group_by(studyID) %>%
+    dplyr::slice(1) %>%
+    stats::model.matrix(regress,.) # Create design matrix
+
+  # Drop intercept
+  reg.mat <- reg.mat[,-1, drop=FALSE]
+
+  return(reg.mat)
+
   # Check that vars are all numeric
-  for (i in seq_along(vars)) {
-    if (!all(is.numeric(check.df[[vars[i]]]))) {
-      stop("All variables specified in `regress.vars` must be numeric: `", paste0(vars[i], "` is not numeric"))
-    }
-  }
+  # for (i in seq_along(vars)) {
+  #   if (!all(is.numeric(check.df[[vars[i]]]))) {
+  #     stop("All variables specified in `regress.vars` must be numeric: `", paste0(vars[i], "` is not numeric"))
+  #   }
+  # }
 }
 
 
