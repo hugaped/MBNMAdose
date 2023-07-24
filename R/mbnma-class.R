@@ -971,9 +971,9 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
                  "network"=object$network, "lim"=lim, "E0"=E0)
 
   # Add 0 values for missing regression values
-  if (is.null(regress.vals) & !is.null(object$model.arg$regress.vars)) {
-    regress.vals <- rep(0, length(object$model.arg$regress.vars))
-    names(regress.vals) <- object$model.arg$regress.vars
+  if (is.null(regress.vals) & !is.null(object$model.arg$regress)) {
+    regress.vals <- rep(0, ncol(object$model.arg$regress.mat))
+    names(regress.vals) <- colnames(object$model.arg$regress.mat)
   }
   output$regress.vals <- regress.vals
 
@@ -1012,14 +1012,14 @@ summary.mbnma <- function(object, digits=4, ...) {
   # Print method section
   cat(print.method.sect(object))
 
-  # Print regression section
-  print.regress.str(object, digits=digits)
-
   # Print treatment-level section
   print.treat.str(object, digits=digits)
 
   # Class-effect section
   print.class.str(object, digits=digits)
+
+  # Print regression section
+  print.regress.str(object, digits=digits)
 
   # Model fit statistics section
   modfit.sect <- print.modfit.str(object)
