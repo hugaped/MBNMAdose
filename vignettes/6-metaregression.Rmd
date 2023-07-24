@@ -34,12 +34,20 @@ knitr::opts_chunk$set(
 
 Study-level covariates can be included in the model to adjust treatment effects following an approach for meta-regression outlined in NICE Technical Support Document 3 [@TSU3]. This can be used to explore and account for potential effect modification.
 
+Following the definition in NICE Technical Support Document 3, network meta-regression can be expressed as an interaction on the treatment effect in arms $\geq2$:
+
+$$\theta_{i,k}=\mu_i+(f(x,\beta_{a_{i,k}})-f(x,\beta_{a_{i,1}})) + (\psi_{1,a_{i,k}}-\psi_{1,a_{i,1}})$$
+
+where $\theta_{i,k}$ is the linear predictor, $\mu_{i}$ is the baseline effect on arm 1, $f(x,\beta_{a_{i,k}})$ is the dose-response function at dose $x$ with dose-response parameters $\beta_{a_{i,k}}$ for agent $a$ in arm $k$ of study $i$. $\psi_{1,a_{i,k}}$ is then the effect modifying interaction between the agent in arm $k$ and the network reference agent (typically Placebo in a dose-response analysis).
+
+## Data preparation
+
 To improve estimation:
 
 * continuous covariates should be centred around their mean
 * binary/categorical variables should be recoded with the most commonly reported value as the reference category
 
-```{r, reg.prep}
+```{r, reg.prep, results="hide"}
 # Using the SSRI dataset
 ssri.reg <- ssri
 
@@ -56,34 +64,95 @@ ssri.reg <- ssri.reg %>%
 ssrinet <- mbnma.network(ssri.reg)
 ```
 
-EXPLAIN ABOUT DIFFERENT REGRESSION ASSUMPTIONS (INCLUDING ALGEBRA)
+## Modelling
 
-```{r, reg}
-##### Perform meta-regression on weeks #####
+For performing network meta-regression, different assumptions can be made regarding how the effect modification may be shared across agents:
 
-# Regress for categorical weeks
-# Common effect modification across all agents vs Placebo
-ssrimod.c <- mbnma.run(ssrinet, fun=dfpoly(degree=2), 
-                     regress=~r.weeks, regress.effect = "common")
+### Independent, agent-specific interactions
 
-# Regress for continuous weeks
-# Random effect modification across all agents vs Placebo
-ssrimod.r <- mbnma.run(ssrinet, fun=dfpoly(degree=2), 
-                     regress=~x.weeks, regress.effect = "random")
+The least constraining assumption available in `MBNMAdose` is to assume that the effect modifier acts on each agent independently, and separate $\psi_{1,a_{i,k}}$ are therefore estimated for each agent in the network.
 
+A slightly stronger assumption is to assume that agents within the same class share the same interaction effect, though classes must be specified within the dataset for this.
+
+```{r, results="hide", message=FALSE}
 # Regress for continuous weeks
 # Separate effect modification for each agent vs Placebo
 ssrimod.a <- mbnma.run(ssrinet, fun=dfpoly(degree=2), 
                      regress=~x.weeks, regress.effect = "agent")
 ```
+```{r}
+summary(ssrimod.a)
+```
 
-For datasets in which agents are nested within classes, assuming a common regression effect within each class versus the network reference is also possible. 
+Within the output, a separate parameter (named `B.x.weeks[]`) has been estimated for each agent that corresponds to the effect of an additional week of study follow-up on the relative effect of the agent versus Placebo. Note that due to the inclusion of weeks as a continuous covariate, we are assuming a linear effect modification due to study follow-up.
+
+### Random effect interaction
+
+Alternatively, the effect modification for different agents versus the network reference agent can be assumed to be exchangeable/shared across the network about a common mean, $\hat{\psi}$, with a between-agent standard deviation of $\tau_\psi$:
+
+$$\psi_{1,a_{i,k}} \sim N(\hat{\psi}, \tau^2_\psi)$$
+
+```{r, results="hide", message=FALSE}
+# Regress for continuous weeks
+# Random effect modification across all agents vs Placebo
+ssrimod.r <- mbnma.run(ssrinet, fun=dfpoly(degree=2), 
+                     regress=~x.weeks, regress.effect = "random")
+```
+```{r}
+summary(ssrimod.r)
+```
+
+In this case only a single regression paramter is estimated (`B.x.weeks`), which corresponds to the mean effect of an additional week of study follow-up on the relative effect of an active agent versus Placebo. A parameter is also estimated for the between-agent standard deviation,  `sd.B.x.weeks`.
+
+### Common effect interaction
+
+This is the strongest assumption for network meta-regression, and it implies that effect modification is common (equal) for all agents versus the network reference agent:
+
+$$\psi_{1,a_{i,k}} =\hat{\psi}$$
+
+```{r, results="hide", message=FALSE}
+# Regress for categorical weeks
+# Common effect modification across all agents vs Placebo
+ssrimod.c <- mbnma.run(ssrinet, fun=dfpoly(degree=2), 
+                     regress=~r.weeks, regress.effect = "common")
+```
+```{r}
+summary(ssrimod.c)
+```
+
+In this case we have performed the network meta-regression on study follow-up (weeks) as a categorical covariate. Therefore, although only a single parameter is estimated for each effect modifying term, there is a separate term for each category of week and a linear relationship for effect modification is no longer assumed.
+
+### Alternative assumptions
 
 Although this is beyond the capability of `MBNMAdose`, one could envision a more complex model in which the interaction effect also varied by a dose-response relationship, rather than assuming an effect by agent/class or across the whole network. This would in principle contain fewer parameters than a fully independent interaction model (in which a separate regression covariate is estimated for each treatment in the dataset).
 
+### Aggregation bias
+
 Note that adjusting for aggregated patient-level covariates (e.g. mean age, % males, etc.) whilst using a non-identity link function can introduce aggregation bias. This is a form of ecological bias that biases treatment effects towards the null and is typically more severe where treatment effects are strong and where the link function is highly non-linear [@TSD3]. This can be resolved by performing a patient-level regression, but Individual Participant Data are required for this and such an analysis is outside the scope of `MBNMAdose`.
 
+
 ## Prediction using effect modifying covariates
+
+Models fitted with meta-regression can also be used to make predictions for a specified set of covariate values. This includes when estimating relative effects using `get.relative()`. An additional argument `regress.vals` can be used to provide a named vector of covariate values at which to make predictions.
+
+```{r}
+# For a continuous covariate, make predictions at 5 weeks follow-up
+pred <- predict(ssrimod.a, regress.vals=c("x.weeks"=5))
+plot(pred)
+```
+
+Predictions are very uncertain for Sertraline, as studies only investigated this agent at 6 weeks follow-up and therefore the agent-specific effect modification is very poorly estimated.
+
+```{r}
+# For a categorical covariate, make predictions at 10 weeks follow-up
+regress.p <- c("r.weeks10"=1, "r.weeks4"=0, "r.weeks5"=0, 
+               "r.weeks6"=0, "r.weeks9"=0)
+
+pred <- predict(ssrimod.c, regress.vals=regress.p)
+plot(pred)
+```
+
+Note that categorical covariates are modelled as multiple binary dummy covariates, and so a value for each of these must be included. 
 
 
 ## References
