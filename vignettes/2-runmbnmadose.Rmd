@@ -273,15 +273,14 @@ An alternative approach for modelling a measurement scale-independent
 treatment effect whilst still assuming additive treatment effects is to
 perform the analysis using Standardised Mean Differences (SMD). Whilst
 not strictly a different link function, this can be specified using
-`link="smd"`. Currently, `MBNMAdose` standardises treatment effects
-using the pooled standard deviation (SD) in each study. The resulting
-treatment effects are reported in units of SD as SMDs.
+`link="smd"`. The resulting treatment effects are reported in units of SD as SMDs.
 
-A more robust approach to minimise bias from estimation of within-study
-SD would be to use a single reference SD for standardisation of each
-scale included in the dataset. This is something `MBNMAdose` will
-incorporate in the future. For further details of analysis of continuous
-data that include discussion of both RoM and SMD see [@GMD2].
+By default, `MBNMAdose` standardises treatment effects
+using the pooled standard deviation (SD) in each study ("study-specific" SDs). However, a more robust approach to minimise bias from estimation of study-specific SD is to use a "reference" SD that is the same for each scale included in the dataset. Such a reference could be estimated from all the included studies within the dataset that report outcomes on the scale (an "internal reference SD"), but the best approach is to obtain a SD from an observational study *that is specific to the target population of interest*.
+
+Once this has been obtained for each scale, it can be included in the original data frame as an additional variable, `standsd`. For the analysis to be meaningful, `stansd` should be the same for all arms within a study and for all studies that report the same outcome. If this has been included in the dataset used to create an `"mbnma.network"` object, then `sdscale=TRUE` argument can be specified in `mbnma.run()` to indicate that this variable should be used to standardise SMDs.
+
+For further details of analysis of continuous data that include discussion of both RoM and SMD see [@GMD2].
 
 ### Class effects
 
