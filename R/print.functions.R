@@ -291,11 +291,11 @@ print.modfit.str <- function(mbnma) {
 #' @noRd
 print.regress.str <- function(mbnma, digits=4, ...) {
 
-  if (!is.null(mbnma$model.arg$regress.vars)) {
+  if (!is.null(mbnma$model.arg$regress)) {
 
     cat(crayon::bold(crayon::underline("Meta-regression\n\n")))
 
-    cat(paste0("Covariates interacting with study-level relative effects: ", paste(crayon::bold(mbnma$model.arg$regress.vars), sep=", "), "\n"))
+    cat(paste0("Covariates interacting with study-level relative effects: ", paste(crayon::bold(colnames(mbnma$model.arg$regress.mat)), collapse=", "), "\n"))
 
     # Create summary data frame
     datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
@@ -333,7 +333,7 @@ print.regress.str <- function(mbnma, digits=4, ...) {
 
     trt.df <- datasum[grepl("^B\\.", datasum$param),]
 
-    trt.df$labs <- rep(labs, length(mbnma$model.arg$regress.vars))
+    trt.df$labs <- rep(labs, ncol(mbnma$model.arg$regress.mat))
 
     trt.df <- trt.df[,c(5,4,1,2,3)]
     rownames(trt.df) <- NULL
