@@ -417,61 +417,79 @@ for (dat in seq_along(alldfs)) {
       pd <- "pv"
 
       # Edit dataset
-      ssri2 <- ssri %>% dplyr::mutate(
-        rob=(as.numeric(factor(bias))-2)^2, # Make RoB binary (with moderate as reference)
+      ssri.reg <- ssri %>%
+        dplyr::mutate(
         class=dplyr::case_when(agent %in% c("citalopram", "escitalopram") ~ "alopram",
                                agent %in% c("fluoxetine", "paroxetine") ~ "xetine",
-                               TRUE ~ "Sertraline"
+                               TRUE ~ "Sertraline")
         )
-      )
 
-      mbnma.com <- mbnma.run(mbnma.network(ssri2),
-                         dfpoly(degree=2),
-                         regress.vars = c("rob"),
-                         regress.effect = "common",
-                         n.iter=n.iter)
+      ssri.reg <- ssri.reg %>%
+        mutate(x.weeks = weeks - mean(weeks, na.rm=TRUE)) %>% # For a continuous covariate
+        mutate(r.weeks=factor(weeks, levels=c(8,4,5,6,9,10))) # For a categorical covariate
 
-      mbnma.agent <- mbnma.run(mbnma.network(ssri2),
-                         dfpoly(degree=2),
-                         regress.vars = c("rob"),
-                         regress.effect = "agent",
-                         n.iter=n.iter)
 
-      mbnma.ran <- mbnma.run(mbnma.network(ssri2),
-                         dfpoly(degree=2),
-                         regress.vars = c("rob"),
-                         regress.effect = "random",
-                         n.iter=n.iter)
+      # Create network object
+      ssrinet <- mbnma.network(ssri.reg)
 
-      mbnma.class1 <- mbnma.run(mbnma.network(ssri2),
-                                fun=dmulti(list(
-                                  dfpoly(degree=2),
-                                  dfpoly(degree=2),
-                                  dfpoly(degree=1),
-                                  dfpoly(degree=2),
-                                  dfpoly(degree=2),
-                                  dfpoly(degree=2)
-                                )),
-                         regress.vars = c("rob"),
-                         regress.effect = "class",
-                         n.iter=n.iter)
+      ssrimod.c <- mbnma.run(ssrinet, fun=dfpoly(degree=2),
+                             regress=~r.weeks, regress.effect = "common",
+                             n.iter=n.iter)
 
-      mbnma.class2 <- mbnma.run(mbnma.network(ssri2),
+      # Regress for continuous weeks
+      # Random effect modification across all agents vs Placebo
+      ssrimod.r <- mbnma.run(ssrinet, fun=dfpoly(degree=2),
+                             regress=~x.weeks, regress.effect = "random",
+                             n.iter=n.iter)
+
+      # Regress for continuous weeks
+      # Separate effect modification for each agent vs Placebo
+      ssrimod.a <- mbnma.run(ssrinet, fun=dfpoly(degree=2),
+                             regress=~x.weeks, regress.effect = "agent",
+                             n.iter=n.iter)
+
+      # Separate effect modification for each agent vs Placebo
+      ssrimod.c1 <- mbnma.run(ssrinet,
+                             fun=dmulti(list(
+                               dfpoly(degree=2),
+                               dfpoly(degree=2),
+                               dfpoly(degree=1),
+                               dfpoly(degree=2),
+                               dfpoly(degree=2),
+                               dfpoly(degree=2)
+                             )),
+                             regress=~r.weeks, regress.effect = "class",
+                             n.iter=n.iter)
+
+      ssrimod.c2 <- mbnma.run(ssrinet,
                          dfpoly(degree=2),
                          class.effect = list(beta.1="random"),
-                         regress.vars = c("rob"),
+                         regress = ~r.weeks,
                          regress.effect = "common",
                          n.iter=n.iter)
 
-      modlist <- list(mbnma.com, mbnma.agent, mbnma.ran, mbnma.class1, mbnma.class2)
+      modlist <- list(ssrimod.c, ssrimod.r, ssrimod.a, ssrimod.c1, ssrimod.c2)
+      binlist <- list(ssrimod.c, ssrimod.c1, ssrimod.c2)
+      contlist <- list(ssrimod.r, ssrimod.a)
 
       for (mod in seq_along(modlist)) {
 
         # Predict
         pred <- predict(modlist[[mod]])
-        predreg <- predict(modlist[[mod]], regress.vals=c("rob"=runif(1,-3,3)))
 
-        expect_error(predict(modlist[[mod]], regress.vals=c("pop"=1)), "must contain a named regressor")
+        if (all.vars(modlist[[mod]]$model.arg$regress)=="r.weeks") {
+
+          regvec <- sample(c(1,0,0,0,0), size=5)
+          names(regvec) <- c("r.weeks10", "r.weeks4", "r.weeks5", "r.weeks6", "r.weeks9")
+
+          predreg <- predict(modlist[[mod]], regress.vals = regvec)
+
+          expect_error(predict(modlist[[mod]], regress.vals=c("pop"=1)), "must contain a single named regressor value for each covariate")
+
+        } else if (all.vars(modlist[[mod]]$model.arg$regress)=="x.weeks") {
+          predreg <- predict(modlist[[mod]], regress=c("x.weeks"=runif(1,0,10)))
+
+        }
 
         # Plot predict
         expect_error(plot(pred), NA)
@@ -514,12 +532,29 @@ for (dat in seq_along(alldfs)) {
         }
 
         # Get relative
-        if (mod<length(modlist)) {
+        if (all.vars(modlist[[mod]]$model.arg$regress)=="r.weeks") {
+
+          regvec <- sample(c(1,0,0,0,0), size=5)
+          names(regvec) <- c("r.weeks10", "r.weeks4", "r.weeks5", "r.weeks6", "r.weeks9")
+
           rels <- get.relative(lower.diag = modlist[[mod]],
-                               upper.diag = modlist[[mod+1]],
-                               regress.vals=c("rob"=runif(1,-3,3)),
+                               upper.diag = binlist[[sample(length(binlist), 1)]],
+                               regress.vals=regvec,
                                lim="pred")
+
+        } else if (all.vars(modlist[[mod]]$model.arg$regress)=="x.weeks") {
+
+          rels <- get.relative(lower.diag = modlist[[mod]],
+                               upper.diag = contlist[[sample(length(contlist), 1)]],
+                               regress.vals=c("x.weeks"=runif(1,0,10)),
+                               lim="pred")
+
+          expect_error(get.relative(lower.diag = modlist[[mod]],
+                                    upper.diag = binlist[[sample(length(binlist), 1)]],
+                                    regress.vals=regvec,
+                                    lim="pred"), "must contain a single named regressor")
         }
+
         expect_error(print(rels), NA)
 
 
