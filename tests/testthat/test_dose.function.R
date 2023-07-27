@@ -15,8 +15,8 @@ testthat::test_that("demax functions correctly", {
   dosefun <- demax(emax="rel", ed50="rel", hill="rel")
   expect_equal(dosefun$nparam, 3)
 
-  expect_message(demax(emax="rel", ed50="rel"), "ed50")
-  expect_message(demax(emax="rel", ed50="rel", hill="random"), "hill")
+  expect_message(demax(emax="rel", ed50="rel", p.expon = TRUE), "ed50")
+  expect_message(demax(emax="rel", ed50="rel", hill="random", p.expon = TRUE), "hill")
 
   dosefun <- demax(emax="random", ed50="rel", hill="common")
   expect_equal(dosefun$apool, c(emax="random", ed50="rel", hill="common"))
