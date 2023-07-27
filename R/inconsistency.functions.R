@@ -1301,7 +1301,8 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #' all treatments specified in `treatments`. If `treatments` is left empty then the set of
 #' treatments in the network on which `lower.diag` is estimated will be used as the default.
 #' @param regress.vals A named numeric vector of effect modifier values at which relative effects
-#'   should be estimated. Named elements must match variable names specified in `regress.vars` within
+#'   should be estimated. Named elements must match variable names specified in regression design matrix
+#'   (`mbnma$model.arg$regress.mat`), corresponding to variables in `regress` within
 #'   the MBNMA model (or **both** MBNMA models if different models are used for `upper.diag`
 #'   and `lower.diag`. Meta-regression is not currently possible for NMA models, so only
 #'   unadjusted results will be shown for these (and a warning given if they are compared to
@@ -1313,7 +1314,6 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 #'   the league table.
 #' @param eform Whether outputted results should be presented in their exponential form (e.g. for
 #' models with log or logit link functions)
-#' @param mbnma DEPRECATED IN VERSION 0.4.2 ONWARDS. An object of `class("mbnma")`
 #' @inheritParams predict.mbnma
 #'
 #'
@@ -1347,23 +1347,16 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
 get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
                          lower.direction="colvrow", upper.direction="rowvcol",
                          regress.vals=NULL,
-                         eform=FALSE, lim="cred",
-                         mbnma=NULL) {
+                         eform=FALSE, lim="cred") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertClass(mbnma, "mbnma", null.ok=TRUE, add=argcheck)
   checkmate::assertList(treatments, null.ok=FALSE, add=argcheck)
   checkmate::assertChoice(lim, choices=c("cred", "pred"), add=argcheck)
   checkmate::assertChoice(lower.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
   checkmate::assertChoice(upper.direction, choices=c("colvrow", "rowvcol"), add=argcheck)
   checkmate::assertNumeric(regress.vals, names = "named", null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
-
-  if (!is.null(mbnma)) {
-    lower.diag <- mbnma
-    warning("'mbnma' argument is deprecated in version >=4.2\n'lower.diag' will be assigned to 'mbnma'")
-  }
 
   # Check classes
   if (!any(class(lower.diag) %in% c("mbnma", "nma")) | !any(class(upper.diag) %in% c("mbnma", "nma"))) {
@@ -1450,7 +1443,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
     }
 
     if (length(mbnma.ind)>0) {
-      if (!is.null(mbnma.ind[[1]]$model.arg$regress.vars)) {
+      if (!is.null(modlist[[mbnma.ind]]$model.arg$regress)) {
         warning(paste0("MBNMA model incorporates meta-regression to account for effect modifiers,\n",
                        "whilst NMA results will average across them. This may cause mismatches in results"))
       }
@@ -1501,8 +1494,16 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
       for (i in 1:(length(trtnams)-1)) {
         for (k in (i+1):length(trtnams)) {
 
-          chunk <- pred$predicts[[trtnams[i]]][[as.character(doses[i])]] -
-            pred$predicts[[trtnams[k]]][[as.character(doses[k])]]
+          # Rescale
+          pred1 <- rescale.link(pred$predicts[[trtnams[i]]][[as.character(doses[i])]],
+                                direction="link",
+                                link=pred$link)
+
+          pred2 <- rescale.link(pred$predicts[[trtnams[k]]][[as.character(doses[k])]],
+                                direction="link",
+                                link=pred$link)
+
+          chunk <- pred1 - pred2
 
           # Incorporate between-study SD
           # if (addsd==TRUE) {
