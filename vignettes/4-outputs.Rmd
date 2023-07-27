@@ -77,6 +77,29 @@ print(rels)
 rank(rels)
 ```
 
+`get.relative()` can also be used to compare results between two different models by specifying which model's relative effects should be presented in the lower left diagonal (`lower.diag`) of the table, and which should be presented in the upper right diagnoal (`upper.diag`).
+
+This can be used to compare relative effects estimated by MBNMA models fitted with different dose-response relationships, or to compare MBNMA estimates with NMA estimates.
+
+```{r, results="hide"}
+nma <- nma.run(tripnet) # NMA (consistency) model
+ume <- nma.run(tripnet, UME=TRUE) # UME (inconsistency) model
+```
+```{r}
+# MBNMA consistency and NMA consistency odds ratios compared 
+consistency <- get.relative(lower.diag=trip.emax, upper.diag=nma,
+                            treatments = treats, eform=TRUE)
+print(consistency)
+```
+
+It can also be used to compare NMA or MBNMA consistency models with Unrelated Mean Effects (UME) inconsistency models. A UME model only parameterises direct comparisons within the network and so can be used to test the consistency assumption ([Checking for consistency][3-consistencychecking.html]). Note that if a UME model is fitted, comparisons for which there is no direct evidence will not have relative effects estimated for them.
+
+```{r}
+# MBNMA consistency and NMA inconsistency log-odds ratios compared
+inconsistency <- get.relative(lower.diag=trip.emax, upper.diag=ume,
+                            treatments = treats, eform=FALSE)
+print(inconsistency)
+```
 
 ## Forest plots
 
