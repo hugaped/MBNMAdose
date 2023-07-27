@@ -474,7 +474,7 @@ recode.agent <- function(data.ab, level="agent") {
     message(paste0("Values for `", level, "` with dose = 0 have been recoded to `Placebo`"))
   }
   if (!identical(1:max(data.ab[[level]]), sort(unique(data.ab[[level]]))[-1])) {
-    message(paste0(level, " is being recoded to enforce sequential numbering and allow inclusion of `Placebo`"))
+    message(paste0(level, " is being recoded to enforce sequential numbering"))
   }
 
   # Reorder by number sequentially (meaning that "Placebo" now is 1)
