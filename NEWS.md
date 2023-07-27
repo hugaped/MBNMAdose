@@ -1,4 +1,4 @@
-# MBNMAdose 0.4.3
+# MBNMAdose 0.4.2
 
 ## Additions/changes
 - Reference SDs can now be used when modelling using SMDs to avoid using study-specific SDs, which can be problematic.
