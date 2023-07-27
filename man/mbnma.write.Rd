@@ -7,6 +7,9 @@
 mbnma.write(
   fun = dloglin(),
   method = "common",
+  regress.mat = NULL,
+  regress.effect = "common",
+  sdscale = FALSE,
   cor = TRUE,
   cor.prior = "wishart",
   omega = NULL,
@@ -23,6 +26,18 @@ dose-response. See Details.}
 
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
+
+\item{regress.mat}{A Nstudy x Ncovariate design matrix of meta-regression covariates}
+
+\item{regress.effect}{Indicates whether effect modification should be assumed to be
+\code{"common"} (assumed to be equal versus Placebo throughout the network),
+\code{"random"} (assumed to be exchangeable versus Placebo throughout the network),
+\code{"agent"} (assumed to be equal versus Placebo within each agent), or
+\code{"class"} (assumed to be equal versus Placebo within each class).}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters. This is

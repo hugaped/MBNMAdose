@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.functions.R
 \name{calc.edx}
 \alias{calc.edx}
-\title{Calculates values for EDx, the dose at which x\% of the maximal response (Emax)
+\title{Calculates values for EDx from an Emax model, the dose at which x\% of the maximal response (Emax)
 is reached}
 \usage{
 calc.edx(mbnma, x = 50)
@@ -18,6 +18,6 @@ should be calculated}
 A data frame of posterior EDx summary values for each agent
 }
 \description{
-Calculates values for EDx, the dose at which x\% of the maximal response (Emax)
+Calculates values for EDx from an Emax model, the dose at which x\% of the maximal response (Emax)
 is reached
 }

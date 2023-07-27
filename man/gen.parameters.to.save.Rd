@@ -4,13 +4,15 @@
 \alias{gen.parameters.to.save}
 \title{Automatically generate parameters to save for a dose-response MBNMA model}
 \usage{
-gen.parameters.to.save(fun, model)
+gen.parameters.to.save(fun, model, regress.mat = NULL)
 }
 \arguments{
 \item{fun}{An object of \code{class("dosefun")} that specifies a functional form to be assigned to the
 dose-response. See Details.}
 
 \item{model}{A JAGS model written as a character object}
+
+\item{regress.mat}{A Nstudy x Ncovariate design matrix of meta-regression covariates}
 }
 \description{
 Automatically generate parameters to save for a dose-response MBNMA model

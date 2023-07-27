@@ -4,7 +4,7 @@
 \alias{demax}
 \title{Emax dose-response function}
 \usage{
-demax(emax = "rel", ed50 = "rel", hill = NULL)
+demax(emax = "rel", ed50 = "rel", hill = NULL, p.expon = FALSE)
 }
 \arguments{
 \item{emax}{Pooling for Emax  parameter. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
@@ -15,6 +15,9 @@ assigned a numeric value (see details).}
 
 \item{hill}{Pooling for Hill parameter. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
+
+\item{p.expon}{A logical object to indicate whether \code{ed50} and \code{hill} parameters should be
+expressed within the dose-response function on an exponential scale}
 }
 \value{
 An object of \code{class("dosefun")}
@@ -28,10 +31,10 @@ exp(ED50) represents the dose at which 50\% of the maximum response is achieved.
 exp(Hill) is the Hill parameter, which allows for a sigmoidal function.
 
 Without Hill parameter:
-\deqn{\frac{E_{max}\times{x}}{e^{ET_{50}}+x}}
+\deqn{\frac{E_{max}\times{x}}{ET_{50}+x}}
 
 With Hill parameter:
-\deqn{\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}}
+\deqn{\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}}+x^{hill}}
 }
 \section{Dose-response parameters}{
 \tabular{ll}{

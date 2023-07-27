@@ -4,7 +4,14 @@
 \alias{genspline}
 \title{Generates spline basis matrices for fitting to dose-response function}
 \usage{
-genspline(x, spline = "bs", knots = 1, degree = 1, max.dose = max(x))
+genspline(
+  x,
+  spline = "bs",
+  knots = 1,
+  degree = 1,
+  max.dose = max(x),
+  boundaries = NULL
+)
 }
 \arguments{
 \item{x}{A numeric vector indicating all time points available in the dataset}
@@ -21,6 +28,10 @@ is 100mg/d, \code{knots=c(0.1,0.5)} would indicate knots should be fitted at 10m
 (e.g. \code{degree=3} represents a cubic spline).}
 
 \item{max.dose}{A number indicating the maximum dose between which to calculate the spline function.}
+
+\item{boundaries}{A positive numeric vector of length 2 that represents the doses at which to anchor the B-spline or natural
+cubic spline basis matrix. This allows data to extend beyond the boundary knots, or for the basis parameters to not depend on \code{x}.
+The default (\code{boundaries=NULL}) is the range of \code{x}.}
 }
 \value{
 A spline basis matrix with number of rows equal to \code{length(x)} and the number of columns equal to the number

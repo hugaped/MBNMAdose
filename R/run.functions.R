@@ -709,7 +709,7 @@ gen.init <- function(jagsdata, fun) {
 #' Automatically generate parameters to save for a dose-response MBNMA model
 #'
 #' @inheritParams mbnma.run
-#' @inheritParams write.jags
+#' @inheritParams mbnma.write
 #' @param model A JAGS model written as a character object
 gen.parameters.to.save <- function(fun, model, regress.mat=NULL) {
   # model.params is a vector (numeric/character) of the names of the dose-response parameters in the model

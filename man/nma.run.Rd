@@ -51,7 +51,8 @@ on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}). Note
+that normal distributions in JAGS are specified as \deqn{N(\mu, prec)}, where \deqn{prec = 1 / {\sigma^2}}.}
 
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
 for any monitored parameter are >1.02 (suggestive of non-convergence).}
@@ -93,7 +94,9 @@ Results can also be compared between consistency (\code{UME=FALSE}) and inconsis
 
 Results can be plotted either as a single forest plot, or facetted by agent
 and plotted with increasing dose in order to identify potential dose-response
-relationships.
+relationships. If Placebo (or any agents with dose=0) is included in the network
+then this will be used as the reference treatment, but if it is not then results
+will be plotted versus the network reference used in the NMA object (\code{x}).
 
 }}
 \examples{

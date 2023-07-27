@@ -12,6 +12,7 @@ dose-response models}
   E0 = 0.2,
   synth = "fixed",
   lim = "cred",
+  regress.vals = NULL,
   ...
 )
 }
@@ -55,6 +56,10 @@ has been provided for it. Using \code{"random"} rather
 than \code{"fixed"} for \code{synth} will result in wider 95\\\% CrI for predictions.}
 
 \item{lim}{Specifies calculation of either 95\% credible intervals (\code{lim="cred"}) or 95\% prediction intervals (\code{lim="pred"}).}
+
+\item{regress.vals}{A named numeric vector of effect modifier values at which results should
+be predicted. Named elements must match variable names specified in \code{regress.vars} within
+the MBNMA model.}
 
 \item{...}{Arguments to be sent to \code{\link[R2jags:jags]{R2jags::jags()}} for synthesis of the network
 reference treatment effect (using \code{\link[=ref.synth]{ref.synth()}})}

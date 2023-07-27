@@ -8,8 +8,11 @@ mbnma.run(
   network,
   fun = dloglin(),
   method = "common",
+  regress = NULL,
+  regress.effect = "common",
   class.effect = list(),
   UME = FALSE,
+  sdscale = FALSE,
   cor = FALSE,
   omega = NULL,
   parameters.to.save = NULL,
@@ -24,14 +27,8 @@ mbnma.run(
   autojags = FALSE,
   Rhat = 1.05,
   n.update = 10,
-  beta.1 = "rel",
-  beta.2 = "rel",
-  beta.3 = "rel",
-  beta.4 = "rel",
-  user.fun = NULL,
   model.file = NULL,
   jagsdata = NULL,
-  arg.params = NULL,
   ...
 )
 }
@@ -44,6 +41,20 @@ dose-response. See Details.}
 \item{method}{Can take either \code{"common"} or \code{"random"} to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).}
 
+\item{regress}{A formula of effect modifiers (variables that
+interact with the treatment effect) to incorporate using Network Meta-Regression
+(E.g. \code{~ Population + Age}). All variables in the formula are modelled as interacting
+with the treatment effect (i.e. prognostic variables cannot be included in this way).
+Effects modifiers must be named variables in \code{network$data.ab} and must be identical
+within a study. Factor and character effect modifiers will be converted to a series of
+named dummy variables.}
+
+\item{regress.effect}{Indicates whether effect modification should be assumed to be
+\code{"common"} (assumed to be equal versus Placebo throughout the network),
+\code{"random"} (assumed to be exchangeable versus Placebo throughout the network),
+\code{"agent"} (assumed to be equal versus Placebo within each agent), or
+\code{"class"} (assumed to be equal versus Placebo within each class).}
+
 \item{class.effect}{A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
 (\code{"common"} or \code{"random"}). Element names should match dose-response parameter names.
@@ -53,6 +64,10 @@ the range of doses differ substantially across agents within a class.}
 \item{UME}{A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{cor}{A boolean object that indicates whether correlation should be modelled
 between relative effect dose-response parameters. This is
@@ -92,7 +107,8 @@ on the likelihood.}
 
 \item{priors}{A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
-\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}).}
+\strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}). Note
+that normal distributions in JAGS are specified as \deqn{N(\mu, prec)}, where \deqn{prec = 1 / {\sigma^2}}.}
 
 \item{n.iter}{number of total iterations per chain (including burn in; default: 20000)}
 
@@ -116,21 +132,6 @@ to a maximum of \code{n.update}. Default is \code{1.05}.}
 Rhat values of all parameters are checked against \code{Rhat}. Default maximum updates
 is \code{10} (i.e. 10,000 additional iterations in total).}
 
-\item{beta.1}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.2}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.3}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{beta.4}{\strong{Deprecated from version 0.4.0 onwards.} Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either \code{"rel"}, \code{"common"}, \code{"random"}, or be assigned a numeric value (see details).}
-
-\item{user.fun}{\strong{Deprecated from version 0.4.0 onwards.} A formula specifying any relationship including \code{dose} and
-one/several of: \code{beta.1}, \code{beta.2}, \code{beta.3}, \code{beta.4}.}
-
 \item{model.file}{The file path to a JAGS model (.jags file) that can be used
 to overwrite the JAGS model that is automatically written based on the
 specified options in \code{MBNMAdose}. Useful for adding further model flexibility.}
@@ -139,8 +140,6 @@ specified options in \code{MBNMAdose}. Useful for adding further model flexibili
 required if users are defining their own JAGS model using \code{model.file}. Format
 should match that of standard models fitted in \code{MBNMAdose}
 (see \code{mbnma$model.arg$jagsdata})}
-
-\item{arg.params}{\strong{Deprecated from version 0.4.0 onwards.} Assign run and wrapper parameters}
 
 \item{...}{Arguments to be sent to R2jags.}
 }

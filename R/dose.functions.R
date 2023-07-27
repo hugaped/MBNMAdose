@@ -354,7 +354,7 @@ dloglin <- function() {
 #' \deqn{\frac{E_{max}\times{x}}{ET_{50}+x}}
 #'
 #' With Hill parameter:
-#' \deqn{\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}}+x^{hill}}}
+#' \deqn{\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}}+x^{hill}}
 #'
 #'
 #' @section Dose-response parameters:

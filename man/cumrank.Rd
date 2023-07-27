@@ -15,7 +15,7 @@ ranking will be calculated for all available parameters that vary by agent/class
 
 \item{sucra}{A logical object to indicate whether Surface Under Cumulative Ranking Curve (SUCRA)
 values should be calculated and returned as a data frame. Areas calculated
-using \code{\link[rgeos]{readWKT}}.}
+using trapezoid approach.}
 
 \item{...}{Arguments to be sent to \code{ggplot::geom_line()}}
 }

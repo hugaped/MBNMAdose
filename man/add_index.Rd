@@ -24,6 +24,8 @@ binomial data or when modelling Standardised Mean Differences
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{agents}{A character string of agent names used to force a particular agent ordering.

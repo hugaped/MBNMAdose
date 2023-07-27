@@ -7,6 +7,9 @@
 getjagsdata(
   data.ab,
   class = FALSE,
+  sdscale = FALSE,
+  regress = NULL,
+  regress.effect = "common",
   likelihood = check.likelink(data.ab)$likelihood,
   link = check.likelink(data.ab)$link,
   level = "agent",
@@ -32,10 +35,30 @@ binomial data or when modelling Standardised Mean Differences
 for poisson data.
 \item \code{class} An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.
+\item \code{standsd} An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).
 }}
 
 \item{class}{A boolean object indicating whether or not \code{data.ab} contains
 information on different classes of treatments}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
+
+\item{regress}{A formula of effect modifiers (variables that
+interact with the treatment effect) to incorporate using Network Meta-Regression
+(E.g. \code{~ Population + Age}). All variables in the formula are modelled as interacting
+with the treatment effect (i.e. prognostic variables cannot be included in this way).
+Effects modifiers must be named variables in \code{network$data.ab} and must be identical
+within a study. Factor and character effect modifiers will be converted to a series of
+named dummy variables.}
+
+\item{regress.effect}{Indicates whether effect modification should be assumed to be
+\code{"common"} (assumed to be equal versus Placebo throughout the network),
+\code{"random"} (assumed to be exchangeable versus Placebo throughout the network),
+\code{"agent"} (assumed to be equal versus Placebo within each agent), or
+\code{"class"} (assumed to be equal versus Placebo within each class).}
 
 \item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}
