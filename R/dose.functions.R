@@ -221,16 +221,16 @@ ditp <- function(emax="rel", rate="rel", p.expon=FALSE) {
     return(y)
   }
 
-  if (emax=="rel") {
-    jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
-  } else if (emax=="abs" & method.emax=="random") {
-    jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
-  }
-  if (rate=="rel") {
-    jags <- gsub("beta\\.2", "beta.2[i,k]", jags)
-  } else if (rate=="abs" & method.rate=="random") {
-    jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
-  }
+  # if (emax=="rel") {
+  #   #jags <- gsub("beta\\.1", "beta.1[i,k]", jags)
+  # } else if (any(c("common", "random") %in% emax))) {
+  #   jags <- gsub("beta\\.1", "i.beta.1[i,k]", jags)
+  # }
+  # if (rate=="rel") {
+  #   #jags <- gsub("beta\\.2", "beta.2[i,k]", jags)
+  # } else if (any(c("common", "random") %in% rate)) {
+  #   jags <- gsub("beta\\.2", "i.beta.2[i,k]", jags)
+  # }
 
 
   # Generate output values
