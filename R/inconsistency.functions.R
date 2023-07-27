@@ -1542,7 +1542,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
             chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i] - nma$jagsresult$BUGSoutput$sims.list$d[,nmat.k]
             skip <- FALSE
           } else if (nma$UME==TRUE) {
-            chunk.nma <- nma$jagsresult$BUGSoutput$sims.list$d[,nmat.i,nmat.k]
+            chunk.nma <- -nma$jagsresult$BUGSoutput$sims.list$d[,nmat.k,nmat.i]
 
             if (sd(chunk.nma)>90) {
               chunk.nma <- NA # No direct evidence
