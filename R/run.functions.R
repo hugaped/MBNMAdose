@@ -417,8 +417,8 @@ mbnma.run <- function(network,
 
     # Change code for if plac not included in network
     if (plac.incl==FALSE) {
-      model <- gsub("for \\(k in 2:Nagent\\)\\{ # Priors on relative treatment effects",
-                    "for (k in 1:Nagent){ # Priors on relative treatment effects",
+      model <- gsub("for \\(k in 2:Nagent\\)\\{ # Priors on relative agent effects",
+                    "for (k in 1:Nagent){ # Priors on relative agent effects",
                     model)
       model <- gsub("for \\(k in 2:Nclass\\)\\{ # Priors on relative class effects",
                     "for (k in 1:Nclass){ # Priors on relative class effects",
