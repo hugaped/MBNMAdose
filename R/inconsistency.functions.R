@@ -681,8 +681,6 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
                             method="common",
                             comparisons=NULL,
                             incldr=TRUE,
-                            beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
-                            user.fun=NULL,
                             ...) {
 
   # Run checks
@@ -692,8 +690,6 @@ mbnma.nodesplit <- function(network, fun=dloglin(),
   checkmate::reportAssertions(argcheck)
 
   # Check fun
-  fun <- check.fun(fun=fun, network=network, beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4,
-                   user.fun=user.fun)
   if ("nonparam" %in% fun$name) {
     stop("Node-splitting cannot currently be performed for non-parametric models")
     # But this could be added
