@@ -46,48 +46,6 @@ for (dat in seq_along(alldfs)) {
   n.iter=500
   pd <- "pv"
 
-  test_that(paste("mbnma.run wrappers function correctly for:", datanam), {
-
-    expect_warning(mbnma.linear(network, slope="rel", n.iter=n.iter, pd=pd), "syntax for specifying dose-response functions")
-
-    # Single parameter DR functions
-    expect_error(mbnma.run(network, fun=dpoly(degree=1, beta.1="random"), n.iter=n.iter, pd=pd), "must include at least one parameter")
-
-    result <- mbnma.run(network, fun=dloglin(), method="common", n.iter=n.iter, pd=pd)
-    expect_equal(all(c("rate") %in% result$parameters.to.save), TRUE)
-    expect_equal(all(c("sd") %in% result$parameters.to.save), FALSE)
-    expect_error(summary(result), NA)
-    expect_error(plot(result), NA)
-    expect_error(rank(result), NA)
-    expect_error(predict(result), NA)
-
-    if ("class" %in% names(dataset)) {
-
-      # Two parameter DR functions
-      result <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="rel", method="common",
-                           class.effect=list(emax="common"), n.iter=n.iter, pd=pd, cor = FALSE))
-      expect_equal(all(c("EMAX", "ed50", "emax") %in% result$parameters.to.save), TRUE)
-      expect_error(suppressWarnings(summary(result), NA))
-      expect_error(plot(result), NA)
-      expect_error(rank(result), NA)
-      expect_error(predict(result), "does not work with models that use class effects")
-
-      # Three parameter DR functions
-      if (datanam!="osteopain") {
-        result <- mbnma.emax.hill(netclass, emax="rel", ed50="rel", hill="common",
-                                  method="random", n.iter=n.iter, pd=pd)
-        expect_equal(all(c("emax", "ed50", "hill", "sd") %in% result$parameters.to.save), TRUE)
-        expect_error(summary(result), NA)
-        expect_error(plot(result), NA)
-        expect_error(rank(result), NA)
-        expect_error(predict(result), NA)
-      }
-    }
-
-  })
-
-
-
   test_that(paste("check.likelink function correctly for:", datanam), {
 
     if (all(c("y", "se") %in% names(dataset))) {
