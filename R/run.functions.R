@@ -305,7 +305,7 @@
 #'
 #' @export
 mbnma.run <- function(network,
-                      fun=dloglin(),
+                      fun=dpoly(degree=1),
                       method="common",
                       regress=NULL,
                       regress.effect="common",

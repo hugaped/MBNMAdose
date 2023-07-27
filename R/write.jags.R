@@ -67,7 +67,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'              )
 #' cat(model)
 #' @export
-mbnma.write <- function(fun=dloglin(),
+mbnma.write <- function(fun=dpoly(degree=1),
                         method="common",
                         regress.mat=NULL, regress.effect="common",
                         sdscale=FALSE,

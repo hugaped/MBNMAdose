@@ -677,7 +677,7 @@ check.indirect.drops <- function(df, comp) {
 #' summary(split) # Generate a data frame of summary results
 #' }
 #' @export
-mbnma.nodesplit <- function(network, fun=dloglin(),
+mbnma.nodesplit <- function(network, fun=dpoly(degree=1),
                             method="common",
                             comparisons=NULL,
                             incldr=TRUE,
