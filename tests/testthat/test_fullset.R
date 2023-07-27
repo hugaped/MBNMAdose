@@ -425,8 +425,8 @@ for (dat in seq_along(alldfs)) {
         )
 
       ssri.reg <- ssri.reg %>%
-        mutate(x.weeks = weeks - mean(weeks, na.rm=TRUE)) %>% # For a continuous covariate
-        mutate(r.weeks=factor(weeks, levels=c(8,4,5,6,9,10))) # For a categorical covariate
+        dplyr::mutate(x.weeks = weeks - mean(weeks, na.rm=TRUE)) %>% # For a continuous covariate
+        dplyr::mutate(r.weeks=factor(weeks, levels=c(8,4,5,6,9,10))) # For a categorical covariate
 
 
       # Create network object
@@ -543,6 +543,9 @@ for (dat in seq_along(alldfs)) {
                                lim="pred")
 
         } else if (all.vars(modlist[[mod]]$model.arg$regress)=="x.weeks") {
+
+          regvec <- sample(c(1,0,0,0,0), size=5)
+          names(regvec) <- c("r.weeks10", "r.weeks4", "r.weeks5", "r.weeks6", "r.weeks9")
 
           rels <- get.relative(lower.diag = modlist[[mod]],
                                upper.diag = contlist[[sample(length(contlist), 1)]],
