@@ -876,12 +876,16 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
   }
 
   # Add maxdose for nonparametric dose-response functions
-  if ("nonparam" %in% fun$name) {
+  if (any(c("nonparam", "itp") %in% fun$name)) {
     data.ab <- data.ab %>% dplyr::group_by(agent) %>%
       dplyr::mutate(maxdose=max(dose, na.rm=TRUE)) %>%
       dplyr::slice_head()
 
-    datalist[["maxdose"]] <- data.ab$maxdose
+    if ("nonparam" %in% fun$name) {
+      datalist[["maxdose"]] <- data.ab$maxdose
+    } else if ("itp" %in% fun$name) {
+      datalist[["maxdose"]] <- max(data.ab$maxdose, na.rm=TRUE)
+    }
   }
 
   if ("spline" %in% names(datalist)) {
