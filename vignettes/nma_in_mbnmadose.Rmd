@@ -35,7 +35,7 @@ Dong2013 <- Dong2013 %>%
 ```
 
 
-## Performing standard NMA using `mbnma.run()` with placebo
+## Performing standard NMA using `mbnma.run()`
 
 The simplest use is in a network that includes a placebo treatment. In this dataset we do not have any dose-response information, so there is no value in performing a MBNMA. However, if we assume that every active treatment in the network is a separate "agent" with a dose of 1, and that the Placebo treatment has a dose of 0, then we can use the data in `MBNMAdose`, and by modelling a linear dose-response function we estimate parameters that are identical to a standard NMA model. 
 
@@ -51,37 +51,76 @@ Note that if there is an intervention within the dataset that has been administe
 
 Once we have reassigned the doses within the dataset we can create an `"mbnma.network"` object and create a network plot:
 
-```{r, network.plot}
+```{r, network.plot, message=FALSE}
 network <- mbnma.network(Dong2013)
-
+```
+```{r}
 summary(network)
 plot(network)
 ```
 
 We can then use a linear dose-response MBNMA to analyse the data. The coefficients for the linear slope of the dose-response function are mathematically equivalent to the basic treatment effect parameters estimated in a standard NMA. Note that the results are equivalent in both models (allowing for Monte-Carlo error from the MCMC sampling). The only difference is that the placebo parameter (`beta.1[1]`) that is equal to zero is not given in the output.
 
-```{r, standard.nma}
+```{r, standard.nma, results="hide"}
 nma.linear <- mbnma.run(network, fun=dpoly(degree=1),
                         n.iter=50000)
-
-nma <- nma.run(network, n.iter=50000)
+```
+```{r}
+print(nma.linear)
 ```
 
+```{r, results="hide"}
+nma <- nma.run(network, n.iter=50000)
+```
+```{r}
+print(nma)
+```
 
-## Performing standard NMA using `mbnma.run()` without placebo
+We can also show the equivalence of results using `get.relative()` to compare relative effects from both models:
+
+```{r}
+rels <- get.relative(nma.linear, nma)
+```
+
+Without a placebo, estimation is very similar, but requires renaming and recoding the network reference intervention to `"Placebo"`. This is not strictly necessary, as `MBNMAdose` can handle dose-response datasets that do not include placebo (or dose=0), but it will ensure that parameter estimates are equivalent between the NMA and MBNMA models and will make it easier to estimate relative effects. We illustrate this with the Surgical Site Infection dataset.
+
+```{r}
+# Ensure that Suture-absorbable is the network reference
+ssi <- ssi_closure %>% mutate(agent=factor(trt, levels=c("Suture-absorbable", unique(ssi_closure$trt)[-1])))
+
+# Set dose=0 for network reference and dose=1 for all other interventions
+ssi.plac <- ssi %>% mutate(dose=case_when(trt=="Suture-absorbable" ~ 0,
+                                          TRUE ~ 1))
+
+network.plac <- mbnma.network(ssi.plac)
+plot(network.plac)
+# Note that Suture-absorbable (the comparator) has been renamed to Placebo
+```
+```{r, results="hide"}
+# Run linear MBNMA model
+nma.linear <- mbnma.run(network.plac, fun=dpoly(degree=1),
+                        n.iter=50000)
+```
+```{r}
+summary(nma.linear)
+```
+
+The linear dose-response coefficients can then be interpreted as the relative effect for each intervention versus the network reference (`"Suture-absorbable"`). 
 
 
-## Benefits of using `mbnma.run()`
+## Benefits of using `mbnma.run()` for standard NMA models
 
-Now that we have shown how to specify a standard NMA model within the MBNMA framework in `mbnma.run()`, we can now use `MBNMAdose` to implement some more interesting models.
+Now that we have shown how to specify a standard NMA model within the MBNMA framework in `mbnma.run()`, we can now use `MBNMAdose` to implement some more interesting models, such as class effect models and node-splits to assess consistency.
 
+A class effects model can be implemented using the `class.effect` argument in `mbnma.run()`, introducing either a `"common"` or 2 class effect on the single linear dose-response parameter, `beta.1`:
 
-### Standard NMA with class effects
+```{r, eval=FALSE}
+# Random class effect model
+nma.class <- mbnma.run(network.plac, fun=dpoly(degree=1),
+                       class.effect=list(beta.1="random"),
+                       n.iter=50000)
+```
 
-A class effects model can be implemented using the `class.effect` argument in `mbnma.run()`. We'll illustrate this with a dataset of XXX to reduce surgical site infections. The `class` variable is also included in the dataset, which indicates the class to which each treatment belongs to. 
-
-We can then investigate fitting a model that assumes a `"common"` class effect, in which all treatments within a class have the same effect, or a `"random"` class effect, which assumes that treatment-level effects are randomly distributed around a mean class effect with a standard deviation (SD) that is estimated within the model.
+A `"common"` class effect assumes that all treatments within a class have the same effect, whilst a `"random"` class effect assumes that treatment-level effects are randomly distributed around a mean class effect with a standard deviation (SD) that is estimated within the model.
 
 Common and random class effect models can be compared using model fit statistics (e.g. Deviance Information Criterion) to identify which is the most parsimonious model. Note that within `MBNMAdose` when a random class effect is fitted this makes the assumption that all classes share the same within-class SD. This may not necessarily be valid, but relaxing this cannot currently be done in `MBNMAdose` and it requires specific JAGS code to be written.
-
-### Node-splitting - can this also be done with class effects? UME? 
