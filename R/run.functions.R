@@ -424,7 +424,8 @@ mbnma.run <- function(network,
                     "for (k in 1:Nclass){ # Priors on relative class effects",
                     model)
 
-      model <- gsub("s\\.beta\\.[(0-9)+]\\[1\\] <- 0", "", model)
+      drop <- grep("s\\.beta\\.[(0-9)+]\\[1\\] <- \\.?[0-9]+", model)
+      model <- model[-drop]
     }
 
     # Add user-defined priors to the model
