@@ -619,10 +619,10 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     stop(msg)
   }
 
-  sort.df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
-  if (!identical(df, sort.df)) {
-    stop("Data formatting error: data.ab has been rearranged in mbnma.network object")
-  }
+  # sort.df <- dplyr::arrange(df, dplyr::desc(df$narm), df$studyID, df$arm)
+  # if (!identical(df, sort.df)) {
+  #   stop("Data formatting error: data.ab has been rearranged in mbnma.network object")
+  # }
 
   df$studynam <- df$studyID
   df <- transform(df, studyID=as.numeric(factor(studyID, levels=as.character(unique(df$studyID)))))
