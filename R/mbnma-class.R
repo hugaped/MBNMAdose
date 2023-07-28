@@ -652,16 +652,17 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     }
 
     # Merge list elements if they have the same agent name
-    newdoses <- list()
-    for (i in seq_along(doses)) {
-      if (names(doses)[i] %in% names(doses)[-i]) {
+    if (!is.null(names(doses))) {
+      for (i in seq_along(doses)) {
+        if (names(doses)[i] %in% names(doses)[-i]) {
 
-        drop <- which(names(doses) %in% names(doses)[i])[-1]
+          drop <- which(names(doses) %in% names(doses)[i])[-1]
 
-        for (k in seq_along(drop)) {
-          doses[[i]] <- sort(append(doses[[i]], doses[[drop[k]]]))
+          for (k in seq_along(drop)) {
+            doses[[i]] <- sort(append(doses[[i]], doses[[drop[k]]]))
+          }
+          doses <- doses[-drop]
         }
-        doses <- doses[-drop]
       }
     }
 
