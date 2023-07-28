@@ -123,7 +123,7 @@ for (dat in seq_along(alldfs)) {
       ref.df <- network$data.ab[network$data.ab$agent==1,]
       ref.df <- ref.df[!duplicated(ref.df$studyID),]
       pred <- suppressWarnings(predict(linear, E0 = ref.df))
-      expect_identical(names(pred), c("predicts", "likelihood", "link", "network", "E0"))
+      expect_identical(names(pred), c("predicts", "likelihood", "link", "network", "lim", "E0"))
       expect_equal(linear$model.arg$likelihood, pred$likelihood)
       expect_equal(linear$model.arg$link, pred$link)
       expect_identical(names(pred$predicts), linear$network$agents)
