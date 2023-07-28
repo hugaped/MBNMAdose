@@ -552,18 +552,15 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
   } else {
     for (i in seq_along(fun$apool)) {
+
+      add.betastart <- FALSE
       pname <- names(fun$apool[i])
       isnum <- suppressWarnings(!is.na(as.numeric(fun$apool[i])))
 
       if (fun$apool[i] %in% "rel") {
         # Convert s.beta to d.
         if (UME==FALSE) {
-          if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
-            insert <- paste0("s.beta.", i, "[1] <- 0.00001") # To avoid numerical error with non-negative params
-          } else {
-            insert <- paste0("s.beta.", i, "[1] <- 0")
-          }
-          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+          add.betastart <- TRUE
 
           insert <- paste0("s.beta.", i, "[k] <- ", pname, "[k]")
           model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
@@ -605,8 +602,8 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
         model <- model.insert(model, pos=which(names(model)=="end"), x=priors[[pname]])
 
         if (UME==FALSE) {
-          insert <- paste0("s.beta.", i, "[1] <- 0")
-          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
+          add.betastart <- TRUE
 
           if (fun$apool[i] %in% "random") {
 
@@ -623,8 +620,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           }
 
         } else if (UME==TRUE) {
-          insert <- c(paste0("s.beta.", i, "[k,k] <- 0"))
-          model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+          add.betastart <- TRUE
 
           if (fun$apool[i] %in% "random") {
 
@@ -647,15 +643,14 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
         model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
         if (UME==FALSE) {
-          insert <- paste0("s.beta.", i, "[1] <- 0")
-          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
+          add.betastart <- TRUE
 
           insert <- paste0("s.beta.", i, "[k] <- ", pname)
           model <- model.insert(model, pos=which(names(model)=="agent.prior"), x=insert)
 
         } else if (UME==TRUE) {
-          insert <- paste0("s.beta.", i, "[k,k] <- 0")
-          model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+          add.betastart <- TRUE
 
           insert <- paste0("s.beta.", i, "[k,c] <- ", pname)
           model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
@@ -664,6 +659,25 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
       } else {
         stop(paste0(pname, " must take either `rel`, `common`, `random` or a numeric value"))
+      }
+
+      if (add.betastart==TRUE) {
+        if (UME==FALSE) {
+          if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
+            insert <- paste0("s.beta.", i, "[1] <- 0.00001") # To avoid numerical error with non-negative params
+          } else {
+            insert <- paste0("s.beta.", i, "[1] <- 0")
+          }
+          model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
+
+        } else if (UME==TRUE) {
+          if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
+            insert <- paste0("s.beta.", i, "[k,k] <- 0.00001") # To avoid numerical error with non-negative params
+          } else {
+            insert <- paste0("s.beta.", i, "[k,k] <- 0")
+          }
+          model <- model.insert(model, pos=which(names(model)=="ume.prior.ref"), x=insert)
+        }
       }
     }
   }
