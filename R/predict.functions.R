@@ -395,3 +395,24 @@ get.regress.vals <- function(mbnma, regress.vals, sum=TRUE) {
     return(outlist)
   }
 }
+
+
+
+
+
+
+#' Check regression parameters are specified correctly
+#'
+#' @noRd
+check.predreg <- function(mbnma, regress.vals) {
+
+  # Check regress.vals
+  if (!is.null(regress.vals)) {
+    if (is.null(mbnma$model.arg$regress.mat)) {
+      stop("'regress.vals' has been specified but MBNMA is not a meta-regression model")
+    }
+    if (!setequal(colnames(mbnma$model.arg$regress.mat), names(regress.vals))) {
+      stop(paste0("'regress.vals' must contain a single named regressor value for each covariate specified in the MBNMA model:\n", paste(colnames(object$model.arg$regress.mat), collapse="\n")))
+    }
+  }
+}
