@@ -697,10 +697,11 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         }
         agent.num <- match(names(doses), mbnma.agents)
       } else {
-        if (!all(names(doses) %in% c(1:max(agents, na.rm=TRUE)))) {
-          match.pass <- FALSE
-        }
-        agent.num <- as.numeric(names(doses)) # Add an agent numerical identifier for included agents
+        # if (!all(names(doses) %in% c(1:max(agents, na.rm=TRUE)))) {
+        #   match.pass <- FALSE
+        # }
+        #agent.num <- as.numeric(names(doses)) # Add an agent numerical identifier for included agents
+        agent.num <- 1:length(unique(names(doses)))
       }
       if (match.pass==FALSE) {
         stop("Element names in `doses` must correspond either to agent names in data or agent codes in `object`")
@@ -850,6 +851,8 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     }
     for (i in seq_along(index)) {
       if (fun$name[posvec[index[i]]] %in% splineopt) {
+        #print(agent.num[i])
+        #print((object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]]))
         splinedoses[[i]] <- t(genspline(splinedoses[[i]],
                                    spline = fun$name[posvec[index[i]]],
                                    knots=fun$knots[[posvec[index[i]]]],
