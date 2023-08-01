@@ -51,10 +51,10 @@ test_that("plot functions correctly", {
       modellist <- list(linear, emax, ns, multifun)
 
       if ("class" %in% names(alldfs[[dat]])) {
-        emax.class <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="random", method="common",
+        emax.class <- suppressWarnings(mbnma.run(network, fun=demax(emax="rel", ed50="random"), method="common",
                                                   class.effect=list(emax="random"), n.iter=1000))
 
-        emax.class2 <- suppressWarnings(mbnma.emax(network, emax="rel", ed50="rel", method="common",
+        emax.class2 <- suppressWarnings(mbnma.run(network, demax(), method="common",
                                                    class.effect=list(emax="random"), n.iter=1000))
 
         modellist[[length(modellist)+1]] <- emax.class
@@ -275,7 +275,7 @@ test_that("plot functions correctly", {
           expect_message(fitplot(emax.class, disp.obs=FALSE, n.iter=100))
         }
 
-        theta.run <- mbnma.run(network, fun="linear", parameters.to.save = "theta", n.iter=1000)
+        theta.run <- mbnma.run(network, fun=dpoly(degree=1), parameters.to.save = "theta", n.iter=1000)
 
         if (!grepl("noplac", datanam)) {
           expect_silent(fitplot(theta.run, n.iter=100))
