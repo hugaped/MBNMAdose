@@ -76,47 +76,34 @@ test_that(paste("get.relative functions work correctly"), {
 
       expect_error(get.relative(emax, treatments=list("Placebo"=0, "Badger"=c(5,10))), "are not all named agents in")
 
-      if (datanam=="psoriasis90.noplac") {
-        treatments <- list("3"=c(70,105),
-                           "7"=c(20,40),
-                           "8"=c(37.5, 75),
-                           "9"=c(8.3, 16.7),
-                           "10"=c(3.75, 5.62, 7.5))
-      } else {
-        treatments <- list()
-      }
+      treatments <- list()
 
-      if (!datanam %in% c("ssri.noplac")) {
-        temp <- get.relative(emax, treatments = treatments)
-        expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
-        expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
-        expect_error(rank(temp), NA)
-      }
+      temp <- get.relative(emax, treatments = treatments)
+      expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
+      expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
+      expect_error(rank(temp), NA)
 
       temp <- get.relative(emax2, treatments=treatments)
       expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
       expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
       expect_error(rank(temp), NA)
 
-      if (!datanam %in% c("psoriasis90.noplac", "ssri.noplac")) {
+      temp <- get.relative(bs, treatments=treatments)
+      expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
+      expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
+      expect_error(rank(temp), NA)
 
-        temp <- get.relative(bs, treatments=treatments)
-        expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
+      temp <- get.relative(ns, treatments=treatments)
+      expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
+      expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
+      expect_error(rank(temp), NA)
+
+      temp <- get.relative(multifun1, treatments=treatments)
+      expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
+      if (!grepl("noplac", datanam)) {
         expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
-        expect_error(rank(temp), NA)
-
-        temp <- get.relative(ns, treatments=treatments)
-        expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
-        expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
-        expect_error(rank(temp), NA)
-
-        temp <- get.relative(multifun1, treatments=treatments)
-        expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
-        if (!grepl("noplac", datanam)) {
-          expect_equal(round(temp$mean[3,1] - temp$mean[2,1], 1), round(temp$mean[3,2], 1))
-        }
-        expect_error(rank(temp), NA)
       }
+      expect_error(rank(temp), NA)
 
       temp <- get.relative(multifun2, treatments=treatments)
       expect_equal(anyNA(temp$relarray[2,1,]), FALSE)
@@ -138,16 +125,14 @@ test_that(paste("get.relative functions work correctly"), {
 
       # Check prediction intervals
       # For common effects model
-      if (!datanam %in% c("psoriasis90.noplac", "ssri.noplac")) {
-        temp <- get.relative(bs)
-        temp2 <- get.relative(bs, lim="pred")
-        expect_equal(temp$se[2], temp2$se[2])
+      temp <- get.relative(bs)
+      temp2 <- get.relative(bs, lim="pred")
+      expect_equal(temp$se[2], temp2$se[2])
 
-        # For random effects model
-        temp <- get.relative(ns)
-        temp2 <- get.relative(ns, lim="pred")
-        expect_gte(temp2$se[2], temp$se[2])
-      }
+      # For random effects model
+      temp <- get.relative(ns)
+      temp2 <- get.relative(ns, lim="pred")
+      expect_gte(temp2$se[2], temp$se[2])
 
       if (datanam %in% "osteopain") {
         temp <- get.relative(bs, treatments=list("Celebrex"=c(0,100,250,400,500)))
