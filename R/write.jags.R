@@ -663,7 +663,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
 
       if (add.betastart==TRUE) {
         if (UME==FALSE) {
-          if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
+          if (FALSE %in% fun$p.expon & (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name))) {
             insert <- paste0("s.beta.", i, "[1] <- 0.00001") # To avoid numerical error with non-negative params
           } else {
             insert <- paste0("s.beta.", i, "[1] <- 0")
@@ -671,7 +671,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
           model <- model.insert(model, pos=which(names(model)=="start"), x=insert)
 
         } else if (UME==TRUE) {
-          if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
+          if (FALSE %in% fun$p.expon & (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name))) {
             insert <- paste0("s.beta.", i, "[k,k] <- 0.00001") # To avoid numerical error with non-negative params
           } else {
             insert <- paste0("s.beta.", i, "[k,k] <- 0")
@@ -800,6 +800,10 @@ write.regress <- function(model, regress.mat, regress.effect, om) {
 #' @noRd
 write.cor <- function(model, fun=dloglin(), cor=TRUE, omega=NULL, corprior="wishart",
                       method="random", class.effect=list(), UME=FALSE) {
+
+  if (cor==TRUE & FALSE %in% fun$p.expon) {
+    stop("Correlation between dose-response relative effects cannot be modelled with truncated parameters restricted to take positive values\nConsider using p.expon=TRUE in dose-response function to model parameters on exponential scale")
+  }
 
   if (length(class.effect)>0 & cor==TRUE) {
     warning("Class effects cannot be modelled with correlation between dose-response relative effects - correlation will be ignored")
@@ -981,8 +985,17 @@ remove.loops <- function(model) {
 #'
 #' @inheritParams nma.run
 #' @noRd
-write.nma <- function(method="common", likelihood="binomial", link="logit", om,
+write.nma <- function(method="common", likelihood="binomial", link="logit",
+                      sdscale=FALSE, om,
                       UME=FALSE) {
+
+  # Checks
+  argcheck <- checkmate::makeAssertCollection()
+  checkmate::assertChoice(method, choices=c("common", "random"), null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(UME, null.ok=FALSE, add=argcheck)
+  checkmate::assertLogical(sdscale, null.ok=FALSE, add=argcheck)
+  checkmate::assertList(om, len=2, null.ok=FALSE, add=argcheck)
+  checkmate::reportAssertions(argcheck)
 
   priors <- default.priors(UME=UME, om=om)
 
@@ -1005,7 +1018,7 @@ write.nma <- function(method="common", likelihood="binomial", link="logit", om,
   )
 
   # Add likelihood
-  model <- write.likelihood(model, likelihood = likelihood, link=link)
+  model <- write.likelihood(model, likelihood = likelihood, link=link, sdscale = sdscale)
 
 
   # Add d[1] <- 0
@@ -1183,9 +1196,11 @@ default.priors <- function(fun=dloglin(), UME=FALSE,
                                                       paste0("sd.", toupper(pname), " ~ dunif(", om$rel, ", 0)"))
 
     # For priors with truncated normal
-    if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
-      priors[[pname]] <- paste(priors[[pname]], "T(0,)")
-      priors[[toupper(pname)]] <- paste(priors[[toupper(pname)]], "T(0,)")
+    if (FALSE %in% fun$p.expon) {
+      if (pname %in% c("ed50", "onset") | (pname %in% "rate" & "itp" %in% fun$name)) {
+        priors[[pname]] <- paste(priors[[pname]], "T(0,)")
+        priors[[toupper(pname)]] <- paste(priors[[toupper(pname)]], "T(0,)")
+      }
     }
 
     # For UME models
