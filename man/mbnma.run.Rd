@@ -6,7 +6,7 @@
 \usage{
 mbnma.run(
   network,
-  fun = dloglin(),
+  fun = dpoly(degree = 1),
   method = "common",
   regress = NULL,
   regress.effect = "common",

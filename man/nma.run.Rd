@@ -13,6 +13,7 @@ nma.run(
   likelihood = NULL,
   link = NULL,
   priors = NULL,
+  sdscale = FALSE,
   warn.rhat = TRUE,
   n.iter = 20000,
   drop.discon = TRUE,
@@ -53,6 +54,10 @@ on the likelihood.}
 replacement prior distribution values given as strings
 \strong{using distributions as specified in JAGS syntax} (see \insertCite{jagsmanual;textual}{MBNMAdose}). Note
 that normal distributions in JAGS are specified as \deqn{N(\mu, prec)}, where \deqn{prec = 1 / {\sigma^2}}.}
+
+\item{sdscale}{Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying \code{sdscale=TRUE}
+will therefore only modify the model if link function is set to SMD (\code{link="smd"}).}
 
 \item{warn.rhat}{A boolean object to indicate whether to return a warning if Rhat values
 for any monitored parameter are >1.02 (suggestive of non-convergence).}

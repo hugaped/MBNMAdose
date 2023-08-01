@@ -7,15 +7,10 @@
 \usage{
 mbnma.nodesplit(
   network,
-  fun = dloglin(),
+  fun = dpoly(degree = 1),
   method = "common",
   comparisons = NULL,
   incldr = TRUE,
-  beta.1 = "rel",
-  beta.2 = "rel",
-  beta.3 = "rel",
-  beta.4 = "rel",
-  user.fun = NULL,
   ...
 )
 

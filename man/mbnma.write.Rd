@@ -5,7 +5,7 @@
 \title{Write MBNMA dose-response model JAGS code}
 \usage{
 mbnma.write(
-  fun = dloglin(),
+  fun = dpoly(degree = 1),
   method = "common",
   regress.mat = NULL,
   regress.effect = "common",
