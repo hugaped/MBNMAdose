@@ -53,54 +53,40 @@ functions in `mbnma.run()`. For example, `mbnma.emax()` is equivalent to
 For the following functions $x_{i,k}$ refers to the dose and $t_{i,k}$
 to the agent in arm $k$ of study $i$.
 
--   Log-linear (`dloglin()`):
-    $f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} \times ln(x_{i,k} + 1)$ where
-    $lambda$ controls the gradient of the dose-response relationship.
+**Log-linear (`dloglin()`)**
+$$f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} \times ln(x_{i,k} + 1)$$ 
+where $lambda$ controls the gradient of the dose-response relationship.
 
--   Exponential (`dexp()`):
-    $f(x_{i,k}, t_{i,k})=Emax_{t_{i,k}} (1 - e^{-x_{i,k}})$ where $Emax$
-    is the maximum efficacy of an agent.
+**Exponential (`dexp()`)**
+$$f(x_{i,k}, t_{i,k})=Emax_{t_{i,k}} (1 - e^{-x_{i,k}})$$
+where $Emax$ is the maximum efficacy of an agent.
 
--   Emax (`demax()`):
-    $f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times {x_{i,k}^{\gamma_{t_{i,k}}}}} {ED50_{t_{i,k}}^{\gamma_{t_{i,k}}} + x_{i,k}^{\gamma_{t_{i,k}}}}$
-    where $Emax$ is the maximum efficacy that can be achieved, $ED50$ is
-    the dose at which 50% of the maximum efficacy is achieved, and
-    $\gamma$ is the Hill parameter that controls the sigmoidal shape of
-    the function. By default, `demax()` fits a 2-parameter Emax function
-    in which $\gamma_{t_{i,k}}=1$ (`hill=NULL` in function argument).
+**Emax (`demax()`)**
+$$f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times {x_{i,k}^{\gamma_{t_{i,k}}}}} {ED50_{t_{i,k}}^{\gamma_{t_{i,k}}} + x_{i,k}^{\gamma_{t_{i,k}}}}$$
+where $Emax$ is the maximum efficacy that can be achieved, $ED50$ is the dose at which 50% of the maximum efficacy is achieved, and $\gamma$ is the Hill parameter that controls the sigmoidal shape of the function. By default, `demax()` fits a 2-parameter Emax function in which $\gamma_{t_{i,k}}=1$ (`hill=NULL` in function argument).
 
--   Polynomial (e.g. linear) (`dpoly()`):
-    $f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}+...+\beta_{p_{t_{i,k}}}x^p_{i,k}$
-    where $p$ is the degree of the polynomial (e.g. 1 for linear) and
-    $\beta_p$ are the coefficients
+**Polynomial (e.g. linear) (`dpoly()`)**
+$$f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}+...+\beta_{p_{t_{i,k}}}x^p_{i,k}$$
+where $p$ is the degree of the polynomial (e.g. 1 for linear) and $\beta_p$ are the coefficients
 
--   Fractional polynomial (`dfpoly()`):
-    $f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k}}}x^{\gamma_p}_{i,k}$
-    where $p$ is the degree of the polynomial, $\beta_p$ are the
-    coefficients, and $x_{i,k}^{\gamma_p}$ is a regular power except
-    where $\gamma_p=0$ where ${x_{i,k}^{(0)}=ln(x_{i,k})}$. If a
-    fractional polynomial power ${\gamma_p}$ repeats within the function
-    it is multiplied by another ${ln(x_{i,k})}$.
+**Fractional polynomial (`dfpoly()`)**
+$$f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k}}}x^{\gamma_p}_{i,k}$$
+where $p$ is the degree of the polynomial, $\beta_p$ are the coefficients, and $x_{i,k}^{\gamma_p}$ is a regular power except where $\gamma_p=0$ where ${x_{i,k}^{(0)}=ln(x_{i,k})}$. If a fractional polynomial power ${\gamma_p}$ repeats within the function it is multiplied by another ${ln(x_{i,k})}$.
 
--   Spline functions (`dspline()`): B-splines (`type="bs"`), natural
-    cubic splines (`type="ns"`) and piecewise linear splines
-    (`type="ls"`) can be fitted.
-    $f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$
-    where $\beta_{p,t_{i,k}}$ is the regression coefficient for the
-    $p^{th}$ spline and $X_{1:P,i,k}$ is the basis matrix for the
-    spline, defined by the spline type.
+**Spline functions (`dspline()`)** 
+B-splines (`type="bs"`), natural cubic splines (`type="ns"`) and piecewise linear splines (`type="ls"`) can be fitted.
+$$f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$$
+where $\beta_{p,t_{i,k}}$ is the regression coefficient for the $p^{th}$ spline and $X_{1:P,i,k}$ is the basis matrix for the spline, defined by the spline type.
 
--   Non-parametric monotonic function (`dnonparam()`): Follows the
-    approach of Owen et al. [-@owen2015]. The `direction` can be
-    specified as `"increasing"` or `"decreasing"`.
+**Non-parametric monotonic function (`dnonparam()`)** 
+Follows the approach of Owen et al. [-@owen2015]. The `direction` can bespecified as `"increasing"` or `"decreasing"`.
 
--   User-defined function (`duser()`): Any function that can be
-    explicitly defined by the user within (see [User-defined
-    dose-response function])
+**User-defined function (`duser()`)** 
+Any function that can be explicitly defined by the user within (see [User-defined dose-response function])
 
--   Agent-specific functions (`dmulti()`): Allows for a separate
-    dose-response function to be fitted to each agent in the network
-    (see [Agent-specific dose-response functions])
+**Agent-specific functions (`dmulti()`)**
+Allows for a separate dose-response function to be fitted to each agent in the network (see [Agent-specific dose-response functions])
+
 
 ## Dose-response parameters
 
@@ -177,6 +163,9 @@ function and common treatment effects that pool relative effects for
 each agent separately on both Emax and ED50 parameters follows:
 
 ```{r, results="hide", warning=FALSE}
+# Prepare data using the triptans dataset
+tripnet <- mbnma.network(triptans)
+
 # Run an Emax dose-response MBNMA
 mbnma <- mbnma.run(tripnet, fun=demax(emax="rel", ed50="rel"), 
                    method="random")
@@ -305,7 +294,7 @@ agent and so an assumption of similarity between agents for this
 parameter may be less valid. One way to try to account for this issue
 and make dose scales more consistent across agents is to standardise
 doses for each agent relative to its "common" dose (see Thorlund et al.
-[-@thorlund2015]), though we expect that this may lead to bias if the
+[-@thorlund2014]), though we expect that this may lead to bias if the
 common dose is located at a different point along the dose-response
 curve.
 
@@ -386,7 +375,7 @@ depnet <- mbnma.network(ssri)
 # An example specifying a quadratic dose-response function
 quadfun <- ~ (beta.1 * dose) + (beta.2 * (dose^2))
 
-quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))|
+quad <- mbnma.run(depnet, fun=duser(fun=quadfun, beta.1 = "rel", beta.2 = "rel"))
 ```
 
 ### Agent-specific dose-response functions
@@ -555,16 +544,17 @@ Different prior distributions can be assigned for different indices of a paramet
 
 For example for an Emax function we may have different prior beliefs about the ED50 parameter, as the dose scale will be different for different agents:
 
-```{r}
-ed50.priors <- list(ed50 = c("dnorm(100, 0.0025) T(0,)", # Prior for Celebrex
-                             "dnorm(20, 0.01) T(0,)", # Prior for Etoricoxib
-                             "dnorm(50, 0.0025) T(0,)", # Prior for Lumiracoxib
-                             "dnorm(500, 0.0004) T(0,)", # Prior for Naproxcinod
-                             "dnorm(500, 0.0004) T(0,)", # Prior for Naproxen
-                             "dnorm(35, 0.04) T(0,)", # Prior for Rofecoxib
-                             "dnorm(200, 0.0004) T(0,)", # Prior for Tramadol
-                             "dnorm(4, 0.04) T(0,)" # Prior for Valdecoxib
-                             ))
+```{r, eval=FALSE}
+ed50.priors <- list(ed50 = c(
+  Celebrex="dnorm(100, 0.0025) T(0,)", 
+  Etoricoxib="dnorm(20, 0.01) T(0,)", 
+  Lumiracoxib="dnorm(50, 0.0025) T(0,)", 
+  Naproxcinod="dnorm(500, 0.0004) T(0,)", 
+  Naproxen="dnorm(500, 0.0004) T(0,)",
+  Rofecoxib="dnorm(35, 0.04) T(0,)",
+  Tramadol="dnorm(200, 0.0004) T(0,)",
+  Valdecoxib="dnorm(4, 0.04) T(0,)"
+  ))
 
 # Using the osteoarthritis dataset
 mbnma <- mbnma.run(painnet, fun=demax(emax="rel", ed50="rel"),

@@ -32,7 +32,7 @@ knitr::opts_chunk$set(
 
 # Network meta-regression
 
-Study-level covariates can be included in the model to adjust treatment effects following an approach for meta-regression outlined in NICE Technical Support Document 3 [@TSU3]. This can be used to explore and account for potential effect modification.
+Study-level covariates can be included in the model to adjust treatment effects following an approach for meta-regression outlined in NICE Technical Support Document 3 [@TSD3]. This can be used to explore and account for potential effect modification.
 
 Following the definition in NICE Technical Support Document 3, network meta-regression can be expressed as an interaction on the treatment effect in arms $\geq2$:
 
