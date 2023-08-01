@@ -371,7 +371,8 @@ add_index <- function(data.ab, agents=NULL, treatments=NULL) {
   newdat <- dplyr::arrange(newdat, dplyr::desc(newdat$narm), newdat$studyID, newdat$arm)
 
   output <- list("data.ab"=newdat,
-                 "studyID"=as.character(unique(newdat$studyID)))
+                 #"studyID"=as.character(unique(newdat$studyID)))
+                 "studyID"=unique(newdat$studyID))
 
   if ("agent" %in% names(data.ab)) {
     output[["agents"]] <- agents
