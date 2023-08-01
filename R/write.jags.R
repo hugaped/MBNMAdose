@@ -627,7 +627,7 @@ write.beta <- function(model, fun=dloglin(), method="common", om,
             insert <- paste0("s.beta.", i, "[k,c] ~ dnorm(", pname, ", tau.", pname, ")")
             model <- model.insert(model, pos=which(names(model)=="ume.prior"), x=insert)
 
-            insert <- c(priors[[paste0("sd.", toupper(pname))]],
+            insert <- c(priors[[paste0("sd.", pname)]],
                         paste0("tau.", pname, " <- pow(sd.", pname, ", -2)"))
             model <- model.insert(model, pos=which(names(model)=="end"), x=insert)
 
