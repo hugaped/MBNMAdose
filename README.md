@@ -55,15 +55,20 @@ devtools::install_github("hugaped/MBNMAdose")
 
 Functions within `MBNMAdose` follow a clear pattern of use:
 
-1.  Load your data into the correct format using `mbnma.network()`
-2.  Analyse your data using `mbnma.run()` with a wide range of
-    dose-response functions
-3.  Examine model results using forest plots and treatment rankings
-4.  Check model fit and test for consistency using functions like
-    `mbnma.nodesplit()`
+1.  Load your data into the correct format using `mbnma.network()` and
+    explore potential relationships (\[Exploring the
+    data\]\[1-dataexploration.html\])
+2.  Perform a dose-response MBNMA using `mbnma.run()` (\[Performing a
+    dose-response MBNMA\]\[2-runmbnmadose.html\]). Modelling of effect
+    modifying covariates is also possibly using \[Network
+    Meta-Regression\]\[6-metaregression.html\].
+3.  Test for consistency at the treatment-level using functions like
+    `nma.nodesplit()` and `nma.run()` (\[Checking for
+    consistency\]\[3-consistencychecking.html\])
+4.  Examine model outputs, such as relative effects, forest plots and
+    treatment rankings (\[Model outputs\]\[4-outputs.html\])
 5.  Use your model to predict responses using `predict()`
-6.  Calculate relative effects between any doses (even those not in the
-    original dataset) using `get.relative()`
+    (\[Predictions\]\[5-predictions.html\])
 
 At each of these stages there are a number of informative plots that can
 be generated to help understand the data and to make decisions regarding
