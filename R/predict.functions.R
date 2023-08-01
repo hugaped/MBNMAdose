@@ -412,7 +412,7 @@ check.predreg <- function(mbnma, regress.vals) {
       stop("'regress.vals' has been specified but MBNMA is not a meta-regression model")
     }
     if (!setequal(colnames(mbnma$model.arg$regress.mat), names(regress.vals))) {
-      stop(paste0("'regress.vals' must contain a single named regressor value for each covariate specified in the MBNMA model:\n", paste(colnames(object$model.arg$regress.mat), collapse="\n")))
+      stop(paste0("'regress.vals' must contain a single named regressor value for each covariate specified in the MBNMA model:\n", paste(colnames(mbnma$model.arg$regress.mat), collapse="\n")))
     }
   }
 }
