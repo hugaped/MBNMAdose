@@ -356,11 +356,6 @@ mbnma.run <- function(network,
       sdscale <- FALSE
     }
   }
-  # if (sdscale==TRUE) {
-  #   if (!"standsd" %in% names(network$data.ab)) {
-  #     stop("'standsd' must be a named variable in network$data.ab if sdscale==TRUE")
-  #   }
-  # }
 
   # Reduce n.burnin by 1 to avoid JAGS error if n.burnin=n.iter
   if (n.iter==n.burnin) {
@@ -827,6 +822,7 @@ gen.parameters.to.save <- function(fun, model, regress.mat=NULL) {
 #'
 #' @export
 nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors=NULL,
+                    sdscale=FALSE,
                     warn.rhat=TRUE, n.iter=20000, drop.discon=TRUE, UME=FALSE, pd="pd.kl",
                     parameters.to.save=NULL, ...) {
 
@@ -850,8 +846,16 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   likelihood <- likelink[["likelihood"]]
   link <- likelink[["link"]]
 
+  # Check sdscale
+  if (sdscale==TRUE) {
+    if (link!="smd") {
+      sdscale <- FALSE
+    }
+  }
+
   #### Write model for NMA ####
   model <- write.nma(method=method, likelihood=likelihood, link=link, UME=UME,
+                     sdscale=sdscale,
                      om=calcom(data.ab=network$data.ab, link=link, likelihood=likelihood))
 
   #### Add priors ####
@@ -891,7 +895,8 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
     trt.labs <- connect[["trt.labs"]]
   }
 
-  jagsdata <- getjagsdata(data.ab, likelihood = likelihood, link=link, level="treatment")
+  jagsdata <- getjagsdata(data.ab, likelihood = likelihood, link=link, sdscale=sdscale,
+                          level="treatment")
 
 
   #### Run JAGS model ####
