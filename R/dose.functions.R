@@ -1198,6 +1198,12 @@ dmulti <- function(funs=list()) {
       #knots <- append(knots, NA)
     }
 
+    if ("p.expon" %in% names(fun)) {
+      p.expon <- fun[["p.expon"]]
+    } else {
+      p.expon <- FALSE
+    }
+
     for (k in seq_along(fun[["params"]])){
       j <- gsub(fun[["bname"]][k], paste0("betaswap.",length(bname)+1), j)
       bname <- append(bname, paste0("beta.",length(bname)+1))
@@ -1222,26 +1228,9 @@ dmulti <- function(funs=list()) {
   names(apool) <- params
   names(bname) <- params
 
-
-  # Check for consistency of knots - I think this is essential tbh
-  # knots <- sapply(funs, FUN=function(x) {x[["knots"]]})
-  # names(knots) <- seq_along(knots)
-  # knots[sapply(knots, is.null)] <- NULL
-  # if (dplyr::n_distinct(knots)>1) {
-  #   stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
-  # }
-  # knots <- unlist(knots)
-  #
-  # # Check for consistency of spline functions
-  # check <- c("rcs", "bs", "ls", "ns") %in% name
-  # if (sum(check)>1) {
-  #   stop("dmulti() can only currently be used with a single type of spline function with consistent knots and degrees")
-  # }
-
-  # Add check to mbnma.run that length(fun$name) == length(network$treatments)
-
   out <- list(name=name, params=params, nparam=length(params), jags=jags,
               apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, degree=degree,
+              p.expon=p.expon,
               agents=names(funs))
   class(out) <- "dosefun"
   return(out)
