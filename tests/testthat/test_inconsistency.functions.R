@@ -129,7 +129,7 @@ for (dat in seq_along(alldats)) {
 
 
 
-  testthat::test_that("test.mbnma.nodesplit", {
+  testthat::test_that(paste0("test.mbnma.nodesplit for: ", datanam), {
 
     if (all(c("y", "se") %in% names(dataset))) {
       like <- "normal"
@@ -207,20 +207,20 @@ for (dat in seq_along(alldats)) {
     expect_error(print(split), NA)
     expect_equal(class(summary(split)), "data.frame")
 
-    expect_error(mbnma.nodesplit(network, fun="linear",
+    expect_error(mbnma.nodesplit(network, fun=dpoly(degree=1),
                                  method="random", n.iter=1000,
                                  comparisons = rbind(c("badger","rizatriptan_0.5"))),
                  "Treatment names given")
 
     if (datanam=="triptans") {
-      expect_error(mbnma.nodesplit(network, fun="emax",
+      expect_error(mbnma.nodesplit(network, fun=demax(),
                                    method="random", n.iter=1000,
                                    comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                        c("zolmitriptan_4", "eletriptan_1"),
                                                        c("naratriptan_2", "Placebo_0"))))
 
     } else {
-      expect_error(mbnma.nodesplit(network, fun="emax",
+      expect_error(mbnma.nodesplit(network, fun=demax(),
                                    method="random", n.iter=1000,
                                    comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                        c("zolmitriptan_4", "eletriptan_1"),
