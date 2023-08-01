@@ -121,7 +121,7 @@ dexp <- function(emax="rel", onset=NULL, p.expon=FALSE) {
     stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
   }
 
-  out <- list(name="exp", fun=fun,
+  out <- list(name="exp", fun=fun, p.expon=p.expon,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
   class(out) <- "dosefun"
@@ -249,7 +249,7 @@ ditp <- function(emax="rel", rate="rel", p.expon=FALSE) {
 
   out <- list(name="itp", fun=fun,
               params=paramnames, nparam=nparam, jags=jags,
-              apool=apool, bname=bname, p.expon=FALSE)
+              apool=apool, bname=bname, p.expon=p.expon)
   class(out) <- "dosefun"
 
   if (p.expon==TRUE) {
@@ -455,7 +455,7 @@ demax <- function(emax="rel", ed50="rel", hill=NULL, p.expon=FALSE) {
     stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")
   }
 
-  out <- list(name="emax", fun=fun,
+  out <- list(name="emax", fun=fun, p.expon=p.expon,
               params=paramnames, nparam=nparam, jags=jags,
               apool=apool, bname=bname)
   class(out) <- "dosefun"
