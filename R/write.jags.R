@@ -1142,6 +1142,7 @@ write.E0.synth <- function(synth="fixed", likelihood=NULL, link=NULL, om) {
 #' This function creates JAGS code snippets for default MBNMA model priors.
 #'
 #' @inheritParams mbnma.run
+#' @inheritParams mbnma.write
 #'
 #' @return A list, each element of which is a named JAGS snippet
 #'   corresponding to a prior in the MBNMA JAGS code.
