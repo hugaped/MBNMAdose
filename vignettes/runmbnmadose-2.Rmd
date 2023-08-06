@@ -1,4 +1,4 @@
----
+ssi_---
 title: "MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
