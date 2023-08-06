@@ -21,6 +21,7 @@
 #'   assigned a numeric value (see details).
 #' @param onset Pooling for onset parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
+#' @inheritParams demax
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -146,6 +147,7 @@ dexp <- function(emax="rel", onset=NULL, p.expon=FALSE) {
 #'   assigned a numeric value (see details).
 #' @param rate Pooling for Rate parameter. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
+#' @inheritParams demax
 #'
 #' @return An object of `class("dosefun")`
 #'
