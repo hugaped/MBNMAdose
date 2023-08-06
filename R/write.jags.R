@@ -35,7 +35,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'              likelihood="binomial",
 #'              link="logit"
 #'              )
-#' cat(model)
+#' names(model) <- NULL
+#' print(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax with a random effects model,
@@ -44,7 +45,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'              likelihood="normal",
 #'              link="identity"
 #'              )
-#' cat(model)
+#' names(model) <- NULL
+#' print(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax and ED50.
@@ -54,7 +56,8 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'              link="identity",
 #'              class.effect=list("ed50"="common")
 #'              )
-#' cat(model)
+#' names(model) <- NULL
+#' print(model)
 #'
 #' # Write model code for a model with an Emax dose-response function,
 #' # relative effects modelled on Emax and ED50 with a
@@ -65,13 +68,14 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
 #'              likelihood="normal",
 #'              link="identity",
 #'              )
-#' cat(model)
+#' names(model) <- NULL
+#' print(model)
 #' @export
 mbnma.write <- function(fun=dpoly(degree=1),
                         method="common",
                         regress.mat=NULL, regress.effect="common",
                         sdscale=FALSE,
-                        cor=TRUE, cor.prior="wishart",
+                        cor=FALSE, cor.prior="wishart",
                         omega=NULL, om=list("rel"=5, "abs"=10),
                         class.effect=list(), UME=FALSE,
                         likelihood="binomial", link=NULL

@@ -10,7 +10,7 @@ mbnma.write(
   regress.mat = NULL,
   regress.effect = "common",
   sdscale = FALSE,
-  cor = TRUE,
+  cor = FALSE,
   cor.prior = "wishart",
   omega = NULL,
   om = list(rel = 5, abs = 10),
@@ -98,7 +98,8 @@ model <- mbnma.write(fun=dexp(),
              likelihood="binomial",
              link="logit"
              )
-cat(model)
+names(model) <- NULL
+print(model)
 
 # Write model code for a model with an Emax dose-response function,
 # relative effects modelled on Emax with a random effects model,
@@ -107,7 +108,8 @@ model <- mbnma.write(fun=demax(emax="rel", ed50="common"),
              likelihood="normal",
              link="identity"
              )
-cat(model)
+names(model) <- NULL
+print(model)
 
 # Write model code for a model with an Emax dose-response function,
 # relative effects modelled on Emax and ED50.
@@ -117,7 +119,8 @@ model <- mbnma.write(fun=demax(),
              link="identity",
              class.effect=list("ed50"="common")
              )
-cat(model)
+names(model) <- NULL
+print(model)
 
 # Write model code for a model with an Emax dose-response function,
 # relative effects modelled on Emax and ED50 with a
@@ -128,5 +131,6 @@ model <- mbnma.write(fun=demax(),
              likelihood="normal",
              link="identity",
              )
-cat(model)
+names(model) <- NULL
+print(model)
 }
