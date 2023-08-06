@@ -2,7 +2,7 @@
 title: "Class effect NMA analysis using MBNMAdose"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{NMA analysis using MBNMAdose}
+  %\VignetteIndexEntry{Class effect NMA analysis using MBNMAdose}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

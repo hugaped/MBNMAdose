@@ -7,7 +7,7 @@ output:
     toc: TRUE
 bibliography: REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{MBNMAdose}
+  %\VignetteIndexEntry{MBNMAdose: Calculating model predictions}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

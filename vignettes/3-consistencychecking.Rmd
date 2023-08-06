@@ -7,7 +7,7 @@ output:
     toc: TRUE
 bibliography: REFERENCES.bib
 vignette: >
-  %\VignetteIndexEntry{MBNMAdose}
+  %\VignetteIndexEntry{MBNMAdose: Checking for consistency}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
