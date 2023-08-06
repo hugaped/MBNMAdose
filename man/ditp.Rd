@@ -12,6 +12,9 @@ assigned a numeric value (see details).}
 
 \item{rate}{Pooling for Rate parameter. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
+
+\item{p.expon}{A logical object to indicate whether \code{ed50} and \code{hill} parameters should be
+expressed within the dose-response function on an exponential scale}
 }
 \value{
 An object of \code{class("dosefun")}

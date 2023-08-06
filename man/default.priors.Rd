@@ -20,11 +20,16 @@ dose-response. See Details.}
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
 
+\item{regress.mat}{A Nstudy x Ncovariate design matrix of meta-regression covariates}
+
 \item{regress.effect}{Indicates whether effect modification should be assumed to be
 \code{"common"} (assumed to be equal versus Placebo throughout the network),
 \code{"random"} (assumed to be exchangeable versus Placebo throughout the network),
 \code{"agent"} (assumed to be equal versus Placebo within each agent), or
 \code{"class"} (assumed to be equal versus Placebo within each class).}
+
+\item{om}{a list with two elements that report the maximum relative (\code{"rel"}) and maximum absolute (\code{"abs"}) efficacies
+on the link scale.}
 }
 \value{
 A list, each element of which is a named JAGS snippet
