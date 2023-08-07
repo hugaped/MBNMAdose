@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Class effect NMA analysis using MBNMAdose</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Class effect NMA analysis using
+MBNMAdose</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(MBNMAdose)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Attaching package: &#39;MBNMAdose&#39;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:stats&#39;:</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;     dexp</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; The following object is masked from &#39;package:base&#39;:</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt;     rank</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; ── Attaching packages</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; ───────────────────────────────────────</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; tidyverse 1.3.2 ──</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 </span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; ✔ tibble  3.1.8      ✔ dplyr   1.0.10</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ✔ tidyr   1.2.1      ✔ stringr 1.5.0 </span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; ✔ readr   2.1.3      ✔ forcats 0.5.2 </span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::filter() masks stats::filter()</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; ✖ dplyr::lag()    masks stats::lag()</span></span></code></pre></div>
+<p>Although <code>MBNMAdose</code> is intended to be used for
+dose-response Model-Based Network Meta-Analysis (MBNMA), it can also be
+adapted to perform standard Network Meta-Analysis (NMA), and this allows
+users to take advantage of some of the additional features of
+<code>MBNMAdose</code>, such as modelling class effects, for use in
+standard NMA. As well as fitting class effect models,
+<code>MBNMAdose</code> also allows for nodes-splitting to check for
+consistency in these models.</p>
+<p>To illustrate how this can be done we will use a dataset of inhaled
+medications for Chronic Obstructive Pulmonary Disease (COPD) from the
+<code>netmeta</code> package (<em>REF</em>):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(netmeta)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; Loading required package: meta</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; Loading &#39;meta&#39; package (version 6.2-1).</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; Type &#39;help(meta)&#39; for a brief overview.</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; Readers of &#39;Meta-Analysis with R (Use R!)&#39; should install</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; older version of &#39;meta&#39; package: https://tinyurl.com/dt4y5drs</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; Loading &#39;netmeta&#39; package (version 2.8-0).</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; Type &#39;help(&quot;netmeta-package&quot;)&#39; for a brief overview.</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; Readers of &#39;Meta-Analysis with R (Use R!)&#39; should install</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; older version of &#39;netmeta&#39; package: https://tinyurl.com/kyz6wjbb</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;Dong2013&quot;</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co"># Rename column names to match those used in MBNMAdose</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>Dong2013 <span class="ot">&lt;-</span> Dong2013 <span class="sc">%&gt;%</span> </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">studyID =</span> id,</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a>         <span class="at">r =</span> death,</span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a>         <span class="at">n =</span> randomized)</span></code></pre></div>
+<div id="performing-standard-nma-using-mbnma.run" class="section level2">
+<h2>Performing standard NMA using <code>mbnma.run()</code></h2>
+<p>The simplest use is in a network that includes a placebo treatment.
+In this dataset we do not have any dose-response information, so there
+is no value in performing a MBNMA. However, if we assume that every
+active treatment in the network is a separate “agent” with a dose of 1,
+and that the Placebo treatment has a dose of 0, then we can use the data
+in <code>MBNMAdose</code>, and by modelling a linear dose-response
+function we estimate parameters that are identical to a standard NMA
+model.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Define agents and assign a dose of 1 to all agents</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>Dong2013 <span class="ot">&lt;-</span> Dong2013 <span class="sc">%&gt;%</span> </span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">agent=</span>treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">dose=</span><span class="fu">case_when</span>(agent<span class="sc">==</span><span class="st">&quot;Placebo&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>                        agent<span class="sc">!=</span><span class="st">&quot;Placebo&quot;</span> <span class="sc">~</span> <span class="dv">1</span>))</span></code></pre></div>
+<p>Note that if there is an intervention within the dataset that has
+been administered at multiple doses, you can force the dataset to be
+analysed either as a “split” network (in which different doses are
+assumed to have independent effects) by assigning each of them a
+separate <code>agent</code> name (e.g. “warfarinlow”, “warfarinhigh”),
+or as a “lumped” network (in which different doses are assumed to have
+the same effect) by simply assigning both doses a dose of 1. Further
+details of “lumping” and “splitting” and the implications of these
+assumptions can be found in <span class="citation">[@pedder2021cons]</span>.</p>
+<p>Once we have reassigned the doses within the dataset we can create an
+<code>&quot;mbnma.network&quot;</code> object and create a network plot:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>network <span class="ot">&lt;-</span> <span class="fu">mbnma.network</span>(Dong2013)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">summary</span>(network)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; Description: Network </span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; Number of studies: 41 </span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; Number of treatments: 6 </span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; Number of agents: 6 </span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 2 (2, 2)</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Agent-level network is CONNECTED</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; Ttreatment-level network is CONNECTED</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="fu">plot</span>(network)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>We can then use a linear dose-response MBNMA to analyse the data. The
+coefficients for the linear slope of the dose-response function are
+mathematically equivalent to the basic treatment effect parameters
+estimated in a standard NMA. Note that the results are equivalent in
+both models (allowing for Monte-Carlo error from the MCMC sampling). The
+only difference is that the placebo parameter (<code>beta.1[1]</code>)
+that is equal to zero is not given in the output.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>nma.linear <span class="ot">&lt;-</span> <span class="fu">mbnma.run</span>(network, <span class="at">fun=</span><span class="fu">dpoly</span>(<span class="at">degree=</span><span class="dv">1</span>),</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>                        <span class="at">n.iter=</span><span class="dv">50000</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">print</span>(nma.linear)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; Inference for Bugs model at &quot;C:\Users\hp17602\AppData\Local\Temp\Rtmp8kKHa7\file6b501f09488b&quot;, fit using jags,</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">#&gt; beta.1[2]   0.033    0.085  -0.137  -0.023   0.033   0.092   0.198 1.002  1600</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co">#&gt; beta.1[3]  -0.073    0.080  -0.236  -0.124  -0.073  -0.018   0.086 1.003   860</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt; beta.1[4]  -0.227    0.089  -0.405  -0.285  -0.228  -0.167  -0.052 1.002  1600</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; beta.1[5]  -0.085    0.065  -0.212  -0.130  -0.086  -0.040   0.039 1.001  2400</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; beta.1[6]   0.421    0.188   0.059   0.288   0.422   0.547   0.783 1.002  1900</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; totresdev 150.337 1253.876  91.957 101.658 107.664 114.642 129.398 1.001  3000</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; deviance  456.037 1253.876 397.657 407.358 413.364 420.342 435.097 1.001  3000</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; pD = 50.3 and DIC = 463.7</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>nma <span class="ot">&lt;-</span> <span class="fu">nma.run</span>(network, <span class="at">n.iter=</span><span class="dv">50000</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">print</span>(nma)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; $jagsresult</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; Inference for Bugs model at &quot;C:\Users\hp17602\AppData\Local\Temp\Rtmp8kKHa7\file6b5067f3f20&quot;, fit using jags,</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; d[1]        0.000    0.000   0.000   0.000   0.000   0.000   0.000 1.000     1</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; d[2]        0.032    0.081  -0.127  -0.023   0.032   0.087   0.187 1.002  1100</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; d[3]       -0.071    0.081  -0.235  -0.124  -0.070  -0.016   0.086 1.002  1200</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; d[4]       -0.226    0.087  -0.400  -0.286  -0.227  -0.167  -0.053 1.001  3000</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; d[5]       -0.086    0.065  -0.213  -0.129  -0.086  -0.043   0.040 1.001  3000</span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; d[6]        0.411    0.189   0.039   0.283   0.409   0.536   0.784 1.015   160</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; totresdev 151.627 1258.521  91.527 102.615 109.114 116.037 132.358 1.002  1200</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; deviance  457.327 1258.521 397.227 408.315 414.814 421.737 438.058 1.001  3000</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; pD = 42.4 and DIC = 457.2</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; $trt.labs</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; [1] &quot;Placebo_0&quot;  &quot;ICS_1&quot;      &quot;LABA_1&quot;     &quot;LABA-ICS_1&quot; &quot;TIO-HH_1&quot;  </span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; [6] &quot;TIO-SMI_1&quot; </span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#&gt; $UME</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt; [1] FALSE</span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt; attr(,&quot;class&quot;)</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#&gt; [1] &quot;nma&quot;</span></span></code></pre></div>
+<p>We can also show the equivalence of results using
+<code>get.relative()</code> to compare relative effects from both
+models:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>rels <span class="ot">&lt;-</span> <span class="fu">get.relative</span>(nma.linear, nma)</span></code></pre></div>
+<p>Without a placebo, estimation is very similar, but requires renaming
+and recoding the network reference intervention to
+<code>&quot;Placebo&quot;</code>. This is not strictly necessary, as
+<code>MBNMAdose</code> can handle dose-response datasets that do not
+include placebo (or dose=0), but it will ensure that parameter estimates
+are equivalent between the NMA and MBNMA models and will make it easier
+to estimate relative effects. We illustrate this with the Surgical Site
+Infection dataset.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Ensure that Suture-absorbable is the network reference</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>ssi <span class="ot">&lt;-</span> ssi_closure <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">agent=</span><span class="fu">factor</span>(trt, <span class="at">levels=</span><span class="fu">c</span>(<span class="st">&quot;Suture-absorbable&quot;</span>, <span class="fu">unique</span>(ssi_closure<span class="sc">$</span>trt)[<span class="sc">-</span><span class="dv">1</span>])))</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Set dose=0 for network reference and dose=1 for all other interventions</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>ssi.plac <span class="ot">&lt;-</span> ssi <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">dose=</span><span class="fu">case_when</span>(trt<span class="sc">==</span><span class="st">&quot;Suture-absorbable&quot;</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>                                          <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">1</span>))</span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>network.plac <span class="ot">&lt;-</span> <span class="fu">mbnma.network</span>(ssi.plac)</span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; Values for `class` with dose = 0 have been recoded to `Placebo`</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt; class is being recoded to enforce sequential numbering</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="fu">plot</span>(network.plac)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Note that Suture-absorbable (the comparator) has been renamed to Placebo</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Run linear MBNMA model</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>nma.linear <span class="ot">&lt;-</span> <span class="fu">mbnma.run</span>(network.plac, <span class="at">fun=</span><span class="fu">dpoly</span>(<span class="at">degree=</span><span class="dv">1</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>                        <span class="at">n.iter=</span><span class="dv">50000</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">summary</span>(nma.linear)</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; ========================================</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; Dose-response MBNMA</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; ========================================</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; Likelihood: binomial</span></span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; Link function: logit</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; Dose-response function: poly</span></span>
+<span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Pooling method</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt; Method: Common (fixed) effects estimated for relative effects</span></span>
+<span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-15"><a href="#cb14-15" tabindex="-1"></a><span class="co">#&gt; beta.1 dose-response parameter results</span></span>
+<span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; Pooling: relative effects for each agent</span></span>
+<span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; |Agent                               |Parameter  |  Median|    2.5%|   97.5%|</span></span>
+<span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; |:-----------------------------------|:----------|-------:|-------:|-------:|</span></span>
+<span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; |Clips                               |beta.1[2]  | -0.1042| -0.9789|  0.8323|</span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt; |Suture--monofilament                |beta.1[3]  |  0.0391| -0.8044|  0.8658|</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt; |Staples                             |beta.1[4]  |  0.0335| -0.5319|  0.6233|</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; |Suture                              |beta.1[5]  | -0.0595| -0.7720|  0.6720|</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; |Tissue adhesive gel-low viscosity   |beta.1[6]  |  0.6387| -0.1066|  1.4252|</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; |Tape/film                           |beta.1[7]  | -0.3092| -1.0313|  0.3677|</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; |Preference of physician             |beta.1[8]  | -0.1882| -1.5443|  0.9779|</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; |Tissue adhesive gel-high viscosity  |beta.1[9]  | -0.1459| -1.7847|  1.5680|</span></span>
+<span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt; |Suture-non-absorbable               |beta.1[10] | -0.0955| -0.3762|  0.1828|</span></span>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; |Suture-antimicrobial                |beta.1[11] | -0.2730| -0.4259| -0.1212|</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; |Suture-non-absorbable-monofilament  |beta.1[12] | -0.6435| -1.2517| -0.0053|</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; |Suture-absorbable-monofilament      |beta.1[13] | -0.5068| -1.1432|  0.1290|</span></span>
+<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt; |Tissue adhesive gel                 |beta.1[14] |  1.0456| -1.7187|  4.9666|</span></span>
+<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; |Suture-absorbable-multifilament     |beta.1[15] | -0.7540| -1.3680| -0.0947|</span></span>
+<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; |Suture-non-absorbable-multifilament |beta.1[16] | -1.0355| -1.9462| -0.1193|</span></span>
+<span id="cb14-36"><a href="#cb14-36" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-37"><a href="#cb14-37" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-38"><a href="#cb14-38" tabindex="-1"></a><span class="co">#&gt; Model Fit Statistics</span></span>
+<span id="cb14-39"><a href="#cb14-39" tabindex="-1"></a><span class="co">#&gt; Effective number of parameters:</span></span>
+<span id="cb14-40"><a href="#cb14-40" tabindex="-1"></a><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 113.5</span></span>
+<span id="cb14-41"><a href="#cb14-41" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb14-42"><a href="#cb14-42" tabindex="-1"></a><span class="co">#&gt; Deviance = 1017.9</span></span>
+<span id="cb14-43"><a href="#cb14-43" tabindex="-1"></a><span class="co">#&gt; Residual deviance = 289</span></span>
+<span id="cb14-44"><a href="#cb14-44" tabindex="-1"></a><span class="co">#&gt; Deviance Information Criterion (DIC) = 1131.5</span></span></code></pre></div>
+<p>The linear dose-response coefficients can then be interpreted as the
+relative effect for each intervention versus the network reference
+(<code>&quot;Suture-absorbable&quot;</code>).</p>
+</div>
+<div id="benefits-of-using-mbnma.run-for-standard-nma-models" class="section level2">
+<h2>Benefits of using <code>mbnma.run()</code> for standard NMA
+models</h2>
+<p>Now that we have shown how to specify a standard NMA model within the
+MBNMA framework in <code>mbnma.run()</code>, we can now use
+<code>MBNMAdose</code> to implement some more interesting models, such
+as class effect models and node-splits to assess consistency.</p>
+<p>A class effects model can be implemented using the
+<code>class.effect</code> argument in <code>mbnma.run()</code>,
+introducing either a <code>&quot;common&quot;</code> or 2 class effect on the
+single linear dose-response parameter, <code>beta.1</code>:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co"># Random class effect model</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>nma.class <span class="ot">&lt;-</span> <span class="fu">mbnma.run</span>(network.plac, <span class="at">fun=</span><span class="fu">dpoly</span>(<span class="at">degree=</span><span class="dv">1</span>),</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>                       <span class="at">class.effect=</span><span class="fu">list</span>(<span class="at">beta.1=</span><span class="st">&quot;random&quot;</span>),</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>                       <span class="at">n.iter=</span><span class="dv">50000</span>)</span></code></pre></div>
+<p>A <code>&quot;common&quot;</code> class effect assumes that all treatments
+within a class have the same effect, whilst a <code>&quot;random&quot;</code>
+class effect assumes that treatment-level effects are randomly
+distributed around a mean class effect with a standard deviation (SD)
+that is estimated within the model.</p>
+<p>Common and random class effect models can be compared using model fit
+statistics (e.g. Deviance Information Criterion) to identify which is
+the most parsimonious model. Note that within <code>MBNMAdose</code>
+when a random class effect is fitted this makes the assumption that all
+classes share the same within-class SD. This may not necessarily be
+valid, but relaxing this cannot currently be done in
+<code>MBNMAdose</code> and it requires specific JAGS code to be
+written.</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

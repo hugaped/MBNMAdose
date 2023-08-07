@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Hugo Pedder" />
+
+<meta name="date" content="2023-08-06" />
+
+<title>MBNMAdose: Package Overview</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 800px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 20px;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 0;
+padding: 4px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table:not([class]) {
+margin: auto;
+min-width: 40%;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table[summary="R argblock"] {
+width: 100%;
+border: none;
+}
+table:not([class]) th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table:not([class]) td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table:not([class]), table:not([class]) th, table:not([class]) td {
+border-left-style: none;
+border-right-style: none;
+}
+table:not([class]) tr.odd {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 13px;
+padding-bottom: 1px;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f5f5f5;
+border-radius: 3px;
+color: #333;
+}
+pre {
+overflow-x: auto;
+border-radius: 3px;
+margin: 5px 0 10px 0;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: white;
+border: #f5f5f5 1px solid;
+}
+pre:not([class]) code {
+color: #444;
+background-color: white;
+}
+code {
+font-family: monospace;
+font-size: 90%;
+}
+p > code, li > code {
+padding: 2px 4px;
+color: #d14;
+border: 1px solid #e1e1e8;
+white-space: inherit;
+}
+div.figure {
+text-align: center;
+}
+table > caption, div.figure p.caption {
+font-style: italic;
+}
+table > caption span, div.figure p.caption span {
+font-style: normal;
+font-weight: bold;
+}
+p {
+margin: 0 0 10px;
+}
+table:not([class]) {
+margin: auto auto 10px auto;
+}
+img:not([class]) {
+background-color: #FFFFFF;
+padding: 2px;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+max-width: 100%;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f5f5f5;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f5f5f5;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f5f5f5;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+div.r-help-page {
+background-color: #f9f9f9;
+border-bottom: #ddd 1px solid;
+margin-bottom: 10px;
+padding: 10px;
+}
+div.r-help-page:hover {
+background-color: #f4f4f4;
+}
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">MBNMAdose: Package Overview</h1>
+<h4 class="author">Hugo Pedder</h4>
+<h4 class="date">2023-08-06</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction">Introduction</a>
+<ul>
+<li><a href="#workflow-within-the-package" id="toc-workflow-within-the-package">Workflow within the
+package</a></li>
+</ul></li>
+<li><a href="#datasets-included-in-the-package" id="toc-datasets-included-in-the-package">Datasets Included in the
+Package</a>
+<ul>
+<li><a href="#triptans-for-migraine-pain-relief" id="toc-triptans-for-migraine-pain-relief">Triptans for migraine pain
+relief</a></li>
+<li><a href="#biologics-for-treatment-of-moderate-to-severe-psoriasis" id="toc-biologics-for-treatment-of-moderate-to-severe-psoriasis">Biologics
+for treatment of moderate-to-severe psoriasis</a></li>
+<li><a href="#selective-serotonin-reuptake-inhibitors-ssris-for-major-depression" id="toc-selective-serotonin-reuptake-inhibitors-ssris-for-major-depression">Selective
+Serotonin Reuptake Inhibitors (SSRIs) for major depression</a></li>
+<li><a href="#interventions-for-serum-uric-acid-sua-reduction-in-gout" id="toc-interventions-for-serum-uric-acid-sua-reduction-in-gout">Interventions
+for Serum Uric Acid (SUA) reduction in gout</a></li>
+<li><a href="#interventions-for-pain-relief-in-osteoarthritis" id="toc-interventions-for-pain-relief-in-osteoarthritis">Interventions
+for pain relief in osteoarthritis</a></li>
+<li><a href="#alogliptin-for-lowering-blood-glucose-concentration-in-type-ii-diabetes" id="toc-alogliptin-for-lowering-blood-glucose-concentration-in-type-ii-diabetes">Alogliptin
+for lowering blood glucose concentration in type II diabetes</a></li>
+<li><a href="#wound-closure-methods-for-reducing-surgical-site-infection-ssi" id="toc-wound-closure-methods-for-reducing-surgical-site-infection-ssi">Wound
+closure methods for reducing Surgical Site Infection (SSI)</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This vignette demonstrates how to use <code>MBNMAdose</code> to
+perform Model-Based Network Meta-Analysis (MBNMA) of studies with
+multiple doses of different agents by accounting for the dose-response
+relationship. This can connect disconnected networks via the
+dose-response relationship and the placebo response, improve precision
+of estimated effects and allow interpolation/extrapolation of predicted
+response based on the dose-response relationship.</p>
+<p>Modelling the dose-response relationship also avoids the “lumping” of
+different doses of an agent which is often done in Network Meta-Analysis
+(NMA) and can introduce additional heterogeneity or inconsistency. All
+models and analyses are implemented in a Bayesian framework, following
+an extension of the standard NMA methodology presented by <span class="citation">(Lu and Ades 2004)</span> and are run in JAGS
+<em>(version 4.3.0 or later is required)</em> <span class="citation">(2017)</span>. For full details of dose-response MBNMA
+methodology see Mawdsley et al. <span class="citation">(2016)</span>.
+Throughout this vignette we refer to a <strong>treatment</strong> as a
+specific <strong>dose</strong> or a specific <strong>agent</strong></p>
+<p>This package has been developed alongside <code>MBNMAtime</code>, a
+package that allows users to perform time-course MBNMA to incorporate
+multiple time points within different studies. However, <em>they should
+not be loaded into R at the same time</em> as there are a number of
+functions with shared names that perform similar tasks yet are specific
+to dealing with either time-course <em>or</em> dose-response data.</p>
+<div id="workflow-within-the-package" class="section level3">
+<h3>Workflow within the package</h3>
+<p>Functions within <code>MBNMAdose</code> follow a clear pattern of
+use:</p>
+<ol style="list-style-type: decimal">
+<li>Load your data into the correct format using
+<code>mbnma.network()</code> and explore potential relationships (<a href="dataexploration-1.html">Exploring the data</a></li>
+<li>Perform a dose-response MBNMA using <code>mbnma.run()</code> (<a href="runmbnmadose-2.html">Performing a dose-response MBNMA</a>.
+Modelling of effect modifying covariates is also possibly using <a href="metaregression-6.html">Network Meta-Regression</a>.</li>
+<li>Test for consistency at the treatment-level using functions like
+<code>nma.nodesplit()</code> and <code>nma.run()</code> (<a href="consistencychecking-3.html">Checking for consistency</a></li>
+<li>Examine model outputs, such as relative effects, forest plots and
+treatment rankings (<a href="outputs-4.html">Model outputs</a></li>
+<li>Use your model to predict responses using <code>predict()</code> (<a href="predictions-5.html">Predictions</a></li>
+</ol>
+<p>At each of these stages there are a number of informative plots that
+can be generated to help understand the data and to make decisions
+regarding model fitting.</p>
+</div>
+</div>
+<div id="datasets-included-in-the-package" class="section level2">
+<h2>Datasets Included in the Package</h2>
+<div id="triptans-for-migraine-pain-relief" class="section level3">
+<h3>Triptans for migraine pain relief</h3>
+<p><code>triptans</code> is from a systematic review of interventions
+for pain relief in migraine <span class="citation">(Thorlund et al.
+2014)</span>. The outcome is binary, and represents (as aggregate data)
+the number of participants who were headache-free at 2 hours. Data are
+from patients who had had at least one migraine attack, who were not
+lost to follow-up, and who did not violate the trial protocol. The
+dataset includes 70 Randomised-Controlled Trials (RCTs), comparing 7
+triptans with placebo. Doses are standardised as relative to a “common”
+dose, and in total there are 23 different treatments (combination of
+dose and agent). <code>triptans</code> is a data frame in long format
+(one row per arm and study), with the variables <code>studyID</code>,
+<code>AuthorYear</code>, <code>N</code>, <code>r</code>,
+<code>dose</code> and <code>agent</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="right">studyID</th>
+<th align="left">AuthorYear</th>
+<th align="right">n</th>
+<th align="right">r</th>
+<th align="right">dose</th>
+<th align="left">agent</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">Tfelt-Hansen P 2006</td>
+<td align="right">22</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="left">placebo</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">Tfelt-Hansen P 2006</td>
+<td align="right">30</td>
+<td align="right">14</td>
+<td align="right">1</td>
+<td align="left">sumatriptan</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="left">Goadsby PJ 2007</td>
+<td align="right">467</td>
+<td align="right">213</td>
+<td align="right">1</td>
+<td align="left">almotriptan</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">Goadsby PJ 2007</td>
+<td align="right">472</td>
+<td align="right">229</td>
+<td align="right">1</td>
+<td align="left">zolmitriptan</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="left">Tuchman M2006</td>
+<td align="right">160</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="left">placebo</td>
+</tr>
+<tr class="even">
+<td align="right">3</td>
+<td align="left">Tuchman M2006</td>
+<td align="right">174</td>
+<td align="right">48</td>
+<td align="right">1</td>
+<td align="left">zolmitriptan</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="biologics-for-treatment-of-moderate-to-severe-psoriasis" class="section level3">
+<h3>Biologics for treatment of moderate-to-severe psoriasis</h3>
+<p>There are 3 psoriasis datasets from a systematic review of RCTs
+comparing biologics at different doses and placebo <span class="citation">(Warren et al. 2019)</span>. Each dataset contains a
+different binary outcome, all based on the number of patients
+experiencing degrees of improvement on the Psoriasis Area and Severity
+Index (PASI) measured at 12 weeks follow-up. Each dataset contains
+information on the number of participants who achieved <span class="math inline">\(\geq75\%\)</span> (<code>psoriasis75</code>),
+<span class="math inline">\(\geq90\%\)</span>
+(<code>psoriasis90</code>), or <span class="math inline">\(100\%\)</span> (<code>psoriasis100</code>).</p>
+</div>
+<div id="selective-serotonin-reuptake-inhibitors-ssris-for-major-depression" class="section level3">
+<h3>Selective Serotonin Reuptake Inhibitors (SSRIs) for major
+depression</h3>
+<p><code>ssri</code> is from a systematic review examining the efficacy
+of different doses of SSRI antidepressant drugs and placebo <span class="citation">(Furukawa et al. 2019)</span>. The response to
+treatment is defined as a 50% reduction in depressive symptoms after 8
+weeks (4-12 week range) follow-up. The dataset includes 60 RCTs
+comparing 5 different SSRIs with placebo.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(ssri), <span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">studyID</th>
+<th align="left">bias</th>
+<th align="right">age</th>
+<th align="right">weeks</th>
+<th align="left">agent</th>
+<th align="right">dose</th>
+<th align="right">n</th>
+<th align="right">r</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="left">Moderate risk</td>
+<td align="right">43.0</td>
+<td align="right">6</td>
+<td align="left">placebo</td>
+<td align="right">0</td>
+<td align="right">149</td>
+<td align="right">69</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="left">Moderate risk</td>
+<td align="right">42.9</td>
+<td align="right">6</td>
+<td align="left">fluoxetine</td>
+<td align="right">20</td>
+<td align="right">137</td>
+<td align="right">77</td>
+</tr>
+<tr class="odd">
+<td align="right">2</td>
+<td align="left">Low risk</td>
+<td align="right">41.2</td>
+<td align="right">6</td>
+<td align="left">placebo</td>
+<td align="right">0</td>
+<td align="right">137</td>
+<td align="right">63</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="left">Low risk</td>
+<td align="right">40.9</td>
+<td align="right">6</td>
+<td align="left">paroxetine</td>
+<td align="right">20</td>
+<td align="right">138</td>
+<td align="right">74</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="left">Low risk</td>
+<td align="right">41.6</td>
+<td align="right">6</td>
+<td align="left">placebo</td>
+<td align="right">0</td>
+<td align="right">158</td>
+<td align="right">91</td>
+</tr>
+<tr class="even">
+<td align="right">7</td>
+<td align="left">Low risk</td>
+<td align="right">41.3</td>
+<td align="right">6</td>
+<td align="left">fluoxetine</td>
+<td align="right">20</td>
+<td align="right">148</td>
+<td align="right">89</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="interventions-for-serum-uric-acid-sua-reduction-in-gout" class="section level3">
+<h3>Interventions for Serum Uric Acid (SUA) reduction in gout</h3>
+<p><code>gout</code> is from a systematic review of interventions for
+lowering Serum Uric Acid (SUA) concentration in patients with gout
+<em>[not published previously]</em>. The outcome is continuous, and
+aggregate data responses correspond to the mean change from baseline in
+SUA in mg/dL at 2 weeks follow-up. The dataset includes 10
+Randomised-Controlled Trials (RCTs), comparing 5 different agents, and
+placebo. Data for one agent (RDEA) arises from an RCT that is not
+placebo-controlled, and so is not connected to the network directly. In
+total there were 19 different treatments (combination of dose and
+agent). <code>gout</code> is a data frame in long format (one row per
+arm and study), with the variables <code>studyID</code>, <code>y</code>,
+<code>se</code>, <code>agent</code> and <code>dose</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">studyID</th>
+<th align="right">y</th>
+<th align="right">se</th>
+<th align="left">agent</th>
+<th align="right">dose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">4</td>
+<td align="right">1102</td>
+<td align="right">-0.53</td>
+<td align="right">0.25</td>
+<td align="left">RDEA</td>
+<td align="right">100</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="right">1102</td>
+<td align="right">-1.37</td>
+<td align="right">0.18</td>
+<td align="left">RDEA</td>
+<td align="right">200</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="right">1102</td>
+<td align="right">-1.73</td>
+<td align="right">0.25</td>
+<td align="left">RDEA</td>
+<td align="right">400</td>
+</tr>
+<tr class="even">
+<td align="left">53</td>
+<td align="right">2001</td>
+<td align="right">-6.82</td>
+<td align="right">0.06</td>
+<td align="left">Febu</td>
+<td align="right">240</td>
+</tr>
+<tr class="odd">
+<td align="left">54</td>
+<td align="right">2001</td>
+<td align="right">0.15</td>
+<td align="right">0.04</td>
+<td align="left">Plac</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">92</td>
+<td align="right">2003</td>
+<td align="right">-3.43</td>
+<td align="right">0.03</td>
+<td align="left">Allo</td>
+<td align="right">300</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="interventions-for-pain-relief-in-osteoarthritis" class="section level3">
+<h3>Interventions for pain relief in osteoarthritis</h3>
+<p><code>osteopain</code> is from a systematic review of interventions
+for pain relief in osteoarthritis, used previously in Pedder et al.
+<span class="citation">(2019)</span>. The outcome is continuous, and
+aggregate data responses correspond to the mean WOMAC pain score at 2
+weeks follow-up. The dataset includes 18 Randomised-Controlled Trials
+(RCTs), comparing 8 different agents with placebo. In total there were
+26 different treatments (combination of dose and agent). The active
+treatments can also be grouped into 3 different classes, within which
+they have similar mechanisms of action. <code>osteopain_2wkabs</code> is
+a data frame in long format (one row per arm and study), with the
+variables <code>studyID</code>, <code>agent</code>, <code>dose</code>,
+<code>class</code>, <code>y</code>, <code>se</code>, and
+<code>N</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">studyID</th>
+<th align="left">agent</th>
+<th align="right">dose</th>
+<th align="left">class</th>
+<th align="right">y</th>
+<th align="right">se</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">13</td>
+<td align="right">1</td>
+<td align="left">Placebo</td>
+<td align="right">0</td>
+<td align="left">Placebo</td>
+<td align="right">6.26</td>
+<td align="right">0.23</td>
+<td align="right">60</td>
+</tr>
+<tr class="even">
+<td align="left">14</td>
+<td align="right">1</td>
+<td align="left">Etoricoxib</td>
+<td align="right">10</td>
+<td align="left">Cox2Inhib</td>
+<td align="right">5.08</td>
+<td align="right">0.16</td>
+<td align="right">114</td>
+</tr>
+<tr class="odd">
+<td align="left">15</td>
+<td align="right">1</td>
+<td align="left">Etoricoxib</td>
+<td align="right">30</td>
+<td align="left">Cox2Inhib</td>
+<td align="right">4.42</td>
+<td align="right">0.17</td>
+<td align="right">102</td>
+</tr>
+<tr class="even">
+<td align="left">16</td>
+<td align="right">1</td>
+<td align="left">Etoricoxib</td>
+<td align="right">5</td>
+<td align="left">Cox2Inhib</td>
+<td align="right">5.34</td>
+<td align="right">0.16</td>
+<td align="right">117</td>
+</tr>
+<tr class="odd">
+<td align="left">17</td>
+<td align="right">1</td>
+<td align="left">Etoricoxib</td>
+<td align="right">60</td>
+<td align="left">Cox2Inhib</td>
+<td align="right">3.62</td>
+<td align="right">0.17</td>
+<td align="right">112</td>
+</tr>
+<tr class="even">
+<td align="left">18</td>
+<td align="right">1</td>
+<td align="left">Etoricoxib</td>
+<td align="right">90</td>
+<td align="left">Cox2Inhib</td>
+<td align="right">4.08</td>
+<td align="right">0.17</td>
+<td align="right">112</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="alogliptin-for-lowering-blood-glucose-concentration-in-type-ii-diabetes" class="section level3">
+<h3>Alogliptin for lowering blood glucose concentration in type II
+diabetes</h3>
+<p><code>alog_pcfb</code> is from a systematic review of
+Randomised-Controlled Trials (RCTs) comparing different doses of
+alogliptin with placebo <span class="citation">(Langford et al.
+2016)</span>. The systematic review was simply performed and was
+intended to provide data to illustrate a statistical methodology rather
+than for clinical inference. Alogliptin is a treatment aimed at reducing
+blood glucose concentration in type II diabetes. The outcome is
+continuous, and aggregate data responses correspond to the mean change
+in HbA1c from baseline to follow-up in studies of at least 12 weeks
+follow-up. The dataset includes 14 RCTs, comparing 5 different doses of
+alogliptin with placebo, leading to 6 different treatments (combination
+of dose and agent) within the network. <code>alog_pcfb</code> is a data
+frame in long format (one row per arm and study), with the variables
+<code>studyID</code>, <code>agent</code>, <code>dose</code>,
+<code>y</code>, <code>se</code>, and <code>N</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">studyID</th>
+<th align="left">agent</th>
+<th align="right">dose</th>
+<th align="right">y</th>
+<th align="right">se</th>
+<th align="right">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NCT01263470</td>
+<td align="left">alogliptin</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.05</td>
+<td align="right">75</td>
+</tr>
+<tr class="even">
+<td align="left">NCT01263470</td>
+<td align="left">alogliptin</td>
+<td align="right">6.25</td>
+<td align="right">-0.51</td>
+<td align="right">0.08</td>
+<td align="right">79</td>
+</tr>
+<tr class="odd">
+<td align="left">NCT01263470</td>
+<td align="left">alogliptin</td>
+<td align="right">12.50</td>
+<td align="right">-0.70</td>
+<td align="right">0.06</td>
+<td align="right">84</td>
+</tr>
+<tr class="even">
+<td align="left">NCT01263470</td>
+<td align="left">alogliptin</td>
+<td align="right">25.00</td>
+<td align="right">-0.76</td>
+<td align="right">0.06</td>
+<td align="right">79</td>
+</tr>
+<tr class="odd">
+<td align="left">NCT01263470</td>
+<td align="left">alogliptin</td>
+<td align="right">50.00</td>
+<td align="right">-0.82</td>
+<td align="right">0.05</td>
+<td align="right">79</td>
+</tr>
+<tr class="even">
+<td align="left">NCT00286455</td>
+<td align="left">alogliptin</td>
+<td align="right">0.00</td>
+<td align="right">-0.13</td>
+<td align="right">0.08</td>
+<td align="right">63</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="wound-closure-methods-for-reducing-surgical-site-infection-ssi" class="section level3">
+<h3>Wound closure methods for reducing Surgical Site Infection
+(SSI)</h3>
+<p><code>ssi_closure</code> is from a systematic review examining the
+efficacy of different wound closure methods to reduce Surgical Site
+Infections (SSI). The outcome is binary and represents the number of
+patients who experienced a SSI. The dataset includes 129 RCTs comparing
+16 different interventions in 6 classes. This dataset is primarily used
+to illustrate how <code>MBNMAdose</code> can be used to perform
+different types of network meta-analysis without dose-response
+information. It is in long format (one row per study arm) and includes
+the variables <code>studyID</code>, <code>Year</code>, <code>n</code>,
+<code>r</code>, <code>trt</code> and <code>class</code>.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">studyID</th>
+<th align="right">Year</th>
+<th align="right">r</th>
+<th align="right">n</th>
+<th align="left">trt</th>
+<th align="left">class</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Chughtai2000_51</td>
+<td align="right">2000</td>
+<td align="right">9</td>
+<td align="right">81</td>
+<td align="left">Suture-absorbable</td>
+<td align="left">Suture</td>
+</tr>
+<tr class="even">
+<td align="left">Chughtai2000_51</td>
+<td align="right">2000</td>
+<td align="right">9</td>
+<td align="right">81</td>
+<td align="left">Clips</td>
+<td align="left">Clips</td>
+</tr>
+<tr class="odd">
+<td align="left">Johnson1997_52</td>
+<td align="right">1997</td>
+<td align="right">24</td>
+<td align="right">258</td>
+<td align="left">Suture–monofilament</td>
+<td align="left">Suture</td>
+</tr>
+<tr class="even">
+<td align="left">Johnson1997_52</td>
+<td align="right">1997</td>
+<td align="right">23</td>
+<td align="right">258</td>
+<td align="left">Staples</td>
+<td align="left">Staples</td>
+</tr>
+<tr class="odd">
+<td align="left">Mullen1999_53</td>
+<td align="right">1999</td>
+<td align="right">3</td>
+<td align="right">40</td>
+<td align="left">Suture</td>
+<td align="left">Suture</td>
+</tr>
+<tr class="even">
+<td align="left">Mullen1999_53</td>
+<td align="right">1999</td>
+<td align="right">6</td>
+<td align="right">40</td>
+<td align="left">Staples</td>
+<td align="left">Staples</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-furukawa2019" class="csl-entry">
+Furukawa, T. A., A. Cipriani, P. J. Cowen, S. Leucht, M. Egger, and G.
+Salanti. 2019. <span>“Optimal Dose of Selective Serotonin Reuptake
+Inhibitors, Venlafaxine, and Mirtazapine in Major Depression: A
+Systematic Review and Dose-Response Meta-Analysis.”</span> Journal
+Article. <em>Lancet Psychiatry</em> 6: 601–9.
+</div>
+<div id="ref-jags" class="csl-entry">
+JAGS Computer Program. 2017. <a href="https://mcmc-jags.sourceforge.io/">https://mcmc-jags.sourceforge.io/</a>.
+</div>
+<div id="ref-langford2016" class="csl-entry">
+Langford, O., J. K. Aronson, G. van Valkenhoef, and R. J. Stevens. 2016.
+<span>“Methods for Meta-Analysis of Pharmacodynamic Dose-Response Data
+with Application to Multi-Arm Studies of Alogliptin.”</span> Journal
+Article. <em>Stat Methods Med Res</em>. <a href="https://doi.org/10.1177/0962280216637093">https://doi.org/10.1177/0962280216637093</a>.
+</div>
+<div id="ref-lu2004" class="csl-entry">
+Lu, G., and A. E. Ades. 2004. <span>“Combination of Direct and Indirect
+Evidence in Mixed Treatment Comparisons.”</span> Journal Article.
+<em>Stat Med</em> 23 (20): 3105–24. <a href="https://doi.org/10.1002/sim.1875">https://doi.org/10.1002/sim.1875</a>.
+</div>
+<div id="ref-mawdsley2016" class="csl-entry">
+Mawdsley, D., M. Bennetts, S. Dias, M. Boucher, and N. J. Welton. 2016.
+<span>“Model-Based Network Meta-Analysis: A Framework for Evidence
+Synthesis of Clinical Trial Data.”</span> Journal Article. <em>CPT
+Pharmacometrics Syst Pharmacol</em> 5 (8): 393–401. <a href="https://doi.org/10.1002/psp4.12091">https://doi.org/10.1002/psp4.12091</a>.
+</div>
+<div id="ref-pedder2019" class="csl-entry">
+Pedder, H., S. Dias, M. Bennetts, M. Boucher, and N. J. Welton. 2019.
+<span>“Modelling Time-Course Relationships with Multiple Treatments:
+Model-Based Network Meta-Analysis for Continuous Summary
+Outcomes.”</span> Journal Article. <em>Res Synth Methods</em> 10 (2):
+267–86.
+</div>
+<div id="ref-thorlund2014" class="csl-entry">
+Thorlund, K., E. J. Mills, P. Wu, E. P. Ramos, A. Chatterjee, E. Druyts,
+and P. J. Godsby. 2014. <span>“Comparative Efficacy of Triptans for the
+Abortive Treatment of Migraine: A Multiple Treatment Comparison
+Meta-Analysis.”</span> Journal Article. <em>Cephalagia</em>. <a href="https://doi.org/10.1177/0333102413508661">https://doi.org/10.1177/0333102413508661</a>.
+</div>
+<div id="ref-warren2019" class="csl-entry">
+Warren, R. B., M. Gooderham, R. Burge, B. Zhu, D. Amato, K. H. Liu, D.
+Shrom, J. Guo, A. Brnabic, and A. Blauvelt. 2019. <span>“Comparison of
+Cumulative Clinical Benefits of Biologics for the Treatment of Psoriasis
+over 16 Weeks: Results from a Network Meta-Analysis.”</span> Journal
+Article. <em>J Am Acad Dermatol</em> 82 (5): 1138–49.
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+window.onload = function() {
+  var i, fig = 1, caps = document.getElementsByClassName('caption');
+  for (i = 0; i < caps.length; i++) {
+    var cap = caps[i];
+    if (cap.parentElement.className !== 'figure' || cap.nodeName !== 'P')
+      continue;
+    cap.innerHTML = '<span>Figure ' + fig + ':</span> ' + cap.innerHTML;
+    fig++;
+  }
+  fig = 1;
+  caps = document.getElementsByTagName('caption');
+  for (i = 0; i < caps.length; i++) {
+    var cap = caps[i];
+    if (cap.parentElement.nodeName !== 'TABLE') continue;
+    cap.innerHTML = '<span>Table ' + fig + ':</span> ' + cap.innerHTML;
+    fig++;
+  }
+}
+</script>
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

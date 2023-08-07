@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Hugo Pedder" />
+
+<meta name="date" content="2023-08-06" />
+
+<title>MBNMAdose: Checking for consistency</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 800px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 20px;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 0;
+padding: 4px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table:not([class]) {
+margin: auto;
+min-width: 40%;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table[summary="R argblock"] {
+width: 100%;
+border: none;
+}
+table:not([class]) th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table:not([class]) td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table:not([class]), table:not([class]) th, table:not([class]) td {
+border-left-style: none;
+border-right-style: none;
+}
+table:not([class]) tr.odd {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 13px;
+padding-bottom: 1px;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f5f5f5;
+border-radius: 3px;
+color: #333;
+}
+pre {
+overflow-x: auto;
+border-radius: 3px;
+margin: 5px 0 10px 0;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: white;
+border: #f5f5f5 1px solid;
+}
+pre:not([class]) code {
+color: #444;
+background-color: white;
+}
+code {
+font-family: monospace;
+font-size: 90%;
+}
+p > code, li > code {
+padding: 2px 4px;
+color: #d14;
+border: 1px solid #e1e1e8;
+white-space: inherit;
+}
+div.figure {
+text-align: center;
+}
+table > caption, div.figure p.caption {
+font-style: italic;
+}
+table > caption span, div.figure p.caption span {
+font-style: normal;
+font-weight: bold;
+}
+p {
+margin: 0 0 10px;
+}
+table:not([class]) {
+margin: auto auto 10px auto;
+}
+img:not([class]) {
+background-color: #FFFFFF;
+padding: 2px;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+max-width: 100%;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f5f5f5;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f5f5f5;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f5f5f5;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+div.r-help-page {
+background-color: #f9f9f9;
+border-bottom: #ddd 1px solid;
+margin-bottom: 10px;
+padding: 10px;
+}
+div.r-help-page:hover {
+background-color: #f4f4f4;
+}
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">MBNMAdose: Checking for consistency</h1>
+<h4 class="author">Hugo Pedder</h4>
+<h4 class="date">2023-08-06</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#consistency-testing" id="toc-consistency-testing">Consistency Testing</a>
+<ul>
+<li><a href="#unrelated-mean-effects-ume-model-at-the-treatment-level" id="toc-unrelated-mean-effects-ume-model-at-the-treatment-level">Unrelated
+Mean Effects (UME) model at the treatment level</a></li>
+<li><a href="#node-splitting-at-the-treatment-level" id="toc-node-splitting-at-the-treatment-level">Node-splitting at the
+treatment level</a></li>
+</ul></li>
+<li><a href="#references" id="toc-references">References</a></li>
+</ul>
+</div>
+
+<div id="consistency-testing" class="section level2">
+<h2>Consistency Testing</h2>
+<p>When performing a MBNMA by pooling relative treatment effects, the
+modelling approach assumes consistency between direct and indirect
+evidence within a network. This is an incredibly useful assumption as it
+allows us to improve precision on existing direct estimates, or to
+estimate relative effects between treatments that have not been compared
+in head-to-head trials, by making use of indirect evidence.</p>
+<p>However, if this assumption does not hold, this is extremely
+problematic for inference, so it is important to be able to test it. A
+number of different approaches exist to allow for this in standard
+Network Meta-Analysis (NMA) <span class="citation">(Dias et al.
+2013)</span>, but within dose-response MBNMA there is added complexity
+because the consistency assumption can be conceptualised either for each
+treatment comparison (combination of dose and agent), or for each agent,
+where consistency is required for the agent-level parameters governing
+the dose-response relationship. A detailed description of consistency
+testing in MBNMA models is given in Pedder et al. <span class="citation">(2021)</span>.</p>
+<p>Testing for consistency at the agent-level is challenging as there is
+unlikely to be the required data available to be able to do this -
+included studies in the dataset must have multiple doses of multiple
+agents, so that sufficient information is available to estimate
+dose-response parameters <em>within that study</em>. However, testing
+for consistency at the treatment-level is possible in MBNMA, and this is
+described below. In practice, testing for consistency at the
+treatment-level should suffice, as any inconsistency identified at the
+treatment level should also translate to inconsistency at the agent
+level and vice versa <span class="citation">(Pedder et al.
+2021)</span>.</p>
+<p>Consistency also depends on the functional form assumed for the
+dose-response relationship, and so is inextricably linked to model fit
+of the dose-response relationship. A thorough assessment of the validity
+of the fitted model is therefore important to be confident that the
+resulting treatment effect estimates provide a firm basis for decision
+making.</p>
+<p>When meta-analysing dose-response studies, the potential for
+inconsistency testing may actually be reasonably rare, as most (if not
+all) trials will be multi-arm placebo-controlled. Since each study is
+internally consistent (the relative effects within the trial will always
+adhere to consistency relationships), there will be no closed loops of
+treatments that are informed by independent sources of evidence.</p>
+<div id="unrelated-mean-effects-ume-model-at-the-treatment-level" class="section level3">
+<h3>Unrelated Mean Effects (UME) model at the treatment level</h3>
+<p>To check for consistency at the treatment level using UME we fit an
+NMA that does not assume consistency relationships, and that only models
+the direct relative effects between each arm in a study and the study
+reference treatment <span class="citation">(Dias et al. 2013)</span>. If
+the consistency assumption holds true then the results from the UME
+model and the NMA will be very similar. However, if there is a
+discrepancy between direct and indirect evidence in the network, then
+the consistency assumption may not be valid, and the UME results are
+likely differ in several ways:</p>
+<ul>
+<li>The UME model may provide a better fit to the data, as measured by
+residual deviance</li>
+<li>The between-study SD for different parameters may be lower in the
+UME model</li>
+<li>Individual relative effects may differ in magnitude or (more
+severely) in direction for different treatment comparisons between UME
+and NMA models.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Using the alogliptin dataset</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>alognet <span class="ot">&lt;-</span> <span class="fu">mbnma.network</span>(alog_pcfb)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>nma <span class="ot">&lt;-</span> <span class="fu">nma.run</span>(alognet, <span class="at">method =</span> <span class="st">&quot;random&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>ume <span class="ot">&lt;-</span> <span class="fu">nma.run</span>(alognet, <span class="at">method =</span> <span class="st">&quot;random&quot;</span>, <span class="at">UME =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="right">Residual Deviance</th>
+<th align="left">Betwen-study SD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">NMA</td>
+<td align="right">46.44</td>
+<td align="left">0.12 (0.075, 0.19)</td>
+</tr>
+<tr class="even">
+<td align="left">UME</td>
+<td align="right">45.93</td>
+<td align="left">0.14 (0.084, 0.21)</td>
+</tr>
+</tbody>
+</table>
+<p>As both the residual deviances and between-study SDs are similar,
+this would suggest that there is no evidence of inconsistency in this
+network, though comparing results for individual comparisons from the
+models can also be useful.</p>
+<p>Deviance-deviance plots <span class="citation">(Dias et al.
+2013)</span> can be compared between different models to investigate the
+fit of different data points. This can be done for two different models
+at a time using <code>devdev()</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Compares residual deviance contributions from NMA and UME models</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">devdev</span>(nma, ume, <span class="at">dev.type =</span> <span class="st">&quot;resdev&quot;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAABUFBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZpAAZrYzMzM6AAA6OgA6Ojo6OmY6OpA6Zjo6ZmY6ZpA6ZrY6kJA6kNtNTU1NTW5NTY5Nbo5NbqtNjshmAABmADpmOgBmOjpmOpBmZgBmZjpmZmZmZpBmkGZmkJBmkLZmkNtmtttmtv9uTU1ubo5ujqtujshuq+SOTU2Obk2Obm6OyOSOyP+QOgCQOjqQZjqQZmaQZpCQkDqQkGaQkLaQtraQttuQ29uQ2/+rbk2rjm6ryOSr5P+2ZgC2Zjq2Zma2kDq2kGa2kJC2tpC2tra2ttu229u22/+2///Ijk3Ijm7IyKvI5P/I///bkDrbkGbbtmbbtpDbtrbbttvb27bb29vb2//b///kq27kyI7kyKvk///y8vL/tmb/yI7/25D/27b/29v/5Kv/5Mj/5OT//7b//8j//9v//+T///+bYRLOAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO2d+5sb5Zmmq7E9nqZn1rCI4DjOLCbDQAcwmThhdjZsTGIv7JiDE+KYLAcn4HPsdv//v63OUpXUbqn6fVV1l+77upJ2NWrV3Y9Lj+vw1VfFoYiI1KJoWkBEhIoFKiJSEwtURKQmFqiISE0sUBGRmligIiI1sUBFRGpigYqI1MQCFRGpiQUqIlITC1REpCYWqIhITSxQEZGabLRA/1FEBE2TBVpa+uGHTa67NghLs4yDkSVDEmG5VpYW6LogLM0yDkaWDEmEpQWaCsLSLONgZMmQRFhaoKkgLM0yDkaWDEmEpQWaCsLSLONgZMmQRFg2UqBPL/94tvDsam/Cj/40+G+zP5dXXlrqYLqNYZZxMLJkSCIsGynQm72jC/TRvgW6YcwyDkaWDEmEZQMF+uxmb75AJzzaf/X3/S/3lv234cpLSx1MtzHMMg5GlgxJhOXmC/Rv7/eWFWh/R/S9wdeboy9LVl5a6mC6jWGWcTCyZEgiLDdeoHd6vXf/uqRA7/TOf3846NHhfuiylZeWOphuY5hlHIwsGZIIy80X6Gu/W3aY/vRy75ejr+f/2N9F/fmXiysvLXUw3cYwyzgYWTIkEZaNXERaUqB3xt+aXEMa1elopWN+EBHhklegTy+Pj9zv9Y/wvz/8+0e96ZG8BSoiXSCvQO+NzoDO9kQXryV5CJ+FWcbByJIhibBsxyH8s6uzQ/bJS8aNOlt5aamD6TaGWcbByJIhibBsR4E+2q+Om1/8jgWahVnGwciSIYmwbEeBLh7TP9p3D3RTmGUcjCwZkgjLdhTo9Izn9Fh+sVIt0CzMMg5GlgxJhGUrCnRu9Pz4NvnFk6IWaBpmGQcjS4YkwrIVBfr08vSE56P9wTCmx+8vXEOyQNMwyzgYWTIkEZaNFuh4/pDSCc8748mYFm5FskCzMMs4GFkyJBGWrSjQ0pilx7/o9V59t7r/aYHmYZZxMLJkSCIsnZE+FYSlWcbByJIhibC0QFNBWJplHIwsGZIISws0FYSlWcbByJIhibC0QFNBWJplHIwsGZIISws0FYSlWcbByJIhibC0QFNBWJplHIwsGZIISws0FYSlWcbByJIhibC0QFNBWJplHIwsGZIISws0FYSlWcbByJIhibC0QFNBWJplHIwsGZIISws0FYSlWcbByJIhibC0QFNBWJplHIwsGZKttSz6TBcs0EwQlmYZByNLhmRbLYtivkEt0EwQlmYZByNLhmRLLYui1KAWaCYIS7OMg5ElQ7KdlkVRblALNBOEpVnGwciSIdlOSwt0kyAszTIORpYMyXZaWqCbBGFplnEwsmRIttPSAt0kCEuzjIORJUOypZZeRNogCEuzjIORJUOyrZYOY9ocCEuzjIORJUOytZYOpN8YCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWoAL9QUSEi3ug64KwNMs4GFkyJBGWoD3Q0lIH020Ms4yDkWX7JIs+lW8xorRAU0FYmmUcjCxbJ1kUiw3KiNICTQVhaZZxMLJsm2RRLGlQRpQWaCoIS7OMg5FlyySLYlmDMqK0QFNBWJplHIwsWyZpgW4CCzQLs4yDkWXLJC3QTWCBZmGWcTCybJmkBboJLNAszDIORpZtk/Qi0gawQLMwyzgYWbZO0mFM+VigWZhlHIws2yfpQPp0LNAszDIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYRlIwX69PKPy4u9IT/602Dp2Uf7vd47Xy6uvLTUwXQbwyzjYGTJkERYNlKgN3ulAn20P1eg4zYdlWlp5aWlDqbbGGYZByNLhiTCsoECfXazVy7Qe/OLN3vnvzx8fLV3/vvqyktLHUy3McwyDkaWDEmE5eYL9G/v9yoFerP33vTPj/bH+6Gv/r668tJSB9NtDLOMg5ElQxJhufECvdPrvfvXUoE+uzpXlnfG/+nOXKmOV15a6mC6jWGWcTCyZEgiLDdfoK/9rnzM3t/bPP/H/l7pz4fXjW72fjn8Zvklw5WXljqYbmOYZRyMLBmSCMtGLiKV23FyDWlQndO90Uf7k5Og/zjhBxERLjkFeq9/UP/94d8/6vW70wIVkY6SU6CT056Da0lzBVodyOQhfBZmGQcjS4YkwrIFh/Cz757/fske6HTlpaUOptsYZhkHI0uGJMKyRQU62Om0QBvALONgZMmQRFi2qkD7nelV+M1jlnEwsmRIIiybL9BnV+c7czL+03Ggm8Ms42BkyZBEWDZfoJM740dF6p1Im8cs42BkyZBEWLagQB/tD4YxPX5/ePt7v0Zf8174zWKWcTCyZEgiLBst0Ef7w/3MO+PJmIa3Ij12NqZNY5ZxMLJkSCIs21Cgh49/0eu9+u54l/PxR/3+fKe6/2mB5mGWcTCyZEgiLJ2RPhWEpVnGwciSIYmwtEBTQViaZRyMLBmSCEsLNBWEpVnGwciSIYmwtEBTQViaZRyMLBmSCEsLNBWEpVnGwciSIYmwtEBTQViaZRyMLBmSCEsLNBWEpVnGwciSIYmwtEBTQViaZRzrZ1n0yTB5Hh2NshEs0EwQlmYZx9pZFkUDDdrNKJvBAs0EYWmWcaybZVE00aCdjLIhwgv04Jtv5hb+cuPT72pYLVt5aamD6TaGWcaxZpZF0UiDdjHKpggu0PsXB1vDS5+PF59cKF74oq5aZeWlpQ6m2xhmGYcFGkYHN8vjC/TueHPY+bfRsgUKwCzjsEDD6OBmeWyB3t8titO/ufHr/peXh9+wQAGYZRwWaBgd3CyPLdBrRXFmcMrzwZWieGXwDQsUgFnG4UWkMDq4WR5XoAf93ny79CcLFIBZxuEwpjA6uFkeV6BzdfnkYrHzWwsUYWmWcTiQPowObpZrFOj4zxYoALOMg5ElQxJhGX0IP9jtHHF3cD7UAgVglnEwsmRIIizDLyK9Ml24VRRnLVAAZhkHI0uGJMIytkD7e52zXdBBnZ7btUBbj1nGwciSIYmwDB5I3+/Muca8XpQWT4YFmoVZxsHIkiGJsAwu0IPrpcb8864F2n7MMg5GlgxJhGX4ZCIPP/mXucZ8eN0CbT1mGQcjS4YkwtLp7FJBWJplHIwsGZIISws0FYSlWcbByJIhibCMLdCH3yzy7QkFpysvLXUw3cYwyzgYWTIkEZbRdyIt4jnQtmOWcTCyZEgiLC3QVBCWZhkHI0uGJMIy9lbOv9wY8nFR7Lzxmxs3/vPFYudNH+nRdswyDkaWDEmEZcZFpP6O6OSGztthO6AWaBpmGQcjS4YkwjKjQK+Vbog/u77T8pWXljqYbmOYZRyMLBmSCMuEAj24Mnc//P3dMx7CtxyzjIORJUMSYZlQoE8uzB22lxZOhAWahVnGwciSIYmwTCnQ0h6oBdp2zDIORpYMSYRlzjnQs0v/fDIs0CzMMg5GlgxJhGVGgd4tipdHJz4HkzO9Xc9rceWlpQ6m2xhmGQcjS4YkwjLlXvjBrKD/dOnSpReLyfPhA7BAszDLOBhZMiQRlikFenB9eh/SK0e8ZH0s0CzMMg5GlgxJhGXSbEwPPxnsfZ56M2omkUMLNA+zjIORJUMSYel0dqkgLM0yDkaWDEmEpQWaCsLSLONgZMmQRFimHcLvFcXOnofwTQusglnGwciSIYmwzCnQW15EGoGwNMs4GFkyJBGWKQU66M9T5y69/mJkg1qgWZhlHIwsGZIIy4wCvb9bnPl8+KcHV4q52zpPhgWahVnGwciSIYmwzLmVczoD08EVb+VsPWYZByNLhiTC0unsUkFYmmUcjCwZkghLp7NLBWFplnEwsmRIIiwt0FQQlmYZByNLhiTCMuUQfm4GpruFh/BtxyzjYGTJkERYehEpFYSlWcbByJIhibBMGsZ0+rPhn76+6DCm9mOWcTCyZEgiLNMG0hd7e3uhtyJZoFmYZRyMLBmSCMucWzlv747v5Nx5q6bWkpWXljqYbmOYZRyxWQ4+QpHvN2ELo0wjZzKRg69e7++Bnvsw6ALScOWlpQ6m2xhmGUdolqOdkMA3nLB9UebhdHaZICzNMo7ILCcT8sS944StizIRCzQThKVZxhGY5XRGs/iP2bZFmUlOgf7lxpRPHQfacswyDgs0jA5ulqsW6J93Z3/5hXcitR2zjMMCDaODm+Xqz4W3QEcgLM0yDgs0jA5ulivfyrnz4TdTop7qYYFmYZZxeBEpjA5ulqtOJjJ3L3wcFmgWZhmHw5jC6OBmWWM2pjgs0CzMMg4H0ofRwc1y1UN4C3QCwtIs42BkyZBEWGZcRLrlIfwEhKVZxsHIkiGJsMwo0CcXwqZgml95aamD6TbG9mYZf4jMyJIhibBMGQf64EJx+tKENxxI33K2NsuEizSMLBmSCMuUAr3uONAxCMttzTJjmBAjS4YkwjLnHKgFOgZhuaVZpgxUZ2TJkERYZg2kD5zHbrLy0lIH022MLc3SAm03jChTxoFmXEOyQNPY0iwt0HbDiNKB9KkgLLc0Swu03TCidCB9KgjLbc3Si0ithhFlzkWksCfJza+8tNTBdBtja7N0GFObYUSZUaAHVwKfJTdbeWmpg+k2xvZm6UD6FsOIMuMQ/oPXi2LnnAPpD91SI0FYMrJkSCIsc6azSxkH+oOICJdmC7S01MF/nhrDLONgZMmQRFj6VM5UEJZmGQcjS4YkwtICTQVhaZZxMLJkSCIsLdBUEJZmGQcjS4YkwtICTQVhaZZxMLJkSCIsLdBUEJZmGQcjS4YkwtICTQVhaZZxMLJkSCIsLdBUEJZmGQcjS4YkwtICTQVhaZZxMLJkSCIsLdBUEJZmGQcjS4YkwtICTQVhaZZxMLJkSCIsMwr02kuf19Z5zspLSx1MtzHMMg5GlgxJhGXOZCJv1/c5euWlpQ6m2xhmGQcjS4YkwtJHeqSCsDTLOBhZMiQRlimP9PChchMQlmYZByNLhiTCMueRHmcSToJaoFmYZRyMLBmSCMuMAn34cVGcckb6AQhLs4yDkSVDEmEJmpG+tNTBdBvDLONgZMmQRFhaoKkgLM0yDkaWDEmEpQPpU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkgjLpAJ9+MleUezsvfltPamlKy8tdTDdxjDLOBhZMiQRljkFemt6CemVmlpLVl5a6mC6jWGWcTCyZEgiLFMKdNCfp85dev3FyAa1QLMwyzgYWTIkEZYZBXp/d3Ir0oMrRdhtnRZoFmYZByNLhiTCMmU6u+LM5O6jgyvF2TpWy1ZeWupguo1hlnEwsmRIIiyzJxO5v3vGWzlbjlnGwciSIYmwzJ7OLm5uOws0C7OMg5ElQxJhaYGmgrA0yzgYWTIkEZYph/BzM9LfLTyEbztmGQcjS4YkwtKLSKkgLM0yDkaWDEmEZdIwptOfDf/09UWHMbUfs4yDkSVDEmGZNpC+2NvbC70VyQLNwizjYGTJkERY5tzKeXt3fCfnzls1tZasvLTUwXQbwyzjYGTJkERYJk0mcvDV6/090HMfBl1AGq68tNTBdBvDLONgZMmQRFiGFuh4CP3DwDmY5lZeWupguo1hlnEwsmRIIixDC3Q06NPnws9AWJplHIwsGZIIy+ACHeyBWqAzEJZmGQcjS4YkwjL4EL448+k3X1944bNvZkQdz1ugWZhlHIwsGZIIy9iLSLeKRbyVs+2YZRyMLBmSCMvYAj24boGWQFiaZRyMLBmSCMvoYUwH39z4r92d39yY8an3wrccs4yDkSVDEmGZPRtTHBZoFmYZByNLhiTCMmM2pg/eCBw/P1t5aamD6TaGWcbByJIhibD0ufCpICzNMg5GlgxJhKUFmgrC0izjYGTJkERYWqCpICzNMg5GlgxJhKUFmgrC0izjYGTJkERYWqCpICzNMg5GlgxJhKUFmgrC0izjYGTJkERYWqCpICzNMg5GlgxJhKUFmgrC0izjYGTJkERYWqCpICzNMg5GlgxJhGXKrZwvfV7f5+iVl5Y6mG5jmGUcjCwZkgjLlAItip03w+/mtECzMMs4GFkyJBGWGffCXx8+k/OfPqwvtXTlpaUOptsYZhkHI0uGJMIy5xzoVz8dPtM49FDeAs3CLONgZMmQRFhmXUQ6uP3ioENPvRV2KG+BZmGWcTCyZEgiLBOvwj/8ZHgo/89OqNxyzDIORpYMSYRl7jCmB7/2kR7txyzjYGTJkERYZhbowScv+kwkAGYZByNLhiTCMq1AD766GHsS1ALNwizjYGTJkERYJhVowmV4CzQLs4yDkSVDEmGZUaCDM599TscOBLVAszDLOBhZMiQRlkl3IiXcimSBZmGWcTCyZEgiLHMK9KXP6gsdufLSUgfTbQyzjIORJUMSYZlxK+enGU81tkDTMMs4GFkyJBGWecOYDr6tYfO8lZeWOphuY5hlHIwsGZIIy8Sr8C988eQngWdCLdAszDIORpYMSYRlSoEeXC+GI+ifXChOBw2jt0DzMMs4GFkyJBGWKQV6rShO/2z3hS8OflUUZxxI33bMMg5GlgxJhGVGgd4tircOn1wY3MN5e7d4u7ZaZeWlpQ6m2xhmGQcjS4YkwjKjQK8VrxyOC/TwVnG2rll15aWlDqbbGGYZByNLhiTCMmMY05Wd304L9P6uk4m0HbOMg5ElQxJhmTKQftCZ4wIdfwnAAs3CLONgZMmQRFhaoKkgLM0yDkaWDEmEZcoh/ODC0bg574ZdhrdAszDLOBhZMiQRlhkXkYYXjkYF2i9TLyK1HbOMg5ElQxJhmVGg93eLl78bFuiDi8XgglIIFmgWZhkHI0uGJMIyZSD9raIo9nZ3zg2e6PHKkv/+9PKPS8t/+0Wv9+o7X47/W2/Ij/5UXXlpqYPpNoZZxsHIkiGJsMy5F/7Pw+dxFkf05+HNXqlA/zCqzFd/P1h4tG+BbhizjIORJUMSYZk0mcjDT/YGD0Ra+kiPZzd7pQK913v13w8PH18ddea9crnOrby01MF0G8Ms42BkyZBEWOY+1ngZf3u/VyrQZ1d7vxx87R+7D77e7L13xMpLSx1MtzHMMg5GlgxJhOXGC/ROr/fuX+cL9Onl8dH6sDqfXR0dyS9ZeWmpg+k2hlnGwciSIYmwjC3Qh98sUplX+c5rvzviMH1YoE8vn/9jfxf1518urrys3b10G2NLshyckg8ReR6MLBmSCMvQAh0+Tq7KkjuRlhbo08uDfc/JNaTRYf1opWN+EKnPaGts2kK2mdQCvTP85r3+Ef73h3//qDc9krdAJYDJ5ti0h2wxxxXowV9uDPm4KHbe+M2NG//5YrHz5pJHzC0r0Hujyrwz/k+L15I8hM9iG7Kc/YMepbMcRpYMSYRlxkWk/o7oZPjn7WU7oMsK9N7+q78sv+T895WVl5Y6mG5jbEOWFug8DEmEZdqEymOWTqi8WKB3epWL74/2qyPpLdAstiFLC3QehiTCMm1C5TH3d5fMxrRQoH+o9me/QN0D3RTbkKUFOg9DEmGZNh/osoUJlQJ9drP32nh3czKqfslOqgWaxVZkuZn+hGTJkERYphRoaQ/0+AK9OXe+c3yb/LRI51ZeWupguo2xHVlupD8hWTIkEZY550DPLv3zlHKB3pm/XvRofzCM6fH7C9eQLNA0tiRLB9JPYUgiLJMea/zy6MTnwfVi2WONJwX6aP/V30/nrxvfIX9nPBnTwq1IFmgWZhkHI0uGJMIy5V74a/1/6//p0qVLg/lAX17y30sFeq9XKtDDx4PJQd+t7n9aoHmYZRyMLBmSCMuUAh3seD5vPtBaWKBZmGUcjCwZkgjLtPlAB3ufp9789shXrI0FmoVZxsHIkiGJsNz8fKB1sUCzMMs4GFkyJBGWFmgqCEuzjIORJUMSYZlZoAd/ufHp2j5Hr7y01MF0G8Ms42BkyZBEWOYU6IP/+O7w8MnFoihORz3V2AJNwyzjYGTJkERYJj3WeHD70bWjpgOthwWahVnGwciSIYmwTBpI36/N+7vFme8eXAgbyGSBZmGWcTCyZEgiLHNu5RzMwHS3GNwSf7dYMhtTLSzQLMwyDkaWDEmEZd50dqMaXTobUy0s0CzMMg5GlgxJhGXadHZPLgynEbFA249ZxsHIkiGJsEwr0Pu7w2lELND2Y5ZxMLJkSCIs0w7hbw1PgXoOFIBZxsHIkiGJsEyaD3Rw+X3QnF6FB2CWcTCyZEgiLJOGMQ14+/Dg10WxEzWS3gLNwizjYGTJkERYJg2k73N2eCFpZ8l8yvWwQLMwyzgYWTIkEZZJt3J+8MaH/S9PfvLS5/Wslq28tNTBdBvDLONgZMmQRFg6G1MqCEuzjIORJUMSYZlXoAeBkykPV15a6mC6jWGWcTCyZEgiLJMK9KufDu6Hf/KTN4PGMB1aoHmYZRyMLBmSCMvEZyL1C/RCcTpqMiYLNA2zjIORJUMSYZn1VM7TP9t94YuDXxVh4+gt0DTMMg5GlgxJhGXSONC3xvdw3t5d9lz4WligWZhlHIwsGZIIy5w7kV6Z3gR/azilSAQWaBYdy3Jw+ihV5HkwsmRIIizT7oUfF+j9XScTaTvdynJ0G1yuytEwsmRIIiwTp7MbNqezMbWfTmVZFI02KCNLhiTC0gJNBWHZpSyLotkGZWTJkERYphzCDy4cjZvT6ezaT5eytEBXgSGJsMy4iHRrNJHIoED7ZepFpLbTpSwt0FVgSCIsMwr0/m7x8nfDAn1w0ens2k+XsrRAV4EhibBMm85ub3fn3Iv9r1HzKVugaXQqSy8irQBDEmGZcy/8n3cn23FYf1qgaXQrS4cxHQ9DEmGZNJnIw0/2+lvxqV2C6iYAACAASURBVMDpQC3QNDqWpQPpj4UhibB0PtBUEJZmGQcjS4YkwjLlVs7IHc/ZyktLHUy3McwyDkaWDEmEZcpA+rAJREorLy11MN3GMMs4GFkyJBGWaXcihWOBZmGWcTCyZEgiLNMmEwnHAs3CLONgZMmQRFjm3Il0JuEkqAWahVnGwciSIYmwzCjQhx8Xxalzl8a84b3wLccs42BkyZBEWOZcRJrH2ZjajlnGwciSIYmwtEBTQViaZRyMLBmSCEsH0qeCsDTLOBhZMiQRlhZoKghLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlhZoKghLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlhZoKghLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlhZoKghLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlqEFOp6H6eG3J3RavvLSUgfTbQyzjIORJUMSYRlaoKOZQJ0PdAbC0izjYGTJkERYBhfoYA/UAp2BsDTLOBhZMiQRlsGH8MWZT7/5+sILn30zI+p43gLNwizjYGTJkERYxl5EulUs4mxMbccs42BkyZBEWMYW6MF1C7QEwtIs42BkyZBEWEYPYzr45sZ/7e785saMT52RvuWYZRyMLBmSCEufypkKwtIs42BkyZBEWGY8lfODqMcglVdeWupguo1hlnEwsmRIIiy9EykVhKVZxsHIkiGJsEwq0Ief7BXFzt6bgfckWaBZmGUcjCwZkgjLnAKdDWd6pabWkpWXljqYbmOYZRyMLBmSCMuUAh3056lzl15/MbJBLdAszDIORpYMSYRlRoHe3y3OfD7804MrxXB6kQgs0CzMMg5GlgxJhGVGgV4rzkwuwx9cKc7WsVq28tJSB9NtDLOMg5ElQxJhmTGM6crcXuf93TMOpG85ZhkHI0uGJMIyeyB93Kh6CzQLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlimH8MXb04W7hYfwbccs42BkyZBEWHoRKRWEpVnGwciSIYmwTBrGdPqz4Z++vugwpvZjlnEwsmRIIizTBtIXe3t7obciWaBZmGUcjCwZkgjLnFs5b++O7+Tceaum1pKVl5Y6mG5jmGUcjCwZkgjLpMlEDr56vb8Heu7DwHntLNAszDIORpYMSYSl09mlgrBsMsvBYcqKLzXLMBiSCEsLNBWEZYNZjk70rPZaswyDIYmwBBXoD9I1JpMeNu0hsgncA10XhGVjWc4e3brKq80yDIYkwhK0B1pa6mC6jWGBxsHYLhmSCEsLNBWEpQUaB2O7ZEgiLC3QVBCWFmgcjO2SIYmwtEBTQVg2l+U6/WmWcTAkEZYWaCoIS4cxxcHYLhmSCEsLNBWEpQPp42BslwxJhGVagX4zIerR8BZoFmYZByNLhiTCMqVAH/x6dnmgcEb6tmOWcTCyZEgiLDMK9MmFwgIdgbA0yzgYWTIkEZYZBXqrKE7/640Jn/pIj5ZjlnEwsmRIIixznokU9RiP0spLSx1MtzHMMg5GlgxJhGXKUznDHuNRWnlpqYPpNoZZxsHIkiGJsMx+rHEcFmgWZhkHI0uGJMIy5RDePdAJCEuzjIORJUMSYZlzESnsSXLzKy8tdTDdxjDLOBhZMiQRlhkF2t8FjXuW3GzlpaUOptsYZhkHI0uGJMIy4xD+g9eLYufcpTFvOIyp5ZhlHIwsGZIIy5SLSIUD6ccgLM0yDkaWDEmEpQWaCsLSLONgZMmQRFg6G1MqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYZlVoAeT6UC/+hfPgbYcs4yDkSVDEmHpfKCpICxbneVsyvo2W05pdZZTGJIIy/z5QM9YoC2nzVnOPTSpxZYz2pzlDIYkwjJpPtCdc6/vDv5XxN2TZIFm0eIs5x/b2V7LOVqc5RwMSYRlznygZ74b/P/bgy49E3QjkgWaRnuzLD04vrWW87Q3y3kYkgjLvPlAR1OKXBvUaAgWaBbtzdICzYEhibDMmw/07nBe+rths9NboFm0N0sLNAeGJMIys0AHR+9PLkQdw1ugWbQ3Sws0B4YkwjJvQuX7u4MejZue3gLNosVZehEpBYYkwjLjKvy14dnP0anQUY1GYIFmEZnlbNhm3Ps5jCkahiTCMqNA7+8WL30+uAz/yqBMPYRvO4FZzvVd4DuO/rRtWSbCkERYptyJdG14/9HdotjZLcIe72GBZhGX5fwRdzhblmUmDEmEZc698H8eHLgfXBveiOQ40LYTlmXpmk8425VlKgxJhGXWZCL/r9+bB7f39t6M6k8LNA0LNA7GdsmQRFg6nV0qCMtlWdZqQQsUsl0yJBGWeQV68G0Nm+etvLTUwXQbY0mW9WrQAoVslwxJhGVSgX7108F1pCc/iTuCt0DTWMyybg96EYmxXTIkEZYpBXpwffAp6hfoheJ00ChQCzSPhSzr70km9ic0y1bCkERYZg1jOv2z3Re+OPiVV+EBBBZo+ED6OZhZthKGJMIyo0DvFsVb43s4b+86G1PriSzQRJhZthKGJMIy7VbO8U3wt5yNqfVYoHEwtkuGJMIybTKRcYF6L3z7ibuIlAo0yzbCkERYpk1nNy5QZ2NqP+sOY2qoWqlZthCGJMLSAk0FYbnmQPqmdk6xWbYPhiTCMueZSG9XplWOwALNYr0sGzu872CWTcGQRFjmPJXz7KRA+2XqRaS2s1aWzV1g6l6WjcGQRFgmzQf68nfDAn1wsRjOTh+BBZqFBRoHY7tkSCIsUwbS3+p/vPZ2d869WMRNB2qBpmGBxsHYLhmSCMus+UAnn7Kw/rRA07BA42BslwxJhGXSZCIPP9nrf8ROvfR5PamlKy8tdTDdxvAiUhyM7ZIhibB0PtBUEJZrZukwpufA2C4ZkghLCzQVhOW6WTqQ/mgY2yVDEmGZVKB/uTHlU8eBthyzjIORJUMSYZlSoLNrSMNpQeuqVVZeWupguo1hlnEwsmRIIiyTprOzQEcgLM0yDkaWDEmEZc6tnDsffjMl6tFIFmgWZhkHI0uGJMIyZTKRsEmUSysvLXUw3cYwyzgYWTIkEZZpszGFY4FmYZZxMLJkSCIsUw7hLdAJCEuzjIORJUMSYZkzG5OH8GMQlmYZByNLhiTCMqNAn1wIm4JpfuWlpQ6m2xhmGQcjS4YkwjJlHOiDC8XpSxPecCB9yzHLOBhZMiQRlikFet1xoGMQlmYZByNLhiTCMuccqAU6BmFplnEwsmRIIiyzBtIHHbfPr7y01MF0G8Ms42BkyZBEWKaMA824hmSBpnF0lq16Njw8yzbBkERYOpA+FYTlkY81bmrmz+Vgs2wfDEmEpQPpU0FYLsmydBa7AaVlULNsIQxJhGXORaS4JyHNrby01MF0G2Mxy6JoYYNCs2wjDEmEZUaBHlzZeau2z9ErLy11MN3GWMiysEDrwtguGZIIy4xD+A9eL4qdcw6kP6RuqXUKNL9omVm2EoYkwjJnOjvHgY5BWEYU6AZ2VZlZthKGJMLSAk0l1jKpo44r0BXNshsU8TfO2C4ZkghLn8qZSqhlVkcdcxFpZbPkBkX8jTO2S4YkwtICTSXSMq2jjhzGtPIurwU6gbFdMiQRlhZoKoGWeSV15ED6lbFAJzC2S4YkwtICTQVboOthgU5gbJcMSYRlIwX69PKPS8vPPtrv9d75csnC/MpLSx1M9xjaXKBeRJrA2C4ZkgjLRgr0Zq9UoE8v9wb86E8LC6WVl5Y6mO4xtLpAHcY0hrFdMiQRlg0U6LObvXKB3uyd//Lw8dXe+e+rC6WVl5Y6mO5xbPIi0vqk96ef+jgYkgjLzRfo397vlQv00f5wd/Pp5Vd/X1kor7y01MF0jyWqP6vvso1ZZsHIkiGJsNx4gd7p9d79a6lA74yX7vTeqyyUV15a6mC6xxPXn6X32cosk2BkyZBEWG6+QF/73eG9UoHe7P1y+HX43dJCeeWlpQ6muyEWzwSYZRyMLBmSCMuMAr320ufPf59SOz67Oj5af7R//vvSwmSlY36QAGbXopo2EdkyVr4X/m0LNJnaDWiBijRE1CM9jirQH/2ptFD+IQ/h56h/PWnJaKhylvmX02uC+BtnbJcMSYRlyiM9jnuo3Fp7oNOVl5Y6mO4anGBE03EFuoEBnTVB/I0ztkuGJMIy55EeZ55/EtQCPRknGlP//ItIm7ilqCaIv3HGdsmQRFhmFOjDj4vi1PNmpPcq/Mk42U1JzxvGlHe708lB/I0ztkuGJMKykQmV71XGgb43+1paKK+8rN29dFfnhDX3nIH0FugJYWyXDEmEZQsK1DuRhqzRWsE1Z4HGwdguGZIIy0YmEykX6LOrvdemt7+XFsorLy11Lt21aiu25SzQOBjbJUMSYdlogT7aH+5nPp6fgOnxds7GtGZvZe2BehHphDC2S4YkwrINBXr4+KN+Zb4z3uUsLcyvvLTUsXTX3vNb4+XHvsxhTHEwtkuGJMIyqUAffrJXFDt7b35bT2rpyktLHUt3/UPnlV9//MscSB8HY7tkSCIscwr01rQPXqmptWTlpaWOpVt7D/TYH1jhZR3LslEYWTIkEZYpBTroz1PnLr3+YmSDWqB1fmCV13Usy0ZhZMmQRFhmFOj93cmtSA+uFMfd1rn6yktLXUu37hG8BdouGFkyJBGWKdPZFWcmdx8dXCnO1rFatvLSUufSXfPijQXaThhZMiQRltmTidzfPbN4K2ctOl6g6168WfMUqAW6GRhZMiQRlil3Is3dfHT83HYrr7y01MF012Sti/BeRNoQjCwZkghLCzSVTMsVd1mPL1qzjIORJUMSYZlyCD83I/3dwkP4hjm2aM0yDkaWDEmEpReRUkFYmmUcjCwZkgjLpGFMpz8b/unriw5jagfP2w01yzgYWTIkEZZpA+mLvb29woH0+atY41LSEf/RLONgZMmQRFjm3Mp5e3d87XfnrZpaS1ZeWupguvVYazDT8v9ilnEwsmRIIiyTJhM5+Or1/h7ouQ+DLiANV15a6mC6tVhpOGhlMOjc60ffNcswGNslQxJh2ch0drWwQGeUuvD4Bi2/qlKlaw7gbw7E3zhju2RIIiwt0FRyLKtluFaBLvkjo0ERf+OM7ZIhibAMLdCDDwbP4Oz//zxLnspZCwt0wtoVOP+qo/7cfhB/44ztkiGJsAwt0CcXBo+QO/6hcrWwQMfUqMAjKtcCDYexXTIkEZYWaCrZBbrenCLVn7ZAw2FslwxJhKXnQFNJL9B15hRZ/GlSf/qpj4MhibC0QFPJL9C1n2G08MMOYwqEsV0yJBGWKffCv/R5bZ3nrLy01MF0V+aE+42lHx725xZnGQ0jS4YkwjJlOru52Zji2IICXbUVT3jcXf3hTmbZEIwsGZIIy+z5QOPofoGu3oux5y0XsmznaVHE3zhju2RIIiyzH+kRRzcLtHI03Uh1VbNs6YUlxN84Y7tkSCIsM86B3po8lDOUThbowvWcJqqrkmVbL80j/sYZ2yVDEmGZUaAPPx4+Ft47kY5Nd3E8UvMF2trBoYi/ccZ2yZBEWOZcRJrHgfRHsnRMpgV6BIi/ccZ2yZBEWFqgqVigcSD+xhnbJUMSYelA+lTWKNC2XESyQE8CY7tkSCIsLdBU1inQgKvf9X7ei0hxMLZLhiTCMq9AD76tYfO8lZeWupFupasi+rPGOziMKQ7GdsmQRFgmFehXPx2c/HzykzfjnunRxQKN7aq6u44OpI+DsV0yJBGWKQV6cH109ejJheJ02E1JnSzQyK6qffKyK1m2AUaWDEmEZUqBXiuK0z/bfeGLg18VxZmofdBuFmggFmgLYGTJkERYZhTo3aJ4a3xH/O3dsIlFLNBjsEBbACNLhiTCMmU6u+KV6ZQit4qzdc2qKy8tdTDdk2KBtgBGlgxJhGXaZCLjAr2/60D6TRF2EamdICwZWTIkEZZp09mNCzRubjsLtMpCWQYNY2opCEtGlgxJhKUFmkqm5ZK6DBlI31YQlowsGZIIy5RD+MGFo3Fz3g27DG+Blom7Ycgs42BkyZBEWObMB3p2UqD9MvUiUgqBt6xvfZaBMLJkSCIsMwr0/m7x8nfDAn1wsQibnd4CLWGBthJGlgxJhGXKQPpb/Y/13u7OuRf7X1+pK7aw8tJSB9NdDwu0lTCyZEgiLHPuhf/z7uTTHdafFmgZC7SVMLJkSCIskyYTefjJXv+jfSryAfEWaBkvIrURRpYMSYSl84GmsuFhTPUwyzgYWTIkEZYZw5g+mHuO3P3X/9lhTElEzeRklnEwsmRIIizTBtIvWzgRFmgWZhkHI0uGJMIyu0C9F779mGUcjCwZkgjL2AKtPJBziHcitR2zjIORJUMSYRm8B3p3sUCdDzSQqNOeJbY0yxQYWTIkEZbBBXrwfy5den1359ylCf/62cn05lZeWupguisQduG9xHZmmQMjS4YkwjL7HGgcFuhRQz9PWqpbmWUSjCwZkgjL7GFMcVigR9x8dOLd0m3MMgtGlgxJhKUD6VPZQIGe/I6kbcwyC0aWDEmEZWaBHvzlxqdr+xy98tJSB9M9lqUFGnBP/DZmmQUjS4YkwjKnQB/8R/8g/snF/qf6dNRsdhaoBQqAkSVDEmGZNJ3d4DLSteHHOuyCkgW69GjdAm0VjCwZkgjLpOfC92vz/m5x5rsHF8ImtLNAj3wMkgXaGhhZMiQRljnPhR/cfXR3OBm9z0SqxVGFeMQgJi8itQVGlgxJhGXac+HHNepkInVYqxIdxtQiGFkyJBGWiY81Hj5OzgKtwZo7lQ6kbw+MLBmSCMu0Ar2/O7wL3gJdn4DTmmvR5Sw3DSNLhiTCMu0Q/tboeZyeA10fC3QpCEtGlgxJhGXORaSzg8vvg+b0KnwNLNClICwZWTIkEZZJw5gGvH148OvC58KvjwW6FIQlI0uGJMIy7bnwg0tITy4UO1HTgW5RgVYvImVXaaez3DCMLBmSCMukWzk/eOPD/pcnPwl8rvEWFejhQn+mNmi3s9wsjCwZkghLZ2NKJWAgff7hfMez3CiMLBmSCEsLNJWTW27ghOjWZLkBGFkyJBGWSQX68JO9otjZe/PbelJLV15a6mC6y7FAJyAsGVkyJBGWOQV6a/qpjxrEZIGuVKC1inZrstwAjCwZkgjLtKvwp85dev3FyAa1QFd98bqr2JosNwAjS4YkwjKjQAcT2Y2uvj+44jjQk7J2f67doNuTZT6MLBmSCMu86eyGHFwZTikSwbYW6Oq7lXVPl25RlukwsmRIIizzprMbcX/Xe+FPyjonQC3QZmFkyZBEWGY/Fz5wNqYf5PnMCrRpExFZpNkCLS118J+nE+MeaPMwsmRIIixTDuGL2Q3wTme3QbyI1DiMLBmSCEsvIqUSZrlaLzqMqWkYWTIkEZZJw5hOfzb809cXHcYUwvJmXPyeA+kbhpElQxJhmTed3d7eXuitSNtcoMuPzaPu8NyuLHNhZMmQRFjm3Mp5e3f8id95q6bWkpWXljqY7tEsvzpU84znIluVZTKMLBmSCMukyUQOvnq9vwd67sOgC0jDlZeWOpju0Swt0LrX3BfZqiyTYWTJkERYOp1dKgHzgR5aoCMQlowsGZIIy4wCDZzDbn7lpaUOpjtHpRgt0AEIS0aWDEmEZXSBHlwfnP489Vbgsftk5aWlDqY7Y6EZn3cK1AJtE4wsGZIIy+ACvT+5enQ66P6juZWXljqY7pQl1Xj0RXgvIrUKRpYMSYRlbIE+uTDY/fxvg3lAo25Amq28tNTBdKcs27dc1pRB/dnpLDcNI0uGJMIytkBvjZ8D/9VuMXc7ZwzbXaBHvrDOCip0OctNw8iSIYmwDC3QgyuT3rxVhN3COV15aamD6U6JO7u5Gl3OctMwsmRIIiyjC3R85+ZgUvrgY/jtKdANPMm4RKez3DCMLBmSCMvQAn1yoRhPXjf7UxhbVKBhZzdXo9tZbhZGlgxJhKUFmkrMQPpkOp7lRmFkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYSlBZoKwtIs42BkyZBEWFqgqSAszTIORpYMSYRldIEu4lM5245ZxsHIkiGJsLRAU0FYmmUcjCwZkgjL2DuRPri0yBs+1rjlmGUcjCwZkghLZ6RPZXXLjQ6dL9O5LBuEkSVDEmFpgaaysuVmb94s07Usm4SRJUMSYWmBprKq5YanDynTsSwbhZElQxJhaYGmsqLlpiewK9OtLJuFkSVDEmFpgaZigcaBsGRkyZBEWFqgqVigcSAsGVkyJBGWFmgqFmgcCEtGlgxJhKUFmooXkeJAWDKyZEgiLC3QVBzGFAfCkpElQxJhaYGm4kD6OBCWjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzQVhKVZxsHIkiGJsLRAU0FYmmUcjCwZkghLCzSVHxqcJ3llKFk2LbAKjCwZkghLCzSVJp/UsTKQLBGWjCwZkghLCzSTRp8VtzKMLP3Ux8GQRFhaoIlUn1bc0i5FZOmnPhCGJMLSAk2kUqBt3RtFZOmnPhCGJMLSAk2kXKCtPZ5HZOmnPhCGJMLSAk2kVKDV4/n2gMjST30gDEmEpQWaybIdUAu0JghLRpYMSYSlBZrKwhlQC7Q2CEtGlgxJhKUFmsrcQHoL9IQgLBlZMiQRlhZoKvOWbe1PYpathZElQxJhaYGmUrJsaX8is2wrjCwZkghLCzSVsmU7+5OZZUthZMmQRFhaoKkgLM0yDkaWDEmEpQWaCsLSLONgZMmQRFhaoKkgLM0yDkaWDEmEpQWaytCypac+p5CybDuMLBmSCEsLNJWBZVsvvk8BZdl6GFkyJBGWFmgqP7R4+OcUTpbth5ElQxJhaYGm8kOLb0CagskSACNLhiTC0gJNxQKNA2HJyJIhibC0QFOxQONAWDKyZEgiLC3QVCzQOBCWjCwZkghLCzQVLyLFgbBkZMmQRFhaoKk4jCkOhCUjS4YkwtICTcWB9HEgLBlZMiQRlhZoKghLs4yDkSVDEmFpgaaCsDTLOBhZMiQRlhZoKghLs4yDkSVDEmG5+QJ99tF+r/fOl7Plq70JP/rT4eHTy7M/l1deWupguo1hlnEwsmRIIiw3XqDjgpz1Y6VAH+1boBvGLONgZMmQRFhuvEBv9s5/efj4au/895X/8Gj/1d/3v9zr/fiIlZeWOphuY5hlHIwsGZIIy00X6KP94a7l08vDtpyjvyP63uDrzdGXJSsvLXUw3cYwyzgYWTIkEZabLtA74x3MO9WevDPaJ312tdqs05WXljqYbmOYZRyMLBmSCMtNF+jN3i+HX6tH6k8vj/7D08vn//h+r/fzLxd+0gLNwizjYGTJkERYbrhApzuYj/bLJ0Ene6aTa0jjnh2udMwPIiJc8gp0ek70Xq/37veHf/+oNz2St0BFpAuEFmhpnNK9yVX5yZ7o4rUkD+GzMMs4GFkyJBGW7TiEf3Z1dsg+4t7COCcLNAuzjIORJUMSYdmOAq3sjy79jgWahVnGwciSIYmwbMdV+MXR89WLTBZoHmYZByNLhiTCcvPjQN8rfR0xPeM5PZZfrFQLNAuzjIORJUMSYdmKO5HmRs/fHBXn4klRCzQNs4yDkSVDEmG56QLtN+NrC/fCP708PeH5aH8wjOnx+4v3ylugWZhlHIwsGZIIy41PJvJ4bjam8fwhpROed8aTMS3cimSBZmGWcTCyZEgiLDc/H+jjj/r9+M6wMCcFWhqz9PgXvd6r71b3Py3QPMwyDkaWDEmEpTPSp4KwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSSzvvBQAADuBJREFUYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFkyJBGWFmgqCEuzjIORJUMSYWmBpoKwNMs4GFky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" width="672" /></p>
+<p>In Pedder et al. <span class="citation">(2021)</span> we suggest
+comparing the following models using these plots to evaluate consistency
+in MBNMA:</p>
+<ol style="list-style-type: decimal">
+<li>Selected dose-response MBNMA model</li>
+<li>Treatment-level NMA model (using same common/random treatment
+effects as for the MBNMA)</li>
+<li>Treatment-level UME model (using same common/random treatment
+effects as for the MBNMA)</li>
+</ol>
+<p>Differences in deviance contributions between models 1 and 2 will
+highlight data points which may fit the dose-response relationship
+poorly. Difference in deviance contributions between models 2 and 3 will
+highlight data points which are suggestive of inconsistency.</p>
+</div>
+<div id="node-splitting-at-the-treatment-level" class="section level3">
+<h3>Node-splitting at the treatment level</h3>
+<p>Another approach for consistency checking is node-splitting. This
+splits contributions for a particular treatment comparison into direct
+and indirect evidence, and the two can then be compared to test their
+similarity <span class="citation">(Valkenhoef et al. 2016)</span>.
+Node-splitting in dose-response MBNMA is an extension to this method, as
+indirect evidence contributions can be calculated incorporating the
+dose-response function. <code>mbnma.nodesplit()</code> takes similar
+arguments to <code>mbnma.run()</code>, and returns an object of
+<code>class(&quot;nodesplit&quot;)</code>.</p>
+<p>In addition to these, the argument <code>comparisons</code> can be
+used to indicate which treatment comparisons to perform a nodesplit on.
+If left as <code>NULL</code> (the default) node-splits will
+automatically be performed in all closed loops of treatments in which
+comparisons are informed by independent sources of evidence. This is
+somewhat similar to the function
+<code>gemtc::mtc.nodesplit.comparisons()</code>, but uses a fixed
+network reference treatment and therefore ensures differences between
+direct and indirect evidence are parameterised as inconsistency rather
+than as heterogeneity <span class="citation">(Dias et al. 2013)</span>.
+However, it also allows for indirect evidence to be informed via the
+dose-response relationship even if there is no pathway of evidence
+between the treatments, which can in fact lead to additional potentially
+inconsistent loops. To incorporate indirect evidence in this way
+<code>incldr=TRUE</code> can be set in
+<code>inconsistency.loops()</code>, the default when using
+<code>mbnma.nodesplit()</code></p>
+<p>The complexity of the dose-response relationship fitted and the
+amount of indirect evidence available will also affect the number of
+comparisons on which node-splitting is possible <span class="citation">(Pedder et al. 2021)</span>. If there is only limited
+indirect dose-response information for a given comparison (e.g. only two
+doses available for the agents in the comparison), then only a simpler
+dose-response function (e.g. exponential) can be fitted. The values
+given in <code>inconsistency.loops()$path</code> can give an indication
+as to the number of doses available for each comparison. For example,
+<code>drparams 3 4</code> would indicate that the indirect evidence is
+estimated only via the dose-response relationship, and that within the
+indirect evidence there are three doses available for estimating the
+dose-response of the agent in <code>t1</code> of the comparison, and
+four doses available for estimating the dose-responses of the agent in
+<code>t2</code> of the comparison. This means that a three-parameter
+dose-response function would be the most complex function that could be
+used when node-splitting this comparison.</p>
+<p>As several models have to be run for each closed loop of treatments,
+node-splitting can take some time to run, and it therefore is not shown
+for the purposes of this vignette.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># Using the psoriasis dataset (&gt;75% improvement in PASI score)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>psoriasis<span class="sc">$</span>r <span class="ot">&lt;-</span> psoriasis<span class="sc">$</span>r75</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>psorinet <span class="ot">&lt;-</span> <span class="fu">mbnma.network</span>(psoriasis)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co"># Identify comparisons on which node-splitting is possible</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>splitcomps <span class="ot">&lt;-</span> <span class="fu">inconsistency.loops</span>(psorinet<span class="sc">$</span>data.ab, <span class="at">incldr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="fu">print</span>(splitcomps)</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># If we want to fit an Emax dose-response function, there is insufficient</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co"># indirect evidence in all but the first 6 comparisons</span></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>nodesplit <span class="ot">&lt;-</span> <span class="fu">mbnma.nodesplit</span>(psorinet, <span class="at">fun =</span> <span class="fu">demax</span>(), <span class="at">comparisons =</span> splitcomps[<span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    ], <span class="at">method =</span> <span class="st">&quot;common&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">print</span>(nodesplit)</span></code></pre></div>
+<p>Performing the <code>print()</code> method on an object of
+<code>class(&quot;nodesplit&quot;)</code> prints a summary of the node-split
+results to the console, whilst the <code>summary()</code> method will
+return a data frame of posterior summaries for direct and indirect
+estimates for each split treatment comparison.</p>
+<p>The nodesplit object itself is a list with results for each treatment
+comparison that has been split. There is a lot of information within the
+results, but the most useful (and easily interpretable) elements
+are:</p>
+<ul>
+<li><code>p.values</code> the Bayesian p-value for the posterior overlap
+between direct and indirect estimates</li>
+<li><code>quantiles</code> the median and 95%CrI of the posterior
+distributions for direct and indirect evidence, and for the difference
+between them.</li>
+<li><code>forest.plot</code> a forest plot that shows the median and 95%
+CrI for direct and indirect estimates</li>
+<li><code>density.plot</code> a plot that shows the posterior
+distributions for direct and indirect estimates</li>
+</ul>
+<p>It is possible to generate different plots of each nodesplit
+comparison using <code>plot()</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Plot forest plots of direct, indirect and pooled (MBNMA) results for each</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co"># comparison</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="fu">plot</span>(nodesplit, <span class="at">plot.type =</span> <span class="st">&quot;forest&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co"># Plot posterior densities of direct and indirect results for each nodesplit</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># comparisons</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">plot</span>(nodesplit, <span class="at">plot.type =</span> <span class="st">&quot;density&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="references" class="section level2 unnumbered">
+<h2 class="unnumbered">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-dias2013" class="csl-entry">
+Dias, S., N. J. Welton, A. J. Sutton, D. M. Caldwell, G. Lu, and A. E.
+Ades. 2013. <span>“Evidence Synthesis for Decision Making 4:
+Inconsistency in Networks of Evidence Based on Randomized Controlled
+Trials.”</span> Journal Article. <em>Med Decis Making</em> 33 (5):
+641–56. <a href="https://doi.org/10.1177/0272989X12455847">https://doi.org/10.1177/0272989X12455847</a>.
+</div>
+<div id="ref-pedder2021cons" class="csl-entry">
+Pedder, H., S. Dias, M. Boucher, M. Bennetts, D. Mawdsley, and N. J.
+Welton. 2021. <span>“Methods to Assess Evidence Consistency in
+Dose-Response Model Based Network Meta-Analysis.”</span> Journal
+Article. <em>Statistics in Medicine</em> 41 (4): 625–44. <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.9270">https://onlinelibrary.wiley.com/doi/10.1002/sim.9270</a>.
+</div>
+<div id="ref-vanvalkenhoef2016" class="csl-entry">
+Valkenhoef, G. van, S. Dias, A. E. Ades, and N. J. Welton. 2016.
+<span>“Automated Generation of Node-Splitting Models for Assessment of
+Inconsistency in Network Meta-Analysis.”</span> Journal Article. <em>Res
+Synth Methods</em> 7 (1): 80–93. <a href="https://doi.org/10.1002/jrsm.1167">https://doi.org/10.1002/jrsm.1167</a>.
+</div>
+</div>
+</div>
+
+<script type="text/javascript">
+window.onload = function() {
+  var i, fig = 1, caps = document.getElementsByClassName('caption');
+  for (i = 0; i < caps.length; i++) {
+    var cap = caps[i];
+    if (cap.parentElement.className !== 'figure' || cap.nodeName !== 'P')
+      continue;
+    cap.innerHTML = '<span>Figure ' + fig + ':</span> ' + cap.innerHTML;
+    fig++;
+  }
+  fig = 1;
+  caps = document.getElementsByTagName('caption');
+  for (i = 0; i < caps.length; i++) {
+    var cap = caps[i];
+    if (cap.parentElement.nodeName !== 'TABLE') continue;
+    cap.innerHTML = '<span>Table ' + fig + ':</span> ' + cap.innerHTML;
+    fig++;
+  }
+}
+</script>
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
