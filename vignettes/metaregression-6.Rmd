@@ -54,12 +54,12 @@ ssri.reg <- ssri
 
 # For a continuous covariate
 ssri.reg <- ssri.reg %>% 
-  mutate(x.weeks = weeks - mean(weeks, na.rm=TRUE))
+  dplyr::mutate(x.weeks = weeks - mean(weeks, na.rm=TRUE))
 
 # For a categorical covariate
 table(ssri$weeks) # Using 8 weeks as the reference
 ssri.reg <- ssri.reg %>% 
-  mutate(r.weeks=factor(weeks, levels=c(8,4,5,6,9,10)))
+  dplyr::mutate(r.weeks=factor(weeks, levels=c(8,4,5,6,9,10)))
 
 # Create network object
 ssrinet <- mbnma.network(ssri.reg)

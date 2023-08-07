@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, include = FALSE}
 library(MBNMAdose)
 library(tidyverse)
 ```
@@ -47,9 +47,9 @@ The simplest use is in a network that includes a placebo treatment. In this data
 ```{r}
 # Define agents and assign a dose of 1 to all agents
 Dong2013 <- Dong2013 %>% 
-  rename(agent=treatment) %>%
-  mutate(dose=case_when(agent=="Placebo" ~ 0,
-                        agent!="Placebo" ~ 1))
+  dplyr::rename(agent=treatment) %>%
+  dplyr::mutate(dose=dplyr::case_when(agent=="Placebo" ~ 0,
+                                      agent!="Placebo" ~ 1))
 ```
 
 Note that if there is an intervention within the dataset that has been administered at multiple doses, you can force the dataset to be analysed either as a "split" network (in which different doses are assumed to have independent effects) by assigning each of them a separate `agent` name (e.g. "warfarinlow", "warfarinhigh"), or as a "lumped" network (in which different doses are assumed to have the same effect) by simply assigning both doses a dose of 1. Further details of "lumping" and "splitting" and the implications of these assumptions can be found in [@pedder2021cons].
@@ -91,11 +91,11 @@ Without a placebo, estimation is very similar, but requires renaming and recodin
 
 ```{r}
 # Ensure that Suture-absorbable is the network reference
-ssi <- ssi_closure %>% mutate(agent=factor(trt, levels=c("Suture-absorbable", unique(ssi_closure$trt)[-1])))
+ssi <- ssi_closure %>% dplyr::mutate(agent=factor(trt, levels=c("Suture-absorbable", unique(ssi_closure$trt)[-1])))
 
 # Set dose=0 for network reference and dose=1 for all other interventions
-ssi.plac <- ssi %>% mutate(dose=case_when(trt=="Suture-absorbable" ~ 0,
-                                          TRUE ~ 1))
+ssi.plac <- ssi %>% dplyr::mutate(dose=dplyr::case_when(trt=="Suture-absorbable" ~ 0,
+                                                        TRUE ~ 1))
 
 network.plac <- mbnma.network(ssi.plac)
 plot(network.plac)
