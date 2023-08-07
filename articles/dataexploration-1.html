@@ -346,35 +346,35 @@ very uncertain if included).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmpw2Ucx9/file1e1055662f83", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpUQzbIK/file1e5a5679494", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
 <span><span class="co">#&gt; d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d[2]        -0.452   0.092   -0.630   -0.513   -0.452   -0.391   -0.268 1.001</span></span>
-<span><span class="co">#&gt; d[3]        -0.655   0.046   -0.746   -0.684   -0.656   -0.624   -0.562 1.001</span></span>
-<span><span class="co">#&gt; d[4]        -0.709   0.046   -0.801   -0.739   -0.709   -0.679   -0.616 1.001</span></span>
-<span><span class="co">#&gt; d[5]        -0.759   0.087   -0.927   -0.815   -0.760   -0.701   -0.584 1.002</span></span>
-<span><span class="co">#&gt; d[6]        -0.683   0.169   -1.017   -0.792   -0.681   -0.571   -0.346 1.002</span></span>
-<span><span class="co">#&gt; sd           0.124   0.028    0.074    0.104    0.122    0.140    0.186 1.004</span></span>
-<span><span class="co">#&gt; totresdev   47.129   9.813   29.853   40.313   46.264   53.274   68.344 1.003</span></span>
-<span><span class="co">#&gt; deviance  -124.185   9.813 -141.461 -131.001 -125.050 -118.040 -102.970 1.003</span></span>
+<span><span class="co">#&gt; d[2]        -0.454   0.089   -0.630   -0.511   -0.453   -0.399   -0.280 1.001</span></span>
+<span><span class="co">#&gt; d[3]        -0.653   0.046   -0.739   -0.683   -0.653   -0.624   -0.560 1.002</span></span>
+<span><span class="co">#&gt; d[4]        -0.708   0.045   -0.794   -0.738   -0.710   -0.678   -0.618 1.002</span></span>
+<span><span class="co">#&gt; d[5]        -0.757   0.085   -0.919   -0.814   -0.757   -0.701   -0.590 1.003</span></span>
+<span><span class="co">#&gt; d[6]        -0.681   0.172   -1.017   -0.797   -0.679   -0.563   -0.354 1.001</span></span>
+<span><span class="co">#&gt; sd           0.125   0.028    0.076    0.106    0.122    0.143    0.186 1.001</span></span>
+<span><span class="co">#&gt; totresdev   46.817   9.860   29.592   39.871   45.836   52.848   67.978 1.000</span></span>
+<span><span class="co">#&gt; deviance  -124.497   9.860 -141.722 -131.443 -125.478 -118.466 -103.336 1.001</span></span>
 <span><span class="co">#&gt;           n.eff</span></span>
 <span><span class="co">#&gt; d[1]          1</span></span>
 <span><span class="co">#&gt; d[2]       3000</span></span>
-<span><span class="co">#&gt; d[3]       2300</span></span>
-<span><span class="co">#&gt; d[4]       3000</span></span>
-<span><span class="co">#&gt; d[5]       1300</span></span>
-<span><span class="co">#&gt; d[6]       1500</span></span>
-<span><span class="co">#&gt; sd         1400</span></span>
-<span><span class="co">#&gt; totresdev   740</span></span>
-<span><span class="co">#&gt; deviance    710</span></span>
+<span><span class="co">#&gt; d[3]       1200</span></span>
+<span><span class="co">#&gt; d[4]       1000</span></span>
+<span><span class="co">#&gt; d[5]        820</span></span>
+<span><span class="co">#&gt; d[6]       3000</span></span>
+<span><span class="co">#&gt; sd         2500</span></span>
+<span><span class="co">#&gt; totresdev  3000</span></span>
+<span><span class="co">#&gt; deviance   3000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
-<span><span class="co">#&gt; pD = 36.8 and DIC = -88.3</span></span>
+<span><span class="co">#&gt; pD = 36.6 and DIC = -88.9</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $trt.labs</span></span>
