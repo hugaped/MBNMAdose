@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -78,6 +99,8 @@ binomial data or when modelling Standardised Mean Differences</p></li>
 for poisson data.</p></li>
 <li><p><code>class</code> An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.</p></li>
+<li><p><code>standsd</code> An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).</p></li>
 </ul></dd>
 
 
@@ -105,6 +128,7 @@ or not (<code>FALSE</code>)</p></dd>
 <li><p>Checks that studies have at least two arms (if <code>single.arm = FALSE</code>)</p></li>
 <li><p>Checks that each study includes at least two treatments</p></li>
 <li><p>Checks that agent names do not include underscores</p></li>
+<li><p>Checks that standsd values are consistent within a study</p></li>
 </ul></div>
 
   </div>

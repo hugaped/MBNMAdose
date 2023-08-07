@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -69,7 +90,7 @@
       </tr><tr><td>
           <p><code><a href="calc.edx.html">calc.edx()</a></code> </p>
         </td>
-        <td><p>Calculates values for EDx, the dose at which x% of the maximal response (Emax)
+        <td><p>Calculates values for EDx from an Emax model, the dose at which x% of the maximal response (Emax)
 is reached</p></td>
       </tr><tr><td>
           <p><code><a href="changepd.html">changepd()</a></code> </p>
@@ -83,6 +104,10 @@ is reached</p></td>
           <p><code><a href="cumrank.html">cumrank()</a></code> </p>
         </td>
         <td><p>Plot cumulative ranking curves from MBNMA models</p></td>
+      </tr><tr><td>
+          <p><code><a href="default.priors.html">default.priors()</a></code> </p>
+        </td>
+        <td><p>Sets default priors for JAGS model code</p></td>
       </tr><tr><td>
           <p><code><a href="demax.html">demax()</a></code> </p>
         </td>
@@ -103,6 +128,10 @@ is reached</p></td>
           <p><code><a href="dfpoly.html">dfpoly()</a></code> </p>
         </td>
         <td><p>Fractional polynomial dose-response function</p></td>
+      </tr><tr><td>
+          <p><code><a href="ditp.html">ditp()</a></code> </p>
+        </td>
+        <td><p>Integrated Two-Component Prediction (ITP) function</p></td>
       </tr><tr><td>
           <p><code><a href="dloglin.html">dloglin()</a></code> </p>
         </td>
@@ -154,7 +183,7 @@ is reached</p></td>
       </tr><tr><td>
           <p><code><a href="get.relative.html">get.relative()</a></code> </p>
         </td>
-        <td><p>Calculates relative effects between treatments in an MBNMA model</p></td>
+        <td><p>Calculates league table of effects between treatments in MBNMA and/or NMA models</p></td>
       </tr><tr><td>
           <p><code><a href="getjagsdata.html">getjagsdata()</a></code> </p>
         </td>
@@ -171,22 +200,6 @@ is reached</p></td>
           <p><code><a href="mbnma.comparisons.html">mbnma.comparisons()</a></code> </p>
         </td>
         <td><p>Identify unique comparisons within a network</p></td>
-      </tr><tr><td>
-          <p><code><a href="mbnma.emax.html">mbnma.emax()</a></code> </p>
-        </td>
-        <td><p>Run MBNMA model with an Emax dose-response function (without Hill parameter) (DEPRECATED)</p></td>
-      </tr><tr><td>
-          <p><code><a href="mbnma.emax.hill.html">mbnma.emax.hill()</a></code> </p>
-        </td>
-        <td><p>Run MBNMA model with an Emax dose-response function (with a Hill parameter) (DEPRECATED)</p></td>
-      </tr><tr><td>
-          <p><code><a href="mbnma.exponential.html">mbnma.exponential()</a></code> </p>
-        </td>
-        <td><p>Run MBNMA model with a exponential dose-response function (DEPRECATED)</p></td>
-      </tr><tr><td>
-          <p><code><a href="mbnma.linear.html">mbnma.linear()</a></code> </p>
-        </td>
-        <td><p>Run MBNMA model with a linear dose-response function (DEPRECATED)</p></td>
       </tr><tr><td>
           <p><code><a href="mbnma.network.html">plot(<i>&lt;mbnma.network&gt;</i>)</a></code> <code><a href="mbnma.network.html">mbnma.network()</a></code> </p>
         </td>
@@ -219,6 +232,10 @@ is reached</p></td>
           <p><code><a href="nma.run.html">plot(<i>&lt;nma&gt;</i>)</a></code> <code><a href="nma.run.html">nma.run()</a></code> </p>
         </td>
         <td><p>Run an NMA model</p></td>
+      </tr><tr><td>
+          <p><code><a href="norm2lnorm.html">norm2lnorm()</a></code> </p>
+        </td>
+        <td><p>Convert normal distribution parameters to corresponding log-normal distribution parameters</p></td>
       </tr><tr><td>
           <p><code><a href="osteopain.html">osteopain</a></code> </p>
         </td>
@@ -310,6 +327,10 @@ differences between treatments/classes</p></td>
           <p><code><a href="rescale.link.html">rescale.link()</a></code> </p>
         </td>
         <td><p>Rescale data depending on the link function provided</p></td>
+      </tr><tr><td>
+          <p><code><a href="ssi_closure.html">ssi_closure</a></code> </p>
+        </td>
+        <td><p>Studies of wound closure methods to reduce Surgical Site Infections (SSI)</p></td>
       </tr><tr><td>
           <p><code><a href="ssri.html">ssri</a></code> </p>
         </td>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -55,11 +76,16 @@
 <h2 class="page-header" data-toc-text="0.4.2" id="mbnmadose-042">MBNMAdose 0.4.2<a class="anchor" aria-label="anchor" href="#mbnmadose-042"></a></h2>
 <div class="section level3">
 <h3 id="additionschanges-0-4-2">Additions/changes<a class="anchor" aria-label="anchor" href="#additionschanges-0-4-2"></a></h3>
-<ul><li>Fractional polynomial powers in <code><a href="../reference/dfpoly.html">dfpoly()</a></code> can only take numeric values from set defined in Jansen 2015.</li>
+<ul><li>Reference SDs can now be used when modelling using SMDs to avoid using study-specific SDs, which can be problematic.</li>
+<li>Network Meta-Regression: Effect modifiers can now be incorporated using <code>regress.vars</code> argument in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>. Various sharing assumptions for effects can be specified in <code>regress.effect</code>.</li>
+<li>Predictions can be estimated for class effect models</li>
+<li>Fractional polynomial powers in <code><a href="../reference/dfpoly.html">dfpoly()</a></code> can only take numeric values from set defined in Jansen 2015.</li>
 <li>Added <code><a href="../reference/calc.edx.html">calc.edx()</a></code> to allow easy estimation of different ED values (e.g. ED90 = the dose at which 90% of the maximum response (Emax) is reached)</li>
 <li>
 <code><a href="../reference/get.relative.html">get.relative()</a></code> now allows simultaneous comparison of two models in a single league table - can be used to compare MBNMA models with different dose-response functions, or MBNMA and NMA models, or NMA models that assume consistency versus those that use Unrelated Mean Effects.</li>
 <li>Plots of predictions look prettier</li>
+<li>Dose-response parameters that were previously modelled on an exponential scale (<code>ed50</code>, <code>hill</code>, <code>onset</code>) are now on the natural scale and are assigned truncated normal default priors</li>
+<li>Separate prior distributions can be specified for different indices of a parameter - allows for agent-specific prior distributions on dose-response parameters.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-0-4-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-4-2"></a></h3>

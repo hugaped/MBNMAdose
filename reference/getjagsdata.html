@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -60,6 +81,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">getjagsdata</span><span class="op">(</span></span>
 <span>  <span class="va">data.ab</span>,</span>
 <span>  class <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  sdscale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  regress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regress.effect <span class="op">=</span> <span class="st">"common"</span>,</span>
 <span>  likelihood <span class="op">=</span> <span class="fu">check.likelink</span><span class="op">(</span><span class="va">data.ab</span><span class="op">)</span><span class="op">$</span><span class="va">likelihood</span>,</span>
 <span>  link <span class="op">=</span> <span class="fu">check.likelink</span><span class="op">(</span><span class="va">data.ab</span><span class="op">)</span><span class="op">$</span><span class="va">link</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"agent"</span>,</span>
@@ -86,12 +110,38 @@ binomial data or when modelling Standardised Mean Differences</p></li>
 for poisson data.</p></li>
 <li><p><code>class</code> An optional column indicating a particular class code. Agents with the same identifier
 must also have the same class code.</p></li>
+<li><p><code>standsd</code> An optional column of numeric data indicating reference SDs used to standardise
+treatment effects when modelling using Standardised Mean Differences (SMD).</p></li>
 </ul></dd>
 
 
 <dt>class</dt>
 <dd><p>A boolean object indicating whether or not <code>data.ab</code> contains
 information on different classes of treatments</p></dd>
+
+
+<dt>sdscale</dt>
+<dd><p>Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying <code>sdscale=TRUE</code>
+will therefore only modify the model if link function is set to SMD (<code>link="smd"</code>).</p></dd>
+
+
+<dt>regress</dt>
+<dd><p>A formula of effect modifiers (variables that
+interact with the treatment effect) to incorporate using Network Meta-Regression
+(E.g. <code>~ Population + Age</code>). All variables in the formula are modelled as interacting
+with the treatment effect (i.e. prognostic variables cannot be included in this way).
+Effects modifiers must be named variables in <code>network$data.ab</code> and must be identical
+within a study. Factor and character effect modifiers will be converted to a series of
+named dummy variables.</p></dd>
+
+
+<dt>regress.effect</dt>
+<dd><p>Indicates whether effect modification should be assumed to be
+<code>"common"</code> (assumed to be equal versus Placebo throughout the network),
+<code>"random"</code> (assumed to be exchangeable versus Placebo throughout the network),
+<code>"agent"</code> (assumed to be equal versus Placebo within each agent), or
+<code>"class"</code> (assumed to be equal versus Placebo within each class).</p></dd>
 
 
 <dt>likelihood</dt>
@@ -157,23 +207,23 @@ to a nodesplit comparison.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Using the triptans headache dataset</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span><span class="va">jagsdat</span> <span class="op">&lt;-</span> <span class="fu">getjagsdata</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span>, likelihood<span class="op">=</span><span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get JAGS data with class</span></span></span>
 <span class="r-in"><span><span class="va">netclass</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">osteopain</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `class` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span><span class="va">jagsdat</span> <span class="op">&lt;-</span> <span class="fu">getjagsdata</span><span class="op">(</span><span class="va">netclass</span><span class="op">$</span><span class="va">data.ab</span>, class<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Get JAGS data at the treatment level for split Network Meta-Analysis</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span><span class="va">jagsdat</span> <span class="op">&lt;-</span> <span class="fu">getjagsdata</span><span class="op">(</span><span class="va">network</span><span class="op">$</span><span class="va">data.ab</span>, level<span class="op">=</span><span class="st">"treatment"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

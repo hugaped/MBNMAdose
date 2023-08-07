@@ -19,7 +19,7 @@ the dose-response relationship)"><!-- mathjax --><script src="https://cdnjs.clou
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -34,7 +34,28 @@ the dose-response relationship)"><!-- mathjax --><script src="https://cdnjs.clou
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -61,7 +82,7 @@ the dose-response relationship)</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dexp</span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, onset <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">dexp</span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, onset <span class="op">=</span> <span class="cn">NULL</span>, p.expon <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -74,6 +95,11 @@ assigned a numeric value (see details).</p></dd>
 <dt>onset</dt>
 <dd><p>Pooling for onset parameter. Can take <code>"rel"</code>, <code>"common"</code>, <code>"random"</code> or be
 assigned a numeric value (see details).</p></dd>
+
+
+<dt>p.expon</dt>
+<dd><p>A logical object to indicate whether <code>ed50</code> and <code>hill</code> parameters should be
+expressed within the dose-response function on an exponential scale</p></dd>
 
 </dl></div>
     <div id="value">
@@ -89,7 +115,7 @@ assigned a numeric value (see details).</p></dd>
     <p>1-parameter model:
 \(emax\times{(1-exp(-x))}\)</p>
 <p>2-parameter model:
-\(emax\times{(1-exp(exp(onset)*-x))}\)</p>
+\(emax\times{(1-exp(onset*-x))}\)</p>
 <p>where emax is the maximum efficacy of an agent and rate is the speed</p>
 <p>Dose-response parameter arguments:</p><table class="table table"><tr><td><strong>Argument</strong></td><td><strong>Model specification</strong></td></tr><tr><td><code>"rel"</code></td><td>Implies that <em>relative</em> effects should be pooled for this dose-response parameter separately for each agent in the network.</td></tr><tr><td><code>"common"</code></td><td>Implies that all agents share the same common effect for this dose-response parameter.</td></tr><tr><td><code>"random"</code></td><td>Implies that all agents share a similar (exchangeable) effect for this dose-response parameter. This approach allows for modelling of variability between agents.</td></tr><tr><td><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code></td><td>Assigned a numeric value, indicating that this dose-response parameter should not be estimated from the data but should be assigned the numeric value determined by the user. This can be useful for fixing specific dose-response parameters (e.g. Hill parameters in Emax functions) to a single value.</td></tr></table></div>
     <div id="references">
@@ -101,13 +127,15 @@ assigned a numeric value (see details).</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Single parameter exponential function is default</span></span></span>
 <span class="r-in"><span><span class="fu">dexp</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "exp"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ~emax * (1 - exp(-dose))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dffb32cb38&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x5585440b19b0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $p.expon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax"</span>
@@ -131,13 +159,15 @@ assigned a numeric value (see details).</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Two parameter exponential function</span></span></span>
 <span class="r-in"><span><span class="fu">dexp</span><span class="op">(</span>onset<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "exp"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ~emax * (1 - exp(exp(onset) * -dose))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dffb1bc0e8&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ~emax * (1 - exp(onset * -dose))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x558543311f10&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $p.expon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax"  "onset"</span>
@@ -146,7 +176,7 @@ assigned a numeric value (see details).</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "s.beta.1[agent[i,k]] * (1 - exp(exp(s.beta.2[agent[i,k]]) * - dose[i,k]))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "s.beta.1[agent[i,k]] * (1 - exp(s.beta.2[agent[i,k]] * - dose[i,k]))"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  emax onset </span>

@@ -18,7 +18,7 @@ meta-analysis (MBNMA)."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -33,7 +33,28 @@ meta-analysis (MBNMA)."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -60,9 +81,12 @@ meta-analysis (MBNMA).</p>
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mbnma.write</span><span class="op">(</span></span>
-<span>  fun <span class="op">=</span> <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  fun <span class="op">=</span> <span class="fu"><a href="dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
-<span>  cor <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  regress.mat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regress.effect <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  sdscale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  cor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cor.prior <span class="op">=</span> <span class="st">"wishart"</span>,</span>
 <span>  omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  om <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>rel <span class="op">=</span> <span class="fl">5</span>, abs <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
@@ -83,6 +107,24 @@ dose-response. See Details.</p></dd>
 <dt>method</dt>
 <dd><p>Can take either <code>"common"</code> or <code>"random"</code> to indicate whether relative effects
 should be modelled with between-study heterogeneity or not (see details).</p></dd>
+
+
+<dt>regress.mat</dt>
+<dd><p>A Nstudy x Ncovariate design matrix of meta-regression covariates</p></dd>
+
+
+<dt>regress.effect</dt>
+<dd><p>Indicates whether effect modification should be assumed to be
+<code>"common"</code> (assumed to be equal versus Placebo throughout the network),
+<code>"random"</code> (assumed to be exchangeable versus Placebo throughout the network),
+<code>"agent"</code> (assumed to be equal versus Placebo within each agent), or
+<code>"class"</code> (assumed to be equal versus Placebo within each class).</p></dd>
+
+
+<dt>sdscale</dt>
+<dd><p>Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying <code>sdscale=TRUE</code>
+will therefore only modify the model if link function is set to SMD (<code>link="smd"</code>).</p></dd>
 
 
 <dt>cor</dt>
@@ -162,9 +204,41 @@ by specifying the relative scale of variances between the dose-response paramete
 <span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"binomial"</span>,</span></span>
 <span class="r-in"><span>             link<span class="op">=</span><span class="st">"logit"</span></span></span>
 <span class="r-in"><span>             <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials w[i,1] &lt;- 0 delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study rhat[i,k] &lt;- psi[i,k] * n[i,k] resdev[i,k] &lt;- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (n[i,k] - r[i,k]) * (log(n[i,k] - r[i,k]) - log(n[i,k] - rhat[i,k]))) r[i,k] ~ dbin(psi[i,k], n[i,k]) logit(psi[i,k]) &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- (s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))) - (s.beta.1[agent[i,1]] * (1 - exp(- dose[i,1]))) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] ~ dnorm(md[i,k], taud[i,k]) md[i,k] &lt;- DR[i,k] + sw[i,k] taud[i,k] &lt;- tau * 2*(k-1)/k w[i,k] &lt;- delta[i,k] - DR[i,k] sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1) } } for (k in 2:Nagent){ # Priors on relative treatment effects emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  sd ~ dunif(0, 5) tau &lt;- pow(sd, -2) # Model ends }</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "model{ \t\t\t# Begin Model Code"                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "s.beta.1[1] &lt;- 0"                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "for(i in 1:NS){ # Run through all NS trials"                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "w[i,1] &lt;- 0"                                                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "delta[i,1] &lt;- 0"                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "mu[i] ~ dnorm(0,0.0001)"                                                                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "for (k in 1:narm[i]){ # Run through all arms within a study"                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "rhat[i,k] &lt;- psi[i,k] * n[i,k]"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "resdev[i,k] &lt;- 2 * (r[i,k] * (log(r[i,k]) - log(rhat[i,k])) + (n[i,k] - r[i,k]) * (log(n[i,k] - r[i,k]) - log(n[i,k] - rhat[i,k])))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "r[i,k] ~ dbin(psi[i,k], n[i,k])"                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "logit(psi[i,k]) &lt;- theta[i,k]"                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "theta[i,k] &lt;- mu[i] + delta[i,k]"                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "DR[i,k] &lt;- (s.beta.1[agent[i,k]] * (1 - exp(- dose[i,k]))) - (s.beta.1[agent[i,1]] * (1 - exp(- dose[i,1])))"                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "}"                                                                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]])"                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "for(k in 2:narm[i]){ # Treatment effects"                                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "delta[i,k] ~ dnorm(md[i,k], taud[i,k])"                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "md[i,k] &lt;- DR[i,k] + sw[i,k]"                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "taud[i,k] &lt;- tau * 2*(k-1)/k"                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "w[i,k] &lt;- delta[i,k] - DR[i,k]"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1)"                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "}"                                                                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "}"                                                                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "for (k in 2:Nagent){ # Priors on relative agent effects"                                                                            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "emax[k] ~ dnorm(0,0.0001)"                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "s.beta.1[k] &lt;- emax[k]"                                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "}"                                                                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "totresdev &lt;- sum(resstudydev[])"                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] ""                                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "sd ~ dunif(0, 5)"                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "tau &lt;- pow(sd, -2)"                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "# Model ends"                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "}"                                                                                                                                  </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
 <span class="r-in"><span><span class="co"># relative effects modelled on Emax with a random effects model,</span></span></span>
@@ -173,9 +247,37 @@ by specifying the relative scale of variances between the dose-response paramete
 <span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span></span>
 <span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span></span></span>
 <span class="r-in"><span>             <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] &lt;- DR[i,k] } } for (k in 2:Nagent){ # Priors on relative treatment effects s.beta.2[k] &lt;- ed50 emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  ed50 ~ dnorm(0,0.001) # Model ends }</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "model{ \t\t\t# Begin Model Code"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "s.beta.2[1] &lt;- 0.00001"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "s.beta.1[1] &lt;- 0"                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "for(i in 1:NS){ # Run through all NS trials"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "delta[i,1] &lt;- 0"                                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "mu[i] ~ dnorm(0,0.0001)"                                                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "for (k in 1:narm[i]){ # Run through all arms within a study"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "y[i,k] ~ dnorm(psi[i,k], prec[i,k])"                                                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "prec[i,k] &lt;- pow(se[i,k], -2)"                                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "psi[i,k] &lt;- theta[i,k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "theta[i,k] &lt;- mu[i] + delta[i,k]"                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (s.beta.2[agent[i,k]] + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (s.beta.2[agent[i,1]] + dose[i,1]))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]])"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "for(k in 2:narm[i]){ # Treatment effects"                                                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "delta[i,k] &lt;- DR[i,k]"                                                                                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "for (k in 2:Nagent){ # Priors on relative agent effects"                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "s.beta.2[k] &lt;- ed50"                                                                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "emax[k] ~ dnorm(0,0.0001)"                                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "s.beta.1[k] &lt;- emax[k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "totresdev &lt;- sum(resstudydev[])"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] ""                                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "ed50 ~ dnorm(0,0.0001) T(0,)"                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "# Model ends"                                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "}"                                                                                                                                                               </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
 <span class="r-in"><span><span class="co"># relative effects modelled on Emax and ED50.</span></span></span>
@@ -185,10 +287,40 @@ by specifying the relative scale of variances between the dose-response paramete
 <span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span>,</span></span>
 <span class="r-in"><span>             class.effect<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ed50"</span><span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
 <span class="r-in"><span>             <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Class effects cannot be modelled with correlation between dose-response relative effects - correlation will be ignored</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] &lt;- DR[i,k] } } for (k in 2:Nagent){ # Priors on relative treatment effects ed50[k]  &lt;- ED50[class[k]] s.beta.2[k] &lt;- ed50[k] emax[k] ~ dnorm(0,0.001) s.beta.1[k] &lt;- emax[k] } for (k in 2:Nclass){ # Priors on relative class effects ED50[k] ~ dnorm(0,0.001) } totresdev &lt;- sum(resstudydev[])  # Model ends }</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "model{ \t\t\t# Begin Model Code"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "s.beta.2[1] &lt;- 0.00001"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "s.beta.1[1] &lt;- 0"                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "for(i in 1:NS){ # Run through all NS trials"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "delta[i,1] &lt;- 0"                                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "mu[i] ~ dnorm(0,0.0001)"                                                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "for (k in 1:narm[i]){ # Run through all arms within a study"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "y[i,k] ~ dnorm(psi[i,k], prec[i,k])"                                                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "prec[i,k] &lt;- pow(se[i,k], -2)"                                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "psi[i,k] &lt;- theta[i,k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "theta[i,k] &lt;- mu[i] + delta[i,k]"                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (s.beta.2[agent[i,k]] + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (s.beta.2[agent[i,1]] + dose[i,1]))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]])"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "for(k in 2:narm[i]){ # Treatment effects"                                                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "delta[i,k] &lt;- DR[i,k]"                                                                                                                                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "for (k in 2:Nagent){ # Priors on relative agent effects"                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "ed50[k]  &lt;- ED50[class[k]]"                                                                                                                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "s.beta.2[k] &lt;- ed50[k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "emax[k] ~ dnorm(0,0.0001)"                                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "s.beta.1[k] &lt;- emax[k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "for (k in 2:Nclass){ # Priors on relative class effects"                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "ED50[k] ~ dnorm(0,0.0001) T(0,)"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "totresdev &lt;- sum(resstudydev[])"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] ""                                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "# Model ends"                                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] "}"                                                                                                                                                               </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Write model code for a model with an Emax dose-response function,</span></span></span>
 <span class="r-in"><span><span class="co"># relative effects modelled on Emax and ED50 with a</span></span></span>
@@ -199,9 +331,44 @@ by specifying the relative scale of variances between the dose-response paramete
 <span class="r-in"><span>             likelihood<span class="op">=</span><span class="st">"normal"</span>,</span></span>
 <span class="r-in"><span>             link<span class="op">=</span><span class="st">"identity"</span>,</span></span>
 <span class="r-in"><span>             <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> model{ 			# Begin Model Code s.beta.2[1] &lt;- 0 s.beta.1[1] &lt;- 0 for(i in 1:NS){ # Run through all NS trials w[i,1] &lt;- 0 delta[i,1] &lt;- 0 mu[i] ~ dnorm(0,0.001) for (k in 1:narm[i]){ # Run through all arms within a study resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood y[i,k] ~ dnorm(psi[i,k], prec[i,k]) prec[i,k] &lt;- pow(se[i,k], -2) psi[i,k] &lt;- theta[i,k] theta[i,k] &lt;- mu[i] + delta[i,k] DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (exp(s.beta.2[agent[i,1]]) + dose[i,1])) } resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]]) for(k in 2:narm[i]){ # Treatment effects delta[i,k] ~ dnorm(md[i,k], taud[i,k]) md[i,k] &lt;- DR[i,k] + sw[i,k] taud[i,k] &lt;- tau * 2*(k-1)/k w[i,k] &lt;- delta[i,k] - DR[i,k] sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1) } } for (k in 2:Nagent){ # Priors on relative treatment effects mult[1:2,k] ~ dmnorm(d.prior[], inv.R[1:2, 1:2]) ed50[k] &lt;- mult[2,k] s.beta.2[k] &lt;- ed50[k] emax[k] &lt;- mult[1,k] s.beta.1[k] &lt;- emax[k] } totresdev &lt;- sum(resstudydev[])  for (p in 1:2) { d.prior[p] &lt;- 0 }  inv.R ~ dwish(omega[,], 2) sd ~ dunif(0, 5) tau &lt;- pow(sd, -2) # Model ends }</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "model{ \t\t\t# Begin Model Code"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [2] "s.beta.2[1] &lt;- 0.00001"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [3] "s.beta.1[1] &lt;- 0"                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [4] "for(i in 1:NS){ # Run through all NS trials"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [5] "w[i,1] &lt;- 0"                                                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [6] "delta[i,1] &lt;- 0"                                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [7] "mu[i] ~ dnorm(0,0.0001)"                                                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [8] "for (k in 1:narm[i]){ # Run through all arms within a study"                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  [9] "resdev[i,k] &lt;- pow((y[i,k] - psi[i,k]),2) * prec[i,k] # residual deviance for normal likelihood"                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [10] "y[i,k] ~ dnorm(psi[i,k], prec[i,k])"                                                                                                                             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [11] "prec[i,k] &lt;- pow(se[i,k], -2)"                                                                                                                                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [12] "psi[i,k] &lt;- theta[i,k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [13] "theta[i,k] &lt;- mu[i] + delta[i,k]"                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [14] "DR[i,k] &lt;- ((s.beta.1[agent[i,k]] * dose[i,k]) / (s.beta.2[agent[i,k]] + dose[i,k])) - ((s.beta.1[agent[i,1]] * dose[i,1]) / (s.beta.2[agent[i,1]] + dose[i,1]))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [15] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [16] "resstudydev[i] &lt;- sum(resdev[i, 1:narm[i]])"                                                                                                                     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [17] "for(k in 2:narm[i]){ # Treatment effects"                                                                                                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [18] "delta[i,k] ~ dnorm(md[i,k], taud[i,k])"                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [19] "md[i,k] &lt;- DR[i,k] + sw[i,k]"                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [20] "taud[i,k] &lt;- tau * 2*(k-1)/k"                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [21] "w[i,k] &lt;- delta[i,k] - DR[i,k]"                                                                                                                                  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [22] "sw[i,k] &lt;- sum(w[i,1:(k-1)])/(k-1)"                                                                                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [23] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [24] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [25] "for (k in 2:Nagent){ # Priors on relative agent effects"                                                                                                         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [26] "ed50[k] ~ dnorm(0,0.0001) T(0,)"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [27] "s.beta.2[k] &lt;- ed50[k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [28] "emax[k] ~ dnorm(0,0.0001)"                                                                                                                                       </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [29] "s.beta.1[k] &lt;- emax[k]"                                                                                                                                          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [30] "}"                                                                                                                                                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [31] "totresdev &lt;- sum(resstudydev[])"                                                                                                                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [32] ""                                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [33] "sd ~ dunif(0, 5)"                                                                                                                                                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [34] "tau &lt;- pow(sd, -2)"                                                                                                                                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [35] "# Model ends"                                                                                                                                                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [36] "}"                                                                                                                                                               </span>
 </code></pre></div>
     </div>
   </div>

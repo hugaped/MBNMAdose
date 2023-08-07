@@ -22,7 +22,7 @@ relative treatment effects with a given reference treatment response
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -37,7 +37,28 @@ relative treatment effects with a given reference treatment response
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -74,6 +95,7 @@ relative treatment effects with a given reference treatment response
 <span>  E0 <span class="op">=</span> <span class="fl">0.2</span>,</span>
 <span>  synth <span class="op">=</span> <span class="st">"fixed"</span>,</span>
 <span>  lim <span class="op">=</span> <span class="st">"cred"</span>,</span>
+<span>  regress.vals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -130,6 +152,12 @@ than <code>"fixed"</code> for <code>synth</code> will result in wider 95\% CrI f
 <dd><p>Specifies calculation of either 95% credible intervals (<code>lim="cred"</code>) or 95% prediction intervals (<code>lim="pred"</code>).</p></dd>
 
 
+<dt>regress.vals</dt>
+<dd><p>A named numeric vector of effect modifier values at which results should
+be predicted. Named elements must match variable names specified in <code>regress.vars</code> within
+the MBNMA model.</p></dd>
+
+
 <dt>...</dt>
 <dd><p>Arguments to be sent to <code><a href="https://rdrr.io/pkg/R2jags/man/jags.html" class="external-link">R2jags::jags()</a></code> for synthesis of the network
 reference treatment effect (using <code><a href="ref.synth.html">ref.synth()</a></code>)</p></dd>
@@ -168,11 +196,10 @@ agent. This may be more useful when ranking different predicted responses using
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run an Emax dose-response MBNMA</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -181,7 +208,7 @@ agent. This may be more useful when ranking different predicted responses using
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -218,7 +245,7 @@ agent. This may be more useful when ranking different predicted responses using
 <span class="r-in"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">emax</span>, E0 <span class="op">=</span> <span class="va">ref.df</span>, synth<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Data frame must contain only data from reference treatment"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -248,36 +275,39 @@ agent. This may be more useful when ranking different predicted responses using
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print and summarise `mbnma.predict` object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">=====================</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Predicted doses</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">=====================</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Summary of Predictions</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Placebo: </span>0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">eletriptan: </span>0, 1, 2, 3, 4, 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">sumatriptan: </span>1, 3, 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Agent       | Min dose| Max dose| N doses|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |:-----------|--------:|--------:|-------:|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |Placebo     |        0|        0|       1|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan  |        0|        5|       6|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan |        1|        5|       3|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          agent dose      mean         sd      2.5%       25%       50%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1      Placebo    0 0.2000000         NA 0.2000000 0.2000000 0.2000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   eletriptan    0 0.2000000         NA 0.2000000 0.2000000 0.2000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3   eletriptan    1 0.5738026 0.02823205 0.5158789 0.5555086 0.5741426</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4   eletriptan    2 0.6594636 0.03262219 0.5947801 0.6380803 0.6604705</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5   eletriptan    3 0.6946538 0.03964424 0.6161001 0.6680917 0.6953104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6   eletriptan    4 0.7135065 0.04429900 0.6247923 0.6838819 0.7138300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7   eletriptan    5 0.7251856 0.04738326 0.6310741 0.6935260 0.7254244</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  sumatriptan    1 0.4385047 0.02243373 0.3943175 0.4232763 0.4382842</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  sumatriptan    3 0.5306136 0.03380373 0.4640772 0.5087433 0.5301469</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 sumatriptan    5 0.5586639 0.04825178 0.4679093 0.5268533 0.5556323</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3   eletriptan    1 0.5672366 0.03431110 0.4978454 0.5443080 0.5671892</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4   eletriptan    2 0.6649080 0.03760306 0.5896905 0.6397813 0.6658229</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5   eletriptan    3 0.7062822 0.04551699 0.6156893 0.6756560 0.7076039</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6   eletriptan    4 0.7285879 0.05105592 0.6286434 0.6945690 0.7293889</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7   eletriptan    5 0.7424041 0.05474077 0.6357103 0.7054679 0.7426375</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  sumatriptan    1 0.3693496 0.03612812 0.3236112 0.3417697 0.3544481</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  sumatriptan    3 0.6335733 0.06584030 0.5079922 0.5766824 0.6505317</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 sumatriptan    5 0.7814866 0.13389629 0.5343431 0.6420788 0.8524345</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>          75%     97.5%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.2000000 0.2000000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.2000000 0.2000000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.5930161 0.6281020</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6814584 0.7225677</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.7212836 0.7694875</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.7434788 0.7981788</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.7568114 0.8161147</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.4533805 0.4827741</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.5525902 0.5994679</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.5894524 0.6622568</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.5904956 0.6340355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6901887 0.7386935</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.7359281 0.7963298</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.7624245 0.8316978</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.7785929 0.8531357</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.4001481 0.4461237</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.6861006 0.7329479</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.8904563 0.9240468</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot `mbnma.predict` object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></span>

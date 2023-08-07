@@ -21,7 +21,7 @@ of Mawdsley et al. (2016)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -36,7 +36,28 @@ of Mawdsley et al. (2016)
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -67,10 +88,13 @@ of Mawdsley et al. (2016)
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mbnma.run</span><span class="op">(</span></span>
 <span>  <span class="va">network</span>,</span>
-<span>  fun <span class="op">=</span> <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  fun <span class="op">=</span> <span class="fu"><a href="dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
+<span>  regress <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  regress.effect <span class="op">=</span> <span class="st">"common"</span>,</span>
 <span>  class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  UME <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  sdscale <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  omega <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  parameters.to.save <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -85,14 +109,8 @@ of Mawdsley et al. (2016)
 <span>  autojags <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  Rhat <span class="op">=</span> <span class="fl">1.05</span>,</span>
 <span>  n.update <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  beta.1 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.2 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.3 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.4 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  user.fun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  model.file <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  jagsdata <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  arg.params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -113,6 +131,24 @@ dose-response. See Details.</p></dd>
 should be modelled with between-study heterogeneity or not (see details).</p></dd>
 
 
+<dt>regress</dt>
+<dd><p>A formula of effect modifiers (variables that
+interact with the treatment effect) to incorporate using Network Meta-Regression
+(E.g. <code>~ Population + Age</code>). All variables in the formula are modelled as interacting
+with the treatment effect (i.e. prognostic variables cannot be included in this way).
+Effects modifiers must be named variables in <code>network$data.ab</code> and must be identical
+within a study. Factor and character effect modifiers will be converted to a series of
+named dummy variables.</p></dd>
+
+
+<dt>regress.effect</dt>
+<dd><p>Indicates whether effect modification should be assumed to be
+<code>"common"</code> (assumed to be equal versus Placebo throughout the network),
+<code>"random"</code> (assumed to be exchangeable versus Placebo throughout the network),
+<code>"agent"</code> (assumed to be equal versus Placebo within each agent), or
+<code>"class"</code> (assumed to be equal versus Placebo within each class).</p></dd>
+
+
 <dt>class.effect</dt>
 <dd><p>A list of named strings that determines which dose-response
 parameters to model with a class effect and what that effect should be
@@ -125,6 +161,12 @@ the range of doses differ substantially across agents within a class.</p></dd>
 <dd><p>A boolean object to indicate whether to fit an Unrelated Mean Effects model
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.</p></dd>
+
+
+<dt>sdscale</dt>
+<dd><p>Logical object to indicate whether to write a model that specifies a reference SD
+for standardising when modelling using Standardised Mean Differences. Specifying <code>sdscale=TRUE</code>
+will therefore only modify the model if link function is set to SMD (<code>link="smd"</code>).</p></dd>
 
 
 <dt>cor</dt>
@@ -180,7 +222,8 @@ on the likelihood.</p></dd>
 <dd><p>A named list of parameter values (without indices) and
 replacement prior distribution values given as strings
 <strong>using distributions as specified in JAGS syntax</strong> (see Plummer (2017)
-).</p></dd>
+). Note
+that normal distributions in JAGS are specified as $$N(\mu, prec)$$, where $$prec = 1 / {\sigma^2}$$.</p></dd>
 
 
 <dt>n.iter</dt>
@@ -220,31 +263,6 @@ Rhat values of all parameters are checked against <code>Rhat</code>. Default max
 is <code>10</code> (i.e. 10,000 additional iterations in total).</p></dd>
 
 
-<dt>beta.1</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.2</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.3</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.4</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>user.fun</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> A formula specifying any relationship including <code>dose</code> and
-one/several of: <code>beta.1</code>, <code>beta.2</code>, <code>beta.3</code>, <code>beta.4</code>.</p></dd>
-
-
 <dt>model.file</dt>
 <dd><p>The file path to a JAGS model (.jags file) that can be used
 to overwrite the JAGS model that is automatically written based on the
@@ -256,10 +274,6 @@ specified options in <code>MBNMAdose</code>. Useful for adding further model fle
 required if users are defining their own JAGS model using <code>model.file</code>. Format
 should match that of standard models fitted in <code>MBNMAdose</code>
 (see <code>mbnma$model.arg$jagsdata</code>)</p></dd>
-
-
-<dt>arg.params</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Assign run and wrapper parameters</p></dd>
 
 
 <dt>...</dt>
@@ -345,7 +359,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">######## Dose-response functions ########</span></span></span>
@@ -419,7 +433,6 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span><span class="co"># with common treatment effects</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"random"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -428,7 +441,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 86</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3696</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3689</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -437,8 +450,6 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span><span class="co"># with a fixed value of 5 for the Hill parameter</span></span></span>
 <span class="r-in"><span><span class="co"># with random relative effects</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span>hill<span class="op">=</span><span class="fl">5</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'hill' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -447,7 +458,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4135</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4133</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -456,7 +467,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span><span class="co"># with 3 knots at 10% 30% and 60% quartiles of dose ranges</span></span></span>
 <span class="r-in"><span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span> <span class="co"># Using the sSRI depression dataset</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="fu"><a href="dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
@@ -480,11 +491,6 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span>                       <span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># for zolmitriptan</span></span></span>
 <span class="r-in"><span>                       <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>, <span class="co"># for naratriptan</span></span></span>
 <span class="r-in"><span>                       <span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="co"># for rizatriptan</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">multidose</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="va">multifun</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
@@ -495,7 +501,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3945</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3938</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -516,12 +522,11 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span> <span class="co"># Run an Emax MBNMA with a common class effect on emax</span></span></span>
 <span class="r-in"><span> <span class="va">painnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">pain.df</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `class` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span> <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">mbnma.run</span><span class="op">(</span><span class="va">painnet</span>, fun <span class="op">=</span> <span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"common"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `normal` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `identity` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -530,7 +535,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 74</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 33</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 884</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 876</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -554,10 +559,10 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">model.arg</span><span class="op">$</span><span class="va">priors</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $mu</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.001)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.0001)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $beta.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.001)"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dnorm(0,0.0001)"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $sd</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "dunif(0, 6.021)"</span>
@@ -668,7 +673,6 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span>              method<span class="op">=</span><span class="st">"random"</span>,</span></span>
 <span class="r-in"><span>              n.iter<span class="op">=</span><span class="fl">10000</span>, n.burnin<span class="op">=</span><span class="fl">9000</span>,</span></span>
 <span class="r-in"><span>              autojags<span class="op">=</span><span class="cn">TRUE</span>, Rhat<span class="op">=</span><span class="fl">1.08</span>, n.update<span class="op">=</span><span class="fl">8</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -677,7 +681,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -687,43 +691,45 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print R2jags output and summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpQaimRh/file17b6cba2dd", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpnvBwhc/file17ed2de04612", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.007   0.148    1.715    1.908    2.003    2.108    2.294 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.311   0.090    1.139    1.253    1.310    1.371    1.487 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.690   0.311    1.093    1.482    1.684    1.890    2.319 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.356   0.187    1.001    1.227    1.357    1.482    1.720 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.444   0.145    1.155    1.346    1.442    1.544    1.726 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.737   0.293    0.155    0.535    0.735    0.939    1.309 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.299   0.174    1.964    2.181    2.296    2.415    2.652 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.368   0.044    0.288    0.337    0.367    0.397    0.465 1.007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  183.666  18.561  149.064  170.888  183.079  195.673  222.096 1.007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1086.772  18.561 1052.170 1073.994 1086.185 1098.779 1125.202 1.008</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.004   0.154    1.714    1.895    2.001    2.103    2.309 1.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.310   0.092    1.134    1.248    1.309    1.373    1.491 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.662   0.302    1.082    1.459    1.656    1.859    2.271 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.357   0.192    0.991    1.227    1.354    1.491    1.730 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.441   0.148    1.159    1.341    1.438    1.539    1.729 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.724   0.279    0.173    0.539    0.725    0.914    1.284 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.285   0.183    1.933    2.162    2.287    2.407    2.659 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.365   0.045    0.279    0.335    0.363    0.393    0.456 1.010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  183.667  18.888  149.123  170.620  182.984  195.951  222.534 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1086.773  18.888 1052.229 1073.726 1086.090 1099.057 1125.640 1.004</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]    3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]    1300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]    1400</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]    1600</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     730</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]     800</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]    1500</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd          300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   360</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    330</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]     350</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]    3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]     620</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]     660</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     910</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]    1900</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]    2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd          200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   590</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    610</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 931.9 and DIC = 2018.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 805.3 and DIC = 1891.4</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Dose-response MBNMA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Likelihood: binomial</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Link function: logit</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Dose-response function: loglin</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Pooling method</span>
@@ -732,8 +738,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Parameter					Median (95%CrI)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">-----------------------------------------------------------------------</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.367 (0.288, 0.465)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.363 (0.279, 0.456)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">rate dose-response parameter results</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -741,22 +746,22 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:------------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 2.0034| 1.7155| 2.2945|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3103| 1.1388| 1.4870|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6844| 1.0935| 2.3191|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3571| 1.0007| 1.7196|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4423| 1.1546| 1.7263|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7354| 0.1548| 1.3095|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2961| 1.9640| 2.6518|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 2.0013| 1.7142| 2.3092|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3087| 1.1337| 1.4911|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6558| 1.0815| 2.2715|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3540| 0.9905| 1.7299|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4375| 1.1586| 1.7286|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7251| 0.1732| 1.2838|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2872| 1.9330| 2.6590|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Effective number of parameters:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 931.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD calculated using an optimism adjustment = 805.3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 2018.1 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1086.1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1891.4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

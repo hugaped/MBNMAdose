@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -75,7 +96,7 @@ ranking will be calculated for all available parameters that vary by agent/class
 <dt>sucra</dt>
 <dd><p>A logical object to indicate whether Surface Under Cumulative Ranking Curve (SUCRA)
 values should be calculated and returned as a data frame. Areas calculated
-using <code>readWKT</code>.</p></dd>
+using trapezoid approach.</p></dd>
 
 
 <dt>...</dt>
@@ -98,11 +119,10 @@ if <code>sucra = TRUE</code>.</p>
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Estimate rankings  from an Emax dose-response MBNMA</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -111,7 +131,7 @@ if <code>sucra = TRUE</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -124,20 +144,20 @@ if <code>sucra = TRUE</code>.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 14 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    agent        parameter sucra</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50       3.17</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> eletriptan   emax       4.23</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50       3.10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax       2.55</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50       1.88</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> frovatriptan emax       2.26</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50       4.03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> almotriptan  emax       3.81</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50       3.05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> zolmitriptan emax       2.92</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> naratriptan  ed50       4.52</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> naratriptan  emax       3.44</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> rizatriptan  ed50       4.25</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> rizatriptan  emax       4.77</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50      0.849</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> eletriptan   emax      1.72 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50      1.73 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax      1.11 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50      4.80 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> frovatriptan emax      4.98 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50      4.88 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> almotriptan  emax      4.82 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50      1.94 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> zolmitriptan emax      1.71 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> naratriptan  ed50      5.26 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> naratriptan  emax      4.27 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> rizatriptan  ed50      4.54 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> rizatriptan  emax      5.40 </span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

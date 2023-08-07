@@ -18,7 +18,7 @@ parameters for multiple dose-response functions."><!-- mathjax --><script src="h
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -33,7 +33,28 @@ parameters for multiple dose-response functions."><!-- mathjax --><script src="h
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -87,9 +108,6 @@ functions in the list is assumed to correspond to the same order of agents in <c
 <span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span>ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span><span class="op">)</span>,<span class="fl">3</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>          <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,<span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">dmulti</span><span class="op">(</span><span class="va">funs</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
@@ -102,10 +120,10 @@ functions in the list is assumed to correspond to the same order of agents in <c
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "s.beta.3[agent[i,k]] * log(dose[i,k] + 1)"                                   </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "(s.beta.4[agent[i,k]] * dose[i,k]) / (exp(s.beta.5[agent[i,k]]) + dose[i,k])"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "s.beta.6[agent[i,k]] * (1 - exp(- dose[i,k]))"                               </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * dose[i,k]) / (s.beta.2[agent[i,k]] + dose[i,k])"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2] "s.beta.3[agent[i,k]] * log(dose[i,k] + 1)"                              </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [3] "(s.beta.4[agent[i,k]] * dose[i,k]) / (s.beta.5[agent[i,k]] + dose[i,k])"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [4] "s.beta.6[agent[i,k]] * (1 - exp(- dose[i,k]))"                          </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     emax     ed50     rate   emax.4   ed50.5   emax.6 </span>
@@ -152,6 +170,9 @@ functions in the list is assumed to correspond to the same order of agents in <c
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $degree</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA NA NA NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $p.expon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $agents</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>

@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -58,7 +58,28 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul>
 </li>
@@ -105,15 +126,14 @@
 </h2>
 <p>Functions within <code>MBNMAdose</code> follow a clear pattern of use:</p>
 <ol style="list-style-type: decimal">
-<li>Load your data into the correct format using <code><a href="reference/mbnma.network.html">mbnma.network()</a></code>
+<li>Load your data into the correct format using <code><a href="reference/mbnma.network.html">mbnma.network()</a></code> and explore potential relationships (<a href="dataexploration-1.html">Exploring the data</a>
 </li>
-<li>Analyse your data using <code><a href="reference/mbnma.run.html">mbnma.run()</a></code> with a wide range of dose-response functions</li>
-<li>Examine model results using forest plots and treatment rankings</li>
-<li>Check model fit and test for consistency using functions like <code><a href="reference/mbnma.nodesplit.html">mbnma.nodesplit()</a></code>
+<li>Perform a dose-response MBNMA using <code><a href="reference/mbnma.run.html">mbnma.run()</a></code> (<a href="runmbnmadose-2.html">Performing a dose-response MBNMA</a>. Modelling of effect modifying covariates is also possibly using <a href="metaregression-6.html">Network Meta-Regression</a>.</li>
+<li>Test for consistency at the treatment-level using functions like <code><a href="reference/nma.nodesplit.html">nma.nodesplit()</a></code> and <code><a href="reference/nma.run.html">nma.run()</a></code> (<a href="consistencychecking-3.html">Checking for consistency</a>
 </li>
-<li>Use your model to predict responses using <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>
+<li>Examine model outputs, such as relative effects, forest plots and treatment rankings (<a href="outputs-4.html">Model outputs</a>
 </li>
-<li>Calculate relative effects between any doses (even those not in the original dataset) using <code><a href="reference/get.relative.html">get.relative()</a></code>
+<li>Use your model to predict responses using <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> (<a href="predictions-5.html">Predictions</a>
 </li>
 </ol>
 <p>At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting. Exported functions in the package are connected like so:</p>

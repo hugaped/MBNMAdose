@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -57,7 +78,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">demax</span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span>, hill <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">demax</span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span>, hill <span class="op">=</span> <span class="cn">NULL</span>, p.expon <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -76,6 +97,11 @@ assigned a numeric value (see details).</p></dd>
 <dd><p>Pooling for Hill parameter. Can take <code>"rel"</code>, <code>"common"</code>, <code>"random"</code> or be
 assigned a numeric value (see details).</p></dd>
 
+
+<dt>p.expon</dt>
+<dd><p>A logical object to indicate whether <code>ed50</code> and <code>hill</code> parameters should be
+expressed within the dose-response function on an exponential scale</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
@@ -91,9 +117,9 @@ assigned a numeric value (see details).</p></dd>
 exp(ED50) represents the dose at which 50% of the maximum response is achieved.
 exp(Hill) is the Hill parameter, which allows for a sigmoidal function.</p>
 <p>Without Hill parameter:
-$$\frac{E_{max}\times{x}}{e^{ET_{50}}+x}$$</p>
+$$\frac{E_{max}\times{x}}{ET_{50}+x}$$</p>
 <p>With Hill parameter:
-$$\frac{E_{max}\times{x^{e^{hill}}}}{e^{ET_{50}\times{e^{hill}}}+x^{e^{hill}}}$$</p>
+$$\frac{E_{max}\times{x^{hill}}}{ET_{50}\times{hill}}+x^{hill}$$</p>
     </div>
     <div id="dose-response-parameters">
     <h2>Dose-response parameters</h2>
@@ -113,13 +139,15 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Model without a Hill parameter</span></span></span>
 <span class="r-in"><span><span class="fu">demax</span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * dose)/(exp(ed50) + dose)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dff94af9f0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * dose)/(ed50 + dose)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55854ac0e9b0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $p.expon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax" "ed50"</span>
@@ -128,7 +156,7 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * dose[i,k]) / (exp(s.beta.2[agent[i,k]]) + dose[i,k])"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * dose[i,k]) / (s.beta.2[agent[i,k]] + dose[i,k])"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     emax     ed50 </span>
@@ -143,14 +171,15 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Model including a Hill parameter and defaults for Emax and ED50 parameters</span></span></span>
 <span class="r-in"><span><span class="fu">demax</span><span class="op">(</span>hill<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'hill' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $name</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $fun</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * (dose^hill))/((exp(ed50)^hill) + (dose^hill))</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55dff92f9be0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> ~(emax * (dose^hill))/((ed50^hill) + (dose^hill))</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: 0x55854b082bb0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $p.expon</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $params</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "emax" "ed50" "hill"</span>
@@ -159,7 +188,7 @@ using the <code>priors</code> argument in <code><a href="mbnma.run.html">mbnma.r
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jags</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * (dose[i,k] ^ exp(s.beta.3[agent[i,k]]))) / ((exp(s.beta.2[agent[i,k]]) ^ exp(s.beta.3[agent[i,k]])) + (dose[i,k] ^ exp(s.beta.3[agent[i,k]])))"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "(s.beta.1[agent[i,k]] * (dose[i,k] ^ s.beta.3[agent[i,k]])) / ((s.beta.2[agent[i,k]] ^ s.beta.3[agent[i,k]]) + (dose[i,k] ^ s.beta.3[agent[i,k]]))"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $apool</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     emax     ed50     hill </span>

@@ -18,7 +18,7 @@ dose-response MBNMA."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -33,7 +33,28 @@ dose-response MBNMA."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -155,11 +176,10 @@ selecting only the studies and arms that investigate dose = 0 (placebo).</p>
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run an Emax dose-response MBNMA</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -168,7 +188,7 @@ selecting only the studies and arms that investigate dose = 0 (placebo).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -180,7 +200,7 @@ selecting only the studies and arms that investigate dose = 0 (placebo).</p>
 <span class="r-in"><span><span class="va">E0</span> <span class="op">&lt;-</span> <span class="fu">ref.synth</span><span class="op">(</span><span class="va">ref.df</span>, <span class="va">emax</span>, synth<span class="op">=</span><span class="st">"fixed"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Data frame must contain only data from reference treatment"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>
@@ -198,7 +218,7 @@ selecting only the studies and arms that investigate dose = 0 (placebo).</p>
 <span class="r-in"><span><span class="va">E0</span> <span class="op">&lt;-</span> <span class="fu">ref.synth</span><span class="op">(</span><span class="va">ref.df</span>, <span class="va">emax</span>, synth<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Data frame must contain only data from reference treatment"</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Resolving undeclared variables</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Allocating nodes</span>

@@ -4,10 +4,31 @@
     <loc>https://hugaped.github.io/MBNMAdose/404.html</loc>
   </url>
   <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/consistencychecking-3.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/dataexploration-1.html</loc>
+  </url>
+  <url>
     <loc>https://hugaped.github.io/MBNMAdose/articles/index.html</loc>
   </url>
   <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/mbnmadose.html</loc>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/mbnmadose-overview.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/metaregression-6.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/nma_in_mbnmadose.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/outputs-4.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/predictions-5.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/articles/runmbnmadose-2.html</loc>
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/authors.html</loc>
@@ -43,6 +64,9 @@
     <loc>https://hugaped.github.io/MBNMAdose/reference/cumrank.html</loc>
   </url>
   <url>
+    <loc>https://hugaped.github.io/MBNMAdose/reference/default.priors.html</loc>
+  </url>
+  <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/demax.html</loc>
   </url>
   <url>
@@ -56,6 +80,9 @@
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/dfpoly.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/reference/ditp.html</loc>
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/dloglin.html</loc>
@@ -112,18 +139,6 @@
     <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.comparisons.html</loc>
   </url>
   <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.emax.hill.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.emax.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.exponential.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.linear.html</loc>
-  </url>
-  <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.network.html</loc>
   </url>
   <url>
@@ -146,6 +161,9 @@
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/nma.run.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/reference/norm2lnorm.html</loc>
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/osteopain.html</loc>
@@ -215,6 +233,9 @@
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/rescale.link.html</loc>
+  </url>
+  <url>
+    <loc>https://hugaped.github.io/MBNMAdose/reference/ssi_closure.html</loc>
   </url>
   <url>
     <loc>https://hugaped.github.io/MBNMAdose/reference/ssri.html</loc>

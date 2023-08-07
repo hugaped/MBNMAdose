@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -131,11 +152,10 @@ models is treated as unknown (if <code>rho = "estimate"</code>) and deviance con
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run an Emax dose-response MBNMA and predict responses</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -144,7 +164,7 @@ models is treated as unknown (if <code>rho = "estimate"</code>) and deviance con
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -175,12 +195,12 @@ models is treated as unknown (if <code>rho = "estimate"</code>) and deviance con
 <span class="r-plt img"><img src="devplot-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">devs</span><span class="op">$</span><span class="va">dev.data</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   study arm      mean        facet fupdose groupvar studyID</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     1   2 0.8464824  sumatriptan     0.5        1      27</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     1   3 1.3783806  sumatriptan     1.0        1      37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     1   4 1.4955489  sumatriptan     2.0        1      66</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6     2   2 0.8614993   eletriptan     1.0        2      27</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7     2   3 0.8919156   eletriptan     2.0        2      37</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     2   4 0.9434015 zolmitriptan     1.0        2      66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     1   2 1.1380554  sumatriptan     0.5        1      27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     1   3 1.0108653  sumatriptan     1.0        1      37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     1   4 1.9454327  sumatriptan     2.0        1      66</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6     2   2 0.8946101   eletriptan     1.0        2      27</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7     2   3 0.8998664   eletriptan     2.0        2      37</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     2   4 1.0119394 zolmitriptan     1.0        2      66</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Other deviance contributions not currently implemented but in future</span></span></span>
 <span class="r-in"><span><span class="co">#it will be possible to plot them like so</span></span></span>

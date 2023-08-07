@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -32,7 +32,28 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -120,7 +141,7 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rank selected agents from a log-linear dose-response MBNMA</span></span></span>
 <span class="r-in"><span><span class="va">loglin</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -140,14 +161,13 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rate</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean         sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 zolmitriptan 2.008333 0.09092109    2   2   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 zolmitriptan 2.007667 0.08723775    2   2   2   2     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2   eletriptan 1.000000 0.00000000    1   1   1   1     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  sumatriptan 2.991667 0.09092109    3   3   3   3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  sumatriptan 2.992333 0.08723775    3   3   3   3     3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rank only ED50 parameters from an Emax dose-response MBNMA</span></span></span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -156,21 +176,21 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 197</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4115</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">emax</span>, params<span class="op">=</span><span class="st">"ed50"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ed50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean       sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   eletriptan 4.370333 1.281302    2   3   4   5     6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  sumatriptan 4.406667 1.307616    2   3   4   5     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 frovatriptan 6.079333 1.477532    2   6   7   7     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  almotriptan 3.286333 1.890733    1   2   3   5     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 zolmitriptan 4.471333 1.690798    2   3   4   6     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  naratriptan 2.404333 2.259030    1   1   1   4     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  rizatriptan 2.981667 1.412089    1   2   3   4     6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   eletriptan 6.719667 0.5142970    5   7   7   7     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  sumatriptan 5.115667 1.5846529    1   5   5   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 frovatriptan 2.642667 1.1992187    1   2   3   4     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  almotriptan 2.594667 1.1659723    1   2   3   4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 zolmitriptan 5.648333 0.6768677    5   5   6   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  naratriptan 2.158000 1.1527412    1   1   2   3     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  rizatriptan 3.121000 1.1408153    1   2   3   4     5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -181,12 +201,11 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="va">class.df</span><span class="op">$</span><span class="va">class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">class.df</span><span class="op">$</span><span class="va">agent</span><span class="op">==</span><span class="st">"eletriptan"</span>, <span class="st">"active2"</span>, <span class="va">class.df</span><span class="op">$</span><span class="va">class</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">netclass</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">class.df</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `class` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> class is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">netclass</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span></span>
 <span class="r-in"><span>            class.effect<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"ed50"</span><span class="op">=</span><span class="st">"common"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `likelihood` not given by user - set to `binomial` based on data provided</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `link` not given by user - set to `logit` based on assigned value for `likelihood`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Compiling model graph</span>
@@ -195,7 +214,7 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 192</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4109</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4108</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -208,26 +227,27 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Ranking of dose-response MBNMA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Includes ranking of class effects from dose-response MBNMA:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Includes ranking of relative class effects from dose-response MBNMA:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">ED50</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 agents/classes/predictions ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 classes ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">ED50 ranking</span> (from best to worst)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.14|      1|    1|     2|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.86|      2|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.11|      1|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.89|      2|    1|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print and generate summary data frame for `mbnma.rank` object</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ED50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    active1 1.861667 0.3453071    1   2   2   2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    active2 1.138333 0.3453071    1   1   1   1     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   rank.param  mean        sd 2.5% 25% 50% 75% 97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    active1 1.889 0.3141845    1   2   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    active2 1.111 0.3141845    1   1   1   1     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -235,17 +255,18 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Ranking of dose-response MBNMA</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Includes ranking of class effects from dose-response MBNMA:</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Includes ranking of relative class effects from dose-response MBNMA:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">ED50</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 agents/classes/predictions ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 classes ranked with positive responses being <span style="color: #00BB00; font-weight: bold;">`better`</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">ED50 ranking</span> (from best to worst)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.14|      1|    1|     2|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.86|      2|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.11|      1|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.89|      2|    1|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

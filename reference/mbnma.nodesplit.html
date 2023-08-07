@@ -19,7 +19,7 @@ assumption required for NMA and MBNMA may violated."><!-- mathjax --><script src
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2.900</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.2</span>
       </span>
     </div>
 
@@ -34,7 +34,28 @@ assumption required for NMA and MBNMA may violated."><!-- mathjax --><script src
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
-      <a href="../articles/mbnmadose.html">MBNMAdose for dose-response Model-Based Network Meta-Analysis</a>
+      <a href="../articles/consistencychecking-3.html">MBNMAdose: Checking for consistency</a>
+    </li>
+    <li>
+      <a href="../articles/dataexploration-1.html">MBNMAdose: Exploring the data</a>
+    </li>
+    <li>
+      <a href="../articles/mbnmadose-overview.html">MBNMAdose: Package Overview</a>
+    </li>
+    <li>
+      <a href="../articles/metaregression-6.html">MBNMAdose: Perform Network Meta-Regression</a>
+    </li>
+    <li>
+      <a href="../articles/nma_in_mbnmadose.html">Class effect NMA analysis using MBNMAdose</a>
+    </li>
+    <li>
+      <a href="../articles/outputs-4.html">MBNMAdose outputs: Relative effects, forest plots and rankings</a>
+    </li>
+    <li>
+      <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
+    </li>
+    <li>
+      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
     </li>
   </ul></li>
 <li>
@@ -63,15 +84,10 @@ assumption required for NMA and MBNMA may violated.</p>
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mbnma.nodesplit</span><span class="op">(</span></span>
 <span>  <span class="va">network</span>,</span>
-<span>  fun <span class="op">=</span> <span class="fu"><a href="dloglin.html">dloglin</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  fun <span class="op">=</span> <span class="fu"><a href="dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  method <span class="op">=</span> <span class="st">"common"</span>,</span>
 <span>  comparisons <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  incldr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  beta.1 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.2 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.3 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  beta.4 <span class="op">=</span> <span class="st">"rel"</span>,</span>
-<span>  user.fun <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -107,31 +123,6 @@ may change if <code>drop.discon = TRUE</code>).</p></dd>
 <dd><p>A boolean object indicating whether or not to allow for indirect evidence contributions via
 the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
 for a greater number of potential loops in which to check for consistency.</p></dd>
-
-
-<dt>beta.1</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.2</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.3</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>beta.4</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> Refers to dose-parameter(s) specified within the dose-response function(s).
-Can take either <code>"rel"</code>, <code>"common"</code>, <code>"random"</code>, or be assigned a numeric value (see details).</p></dd>
-
-
-<dt>user.fun</dt>
-<dd><p><strong>Deprecated from version 0.4.0 onwards.</strong> A formula specifying any relationship including <code>dose</code> and
-one/several of: <code>beta.1</code>, <code>beta.2</code>, <code>beta.3</code>, <code>beta.4</code>.</p></dd>
 
 
 <dt>...</dt>
@@ -172,11 +163,10 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-in"><span><span class="co"># Using the triptans data</span></span></span>
 <span class="r-in"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Values for `agent` with dose = 0 have been recoded to `Placebo`</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering and allow inclusion of `Placebo`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> agent is being recoded to enforce sequential numbering</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">split</span> <span class="op">&lt;-</span> <span class="fu">mbnma.nodesplit</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
 <span class="r-in"><span>  method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -193,7 +183,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 84</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3691</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3684</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -205,7 +195,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3906</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3898</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -217,7 +207,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3906</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3898</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -229,7 +219,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3906</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3898</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -241,7 +231,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3908</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3900</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -253,7 +243,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -265,7 +255,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -277,7 +267,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -289,7 +279,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -301,7 +291,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -313,7 +303,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -325,7 +315,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -337,7 +327,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -349,7 +339,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -361,7 +351,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -373,7 +363,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -385,7 +375,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -397,7 +387,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -409,7 +399,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -421,7 +411,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -433,7 +423,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 85</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3904</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3896</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -458,7 +448,6 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-in"><span><span class="co"># This...</span></span></span>
 <span class="r-in"><span><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">mbnma.nodesplit</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
 <span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sumatriptan_1"</span>, <span class="st">"almotriptan_1"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -487,7 +476,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4334</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -495,7 +484,6 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-in"><span><span class="co">#...is the same as...</span></span></span>
 <span class="r-in"><span><span class="va">single.split</span> <span class="op">&lt;-</span> <span class="fu">mbnma.nodesplit</span><span class="op">(</span><span class="va">network</span>, fun<span class="op">=</span><span class="fu"><a href="dexp.html">dexp</a></span><span class="op">(</span><span class="op">)</span>, likelihood <span class="op">=</span> <span class="st">"binomial"</span>, link<span class="op">=</span><span class="st">"logit"</span>,</span></span>
 <span class="r-in"><span>             method<span class="op">=</span><span class="st">"random"</span>, comparisons<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 'onset' parameters are on exponential scale to ensure they take positive values on the natural scale</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |                                                                      |   0%  |                                                                              |===                                                                   |   4%  |                                                                              |=====                                                                 |   8%  |                                                                              |========                                                              |  12%  |                                                                              |===========                                                           |  15%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |=============                                                         |  19%</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   |                                                                              |================                                                      |  23%  |                                                                              |===================                                                   |  27%  |                                                                              |======================                                                |  31%  |                                                                              |========================                                              |  35%  |                                                                              |===========================                                           |  38%  |                                                                              |==============================                                        |  42%</span>
@@ -524,7 +512,7 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 191</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4335</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 4334</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -542,168 +530,168 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Comparison                         | p-value| Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:----------------------------------|-------:|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_1 vs almotriptan_1    |   0.411|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.121| -0.150|  0.374|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.333|  0.093|  0.587|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.229|  0.060|  0.404|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_1 vs almotriptan_1    |   0.196|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.118| -0.134|  0.377|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.431|  0.210|  0.633|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.286|  0.094|  0.458|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1 vs sumatriptan_1     |   0.155|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.194| -0.042|  0.435|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.496|  0.323|  0.679|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.381|  0.244|  0.516|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_1 vs sumatriptan_1     |   0.101|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.187| -0.066|  0.444|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.531|  0.373|  0.685|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.446|  0.314|  0.574|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_1 vs sumatriptan_1     |   0.073|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        | -0.398| -0.683| -0.122|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.045| -0.157|  0.253|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.176|  0.023|  0.335|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_1 vs sumatriptan_1     |   0.064|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        | -0.401| -0.684| -0.125|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.121| -0.139|  0.322|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.209|  0.015|  0.367|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.5 vs sumatriptan_0.5 |   0.566|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.287|  0.027|  0.541|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.105| -0.190|  0.438|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.226| -0.015|  0.437|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.5 vs sumatriptan_0.5 |   0.412|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.287|  0.023|  0.554|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        | -0.033| -0.229|  0.399|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.013| -0.121|  0.133|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.25 vs Placebo_0      |   0.341|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.149| -0.812|  0.906|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.685|  0.370|  1.084|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.717|  0.438|  1.020|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan_0.25 vs Placebo_0      |   0.070|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.049| -0.911|  0.812|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.383|  0.352|  0.414|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.386|  0.354|  0.419|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_2 vs Placebo_0         |   0.820|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.838|  0.267|  1.407|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.710|  0.000|  1.489|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.853|  0.424|  1.310|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_2 vs Placebo_0         |   0.693|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.826|  0.280|  1.393|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.068|  0.450|  1.643|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.893|  0.424|  1.344|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_1 vs Placebo_0         |   0.493|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.566|  0.251|  0.883|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.341|  0.000|  1.252|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.505|  0.247|  0.800|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan_1 vs Placebo_0         |   0.599|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.568|  0.259|  0.866|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.406|  0.123|  0.706|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.452|  0.215|  0.686|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_10 vs Placebo_0       |   0.308|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  2.742|  1.425|  4.043|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.731|  1.223|  2.565|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.917|  1.355|  2.469|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_10 vs Placebo_0       |   0.386|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  2.664|  1.385|  4.011|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.934|  1.415|  2.530|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  2.145|  1.603|  2.917|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_4 vs Placebo_0        |   0.723|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.759|  1.341|  2.190|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.920|  1.345|  2.488|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.741|  1.333|  2.116|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_4 vs Placebo_0        |   0.598|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.789|  1.365|  2.206|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  2.043|  1.481|  2.605|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.873|  1.497|  2.307|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_2 vs Placebo_0        |   0.924|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.472|  1.139|  1.837|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.481|  1.179|  1.752|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.516|  1.283|  1.725|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_2 vs Placebo_0        |   0.809|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.551|  1.245|  1.889|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.536|  1.322|  1.749|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.544|  1.341|  1.753|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_0.4 vs Placebo_0      |   0.588|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.802|  0.001|  1.543|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.727|  0.546|  1.272|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.757|  0.597|  1.119|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan_0.4 vs Placebo_0      |   0.355|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.833| -0.010|  1.571|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.658|  0.525|  0.925|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.649|  0.495|  0.861|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_2 vs Placebo_0         |   0.525|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.382|  1.105|  1.667|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.525|  0.942|  2.069|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.455|  1.176|  1.725|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_2 vs Placebo_0         |   0.059|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.351|  1.070|  1.637|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.910|  1.629|  2.198|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.569|  1.266|  1.831|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_0.5 vs Placebo_0       |   0.785|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.607|  0.301|  0.937|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.665|  0.482|  1.084|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.600|  0.461|  0.821|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan_0.5 vs Placebo_0       |   0.450|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  0.488|  0.167|  0.797|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.429|  0.363|  0.638|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.431|  0.355|  0.687|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_2 vs Placebo_0        |   0.155|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.377|  0.783|  1.948|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  2.261|  1.634|  2.858|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.259|  0.927|  1.726|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_2 vs Placebo_0        |   0.178|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.369|  0.789|  1.973|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  2.261|  1.615|  2.961|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.818|  1.334|  2.318|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_1 vs Placebo_0        |   0.522|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.216|  0.907|  1.535|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.291|  0.504|  1.968|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.221|  0.899|  1.523|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan_1 vs Placebo_0        |   0.121|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.202|  0.898|  1.536|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  0.696|  0.409|  0.999|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  0.924|  0.677|  1.188|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_2 vs Placebo_0         |   0.014|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.428|  1.316|  1.538|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.142|  1.042|  1.257|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.390|  1.287|  1.494|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_2 vs Placebo_0         |   0.000|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.342|  1.233|  1.449|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.974|  1.790|  2.177|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.361|  1.191|  1.480|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_1.7 vs Placebo_0       |   0.165|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.100|  0.811|  1.413|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.371|  1.264|  1.474|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.344|  1.248|  1.439|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan_1.7 vs Placebo_0       |   0.313|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.095|  0.800|  1.403|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.320|  1.161|  1.431|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.298|  1.143|  1.408|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_2 vs Placebo_0          |   0.099|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.987|  1.814|  2.161|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  2.616|  2.088|  3.453|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  2.029|  1.863|  2.201|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_2 vs Placebo_0          |   0.000|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.942|  1.769|  2.113|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  3.333|  3.061|  3.607|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  2.024|  1.858|  2.191|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_1 vs Placebo_0          |   0.401|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.726|  1.577|  1.865|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.570|  1.060|  1.774|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.706|  1.567|  1.849|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_1 vs Placebo_0          |   0.387|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.688|  1.530|  1.848|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.493|  0.914|  1.741|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.657|  0.980|  1.809|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_0.5 vs Placebo_0        |   0.353|       |       |       |</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.151|  0.910|  1.402|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.386|  1.172|  1.656|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.292|  1.146|  1.469|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan_0.5 vs Placebo_0        |   0.402|       |       |       |</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; direct                          |        |  1.138|  0.894|  1.386|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; indirect                        |        |  1.331|  1.140|  1.558|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |-&gt; MBNMA                           |        |  1.227|  0.494|  1.415|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |                                   |        |       |       |       |</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span> <span class="co"># Generate a data frame of summary results</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                            Comparison Evidence Median   2.5%  97.5% p.value</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1     zolmitriptan_1 vs almotriptan_1   Direct  0.121 -0.150  0.374   0.411</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2     zolmitriptan_1 vs almotriptan_1 Indirect  0.333  0.093  0.587   0.411</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3     zolmitriptan_1 vs almotriptan_1    MBNMA  0.229  0.060  0.404   0.411</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4      rizatriptan_1 vs sumatriptan_1   Direct  0.194 -0.042  0.435   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5      rizatriptan_1 vs sumatriptan_1 Indirect  0.496  0.323  0.679   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      rizatriptan_1 vs sumatriptan_1    MBNMA  0.381  0.244  0.516   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      almotriptan_1 vs sumatriptan_1   Direct -0.398 -0.683 -0.122   0.073</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      almotriptan_1 vs sumatriptan_1 Indirect  0.045 -0.157  0.253   0.073</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      almotriptan_1 vs sumatriptan_1    MBNMA  0.176  0.023  0.335   0.073</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 rizatriptan_0.5 vs sumatriptan_0.5   Direct  0.287  0.027  0.541   0.566</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 rizatriptan_0.5 vs sumatriptan_0.5 Indirect  0.105 -0.190  0.438   0.566</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 rizatriptan_0.5 vs sumatriptan_0.5    MBNMA  0.226 -0.015  0.437   0.566</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13      rizatriptan_0.25 vs Placebo_0   Direct  0.149 -0.812  0.906   0.341</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14      rizatriptan_0.25 vs Placebo_0 Indirect  0.685  0.370  1.084   0.341</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15      rizatriptan_0.25 vs Placebo_0    MBNMA  0.717  0.438  1.020   0.341</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16         naratriptan_2 vs Placebo_0   Direct  0.838  0.267  1.407   0.820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17         naratriptan_2 vs Placebo_0 Indirect  0.710  0.000  1.489   0.820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18         naratriptan_2 vs Placebo_0    MBNMA  0.853  0.424  1.310   0.820</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19         naratriptan_1 vs Placebo_0   Direct  0.566  0.251  0.883   0.493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20         naratriptan_1 vs Placebo_0 Indirect  0.341  0.000  1.252   0.493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21         naratriptan_1 vs Placebo_0    MBNMA  0.505  0.247  0.800   0.493</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22       zolmitriptan_10 vs Placebo_0   Direct  2.742  1.425  4.043   0.308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23       zolmitriptan_10 vs Placebo_0 Indirect  1.731  1.223  2.565   0.308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24       zolmitriptan_10 vs Placebo_0    MBNMA  1.917  1.355  2.469   0.308</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25        zolmitriptan_4 vs Placebo_0   Direct  1.759  1.341  2.190   0.723</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        zolmitriptan_4 vs Placebo_0 Indirect  1.920  1.345  2.488   0.723</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27        zolmitriptan_4 vs Placebo_0    MBNMA  1.741  1.333  2.116   0.723</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28        zolmitriptan_2 vs Placebo_0   Direct  1.472  1.139  1.837   0.924</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29        zolmitriptan_2 vs Placebo_0 Indirect  1.481  1.179  1.752   0.924</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30        zolmitriptan_2 vs Placebo_0    MBNMA  1.516  1.283  1.725   0.924</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31      zolmitriptan_0.4 vs Placebo_0   Direct  0.802  0.001  1.543   0.588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32      zolmitriptan_0.4 vs Placebo_0 Indirect  0.727  0.546  1.272   0.588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33      zolmitriptan_0.4 vs Placebo_0    MBNMA  0.757  0.597  1.119   0.588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34         almotriptan_2 vs Placebo_0   Direct  1.382  1.105  1.667   0.525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35         almotriptan_2 vs Placebo_0 Indirect  1.525  0.942  2.069   0.525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36         almotriptan_2 vs Placebo_0    MBNMA  1.455  1.176  1.725   0.525</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 37       almotriptan_0.5 vs Placebo_0   Direct  0.607  0.301  0.937   0.785</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 38       almotriptan_0.5 vs Placebo_0 Indirect  0.665  0.482  1.084   0.785</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 39       almotriptan_0.5 vs Placebo_0    MBNMA  0.600  0.461  0.821   0.785</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 40        frovatriptan_2 vs Placebo_0   Direct  1.377  0.783  1.948   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 41        frovatriptan_2 vs Placebo_0 Indirect  2.261  1.634  2.858   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 42        frovatriptan_2 vs Placebo_0    MBNMA  1.259  0.927  1.726   0.155</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 43        frovatriptan_1 vs Placebo_0   Direct  1.216  0.907  1.535   0.522</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 44        frovatriptan_1 vs Placebo_0 Indirect  1.291  0.504  1.968   0.522</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 45        frovatriptan_1 vs Placebo_0    MBNMA  1.221  0.899  1.523   0.522</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 46         sumatriptan_2 vs Placebo_0   Direct  1.428  1.316  1.538   0.014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 47         sumatriptan_2 vs Placebo_0 Indirect  1.142  1.042  1.257   0.014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 48         sumatriptan_2 vs Placebo_0    MBNMA  1.390  1.287  1.494   0.014</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 49       sumatriptan_1.7 vs Placebo_0   Direct  1.100  0.811  1.413   0.165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 50       sumatriptan_1.7 vs Placebo_0 Indirect  1.371  1.264  1.474   0.165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 51       sumatriptan_1.7 vs Placebo_0    MBNMA  1.344  1.248  1.439   0.165</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 52          eletriptan_2 vs Placebo_0   Direct  1.987  1.814  2.161   0.099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 53          eletriptan_2 vs Placebo_0 Indirect  2.616  2.088  3.453   0.099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 54          eletriptan_2 vs Placebo_0    MBNMA  2.029  1.863  2.201   0.099</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 55          eletriptan_1 vs Placebo_0   Direct  1.726  1.577  1.865   0.401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 56          eletriptan_1 vs Placebo_0 Indirect  1.570  1.060  1.774   0.401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 57          eletriptan_1 vs Placebo_0    MBNMA  1.706  1.567  1.849   0.401</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 58        eletriptan_0.5 vs Placebo_0   Direct  1.151  0.910  1.402   0.353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 59        eletriptan_0.5 vs Placebo_0 Indirect  1.386  1.172  1.656   0.353</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 60        eletriptan_0.5 vs Placebo_0    MBNMA  1.292  1.146  1.469   0.353</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1     zolmitriptan_1 vs almotriptan_1   Direct  0.118 -0.134  0.377   0.196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2     zolmitriptan_1 vs almotriptan_1 Indirect  0.431  0.210  0.633   0.196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3     zolmitriptan_1 vs almotriptan_1    MBNMA  0.286  0.094  0.458   0.196</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4      rizatriptan_1 vs sumatriptan_1   Direct  0.187 -0.066  0.444   0.101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5      rizatriptan_1 vs sumatriptan_1 Indirect  0.531  0.373  0.685   0.101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      rizatriptan_1 vs sumatriptan_1    MBNMA  0.446  0.314  0.574   0.101</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      almotriptan_1 vs sumatriptan_1   Direct -0.401 -0.684 -0.125   0.064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8      almotriptan_1 vs sumatriptan_1 Indirect  0.121 -0.139  0.322   0.064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9      almotriptan_1 vs sumatriptan_1    MBNMA  0.209  0.015  0.367   0.064</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 rizatriptan_0.5 vs sumatriptan_0.5   Direct  0.287  0.023  0.554   0.412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 rizatriptan_0.5 vs sumatriptan_0.5 Indirect -0.033 -0.229  0.399   0.412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 rizatriptan_0.5 vs sumatriptan_0.5    MBNMA  0.013 -0.121  0.133   0.412</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13      rizatriptan_0.25 vs Placebo_0   Direct  0.049 -0.911  0.812   0.070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14      rizatriptan_0.25 vs Placebo_0 Indirect  0.383  0.352  0.414   0.070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15      rizatriptan_0.25 vs Placebo_0    MBNMA  0.386  0.354  0.419   0.070</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16         naratriptan_2 vs Placebo_0   Direct  0.826  0.280  1.393   0.693</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17         naratriptan_2 vs Placebo_0 Indirect  1.068  0.450  1.643   0.693</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18         naratriptan_2 vs Placebo_0    MBNMA  0.893  0.424  1.344   0.693</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19         naratriptan_1 vs Placebo_0   Direct  0.568  0.259  0.866   0.599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20         naratriptan_1 vs Placebo_0 Indirect  0.406  0.123  0.706   0.599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21         naratriptan_1 vs Placebo_0    MBNMA  0.452  0.215  0.686   0.599</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22       zolmitriptan_10 vs Placebo_0   Direct  2.664  1.385  4.011   0.386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23       zolmitriptan_10 vs Placebo_0 Indirect  1.934  1.415  2.530   0.386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24       zolmitriptan_10 vs Placebo_0    MBNMA  2.145  1.603  2.917   0.386</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        zolmitriptan_4 vs Placebo_0   Direct  1.789  1.365  2.206   0.598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        zolmitriptan_4 vs Placebo_0 Indirect  2.043  1.481  2.605   0.598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        zolmitriptan_4 vs Placebo_0    MBNMA  1.873  1.497  2.307   0.598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28        zolmitriptan_2 vs Placebo_0   Direct  1.551  1.245  1.889   0.809</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29        zolmitriptan_2 vs Placebo_0 Indirect  1.536  1.322  1.749   0.809</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30        zolmitriptan_2 vs Placebo_0    MBNMA  1.544  1.341  1.753   0.809</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31      zolmitriptan_0.4 vs Placebo_0   Direct  0.833 -0.010  1.571   0.355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32      zolmitriptan_0.4 vs Placebo_0 Indirect  0.658  0.525  0.925   0.355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33      zolmitriptan_0.4 vs Placebo_0    MBNMA  0.649  0.495  0.861   0.355</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34         almotriptan_2 vs Placebo_0   Direct  1.351  1.070  1.637   0.059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35         almotriptan_2 vs Placebo_0 Indirect  1.910  1.629  2.198   0.059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36         almotriptan_2 vs Placebo_0    MBNMA  1.569  1.266  1.831   0.059</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 37       almotriptan_0.5 vs Placebo_0   Direct  0.488  0.167  0.797   0.450</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 38       almotriptan_0.5 vs Placebo_0 Indirect  0.429  0.363  0.638   0.450</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 39       almotriptan_0.5 vs Placebo_0    MBNMA  0.431  0.355  0.687   0.450</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 40        frovatriptan_2 vs Placebo_0   Direct  1.369  0.789  1.973   0.178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 41        frovatriptan_2 vs Placebo_0 Indirect  2.261  1.615  2.961   0.178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 42        frovatriptan_2 vs Placebo_0    MBNMA  1.818  1.334  2.318   0.178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 43        frovatriptan_1 vs Placebo_0   Direct  1.202  0.898  1.536   0.121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 44        frovatriptan_1 vs Placebo_0 Indirect  0.696  0.409  0.999   0.121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 45        frovatriptan_1 vs Placebo_0    MBNMA  0.924  0.677  1.188   0.121</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 46         sumatriptan_2 vs Placebo_0   Direct  1.342  1.233  1.449   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 47         sumatriptan_2 vs Placebo_0 Indirect  1.974  1.790  2.177   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 48         sumatriptan_2 vs Placebo_0    MBNMA  1.361  1.191  1.480   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 49       sumatriptan_1.7 vs Placebo_0   Direct  1.095  0.800  1.403   0.313</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 50       sumatriptan_1.7 vs Placebo_0 Indirect  1.320  1.161  1.431   0.313</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 51       sumatriptan_1.7 vs Placebo_0    MBNMA  1.298  1.143  1.408   0.313</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 52          eletriptan_2 vs Placebo_0   Direct  1.942  1.769  2.113   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 53          eletriptan_2 vs Placebo_0 Indirect  3.333  3.061  3.607   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 54          eletriptan_2 vs Placebo_0    MBNMA  2.024  1.858  2.191   0.000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 55          eletriptan_1 vs Placebo_0   Direct  1.688  1.530  1.848   0.387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 56          eletriptan_1 vs Placebo_0 Indirect  1.493  0.914  1.741   0.387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 57          eletriptan_1 vs Placebo_0    MBNMA  1.657  0.980  1.809   0.387</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 58        eletriptan_0.5 vs Placebo_0   Direct  1.138  0.894  1.386   0.402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 59        eletriptan_0.5 vs Placebo_0 Indirect  1.331  1.140  1.558   0.402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 60        eletriptan_0.5 vs Placebo_0    MBNMA  1.227  0.494  1.415   0.402</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
