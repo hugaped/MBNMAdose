@@ -126,14 +126,12 @@
 </h2>
 <p>Functions within <code>MBNMAdose</code> follow a clear pattern of use:</p>
 <ol style="list-style-type: decimal">
-<li>Load your data into the correct format using <code><a href="reference/mbnma.network.html">mbnma.network()</a></code> and explore potential relationships (<a href="dataexploration-1.html">Exploring the data</a>
+<li>Load your data into the correct format using <code><a href="reference/mbnma.network.html">mbnma.network()</a></code> and explore potential relationships</li>
+<li>Perform a dose-response MBNMA using <code><a href="reference/mbnma.run.html">mbnma.run()</a></code>. Modelling of effect modifying covariates is also possibly using Network Meta-Regression.</li>
+<li>Test for consistency at the treatment-level using functions like <code><a href="reference/nma.nodesplit.html">nma.nodesplit()</a></code> and <code><a href="reference/nma.run.html">nma.run()</a></code>
 </li>
-<li>Perform a dose-response MBNMA using <code><a href="reference/mbnma.run.html">mbnma.run()</a></code> (<a href="runmbnmadose-2.html">Performing a dose-response MBNMA</a>. Modelling of effect modifying covariates is also possibly using <a href="metaregression-6.html">Network Meta-Regression</a>.</li>
-<li>Test for consistency at the treatment-level using functions like <code><a href="reference/nma.nodesplit.html">nma.nodesplit()</a></code> and <code><a href="reference/nma.run.html">nma.run()</a></code> (<a href="consistencychecking-3.html">Checking for consistency</a>
-</li>
-<li>Examine model outputs, such as relative effects, forest plots and treatment rankings (<a href="outputs-4.html">Model outputs</a>
-</li>
-<li>Use your model to predict responses using <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> (<a href="predictions-5.html">Predictions</a>
+<li>Examine model outputs, such as relative effects, forest plots and treatment rankings</li>
+<li>Use your model to predict responses using <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>
 </li>
 </ol>
 <p>At each of these stages there are a number of informative plots that can be generated to help understand the data and to make decisions regarding model fitting. Exported functions in the package are connected like so:</p>
