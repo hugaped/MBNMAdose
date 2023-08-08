@@ -859,6 +859,8 @@ mbnma.nodesplit <- function(network, fun=dpoly(degree=1),
 #'
 #'
 #' @examples
+#' \donttest{
+#'
 #' # Using the osteoarthritis data
 #' network <- mbnma.network(osteopain)
 #'
@@ -877,6 +879,7 @@ mbnma.nodesplit <- function(network, fun=dpoly(degree=1),
 #' rel.eff <- get.relative(lower.diag=expon, upper.diag=nma,
 #'   treatments=list("Celebrex"=c(100,200), "Tramadol"=100),
 #'   upper.direction="colvrow")
+#' }
 #'
 #' @export
 get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
@@ -1296,7 +1299,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
 
   ######### Summary matrixes ######
 
-  out <- sum.mat.rel(xmat=outmat, trtnames=trtnames)
+  out <- mat.rel.sum(xmat=outmat, trtnames=trtnames)
 
   attributes(out) <- list("class"="relative.array",
                           "names"=names(out),
@@ -1311,7 +1314,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
 #' Summarise relative array outputs for `get.relative()`
 #'
 #' @noRd
-sum.mat.rel <- function(xmat, trtnames) {
+mat.rel.sum <- function(xmat, trtnames) {
 
   meanmat <- matrix(nrow=nrow(xmat), ncol=ncol(xmat))
   semat <- meanmat
