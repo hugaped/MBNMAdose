@@ -1004,24 +1004,23 @@ summary.mbnma <- function(object, digits=4, ...) {
   rhat.warning(object)
 
   ##### Overall section #####
-  print.overall.str(object)
+  overall.str(object)
 
   # Print method section
-  cat(print.method.sect(object))
+  cat(method.str(object))
 
   # Print treatment-level section
-  print.treat.str(object, digits=digits)
+  treat.str(object, digits=digits)
 
   # Class-effect section
-  print.class.str(object, digits=digits)
+  class.str(object, digits=digits)
 
   # Print regression section
-  print.regress.str(object, digits=digits)
+  regress.str(object, digits=digits)
 
   # Model fit statistics section
-  modfit.sect <- print.modfit.str(object)
+  modfit.sect <- modfit.str(object)
 
-  #output <- paste(overall.sect, treat.sect, method.sect, "\n", class.sect, "\n\n", modfit.sect, sep="")
   output <- paste("\n\n", modfit.sect, sep="")
   cat(output, ...)
 }

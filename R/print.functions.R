@@ -41,7 +41,7 @@ rhat.warning <- function(mbnma, cutoff=1.2) {
 #'
 #' @inheritParams predict.mbnma
 #' @noRd
-print.treat.str <- function(mbnma, digits=3, ...) {
+treat.str <- function(mbnma, digits=3, ...) {
 
   fun <- mbnma$model.arg$fun
   datasum <- as.data.frame(cbind(mbnma$BUGSoutput$summary[,5],
@@ -139,7 +139,7 @@ print.treat.str <- function(mbnma, digits=3, ...) {
 #' Neatly prints a summary of the method used in the model
 #'
 #' @noRd
-print.method.sect <- function(mbnma) {
+method.str <- function(mbnma) {
   # String for method
   data.head <- paste("Parameter", "Median (95%CrI)", sep="\t\t\t\t\t")
   data.head <- paste(crayon::bold(data.head, "-----------------------------------------------------------------------", sep="\n"))
@@ -171,9 +171,9 @@ print.method.sect <- function(mbnma) {
     method <- paste0(method, sd.str)
   }
 
-  method.str <- paste("Method:", method, sep=" ")
-  method.str <- paste(crayon::bold(crayon::underline("\n\nPooling method")), method.str, "", sep="\n\n")
-  return(method.str)
+  method.sect <- paste("Method:", method, sep=" ")
+  method.sect <- paste(crayon::bold(crayon::underline("\n\nPooling method")), method.sect, "", sep="\n\n")
+  return(method.sect)
 }
 
 
@@ -184,7 +184,7 @@ print.method.sect <- function(mbnma) {
 
 #' Neatly prints class results
 #' @noRd
-print.class.str <- function(mbnma, digits=4, ...) {
+class.str <- function(mbnma, digits=4, ...) {
 
   if (length(mbnma$model.arg$class.effect)>0) {
 
@@ -242,7 +242,7 @@ print.class.str <- function(mbnma, digits=4, ...) {
 
 #' Neatly prints model fit details
 #' @noRd
-print.modfit.str <- function(mbnma) {
+modfit.str <- function(mbnma) {
   totresdev.str <- c()
 
   cat(crayon::bold(crayon::underline("Model Fit Statistics\n")))
@@ -289,7 +289,7 @@ print.modfit.str <- function(mbnma) {
 
 #' Neatly prints model regression details
 #' @noRd
-print.regress.str <- function(mbnma, digits=4, ...) {
+regress.str <- function(mbnma, digits=4, ...) {
 
   if (!is.null(mbnma$model.arg$regress)) {
 
@@ -360,7 +360,7 @@ print.regress.str <- function(mbnma, digits=4, ...) {
 
 #' Neatly prints heading section
 #' @noRd
-print.overall.str <- function(mbnma) {
+overall.str <- function(mbnma) {
 
   # Print title
   cat(crayon::bold("========================================\nDose-response MBNMA\n========================================\n\n"))
