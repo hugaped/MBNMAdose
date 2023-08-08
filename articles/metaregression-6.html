@@ -71,7 +71,7 @@
       <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
     </li>
     <li>
-      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
+      <a href="../articles/runmbnmadose-2.html">MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)</a>
     </li>
   </ul>
 </li>
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-07</h4>
+            <h4 data-toc-skip class="date">2023-08-08</h4>
       
       
       <div class="hidden name"><code>metaregression-6.Rmd</code></div>
@@ -194,24 +194,24 @@ specified within the dataset for this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0972| -0.3674|  0.1677|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.1307| -0.1333|  0.4048|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2687|  0.0375|  0.4961|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1319| -0.4277|  0.1616|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  1.2694| -8.1045| 10.6024|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0978| -0.3566|  0.1653|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.1287| -0.1429|  0.3986|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2714|  0.0523|  0.4917|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1363| -0.4334|  0.1705|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  1.3609| -7.8814| 10.4915|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|  97.5%|</span></span>
-<span><span class="co">#&gt; |:------------|:---------|-------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0682| -0.0043| 0.1426|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0081| -0.0928| 0.0791|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0656| -0.1314| 0.0015|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0898| -0.0034| 0.1807|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1771| -1.1800| 0.8398|</span></span>
+<span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0684| -0.0035|  0.1388|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0072| -0.0930|  0.0803|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0663| -0.1313| -0.0023|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0896| -0.0056|  0.1863|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1773| -1.1832|  0.8195|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -230,20 +230,20 @@ specified within the dataset for this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter    |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:------------|-------:|--------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |B.x.weeks[2] | -0.1593|  -0.3295|  0.0083|</span></span>
-<span><span class="co">#&gt; |escitalopram |B.x.weeks[3] |  0.1634|  -0.0190|  0.3619|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |B.x.weeks[4] | -0.0279|  -0.1690|  0.1132|</span></span>
-<span><span class="co">#&gt; |paroxetine   |B.x.weeks[5] |  0.0827|  -0.0276|  0.2002|</span></span>
-<span><span class="co">#&gt; |sertraline   |B.x.weeks[6] |  1.2986| -18.3670| 21.1540|</span></span>
+<span><span class="co">#&gt; |citalopram   |B.x.weeks[2] | -0.1617|  -0.3325|  0.0075|</span></span>
+<span><span class="co">#&gt; |escitalopram |B.x.weeks[3] |  0.1607|  -0.0239|  0.3655|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |B.x.weeks[4] | -0.0290|  -0.1717|  0.1152|</span></span>
+<span><span class="co">#&gt; |paroxetine   |B.x.weeks[5] |  0.0844|  -0.0275|  0.1906|</span></span>
+<span><span class="co">#&gt; |sertraline   |B.x.weeks[6] |  1.6452| -18.0446| 20.8984|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.9</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 75.1</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Deviance = 890.7</span></span>
 <span><span class="co">#&gt; Residual deviance = 191</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.6</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.8</span></span></code></pre></div>
 <p>Within the output, a separate parameter (named
 <code>B.x.weeks[]</code>) has been estimated for each agent that
 corresponds to the effect of an additional week of study follow-up on
@@ -286,11 +286,11 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0632| -0.5518| 0.2398|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2698| -0.0793| 0.6323|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2895|  0.0501| 0.5301|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.0870| -0.3921| 0.2304|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.5921|  0.1532| 1.0598|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0718| -0.3195| 0.2172|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2405| -0.1336| 0.7476|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2699|  0.0156| 0.5070|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.0826| -0.3662| 0.2672|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.6175|  0.1466| 1.1297|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
@@ -299,11 +299,11 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0606| -0.0209|  0.1969|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0443| -0.1702|  0.0744|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0703| -0.1422| -0.0011|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0803| -0.0199|  0.1770|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.0994| -0.1951| -0.0089|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0633| -0.0152|  0.1317|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0350| -0.2080|  0.0896|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0644| -0.1347|  0.0106|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0783| -0.0333|  0.1677|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1046| -0.2097| -0.0049|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -322,23 +322,23 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Regression effect |Parameter | Median|    2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:-----------------|:---------|------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |Random effect     |B.x.weeks | 0.0241| -0.0682| 0.1195|</span></span>
+<span><span class="co">#&gt; |Random effect     |B.x.weeks | 0.0271| -0.0651| 0.1195|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Standard deviation for random covariate-by-treatment effects</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Parameter    | Median|   2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|------:|------:|------:|</span></span>
-<span><span class="co">#&gt; |sd.B.x.weeks | 0.0575| 0.0029| 0.2569|</span></span>
+<span><span class="co">#&gt; |sd.B.x.weeks | 0.0616| 0.0034| 0.2288|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 75.4</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.7</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 890.8</span></span>
-<span><span class="co">#&gt; Residual deviance = 191.1</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 966.2</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 890.6</span></span>
+<span><span class="co">#&gt; Residual deviance = 190.9</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.4</span></span></code></pre></div>
 <p>In this case only a single regression paramter is estimated
 (<code>B.x.weeks</code>), which corresponds to the mean effect of an
 additional week of study follow-up on the relative effect of an active
@@ -379,11 +379,11 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0608| -0.3331| 0.2108|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2482|  0.0225| 0.4676|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2186| -0.0163| 0.4605|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1110| -0.4059| 0.1787|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.5892|  0.1322| 1.0816|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0616| -0.3318| 0.2089|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2479|  0.0228| 0.4786|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2203| -0.0214| 0.4605|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1089| -0.4152| 0.1842|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.5794|  0.1387| 1.0592|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
@@ -392,11 +392,11 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0581| -0.0150|  0.1316|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0288| -0.1056|  0.0486|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0556| -0.1246|  0.0100|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0865| -0.0052|  0.1782|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1012| -0.2019| -0.0092|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0583| -0.0119|  0.1294|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0296| -0.1084|  0.0498|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0553| -0.1244|  0.0121|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0856| -0.0066|  0.1805|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1007| -0.1951| -0.0100|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -415,20 +415,20 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Regression effect |Parameter   |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:-----------------|:-----------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks10 |  0.1478| -0.2443|  0.5549|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks4  | -0.7308| -1.4295| -0.0427|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks5  |  0.8176| -0.1747|  1.8324|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks6  |  0.0502| -0.1355|  0.2424|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks9  |  0.4243| -0.3949|  1.3012|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks10 |  0.1474| -0.2445|  0.5385|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks4  | -0.7424| -1.4491| -0.0562|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks5  |  0.8319| -0.1658|  1.9106|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks6  |  0.0509| -0.1422|  0.2397|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks9  |  0.4239| -0.3708|  1.2790|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.5</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 891</span></span>
-<span><span class="co">#&gt; Residual deviance = 191.3</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.5</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 890.8</span></span>
+<span><span class="co">#&gt; Residual deviance = 191.1</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.6</span></span></code></pre></div>
 <p>In this case we have performed the network meta-regression on study
 follow-up (weeks) as a categorical covariate. Therefore, although only a
 single parameter is estimated for each effect modifying term, there is a

@@ -56,7 +56,7 @@ Results can also be compared between consistency (UME=FALSE) and inconsistency
       <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
     </li>
     <li>
-      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
+      <a href="../articles/runmbnmadose-2.html">MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)</a>
     </li>
   </ul></li>
 <li>
@@ -234,35 +234,35 @@ will be plotted versus the network reference used in the NMA object (<code>x</co
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $jagsresult</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmpsr9qV8/file17d94b3b74a1", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpIhvqpC/file17ff5599f938", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 3000 iterations saved</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]        -0.452   0.091   -0.628   -0.513   -0.453   -0.393   -0.271 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]        -0.653   0.046   -0.741   -0.684   -0.654   -0.624   -0.562 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        -0.708   0.046   -0.799   -0.739   -0.709   -0.679   -0.617 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]        -0.756   0.086   -0.918   -0.814   -0.757   -0.701   -0.580 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]        -0.682   0.167   -0.998   -0.792   -0.681   -0.570   -0.353 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.124   0.028    0.075    0.105    0.122    0.141    0.188 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   47.032   9.814   29.714   40.094   46.309   53.123   67.458 1.001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -124.282   9.814 -141.601 -131.221 -125.005 -118.191 -103.856 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]        -0.453   0.091   -0.627   -0.513   -0.457   -0.394   -0.271 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]        -0.655   0.045   -0.740   -0.685   -0.656   -0.625   -0.561 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        -0.710   0.046   -0.795   -0.741   -0.712   -0.683   -0.620 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]        -0.760   0.084   -0.926   -0.817   -0.761   -0.704   -0.593 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[6]        -0.681   0.168   -1.018   -0.792   -0.677   -0.567   -0.354 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.124   0.029    0.072    0.103    0.122    0.142    0.188 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   47.284  10.038   30.105   40.319   46.637   53.439   69.135 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  -124.030  10.038 -141.209 -130.995 -124.677 -117.876 -102.180 1.002</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d[1]          1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]       3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]       1100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]        710</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]       3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[2]       2500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[3]       3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[4]       3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> d[5]        760</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> d[6]       3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd         1100</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance   3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd         3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  1200</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance   1200</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule, pD = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 37.4 and DIC = -87.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 36.9 and DIC = -87.8</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $trt.labs</span>

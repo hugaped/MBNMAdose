@@ -71,7 +71,7 @@
       <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
     </li>
     <li>
-      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
+      <a href="../articles/runmbnmadose-2.html">MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)</a>
     </li>
   </ul>
 </li>
@@ -189,47 +189,47 @@ that is equal to zero is not given in the output.</p>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.linear</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp88GkcE/file1e78d686a16", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpOkOdUQ/file1ec62432a009", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
-<span><span class="co">#&gt; beta.1[2]   0.030    0.082  -0.131  -0.025   0.029   0.088   0.186 1.003   760</span></span>
-<span><span class="co">#&gt; beta.1[3]  -0.078    0.081  -0.237  -0.132  -0.078  -0.023   0.075 1.001  3000</span></span>
-<span><span class="co">#&gt; beta.1[4]  -0.229    0.088  -0.395  -0.289  -0.229  -0.170  -0.058 1.001  3000</span></span>
-<span><span class="co">#&gt; beta.1[5]  -0.086    0.067  -0.214  -0.132  -0.087  -0.042   0.047 1.004   640</span></span>
-<span><span class="co">#&gt; beta.1[6]   0.410    0.182   0.053   0.286   0.411   0.532   0.764 1.004   500</span></span>
-<span><span class="co">#&gt; totresdev 150.326 1261.186  91.578 101.422 107.380 113.888 130.127 1.001  3000</span></span>
-<span><span class="co">#&gt; deviance  456.026 1261.186 397.278 407.122 413.080 419.588 435.826 1.001  3000</span></span>
+<span><span class="co">#&gt; beta.1[2]   0.031    0.083  -0.129  -0.025   0.031   0.086   0.193 1.001  3000</span></span>
+<span><span class="co">#&gt; beta.1[3]  -0.070    0.082  -0.235  -0.124  -0.072  -0.016   0.097 1.001  3000</span></span>
+<span><span class="co">#&gt; beta.1[4]  -0.231    0.087  -0.402  -0.291  -0.228  -0.171  -0.058 1.003  1000</span></span>
+<span><span class="co">#&gt; beta.1[5]  -0.086    0.064  -0.211  -0.129  -0.085  -0.043   0.040 1.001  2600</span></span>
+<span><span class="co">#&gt; beta.1[6]   0.411    0.186   0.040   0.282   0.414   0.537   0.770 1.002  1700</span></span>
+<span><span class="co">#&gt; totresdev 151.426 1257.817  91.589 102.388 108.694 116.011 132.884 1.001  3000</span></span>
+<span><span class="co">#&gt; deviance  457.126 1257.817 397.289 408.088 414.394 421.711 438.584 1.001  3000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
-<span><span class="co">#&gt; pD = 44.8 and DIC = 457.9</span></span>
+<span><span class="co">#&gt; pD = 45.6 and DIC = 460.0</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">network</span>, n.iter<span class="op">=</span><span class="fl">50000</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp88GkcE/file1e783ba9b8c4", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpOkOdUQ/file1ec65ace55ec", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
 <span><span class="co">#&gt; d[1]        0.000    0.000   0.000   0.000   0.000   0.000   0.000 1.000     1</span></span>
-<span><span class="co">#&gt; d[2]        0.032    0.081  -0.126  -0.023   0.032   0.085   0.191 1.001  3000</span></span>
-<span><span class="co">#&gt; d[3]       -0.073    0.080  -0.226  -0.128  -0.074  -0.020   0.084 1.003   750</span></span>
-<span><span class="co">#&gt; d[4]       -0.229    0.088  -0.399  -0.289  -0.230  -0.171  -0.057 1.001  3000</span></span>
-<span><span class="co">#&gt; d[5]       -0.084    0.063  -0.210  -0.128  -0.084  -0.041   0.037 1.002  1200</span></span>
-<span><span class="co">#&gt; d[6]        0.416    0.186   0.054   0.292   0.416   0.542   0.770 1.011   200</span></span>
-<span><span class="co">#&gt; totresdev 152.203 1260.993  92.460 103.327 109.456 116.171 132.222 1.002  1300</span></span>
-<span><span class="co">#&gt; deviance  457.903 1260.993 398.160 409.026 415.156 421.870 437.921 1.001  3000</span></span>
+<span><span class="co">#&gt; d[2]        0.029    0.081  -0.126  -0.026   0.029   0.084   0.186 1.001  3000</span></span>
+<span><span class="co">#&gt; d[3]       -0.073    0.079  -0.232  -0.127  -0.072  -0.019   0.073 1.001  2500</span></span>
+<span><span class="co">#&gt; d[4]       -0.228    0.088  -0.401  -0.287  -0.229  -0.168  -0.058 1.002  1200</span></span>
+<span><span class="co">#&gt; d[5]       -0.086    0.065  -0.219  -0.129  -0.086  -0.042   0.038 1.002  2200</span></span>
+<span><span class="co">#&gt; d[6]        0.406    0.184   0.046   0.279   0.407   0.531   0.765 1.004   590</span></span>
+<span><span class="co">#&gt; totresdev 150.891 1265.449  92.338 101.754 107.879 114.908 131.039 1.002  1200</span></span>
+<span><span class="co">#&gt; deviance  456.591 1265.449 398.038 407.453 413.579 420.608 436.739 1.001  3000</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
-<span><span class="co">#&gt; pD = 44.7 and DIC = 459.8</span></span>
+<span><span class="co">#&gt; pD = 44.5 and DIC = 458.1</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $trt.labs</span></span>
@@ -298,30 +298,30 @@ Infection dataset.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent                               |Parameter  |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:-----------------------------------|:----------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |Clips                               |beta.1[2]  | -0.1202| -1.0477|  0.7538|</span></span>
-<span><span class="co">#&gt; |Suture--monofilament                |beta.1[3]  |  0.0449| -0.8030|  0.8853|</span></span>
-<span><span class="co">#&gt; |Staples                             |beta.1[4]  |  0.0545| -0.5556|  0.6193|</span></span>
-<span><span class="co">#&gt; |Suture                              |beta.1[5]  | -0.0624| -0.7431|  0.6691|</span></span>
-<span><span class="co">#&gt; |Tissue adhesive gel-low viscosity   |beta.1[6]  |  0.6611| -0.1014|  1.4228|</span></span>
-<span><span class="co">#&gt; |Tape/film                           |beta.1[7]  | -0.2932| -1.0091|  0.3772|</span></span>
-<span><span class="co">#&gt; |Preference of physician             |beta.1[8]  | -0.2304| -1.5015|  0.9467|</span></span>
-<span><span class="co">#&gt; |Tissue adhesive gel-high viscosity  |beta.1[9]  | -0.1574| -1.8559|  1.4993|</span></span>
-<span><span class="co">#&gt; |Suture-non-absorbable               |beta.1[10] | -0.0913| -0.3826|  0.1879|</span></span>
-<span><span class="co">#&gt; |Suture-antimicrobial                |beta.1[11] | -0.2682| -0.4307| -0.1184|</span></span>
-<span><span class="co">#&gt; |Suture-non-absorbable-monofilament  |beta.1[12] | -0.6443| -1.3034|  0.0071|</span></span>
-<span><span class="co">#&gt; |Suture-absorbable-monofilament      |beta.1[13] | -0.5165| -1.1909|  0.1403|</span></span>
-<span><span class="co">#&gt; |Tissue adhesive gel                 |beta.1[14] |  0.9447| -1.8085|  4.1225|</span></span>
-<span><span class="co">#&gt; |Suture-absorbable-multifilament     |beta.1[15] | -0.7606| -1.4334| -0.0886|</span></span>
-<span><span class="co">#&gt; |Suture-non-absorbable-multifilament |beta.1[16] | -1.0235| -1.9774| -0.0824|</span></span>
+<span><span class="co">#&gt; |Clips                               |beta.1[2]  | -0.0935| -1.0314|  0.7807|</span></span>
+<span><span class="co">#&gt; |Suture--monofilament                |beta.1[3]  |  0.0352| -0.7613|  0.8636|</span></span>
+<span><span class="co">#&gt; |Staples                             |beta.1[4]  |  0.0453| -0.5169|  0.6196|</span></span>
+<span><span class="co">#&gt; |Suture                              |beta.1[5]  | -0.0455| -0.7291|  0.6758|</span></span>
+<span><span class="co">#&gt; |Tissue adhesive gel-low viscosity   |beta.1[6]  |  0.6545| -0.1038|  1.3978|</span></span>
+<span><span class="co">#&gt; |Tape/film                           |beta.1[7]  | -0.3057| -1.0046|  0.3621|</span></span>
+<span><span class="co">#&gt; |Preference of physician             |beta.1[8]  | -0.2324| -1.5624|  0.9775|</span></span>
+<span><span class="co">#&gt; |Tissue adhesive gel-high viscosity  |beta.1[9]  | -0.1958| -1.8191|  1.5250|</span></span>
+<span><span class="co">#&gt; |Suture-non-absorbable               |beta.1[10] | -0.0969| -0.3637|  0.1808|</span></span>
+<span><span class="co">#&gt; |Suture-antimicrobial                |beta.1[11] | -0.2722| -0.4229| -0.1197|</span></span>
+<span><span class="co">#&gt; |Suture-non-absorbable-monofilament  |beta.1[12] | -0.6546| -1.3022| -0.0068|</span></span>
+<span><span class="co">#&gt; |Suture-absorbable-monofilament      |beta.1[13] | -0.5221| -1.1839|  0.1515|</span></span>
+<span><span class="co">#&gt; |Tissue adhesive gel                 |beta.1[14] |  0.9025| -1.8301|  3.9958|</span></span>
+<span><span class="co">#&gt; |Suture-absorbable-multifilament     |beta.1[15] | -0.7621| -1.4492| -0.0838|</span></span>
+<span><span class="co">#&gt; |Suture-non-absorbable-multifilament |beta.1[16] | -1.0547| -1.9883| -0.1186|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 112.4</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 113.7</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 1017.5</span></span>
-<span><span class="co">#&gt; Residual deviance = 288.6</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1129.9</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 1016.7</span></span>
+<span><span class="co">#&gt; Residual deviance = 287.8</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1130.4</span></span></code></pre></div>
 <p>The linear dose-response coefficients can then be interpreted as the
 relative effect for each intervention versus the network reference
 (<code>"Suture-absorbable"</code>).</p>

@@ -53,7 +53,7 @@
       <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
     </li>
     <li>
-      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
+      <a href="../articles/runmbnmadose-2.html">MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)</a>
     </li>
   </ul></li>
 <li>
@@ -160,10 +160,10 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">loglin</span>, to.rank<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"zolmitriptan"</span>, <span class="st">"eletriptan"</span>, <span class="st">"sumatriptan"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $rate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 zolmitriptan 2.006667 0.0813906    2   2   2   2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2   eletriptan 1.000000 0.0000000    1   1   1   1     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  sumatriptan 2.993333 0.0813906    3   3   3   3     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param  mean         sd 2.5% 25% 50% 75% 97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 zolmitriptan 2.007 0.08338656    2   2   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2   eletriptan 1.000 0.00000000    1   1   1   1     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  sumatriptan 2.993 0.08338656    3   3   3   3     3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Rank only ED50 parameters from an Emax dose-response MBNMA</span></span></span>
@@ -183,14 +183,14 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="rank.html">rank</a></span><span class="op">(</span><span class="va">emax</span>, params<span class="op">=</span><span class="st">"ed50"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ed50</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1   eletriptan 6.648667 0.5779356    5   6   7   7     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  sumatriptan 5.643000 0.7834255    5   5   5   6     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 frovatriptan 2.573000 1.1620906    1   2   3   4     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  almotriptan 2.467000 1.1201172    1   2   2   3     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 zolmitriptan 5.670333 0.6970044    5   5   6   6     7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  naratriptan 2.031667 1.1095379    1   1   2   3     4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  rizatriptan 2.966333 0.9477162    1   2   3   4     4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     rank.param     mean        sd  2.5% 25% 50% 75% 97.5%</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1   eletriptan 6.638333 0.5839328 5.000   6   7   7     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  sumatriptan 5.314333 1.4267234 1.000   5   6   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 frovatriptan 2.643333 1.1820553 1.000   2   3   4     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  almotriptan 2.517000 1.1636848 1.000   2   2   3     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5 zolmitriptan 5.631000 0.7305365 4.975   5   6   6     7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  naratriptan 2.166333 1.1825676 1.000   1   2   3     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  rizatriptan 3.089667 1.1676534 1.000   2   3   4     5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
@@ -237,8 +237,8 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.13|      1|    1|     2|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.87|      2|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.14|      1|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.86|      2|    1|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -246,8 +246,8 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ED50</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    active1 1.874667 0.3311517    1   2   2   2     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    active2 1.125333 0.3311517    1   1   1   1     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    active1 1.863333 0.3435524    1   2   2   2     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    active2 1.136667 0.3435524    1   1   1   1     2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -265,8 +265,8 @@ for each agent, for each parameter that has been ranked.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Treatment | Mean| Median| 2.5%| 97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:---------|----:|------:|----:|-----:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.13|      1|    1|     2|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.87|      2|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active2   | 1.14|      1|    1|     2|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |active1   | 1.86|      2|    1|     2|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>

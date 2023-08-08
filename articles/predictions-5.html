@@ -71,7 +71,7 @@
       <a href="../articles/predictions-5.html">MBNMAdose: Calculating model predictions</a>
     </li>
     <li>
-      <a href="../articles/runmbnmadose-2.html">UNKNOWN TITLE</a>
+      <a href="../articles/runmbnmadose-2.html">MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)</a>
     </li>
   </ul>
 </li>
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-07</h4>
+            <h4 data-toc-skip class="date">2023-08-08</h4>
       
       
       <div class="hidden name"><code>predictions-5.Rmd</code></div>
@@ -199,19 +199,19 @@ treatment.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         agent dose      mean          sd      2.5%       25%       50%</span></span>
-<span><span class="co">#&gt; 1     Placebo    0 0.1238704 0.003289408 0.1175508 0.1215433 0.1238423</span></span>
-<span><span class="co">#&gt; 2  eletriptan    0 0.1238704 0.003289408 0.1175508 0.1215433 0.1238423</span></span>
-<span><span class="co">#&gt; 3  eletriptan    1 0.4320090 0.018682585 0.3949259 0.4191770 0.4321244</span></span>
-<span><span class="co">#&gt; 4  eletriptan    3 0.5541296 0.027941910 0.5009242 0.5346006 0.5537790</span></span>
-<span><span class="co">#&gt; 5 sumatriptan    0 0.1238704 0.003289408 0.1175508 0.1215433 0.1238423</span></span>
-<span><span class="co">#&gt; 6 sumatriptan    3 0.3926083 0.018673781 0.3576673 0.3798141 0.3921482</span></span>
+<span><span class="co">#&gt; 1     Placebo    0 0.1238502 0.003323992 0.1173696 0.1216457 0.1238832</span></span>
+<span><span class="co">#&gt; 2  eletriptan    0 0.1238502 0.003323992 0.1173696 0.1216457 0.1238832</span></span>
+<span><span class="co">#&gt; 3  eletriptan    1 0.4337910 0.018894481 0.3969044 0.4210496 0.4330769</span></span>
+<span><span class="co">#&gt; 4  eletriptan    3 0.5559107 0.027522628 0.5024376 0.5368935 0.5554284</span></span>
+<span><span class="co">#&gt; 5 sumatriptan    0 0.1238502 0.003323992 0.1173696 0.1216457 0.1238832</span></span>
+<span><span class="co">#&gt; 6 sumatriptan    3 0.3926702 0.018996193 0.3567728 0.3794424 0.3919928</span></span>
 <span><span class="co">#&gt;         75%     97.5%</span></span>
-<span><span class="co">#&gt; 1 0.1260055 0.1304253</span></span>
-<span><span class="co">#&gt; 2 0.1260055 0.1304253</span></span>
-<span><span class="co">#&gt; 3 0.4442267 0.4680868</span></span>
-<span><span class="co">#&gt; 4 0.5740999 0.6081408</span></span>
-<span><span class="co">#&gt; 5 0.1260055 0.1304253</span></span>
-<span><span class="co">#&gt; 6 0.4047419 0.4312215</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 0.1260651 0.1305367</span></span>
+<span><span class="co">#&gt; 2 0.1260651 0.1305367</span></span>
+<span><span class="co">#&gt; 3 0.4471940 0.4706994</span></span>
+<span><span class="co">#&gt; 4 0.5752456 0.6098590</span></span>
+<span><span class="co">#&gt; 5 0.1260651 0.1305367</span></span>
+<span><span class="co">#&gt; 6 0.4048557 0.4316166</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="plotting-predictions">Plotting predictions<a class="anchor" aria-label="anchor" href="#plotting-predictions"></a>
 </h3>
