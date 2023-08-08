@@ -61,6 +61,8 @@ specified in the \code{lower.diag} and \code{upper.diag} models.
 Calculates league table of effects between treatments in MBNMA and/or NMA models
 }
 \examples{
+\donttest{
+
 # Using the osteoarthritis data
 network <- mbnma.network(osteopain)
 
@@ -79,5 +81,6 @@ nma <- nma.run(network, method="random")
 rel.eff <- get.relative(lower.diag=expon, upper.diag=nma,
   treatments=list("Celebrex"=c(100,200), "Tramadol"=100),
   upper.direction="colvrow")
+}
 
 }
