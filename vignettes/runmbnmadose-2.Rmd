@@ -1,4 +1,4 @@
-ssi_---
+---
 title: "MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA)"
 author: "Hugo Pedder"
 date: "`r Sys.Date()`"
@@ -428,7 +428,7 @@ assigned a dose of 1, and these can then be modeled using a linear
 dose-response relationship, whilst agents with a plausible dose-response
 can be assigned a function that appropriately captures their
 dose-response relationship. Further details of this approach can be
-found in the vignette on [NMA in `MBNMAdose`](nma_in_mbnmadose.html)
+found in the vignette on [NMA in MBNMAdose](nma_in_mbnmadose.html)
 
 ### Splines and `knots`
 
@@ -437,7 +437,7 @@ be fitted to the data by using `dspline()`. This model is very flexible
 and can allow for a variety of non-monotonic dose-response
 relationships, though parameters can be difficult to interpret and the
 resulting dose-response shape is often best visualised by calculating
-and plotting predictions [Prediction](mbnmadose.html).
+and plotting predictions ([Predictions](predictions-5.html).
 
 To fit this model, the number/location of `knots` (the points at which
 the different spline pieces meet) should be specified. If a single
