@@ -101,7 +101,12 @@ get.prior <- function(model) {
   priors <- list()
   for (i in seq_along(priorlist)) {
     priorname <- unlist(strsplit(priorlist[[i]][1], split="\\["))[1]
-    priors[[priorname]] <- priorlist[[i]][2]
+
+    if (priorname %in% names(priors)) {
+      priors[[priorname]] <- append(priors[[priorname]], priorlist[[i]][2])
+    } else {
+      priors[[priorname]] <- priorlist[[i]][2]
+    }
   }
 
   return(priors)
