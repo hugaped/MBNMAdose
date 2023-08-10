@@ -862,6 +862,25 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
 
   #### Add priors ####
   if (!is.null(priors)) {
+    # Check that order is correct if names in priors match network$agents
+    for (i in seq_along(priors)) {
+      if (length(priors[[i]])>1) {
+        if (!is.null(names(priors[[i]]))) { # If treatment-specific priors are named
+          if (length(class.effect)>0) {
+            warning("MBNMAdose defaults to agent-specific priors if multiple priors are specified for a parameter")
+          }
+
+          priornam <- names(priors[[i]])
+
+          # If at least 2 names match those in network$agents then sort priors to match network order
+          if (sum(priornam %in% network$agents)>=2) {
+            priors[[i]] <- priors[[i]][match(network$agents, priornam, nomatch=0)]
+          }
+        }
+      }
+      prior <- priors[[i]]
+    }
+
     model <- replace.prior(priors=priors, model=model)
   }
 
