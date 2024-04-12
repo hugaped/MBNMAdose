@@ -26,7 +26,7 @@ library(dplyr)
 
 Although `MBNMAdose` is intended to be used for dose-response Model-Based Network Meta-Analysis (MBNMA), it can also be adapted to perform standard Network Meta-Analysis (NMA), and this allows users to take advantage of some of the additional features of `MBNMAdose`, such as modelling class effects, for use in standard NMA. As well as fitting class effect models, `MBNMAdose` also allows for nodes-splitting to check for consistency in these models.
 
-To illustrate how this can be done we will use a dataset of inhaled medications for Chronic Obstructive Pulmonary Disease (COPD) from the `netmeta` package (*REF*):
+To illustrate how this can be done we will use a dataset of inhaled medications for Chronic Obstructive Pulmonary Disease (COPD) from the `netmeta` package:
 
 ```{r, loaddata}
 library(netmeta)

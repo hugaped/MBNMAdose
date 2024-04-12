@@ -48,6 +48,7 @@ Suggests:
     ggdist (>= 2.4.0),
     zoo (>= 1.8-8),
     lspline (>= 1.0-0),
+    formatR (>= 1.14),
     netmeta,
     knitr,
     rmarkdown

@@ -8,6 +8,7 @@ testthat::context("Testing full set of functions")
 # Tests default ranking (including cumrank)
 # Tests default prediction
 # Occasionally tests get.relative
+# Includes tests for meta-regression on SSRI dataset
 
 
 # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)

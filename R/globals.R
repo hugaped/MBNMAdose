@@ -9,4 +9,5 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "studyID", "agent",
                                                         "Estimate", "2.5%", "50%", "97.5%", "treatment",
                                                         "study", "arm", "mod1.mean", "mod2.mean", "argcheck",
                                                         "Comparison", "Evidence", "splinefun", "level",
+                                                        "class.effect",
                                                         "user.str"))
