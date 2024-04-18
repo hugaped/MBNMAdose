@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBNMAdose: Checking for consistency • MBNMAdose</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-08</h4>
+            <h4 data-toc-skip class="date">2024-04-18</h4>
       
       
       <div class="hidden name"><code>consistencychecking-3.Rmd</code></div>
@@ -171,8 +171,8 @@ and NMA models.</li>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Using the alogliptin dataset</span></span>
 <span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
-<span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
-<span><span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method <span class="op">=</span> <span class="st">"random"</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Model</th>
@@ -182,13 +182,13 @@ and NMA models.</li>
 <tbody>
 <tr class="odd">
 <td align="left">NMA</td>
-<td align="right">46.64</td>
-<td align="left">0.12 (0.076, 0.18)</td>
+<td align="right">46.2</td>
+<td align="left">0.12 (0.075, 0.19)</td>
 </tr>
 <tr class="even">
 <td align="left">UME</td>
-<td align="right">45.63</td>
-<td align="left">0.14 (0.09, 0.21)</td>
+<td align="right">45.9</td>
+<td align="left">0.14 (0.088, 0.22)</td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +202,7 @@ fit of different data points. This can be done for two different models
 at a time using <code><a href="../reference/devdev.html">devdev()</a></code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Compares residual deviance contributions from NMA and UME models</span></span>
-<span><span class="fu"><a href="../reference/devdev.html">devdev</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">ume</span>, dev.type<span class="op">=</span><span class="st">"resdev"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/devdev.html">devdev</a></span><span class="op">(</span><span class="va">nma</span>, <span class="va">ume</span>, dev.type <span class="op">=</span> <span class="st">"resdev"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="consistencychecking-3_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>In Pedder et al. <span class="citation">(2021)</span> we suggest
 comparing the following models using these plots to evaluate consistency
@@ -273,12 +273,13 @@ for the purposes of this vignette.</p>
 <span><span class="va">psorinet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">psoriasis</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Identify comparisons on which node-splitting is possible</span></span>
-<span><span class="va">splitcomps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">psorinet</span><span class="op">$</span><span class="va">data.ab</span>, incldr<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">splitcomps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/inconsistency.loops.html">inconsistency.loops</a></span><span class="op">(</span><span class="va">psorinet</span><span class="op">$</span><span class="va">data.ab</span>, incldr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">splitcomps</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># If we want to fit an Emax dose-response function, there is insufficient</span></span>
-<span><span class="co">#indirect evidence in all but the first 6 comparisons</span></span>
-<span><span class="va">nodesplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit</a></span><span class="op">(</span><span class="va">psorinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, comparisons<span class="op">=</span><span class="va">splitcomps</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,<span class="op">]</span>, method<span class="op">=</span><span class="st">"common"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># indirect evidence in all but the first 6 comparisons</span></span>
+<span><span class="va">nodesplit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.nodesplit.html">mbnma.nodesplit</a></span><span class="op">(</span><span class="va">psorinet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, comparisons <span class="op">=</span> <span class="va">splitcomps</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>,</span>
+<span>    <span class="op">]</span>, method <span class="op">=</span> <span class="st">"common"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nodesplit</span><span class="op">)</span></span></code></pre></div>
 <p>Performing the <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method on an object of
@@ -308,17 +309,19 @@ distributions for direct and indirect estimates</li>
 <p>It is possible to generate different plots of each nodesplit
 comparison using <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Plot forest plots of direct, indirect and pooled (MBNMA) results for each comparison</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Plot forest plots of direct, indirect and pooled (MBNMA) results for each</span></span>
+<span><span class="co"># comparison</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type <span class="op">=</span> <span class="st">"forest"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Plot posterior densities of direct and indirect results for each nodesplit comparisons</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Plot posterior densities of direct and indirect results for each nodesplit</span></span>
+<span><span class="co"># comparisons</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nodesplit</span>, plot.type <span class="op">=</span> <span class="st">"density"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2 unnumbered">
 <h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-dias2013" class="csl-entry">
 Dias, S., N. J. Welton, A. J. Sutton, D. M. Caldwell, G. Lu, and A. E.
 Ades. 2013. <span>“Evidence Synthesis for Decision Making 4:
@@ -359,7 +362,7 @@ Synth Methods</em> 7 (1): 80–93. <a href="https://doi.org/10.1002/jrsm.1167" c
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBNMAdose: Perform Network Meta-Regression • MBNMAdose</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-08</h4>
+            <h4 data-toc-skip class="date">2024-04-18</h4>
       
       
       <div class="hidden name"><code>metaregression-6.Rmd</code></div>
@@ -139,13 +139,13 @@ commonly reported value as the reference category</li>
 <span><span class="va">ssri.reg</span> <span class="op">&lt;-</span> <span class="va">ssri</span></span>
 <span></span>
 <span><span class="co"># For a continuous covariate</span></span>
-<span><span class="va">ssri.reg</span> <span class="op">&lt;-</span> <span class="va">ssri.reg</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>x.weeks <span class="op">=</span> <span class="va">weeks</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weeks</span>, na.rm<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">ssri.reg</span> <span class="op">&lt;-</span> <span class="va">ssri.reg</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>x.weeks <span class="op">=</span> <span class="va">weeks</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">weeks</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># For a categorical covariate</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">$</span><span class="va">weeks</span><span class="op">)</span> <span class="co"># Using 8 weeks as the reference</span></span>
-<span><span class="va">ssri.reg</span> <span class="op">&lt;-</span> <span class="va">ssri.reg</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span> </span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>r.weeks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">weeks</span>, levels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">6</span>,<span class="fl">9</span>,<span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">$</span><span class="va">weeks</span><span class="op">)</span>  <span class="co"># Using 8 weeks as the reference</span></span>
+<span><span class="va">ssri.reg</span> <span class="op">&lt;-</span> <span class="va">ssri.reg</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>r.weeks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">weeks</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">9</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Create network object</span></span>
 <span><span class="va">ssrinet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri.reg</span><span class="op">)</span></span>
@@ -169,10 +169,9 @@ therefore estimated for each agent in the network.</p>
 same class share the same interaction effect, though classes must be
 specified within the dataset for this.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Regress for continuous weeks</span></span>
-<span><span class="co"># Separate effect modification for each agent vs Placebo</span></span>
-<span><span class="va">ssrimod.a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, </span>
-<span>                     regress<span class="op">=</span><span class="op">~</span><span class="va">x.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"agent"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Regress for continuous weeks Separate effect modification for each agent vs</span></span>
+<span><span class="co"># Placebo</span></span>
+<span><span class="va">ssrimod.a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, regress <span class="op">=</span> <span class="op">~</span><span class="va">x.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"agent"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ssrimod.a</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
@@ -194,11 +193,11 @@ specified within the dataset for this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0978| -0.3566|  0.1653|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.1287| -0.1429|  0.3986|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2714|  0.0523|  0.4917|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1363| -0.4334|  0.1705|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  1.3609| -7.8814| 10.4915|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0921| -0.3599|  0.1623|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.1329| -0.1286|  0.4042|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2717|  0.0467|  0.5046|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1404| -0.4415|  0.1613|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  1.3226| -7.8854| 10.3403|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
@@ -207,11 +206,11 @@ specified within the dataset for this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0684| -0.0035|  0.1388|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0072| -0.0930|  0.0803|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0663| -0.1313| -0.0023|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0896| -0.0056|  0.1863|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1773| -1.1832|  0.8195|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0668| -0.0030|  0.1408|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0076| -0.0966|  0.0737|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0665| -0.1327| -0.0002|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0916| -0.0022|  0.1841|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1820| -1.1618|  0.8251|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -230,20 +229,20 @@ specified within the dataset for this.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter    |  Median|     2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:------------|-------:|--------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |B.x.weeks[2] | -0.1617|  -0.3325|  0.0075|</span></span>
-<span><span class="co">#&gt; |escitalopram |B.x.weeks[3] |  0.1607|  -0.0239|  0.3655|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |B.x.weeks[4] | -0.0290|  -0.1717|  0.1152|</span></span>
-<span><span class="co">#&gt; |paroxetine   |B.x.weeks[5] |  0.0844|  -0.0275|  0.1906|</span></span>
-<span><span class="co">#&gt; |sertraline   |B.x.weeks[6] |  1.6452| -18.0446| 20.8984|</span></span>
+<span><span class="co">#&gt; |citalopram   |B.x.weeks[2] | -0.1579|  -0.3352|  0.0079|</span></span>
+<span><span class="co">#&gt; |escitalopram |B.x.weeks[3] |  0.1601|  -0.0319|  0.3592|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |B.x.weeks[4] | -0.0264|  -0.1687|  0.1166|</span></span>
+<span><span class="co">#&gt; |paroxetine   |B.x.weeks[5] |  0.0836|  -0.0252|  0.1947|</span></span>
+<span><span class="co">#&gt; |sertraline   |B.x.weeks[6] |  1.4210| -18.0748| 20.5588|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 75.1</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.5</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 890.7</span></span>
-<span><span class="co">#&gt; Residual deviance = 191</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.8</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 890.6</span></span>
+<span><span class="co">#&gt; Residual deviance = 190.9</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.1</span></span></code></pre></div>
 <p>Within the output, a separate parameter (named
 <code>B.x.weeks[]</code>) has been estimated for each agent that
 corresponds to the effect of an additional week of study follow-up on
@@ -261,10 +260,9 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <p><span class="math display">\[\psi_{1,a_{i,k}} \sim N(\hat{\psi},
 \tau^2_\psi)\]</span></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Regress for continuous weeks</span></span>
-<span><span class="co"># Random effect modification across all agents vs Placebo</span></span>
-<span><span class="va">ssrimod.r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, </span>
-<span>                     regress<span class="op">=</span><span class="op">~</span><span class="va">x.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Regress for continuous weeks Random effect modification across all agents vs</span></span>
+<span><span class="co"># Placebo</span></span>
+<span><span class="va">ssrimod.r</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, regress <span class="op">=</span> <span class="op">~</span><span class="va">x.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ssrimod.r</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
@@ -286,11 +284,11 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0718| -0.3195| 0.2172|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2405| -0.1336| 0.7476|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2699|  0.0156| 0.5070|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.0826| -0.3662| 0.2672|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.6175|  0.1466| 1.1297|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0713| -0.6202| 0.2088|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2440| -0.0324| 0.5390|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2659|  0.0253| 0.5325|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.0938| -0.4674| 0.1843|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.6658|  0.1637| 1.1718|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
@@ -299,11 +297,11 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0633| -0.0152|  0.1317|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0350| -0.2080|  0.0896|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0644| -0.1347|  0.0106|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0783| -0.0333|  0.1677|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1046| -0.2097| -0.0049|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0637| -0.0133|  0.2148|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0365| -0.1378|  0.0599|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0628| -0.1415|  0.0070|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0813| -0.0070|  0.2025|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1147| -0.2209| -0.0087|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -320,25 +318,25 @@ deviation of <span class="math inline">\(\tau_\psi\)</span>:</p>
 <span><span class="co">#&gt; Random (exchangeable) covariate-by-treatment effects</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Regression effect |Parameter | Median|    2.5%|  97.5%|</span></span>
-<span><span class="co">#&gt; |:-----------------|:---------|------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |Random effect     |B.x.weeks | 0.0271| -0.0651| 0.1195|</span></span>
+<span><span class="co">#&gt; |Regression effect |Parameter | Median|    2.5%| 97.5%|</span></span>
+<span><span class="co">#&gt; |:-----------------|:---------|------:|-------:|-----:|</span></span>
+<span><span class="co">#&gt; |Random effect     |B.x.weeks | 0.0303| -0.0661| 0.126|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Standard deviation for random covariate-by-treatment effects</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Parameter    | Median|   2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|------:|------:|------:|</span></span>
-<span><span class="co">#&gt; |sd.B.x.weeks | 0.0616| 0.0034| 0.2288|</span></span>
+<span><span class="co">#&gt; |sd.B.x.weeks | 0.0616| 0.0052| 0.2759|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.7</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 76.8</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 890.6</span></span>
-<span><span class="co">#&gt; Residual deviance = 190.9</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.4</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 890.5</span></span>
+<span><span class="co">#&gt; Residual deviance = 190.8</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 967.3</span></span></code></pre></div>
 <p>In this case only a single regression paramter is estimated
 (<code>B.x.weeks</code>), which corresponds to the mean effect of an
 additional week of study follow-up on the relative effect of an active
@@ -354,10 +352,9 @@ the network reference agent:</p>
 <p><span class="math display">\[\psi_{1,a_{i,k}}
 =\hat{\psi}\]</span></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Regress for categorical weeks</span></span>
-<span><span class="co"># Common effect modification across all agents vs Placebo</span></span>
-<span><span class="va">ssrimod.c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, </span>
-<span>                     regress<span class="op">=</span><span class="op">~</span><span class="va">r.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"common"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># Regress for categorical weeks Common effect modification across all agents vs</span></span>
+<span><span class="co"># Placebo</span></span>
+<span><span class="va">ssrimod.c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">ssrinet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, regress <span class="op">=</span> <span class="op">~</span><span class="va">r.weeks</span>, regress.effect <span class="op">=</span> <span class="st">"common"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ssrimod.c</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
@@ -379,11 +376,11 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|  97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0616| -0.3318| 0.2089|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2479|  0.0228| 0.4786|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2203| -0.0214| 0.4605|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1089| -0.4152| 0.1842|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.5794|  0.1387| 1.0592|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.1[2] | -0.0628| -0.3399| 0.2093|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.1[3] |  0.2481|  0.0192| 0.4808|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.1[4] |  0.2229| -0.0216| 0.4693|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.1[5] | -0.1125| -0.4094| 0.1988|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.1[6] |  0.5900|  0.1250| 1.0481|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">beta.2 dose-response parameter results</span></span></span>
@@ -392,11 +389,11 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0583| -0.0119|  0.1294|</span></span>
-<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0296| -0.1084|  0.0498|</span></span>
-<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0553| -0.1244|  0.0121|</span></span>
-<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0856| -0.0066|  0.1805|</span></span>
-<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1007| -0.1951| -0.0100|</span></span>
+<span><span class="co">#&gt; |citalopram   |beta.2[2] |  0.0582| -0.0136|  0.1321|</span></span>
+<span><span class="co">#&gt; |escitalopram |beta.2[3] | -0.0277| -0.1093|  0.0516|</span></span>
+<span><span class="co">#&gt; |fluoxetine   |beta.2[4] | -0.0569| -0.1254|  0.0099|</span></span>
+<span><span class="co">#&gt; |paroxetine   |beta.2[5] |  0.0860| -0.0111|  0.1815|</span></span>
+<span><span class="co">#&gt; |sertraline   |beta.2[6] | -0.1020| -0.1954| -0.0082|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">power.1 dose-response parameter results</span></span></span>
@@ -415,20 +412,20 @@ the network reference agent:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Regression effect |Parameter   |  Median|    2.5%|   97.5%|</span></span>
 <span><span class="co">#&gt; |:-----------------|:-----------|-------:|-------:|-------:|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks10 |  0.1474| -0.2445|  0.5385|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks4  | -0.7424| -1.4491| -0.0562|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks5  |  0.8319| -0.1658|  1.9106|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks6  |  0.0509| -0.1422|  0.2397|</span></span>
-<span><span class="co">#&gt; |Common effect     |B.r.weeks9  |  0.4239| -0.3708|  1.2790|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks10 |  0.1430| -0.2404|  0.5346|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks4  | -0.7304| -1.4727| -0.0153|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks5  |  0.7975| -0.2289|  1.8614|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks6  |  0.0516| -0.1362|  0.2388|</span></span>
+<span><span class="co">#&gt; |Common effect     |B.r.weeks9  |  0.4311| -0.3775|  1.2280|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.8</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 74.7</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 890.8</span></span>
-<span><span class="co">#&gt; Residual deviance = 191.1</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.6</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 890.9</span></span>
+<span><span class="co">#&gt; Residual deviance = 191.2</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 965.7</span></span></code></pre></div>
 <p>In this case we have performed the network meta-regression on study
 follow-up (weeks) as a categorical covariate. Therefore, although only a
 single parameter is estimated for each effect modifying term, there is a
@@ -470,7 +467,7 @@ additional argument <code>regress.vals</code> can be used to provide a
 named vector of covariate values at which to make predictions.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For a continuous covariate, make predictions at 5 weeks follow-up</span></span>
-<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.a</span>, regress.vals<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x.weeks"</span><span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.a</span>, regress.vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>x.weeks <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metaregression-6_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
 <p>Predictions are very uncertain for Sertraline, as studies only
@@ -478,10 +475,9 @@ investigated this agent at 6 weeks follow-up and therefore the
 agent-specific effect modification is very poorly estimated.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># For a categorical covariate, make predictions at 10 weeks follow-up</span></span>
-<span><span class="va">regress.p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r.weeks10"</span><span class="op">=</span><span class="fl">1</span>, <span class="st">"r.weeks4"</span><span class="op">=</span><span class="fl">0</span>, <span class="st">"r.weeks5"</span><span class="op">=</span><span class="fl">0</span>, </span>
-<span>               <span class="st">"r.weeks6"</span><span class="op">=</span><span class="fl">0</span>, <span class="st">"r.weeks9"</span><span class="op">=</span><span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">regress.p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>r.weeks10 <span class="op">=</span> <span class="fl">1</span>, r.weeks4 <span class="op">=</span> <span class="fl">0</span>, r.weeks5 <span class="op">=</span> <span class="fl">0</span>, r.weeks6 <span class="op">=</span> <span class="fl">0</span>, r.weeks9 <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.c</span>, regress.vals<span class="op">=</span><span class="va">regress.p</span><span class="op">)</span></span>
+<span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.c</span>, regress.vals <span class="op">=</span> <span class="va">regress.p</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
 <p><img src="metaregression-6_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
 <p>Note that categorical covariates are modelled as multiple binary
@@ -490,7 +486,7 @@ dummy covariates, and so a value for each of these must be included.</p>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-TSD3" class="csl-entry">
 Dias, S., A. J. Sutton, N. J. Welton, and A. E. Ades. 2011. <span>“NICE
 DSU Technical Support Document 3: Heterogeneity: Subgroups,
@@ -519,7 +515,7 @@ Unit, ScHARR, University of Sheffield. <a href="https://www.ncbi.nlm.nih.gov/boo
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>

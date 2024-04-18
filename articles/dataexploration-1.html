@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBNMAdose: Exploring the data • MBNMAdose</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-08</h4>
+            <h4 data-toc-skip class="date">2024-04-18</h4>
       
       
       <div class="hidden name"><code>dataexploration-1.Rmd</code></div>
@@ -285,7 +285,7 @@ are connected (via different doses of the same agent), meaning that
 results.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot at the agent-level</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level <span class="op">=</span> <span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
 <span><span class="co">#&gt; to the network reference:</span></span>
 <span><span class="co">#&gt; RDEA</span></span></code></pre></div>
@@ -296,8 +296,9 @@ results.</p>
 (see [Linking disconnected treatments via the dose-response
 relationship]).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Plot connections to placebo via a two-parameter dose-response function (e.g. Emax)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level<span class="op">=</span><span class="st">"agent"</span>, doselink <span class="op">=</span> <span class="fl">2</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Plot connections to placebo via a two-parameter dose-response function (e.g.</span></span>
+<span><span class="co"># Emax)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level <span class="op">=</span> <span class="st">"agent"</span>, doselink <span class="op">=</span> <span class="fl">2</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
 <span><span class="co">#&gt;                    function with 1 degrees of freedom</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
@@ -342,39 +343,39 @@ very uncertain if included).</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run a random effect split NMA using the alogliptin dataset</span></span>
 <span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
-<span><span class="va">nma.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">nma.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpvBZL3c/file1e144ec7461b", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp6ZtZgV/file1f60434beb41", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
 <span><span class="co">#&gt; d[1]         0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d[2]        -0.456   0.091   -0.630   -0.519   -0.457   -0.394   -0.279 1.002</span></span>
-<span><span class="co">#&gt; d[3]        -0.655   0.046   -0.739   -0.685   -0.655   -0.626   -0.559 1.001</span></span>
-<span><span class="co">#&gt; d[4]        -0.710   0.045   -0.797   -0.740   -0.711   -0.681   -0.621 1.002</span></span>
-<span><span class="co">#&gt; d[5]        -0.761   0.083   -0.920   -0.818   -0.761   -0.707   -0.597 1.001</span></span>
-<span><span class="co">#&gt; d[6]        -0.684   0.167   -1.020   -0.796   -0.682   -0.569   -0.366 1.003</span></span>
-<span><span class="co">#&gt; sd           0.124   0.028    0.076    0.104    0.121    0.140    0.185 1.001</span></span>
-<span><span class="co">#&gt; totresdev   47.218   9.714   30.318   40.403   46.518   53.270   68.335 1.001</span></span>
-<span><span class="co">#&gt; deviance  -124.096   9.714 -140.996 -130.911 -124.796 -118.044 -102.979 1.001</span></span>
+<span><span class="co">#&gt; d[2]        -0.453   0.092   -0.629   -0.514   -0.453   -0.394   -0.269 1.001</span></span>
+<span><span class="co">#&gt; d[3]        -0.655   0.047   -0.749   -0.684   -0.656   -0.626   -0.561 1.002</span></span>
+<span><span class="co">#&gt; d[4]        -0.712   0.046   -0.802   -0.742   -0.711   -0.682   -0.619 1.003</span></span>
+<span><span class="co">#&gt; d[5]        -0.760   0.087   -0.930   -0.817   -0.760   -0.705   -0.588 1.001</span></span>
+<span><span class="co">#&gt; d[6]        -0.683   0.169   -1.014   -0.799   -0.685   -0.567   -0.371 1.001</span></span>
+<span><span class="co">#&gt; sd           0.124   0.029    0.075    0.104    0.122    0.141    0.187 1.002</span></span>
+<span><span class="co">#&gt; totresdev   47.084   9.936   29.683   40.122   46.201   53.434   68.634 1.001</span></span>
+<span><span class="co">#&gt; deviance  -124.230   9.936 -141.631 -131.192 -125.113 -117.880 -102.680 1.001</span></span>
 <span><span class="co">#&gt;           n.eff</span></span>
 <span><span class="co">#&gt; d[1]          1</span></span>
-<span><span class="co">#&gt; d[2]       1600</span></span>
-<span><span class="co">#&gt; d[3]       3000</span></span>
-<span><span class="co">#&gt; d[4]       1700</span></span>
+<span><span class="co">#&gt; d[2]       2400</span></span>
+<span><span class="co">#&gt; d[3]       1400</span></span>
+<span><span class="co">#&gt; d[4]        710</span></span>
 <span><span class="co">#&gt; d[5]       3000</span></span>
-<span><span class="co">#&gt; d[6]        820</span></span>
-<span><span class="co">#&gt; sd         3000</span></span>
-<span><span class="co">#&gt; totresdev  2900</span></span>
-<span><span class="co">#&gt; deviance   3000</span></span>
+<span><span class="co">#&gt; d[6]       3000</span></span>
+<span><span class="co">#&gt; sd         1000</span></span>
+<span><span class="co">#&gt; totresdev  3000</span></span>
+<span><span class="co">#&gt; deviance   2800</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; For each parameter, n.eff is a crude measure of effective sample size,</span></span>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
-<span><span class="co">#&gt; pD = 37.2 and DIC = -87.6</span></span>
+<span><span class="co">#&gt; pD = 36.7 and DIC = -88.4</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $trt.labs</span></span>
@@ -428,7 +429,7 @@ MBNMA may not be directly comparable.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>

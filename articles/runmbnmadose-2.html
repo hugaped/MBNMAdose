@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MBNMAdose: Perform a Model-Based Network Meta-Analysis (MBNMA) • MBNMAdose</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
@@ -97,7 +97,7 @@ Meta-Analysis (MBNMA)</h1>
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2023-08-08</h4>
+            <h4 data-toc-skip class="date">2024-04-18</h4>
       
       
       <div class="hidden name"><code>runmbnmadose-2.Rmd</code></div>
@@ -271,8 +271,7 @@ each agent separately on both Emax and ED50 parameters follows:</p>
 <span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
 <span></span>
 <span><span class="co"># Run an Emax dose-response MBNMA</span></span>
-<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span>, </span>
-<span>                   method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
@@ -293,45 +292,45 @@ each agent separately on both Emax and ED50 parameters follows:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; Between-study SD for relative effects        0.311 (0.225, 0.409)</span></span>
+<span><span class="co">#&gt; Between-study SD for relative effects        0.31 (0.222, 0.408)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Agent        |Parameter |   Median|    2.5%|    97.5%|</span></span>
-<span><span class="co">#&gt; |:------------|:---------|--------:|-------:|--------:|</span></span>
-<span><span class="co">#&gt; |eletriptan   |emax[2]   |   2.7600|  2.0969|   3.8266|</span></span>
-<span><span class="co">#&gt; |sumatriptan  |emax[3]   |   2.2633|  1.5217|  11.9528|</span></span>
-<span><span class="co">#&gt; |frovatriptan |emax[4]   |  72.2399|  7.2138| 182.5020|</span></span>
-<span><span class="co">#&gt; |almotriptan  |emax[5]   |  68.3933|  9.9913| 168.5920|</span></span>
-<span><span class="co">#&gt; |zolmitriptan |emax[6]   |   2.7642|  1.6119|   4.7676|</span></span>
-<span><span class="co">#&gt; |naratriptan  |emax[7]   |  44.8628|  5.8279| 121.9574|</span></span>
-<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 105.0303| 18.8301| 236.9822|</span></span>
+<span><span class="co">#&gt; |Agent        |Parameter |  Median|   2.5%|    97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|-------:|------:|--------:|</span></span>
+<span><span class="co">#&gt; |eletriptan   |emax[2]   |  2.7468| 2.0855|   3.8224|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |emax[3]   |  2.2280| 1.5041|   5.7750|</span></span>
+<span><span class="co">#&gt; |frovatriptan |emax[4]   | 73.8410| 5.3802| 181.5962|</span></span>
+<span><span class="co">#&gt; |almotriptan  |emax[5]   | 64.9145| 4.8699| 166.3348|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |emax[6]   |  2.8738| 1.6952|   5.1088|</span></span>
+<span><span class="co">#&gt; |naratriptan  |emax[7]   | 44.2414| 6.5802| 120.5205|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 91.5845| 5.0873| 216.0724|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Pooling: relative effects for each agent</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; |Agent        |Parameter |   Median|    2.5%|    97.5%|</span></span>
-<span><span class="co">#&gt; |:------------|:---------|--------:|-------:|--------:|</span></span>
-<span><span class="co">#&gt; |eletriptan   |ed50[2]   |   0.6630|  0.2632|   1.5004|</span></span>
-<span><span class="co">#&gt; |sumatriptan  |ed50[3]   |   1.1913|  0.3373|  15.1499|</span></span>
-<span><span class="co">#&gt; |frovatriptan |ed50[4]   |  75.3883|  5.8794| 189.9164|</span></span>
-<span><span class="co">#&gt; |almotriptan  |ed50[5]   |  81.8023| 10.9252| 205.5215|</span></span>
-<span><span class="co">#&gt; |zolmitriptan |ed50[6]   |   1.4143|  0.3538|   3.8114|</span></span>
-<span><span class="co">#&gt; |naratriptan  |ed50[7]   | 101.7515| 15.5596| 245.4955|</span></span>
-<span><span class="co">#&gt; |rizatriptan  |ed50[8]   |  65.4583| 10.5753| 148.4957|</span></span>
+<span><span class="co">#&gt; |Agent        |Parameter |  Median|    2.5%|    97.5%|</span></span>
+<span><span class="co">#&gt; |:------------|:---------|-------:|-------:|--------:|</span></span>
+<span><span class="co">#&gt; |eletriptan   |ed50[2]   |  0.6479|  0.2599|   1.4542|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |ed50[3]   |  1.1245|  0.3205|   5.9756|</span></span>
+<span><span class="co">#&gt; |frovatriptan |ed50[4]   | 77.2307|  3.7741| 195.8473|</span></span>
+<span><span class="co">#&gt; |almotriptan  |ed50[5]   | 77.6310|  4.1451| 195.5089|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |ed50[6]   |  1.4850|  0.4132|   4.2453|</span></span>
+<span><span class="co">#&gt; |naratriptan  |ed50[7]   | 99.4281| 16.2121| 241.6199|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |ed50[8]   | 56.6349|  2.2844| 137.5161|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 132</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 130.5</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 1090.7</span></span>
-<span><span class="co">#&gt; Residual deviance = 187.6</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1222.6</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 1090.6</span></span>
+<span><span class="co">#&gt; Residual deviance = 187.5</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1221.1</span></span></code></pre></div>
 <p>In this example the <code>emax</code> parameters are the maximum
 efficacy that can be achieved for each agent. The <code>ed50</code>
 parameters are the the dose at which 50% of the maximum efficacy is
@@ -345,8 +344,7 @@ estimate a single parameter across the whole network for ED50, but still
 estimate a separate effect for each agent for Emax:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Emax model with single parameter estimated for Emax</span></span>
-<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"common"</span><span class="op">)</span>, </span>
-<span>                  method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"common"</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
@@ -376,7 +374,7 @@ estimate a separate effect for each agent for Emax:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">Parameter                    Median (95%CrI)</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; -----------------------------------------------------------------------</span></span></span>
-<span><span class="co">#&gt; Between-study SD for relative effects        0.267 (0.167, 0.604)</span></span>
+<span><span class="co">#&gt; Between-study SD for relative effects        0.268 (0.157, 0.616)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">emax dose-response parameter results</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span></span></span>
@@ -384,13 +382,13 @@ estimate a separate effect for each agent for Emax:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Agent        |Parameter | Median|   2.5%|    97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|:---------|------:|------:|--------:|</span></span>
-<span><span class="co">#&gt; |eletriptan   |emax[2]   | 3.0401| 2.4487| 136.7229|</span></span>
-<span><span class="co">#&gt; |sumatriptan  |emax[3]   | 2.0209| 1.6524|  90.6435|</span></span>
-<span><span class="co">#&gt; |frovatriptan |emax[4]   | 2.3582| 1.5112| 138.0360|</span></span>
-<span><span class="co">#&gt; |almotriptan  |emax[5]   | 1.9553| 1.4106| 103.5103|</span></span>
-<span><span class="co">#&gt; |zolmitriptan |emax[6]   | 2.2940| 1.7590|  64.0362|</span></span>
-<span><span class="co">#&gt; |naratriptan  |emax[7]   | 1.1971| 0.4106|  68.0370|</span></span>
-<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 2.9588| 2.2912| 200.4817|</span></span>
+<span><span class="co">#&gt; |eletriptan   |emax[2]   | 3.0735| 2.4038| 140.0550|</span></span>
+<span><span class="co">#&gt; |sumatriptan  |emax[3]   | 2.0308| 1.6537|  94.8045|</span></span>
+<span><span class="co">#&gt; |frovatriptan |emax[4]   | 2.3785| 1.4961| 139.9150|</span></span>
+<span><span class="co">#&gt; |almotriptan  |emax[5]   | 1.9740| 1.4161| 108.1797|</span></span>
+<span><span class="co">#&gt; |zolmitriptan |emax[6]   | 2.3123| 1.7545|  61.1024|</span></span>
+<span><span class="co">#&gt; |naratriptan  |emax[7]   | 1.2295| 0.4283|  66.8817|</span></span>
+<span><span class="co">#&gt; |rizatriptan  |emax[8]   | 2.9554| 2.2439| 202.4891|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 dose-response parameter results</span></span></span>
@@ -399,16 +397,16 @@ estimate a separate effect for each agent for Emax:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Parameter | Median|   2.5%|    97.5%|</span></span>
 <span><span class="co">#&gt; |:---------|------:|------:|--------:|</span></span>
-<span><span class="co">#&gt; |ed50      | 0.8284| 0.4638| 126.1865|</span></span>
+<span><span class="co">#&gt; |ed50      | 0.8362| 0.4555| 131.6718|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Effective number of parameters:</span></span>
-<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 120.3</span></span>
+<span><span class="co">#&gt; pD calculated using the Kullback-Leibler divergence = 141.4</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Deviance = 1091.9</span></span>
-<span><span class="co">#&gt; Residual deviance = 188.8</span></span>
-<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1212.1</span></span></code></pre></div>
+<span><span class="co">#&gt; Deviance = 1092.2</span></span>
+<span><span class="co">#&gt; Residual deviance = 189.1</span></span>
+<span><span class="co">#&gt; Deviance Information Criterion (DIC) = 1233.6</span></span></code></pre></div>
 <p>In this example <code>ed50</code> only has a single parameter, which
 corresponds to the dose at which 50% of the maximum efficacy is
 achieved, assumed to be equal across all agents in the network.</p>
@@ -553,12 +551,11 @@ to be equal to their agents.</p>
 <span><span class="va">pain.df</span><span class="op">$</span><span class="va">class</span> <span class="op">&lt;-</span> <span class="va">pain.df</span><span class="op">$</span><span class="va">class</span></span>
 <span></span>
 <span><span class="co"># Set a shared class (NSAID) only for Naproxcinod and Naproxen</span></span>
-<span><span class="va">pain.df</span><span class="op">$</span><span class="va">class</span><span class="op">[</span><span class="va">pain.df</span><span class="op">$</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="st">"NSAID"</span></span>
+<span><span class="va">pain.df</span><span class="op">$</span><span class="va">class</span><span class="op">[</span><span class="va">pain.df</span><span class="op">$</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">"NSAID"</span></span>
 <span></span>
 <span><span class="co"># Run a restricted cubic spline MBNMA with a random class effect on beta.1</span></span>
 <span><span class="va">painnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">pain.df</span><span class="op">)</span></span>
-<span><span class="va">splines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">painnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>, class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.1<span class="op">=</span><span class="st">"random"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">splines</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">painnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bs"</span>, knots <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.1 <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Mean class effects are given in the output as
 <code>D.ed50</code>/<code>D.1</code> parameters. These can be
 interpreted as the effect of each class for Emax parameters
@@ -602,9 +599,9 @@ implemented in JAGS can be added to the function
 <span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># An example specifying a quadratic dose-response function</span></span>
-<span><span class="va">quadfun</span> <span class="op">&lt;-</span> <span class="op">~</span> <span class="op">(</span><span class="va">beta.1</span> <span class="op">*</span> <span class="va">dose</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">beta.2</span> <span class="op">*</span> <span class="op">(</span><span class="va">dose</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">quadfun</span> <span class="op">&lt;-</span> <span class="op">~</span><span class="op">(</span><span class="va">beta.1</span> <span class="op">*</span> <span class="va">dose</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">beta.2</span> <span class="op">*</span> <span class="op">(</span><span class="va">dose</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">quad</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/duser.html">duser</a></span><span class="op">(</span>fun<span class="op">=</span><span class="va">quadfun</span>, beta.1 <span class="op">=</span> <span class="st">"rel"</span>, beta.2 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">quad</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/duser.html">duser</a></span><span class="op">(</span>fun <span class="op">=</span> <span class="va">quadfun</span>, beta.1 <span class="op">=</span> <span class="st">"rel"</span>, beta.2 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="agent-specific-dose-response-functions">Agent-specific dose-response functions<a class="anchor" aria-label="anchor" href="#agent-specific-dose-response-functions"></a>
@@ -630,16 +627,11 @@ typically equal 0.</p>
 <code class="sourceCode R"><span><span class="co"># Using the depression SSRI dataset</span></span>
 <span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">dr.funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dmulti.html">dmulti</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  <span class="st">"Placebo"</span><span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>  <span class="st">"citalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>  <span class="st">"escitalopram"</span><span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>  <span class="st">"fluoxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>  <span class="st">"paroxetine"</span><span class="op">=</span><span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree<span class="op">=</span><span class="fl">2</span><span class="op">)</span>,</span>
-<span>  <span class="st">"sertraline"</span><span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>,knots<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dr.funs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dmulti.html">dmulti</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Placebo <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, citalopram <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    escitalopram <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, fluoxetine <span class="op">=</span> <span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"ns"</span>, knots <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    paroxetine <span class="op">=</span> <span class="fu"><a href="../reference/dfpoly.html">dfpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, sertraline <span class="op">=</span> <span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"ns"</span>, knots <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">multifun</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="va">dr.funs</span>, method<span class="op">=</span><span class="st">"common"</span>, n.iter<span class="op">=</span><span class="fl">50000</span><span class="op">)</span></span>
+<span><span class="va">multifun</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun <span class="op">=</span> <span class="va">dr.funs</span>, method <span class="op">=</span> <span class="st">"common"</span>, n.iter <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">multifun</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -677,13 +669,13 @@ dose range for each agent at which knots should be located. Note that by
 default, a boundary knot will be placed at the maximum of the dose range
 to limit the function extrapolating to extreme values.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co"># ...is equivalent to </span></span>
-<span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"bs"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bs"</span>, knots <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co"># ...is equivalent to</span></span>
+<span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"bs"</span>, knots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using a natural cubic spline on the SSRI dataset</span></span>
 <span><span class="va">depnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssri</span><span class="op">)</span></span>
-<span><span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type<span class="op">=</span><span class="st">"ns"</span>, knots<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>,<span class="fl">0.5</span>,<span class="fl">0.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">depnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dspline.html">dspline</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"ns"</span>, knots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="correlation-between-dose-response-parameters">Correlation between dose-response parameters<a class="anchor" aria-label="anchor" href="#correlation-between-dose-response-parameters"></a>
@@ -763,13 +755,10 @@ aren’t specified will take default values.</p>
 parameters we could increase the precision:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define replacement prior</span></span>
-<span><span class="va">new.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>  sd <span class="op">=</span> <span class="st">"dnorm(0, 1) T(0,)"</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="va">new.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sd <span class="op">=</span> <span class="st">"dnorm(0, 1) T(0,)"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Run an MBNMA model with new priors</span></span>
-<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span>,</span>
-<span>                   priors<span class="op">=</span><span class="va">new.priors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span>, priors <span class="op">=</span> <span class="va">new.priors</span><span class="op">)</span></span></code></pre></div>
 <p>Different prior distributions can be assigned for different indices
 of a parameter by specifying the list element for a parameter as a
 character vector. This allows (for example) for the user to fit specific
@@ -782,20 +771,13 @@ network.</p>
 about the ED50 parameter, as the dose scale will be different for
 different agents:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ed50.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ed50 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
-<span>  Celebrex<span class="op">=</span><span class="st">"dnorm(100, 0.0025) T(0,)"</span>, </span>
-<span>  Etoricoxib<span class="op">=</span><span class="st">"dnorm(20, 0.01) T(0,)"</span>, </span>
-<span>  Lumiracoxib<span class="op">=</span><span class="st">"dnorm(50, 0.0025) T(0,)"</span>, </span>
-<span>  Naproxcinod<span class="op">=</span><span class="st">"dnorm(500, 0.0004) T(0,)"</span>, </span>
-<span>  Naproxen<span class="op">=</span><span class="st">"dnorm(500, 0.0004) T(0,)"</span>,</span>
-<span>  Rofecoxib<span class="op">=</span><span class="st">"dnorm(35, 0.04) T(0,)"</span>,</span>
-<span>  Tramadol<span class="op">=</span><span class="st">"dnorm(200, 0.0004) T(0,)"</span>,</span>
-<span>  Valdecoxib<span class="op">=</span><span class="st">"dnorm(4, 0.04) T(0,)"</span></span>
-<span>  <span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">ed50.priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>ed50 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>Celebrex <span class="op">=</span> <span class="st">"dnorm(100, 0.0025) T(0,)"</span>, Etoricoxib <span class="op">=</span> <span class="st">"dnorm(20, 0.01) T(0,)"</span>,</span>
+<span>    Lumiracoxib <span class="op">=</span> <span class="st">"dnorm(50, 0.0025) T(0,)"</span>, Naproxcinod <span class="op">=</span> <span class="st">"dnorm(500, 0.0004) T(0,)"</span>,</span>
+<span>    Naproxen <span class="op">=</span> <span class="st">"dnorm(500, 0.0004) T(0,)"</span>, Rofecoxib <span class="op">=</span> <span class="st">"dnorm(35, 0.04) T(0,)"</span>, Tramadol <span class="op">=</span> <span class="st">"dnorm(200, 0.0004) T(0,)"</span>,</span>
+<span>    Valdecoxib <span class="op">=</span> <span class="st">"dnorm(4, 0.04) T(0,)"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Using the osteoarthritis dataset</span></span>
-<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">painnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span>,</span>
-<span>                   priors<span class="op">=</span><span class="va">ed50.priors</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">mbnma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">painnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span>, priors <span class="op">=</span> <span class="va">ed50.priors</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="pd-effective-number-of-parameters">pD (effective number of parameters)<a class="anchor" aria-label="anchor" href="#pd-effective-number-of-parameters"></a>
@@ -860,16 +842,14 @@ version of the gout dataset which excludes placebo (to artificially
 disconnect the network):</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate dataset without placebo</span></span>
-<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="va">gout</span><span class="op">[</span><span class="op">!</span><span class="va">gout</span><span class="op">$</span><span class="va">studyID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2001</span>, <span class="fl">3102</span><span class="op">)</span>,<span class="op">]</span> <span class="co"># Drop two-arm placebo studies</span></span>
-<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="va">noplac.gout</span><span class="op">[</span><span class="va">noplac.gout</span><span class="op">$</span><span class="va">agent</span><span class="op">!=</span><span class="st">"Plac"</span>,<span class="op">]</span> <span class="co"># Drop placebo arm from multi-arm studies</span></span>
+<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> <span class="va">gout</span><span class="op">[</span><span class="op">!</span><span class="va">gout</span><span class="op">$</span><span class="va">studyID</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2001</span>, <span class="fl">3102</span><span class="op">)</span>, <span class="op">]</span>  <span class="co"># Drop two-arm placebo studies</span></span>
+<span><span class="va">noplac.gout</span> <span class="op">&lt;-</span> <span class="va">noplac.gout</span><span class="op">[</span><span class="va">noplac.gout</span><span class="op">$</span><span class="va">agent</span> <span class="op">!=</span> <span class="st">"Plac"</span>, <span class="op">]</span>  <span class="co"># Drop placebo arm from multi-arm studies</span></span>
 <span></span>
 <span><span class="co"># Create mbnma.network object</span></span>
 <span><span class="va">noplac.net</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">noplac.gout</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot network</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, label.distance<span class="op">=</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
 <span><span class="co">#&gt; to the network reference:</span></span>
 <span><span class="co">#&gt; Allo_300</span></span>
@@ -894,7 +874,7 @@ connected via this relationship, and we can connect up more treatments
 and agents in the network.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Network plot at the agent level illustrates how doses can connect using MBNMA</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level <span class="op">=</span> <span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
 <span><span class="co">#&gt; to the network reference:</span></span>
 <span><span class="co">#&gt; Arha</span></span>
@@ -925,19 +905,17 @@ the network.</p>
 <p>If placebo is not included in the original dataset then this argument
 will also add a node for placebo to illustrate the connection.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Network plot assuming connectivity via two doses</span></span>
-<span><span class="co"># Allows estimation of a single-parameter dose-response function</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>     doselink<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Network plot assuming connectivity via two doses Allows estimation of a</span></span>
+<span><span class="co"># single-parameter dose-response function</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level <span class="op">=</span> <span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>, doselink <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
 <span><span class="co">#&gt;                    function with 1 degrees of freedom</span></span></code></pre></div>
 <p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
-<span><span class="co"># Network plot assuming connectivity via three doses</span></span>
-<span><span class="co"># Allows estimation of a two-parameter dose-response function</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level<span class="op">=</span><span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>,</span>
-<span>     doselink<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co"># Network plot assuming connectivity via three doses Allows estimation of a</span></span>
+<span><span class="co"># two-parameter dose-response function</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level <span class="op">=</span> <span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>, doselink <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
 <span><span class="co">#&gt; to the network reference:</span></span>
 <span><span class="co">#&gt; Allo</span></span>
@@ -981,80 +959,80 @@ significantly poorer model fit.</p>
 correctly choose the expected <code>direction</code> of the monotonic
 response, otherwise it can lead to computation error.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">nonparam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/dnonparam.html">dnonparam</a></span><span class="op">(</span>direction<span class="op">=</span><span class="st">"increasing"</span><span class="op">)</span>, method<span class="op">=</span><span class="st">"random"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">nonparam</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dnonparam.html">dnonparam</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"increasing"</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nonparam</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmppzC4jC/file1f892ebf3b33", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpGn8oqt/file20cc7b9d47e9", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
 <span><span class="co">#&gt; d.1[1,1]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
 <span><span class="co">#&gt; d.1[1,2]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,2]     1.201   0.175    0.847    1.089    1.201    1.323    1.536 1.001</span></span>
-<span><span class="co">#&gt; d.1[3,2]     1.754   0.119    1.519    1.679    1.751    1.834    1.991 1.001</span></span>
-<span><span class="co">#&gt; d.1[4,2]     2.058   0.142    1.783    1.963    2.054    2.154    2.341 1.002</span></span>
+<span><span class="co">#&gt; d.1[2,2]     1.210   0.176    0.857    1.093    1.211    1.328    1.556 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,2]     1.749   0.117    1.517    1.672    1.749    1.825    1.982 1.001</span></span>
+<span><span class="co">#&gt; d.1[4,2]     2.052   0.144    1.775    1.953    2.051    2.144    2.345 1.002</span></span>
 <span><span class="co">#&gt; d.1[1,3]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,3]     0.947   0.144    0.623    0.859    0.961    1.050    1.187 1.001</span></span>
-<span><span class="co">#&gt; d.1[3,3]     1.119   0.085    0.948    1.064    1.117    1.176    1.282 1.003</span></span>
-<span><span class="co">#&gt; d.1[4,3]     1.257   0.113    1.045    1.176    1.256    1.337    1.476 1.001</span></span>
-<span><span class="co">#&gt; d.1[5,3]     1.461   0.086    1.298    1.401    1.460    1.519    1.634 1.004</span></span>
+<span><span class="co">#&gt; d.1[2,3]     0.948   0.142    0.633    0.860    0.964    1.047    1.187 1.002</span></span>
+<span><span class="co">#&gt; d.1[3,3]     1.119   0.086    0.955    1.062    1.118    1.178    1.292 1.004</span></span>
+<span><span class="co">#&gt; d.1[4,3]     1.267   0.112    1.052    1.186    1.264    1.346    1.490 1.002</span></span>
+<span><span class="co">#&gt; d.1[5,3]     1.464   0.087    1.298    1.402    1.462    1.525    1.633 1.004</span></span>
 <span><span class="co">#&gt; d.1[1,4]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,4]     1.247   0.205    0.842    1.111    1.245    1.379    1.663 1.001</span></span>
-<span><span class="co">#&gt; d.1[3,4]     1.624   0.310    1.075    1.408    1.605    1.816    2.289 1.001</span></span>
+<span><span class="co">#&gt; d.1[2,4]     1.233   0.209    0.835    1.091    1.229    1.365    1.652 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,4]     1.600   0.313    1.035    1.384    1.583    1.797    2.262 1.001</span></span>
 <span><span class="co">#&gt; d.1[1,5]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,5]     0.630   0.240    0.144    0.466    0.640    0.812    1.070 1.001</span></span>
-<span><span class="co">#&gt; d.1[3,5]     1.042   0.125    0.799    0.960    1.042    1.124    1.286 1.002</span></span>
-<span><span class="co">#&gt; d.1[4,5]     1.445   0.212    1.046    1.297    1.442    1.587    1.876 1.001</span></span>
+<span><span class="co">#&gt; d.1[2,5]     0.623   0.240    0.135    0.458    0.632    0.798    1.061 1.003</span></span>
+<span><span class="co">#&gt; d.1[3,5]     1.041   0.123    0.807    0.961    1.037    1.119    1.287 1.005</span></span>
+<span><span class="co">#&gt; d.1[4,5]     1.452   0.213    1.063    1.303    1.444    1.595    1.886 1.006</span></span>
 <span><span class="co">#&gt; d.1[1,6]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,6]     0.776   0.314    0.120    0.554    0.806    1.024    1.299 1.004</span></span>
-<span><span class="co">#&gt; d.1[3,6]     1.250   0.115    1.022    1.173    1.251    1.326    1.475 1.001</span></span>
-<span><span class="co">#&gt; d.1[4,6]     1.558   0.192    1.226    1.423    1.545    1.678    1.972 1.003</span></span>
-<span><span class="co">#&gt; d.1[5,6]     1.890   0.277    1.409    1.693    1.874    2.061    2.484 1.003</span></span>
-<span><span class="co">#&gt; d.1[6,6]     2.935   0.624    1.885    2.478    2.873    3.324    4.292 1.002</span></span>
+<span><span class="co">#&gt; d.1[2,6]     0.786   0.313    0.129    0.566    0.830    1.024    1.297 1.018</span></span>
+<span><span class="co">#&gt; d.1[3,6]     1.253   0.115    1.025    1.176    1.257    1.330    1.472 1.001</span></span>
+<span><span class="co">#&gt; d.1[4,6]     1.559   0.188    1.236    1.425    1.543    1.681    1.970 1.003</span></span>
+<span><span class="co">#&gt; d.1[5,6]     1.885   0.264    1.433    1.696    1.869    2.053    2.451 1.003</span></span>
+<span><span class="co">#&gt; d.1[6,6]     2.907   0.609    1.882    2.456    2.846    3.313    4.224 1.010</span></span>
 <span><span class="co">#&gt; d.1[1,7]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,7]     0.558   0.203    0.168    0.418    0.555    0.696    0.964 1.001</span></span>
-<span><span class="co">#&gt; d.1[3,7]     1.016   0.309    0.472    0.802    0.993    1.198    1.669 1.002</span></span>
+<span><span class="co">#&gt; d.1[2,7]     0.561   0.209    0.137    0.426    0.567    0.702    0.978 1.003</span></span>
+<span><span class="co">#&gt; d.1[3,7]     1.005   0.305    0.453    0.796    0.983    1.200    1.669 1.001</span></span>
 <span><span class="co">#&gt; d.1[1,8]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
-<span><span class="co">#&gt; d.1[2,8]     0.512   0.321    0.027    0.256    0.475    0.732    1.189 1.002</span></span>
-<span><span class="co">#&gt; d.1[3,8]     1.267   0.165    0.931    1.153    1.268    1.382    1.578 1.001</span></span>
-<span><span class="co">#&gt; d.1[4,8]     1.614   0.106    1.411    1.542    1.612    1.686    1.829 1.002</span></span>
-<span><span class="co">#&gt; sd           0.260   0.047    0.176    0.228    0.257    0.289    0.359 1.002</span></span>
-<span><span class="co">#&gt; totresdev  189.677  19.466  154.066  176.268  188.962  201.885  229.385 1.002</span></span>
-<span><span class="co">#&gt; deviance  1092.783  19.466 1057.172 1079.374 1092.068 1104.991 1132.491 1.002</span></span>
+<span><span class="co">#&gt; d.1[2,8]     0.499   0.313    0.025    0.242    0.460    0.718    1.146 1.001</span></span>
+<span><span class="co">#&gt; d.1[3,8]     1.277   0.160    0.955    1.172    1.280    1.388    1.584 1.005</span></span>
+<span><span class="co">#&gt; d.1[4,8]     1.619   0.102    1.421    1.552    1.617    1.686    1.819 1.003</span></span>
+<span><span class="co">#&gt; sd           0.259   0.047    0.171    0.228    0.257    0.289    0.356 1.006</span></span>
+<span><span class="co">#&gt; totresdev  189.368  19.220  152.706  175.947  188.696  202.044  228.622 1.001</span></span>
+<span><span class="co">#&gt; deviance  1092.474  19.220 1055.812 1079.053 1091.802 1105.150 1131.728 1.001</span></span>
 <span><span class="co">#&gt;           n.eff</span></span>
 <span><span class="co">#&gt; d.1[1,1]      1</span></span>
 <span><span class="co">#&gt; d.1[1,2]      1</span></span>
 <span><span class="co">#&gt; d.1[2,2]   3000</span></span>
-<span><span class="co">#&gt; d.1[3,2]   3000</span></span>
-<span><span class="co">#&gt; d.1[4,2]   2100</span></span>
+<span><span class="co">#&gt; d.1[3,2]   2900</span></span>
+<span><span class="co">#&gt; d.1[4,2]   1100</span></span>
 <span><span class="co">#&gt; d.1[1,3]      1</span></span>
-<span><span class="co">#&gt; d.1[2,3]   3000</span></span>
-<span><span class="co">#&gt; d.1[3,3]    760</span></span>
-<span><span class="co">#&gt; d.1[4,3]   3000</span></span>
-<span><span class="co">#&gt; d.1[5,3]    650</span></span>
+<span><span class="co">#&gt; d.1[2,3]   1700</span></span>
+<span><span class="co">#&gt; d.1[3,3]    590</span></span>
+<span><span class="co">#&gt; d.1[4,3]   1300</span></span>
+<span><span class="co">#&gt; d.1[5,3]    590</span></span>
 <span><span class="co">#&gt; d.1[1,4]      1</span></span>
-<span><span class="co">#&gt; d.1[2,4]   3000</span></span>
+<span><span class="co">#&gt; d.1[2,4]   2700</span></span>
 <span><span class="co">#&gt; d.1[3,4]   3000</span></span>
 <span><span class="co">#&gt; d.1[1,5]      1</span></span>
-<span><span class="co">#&gt; d.1[2,5]   3000</span></span>
-<span><span class="co">#&gt; d.1[3,5]   1000</span></span>
-<span><span class="co">#&gt; d.1[4,5]   3000</span></span>
+<span><span class="co">#&gt; d.1[2,5]   1700</span></span>
+<span><span class="co">#&gt; d.1[3,5]    430</span></span>
+<span><span class="co">#&gt; d.1[4,5]    390</span></span>
 <span><span class="co">#&gt; d.1[1,6]      1</span></span>
-<span><span class="co">#&gt; d.1[2,6]   3000</span></span>
-<span><span class="co">#&gt; d.1[3,6]   2200</span></span>
-<span><span class="co">#&gt; d.1[4,6]   1700</span></span>
-<span><span class="co">#&gt; d.1[5,6]   2000</span></span>
-<span><span class="co">#&gt; d.1[6,6]   2800</span></span>
+<span><span class="co">#&gt; d.1[2,6]    320</span></span>
+<span><span class="co">#&gt; d.1[3,6]   2400</span></span>
+<span><span class="co">#&gt; d.1[4,6]    840</span></span>
+<span><span class="co">#&gt; d.1[5,6]    700</span></span>
+<span><span class="co">#&gt; d.1[6,6]    230</span></span>
 <span><span class="co">#&gt; d.1[1,7]      1</span></span>
-<span><span class="co">#&gt; d.1[2,7]   3000</span></span>
-<span><span class="co">#&gt; d.1[3,7]   1800</span></span>
+<span><span class="co">#&gt; d.1[2,7]   2800</span></span>
+<span><span class="co">#&gt; d.1[3,7]   3000</span></span>
 <span><span class="co">#&gt; d.1[1,8]      1</span></span>
-<span><span class="co">#&gt; d.1[2,8]   1600</span></span>
-<span><span class="co">#&gt; d.1[3,8]   3000</span></span>
-<span><span class="co">#&gt; d.1[4,8]   1200</span></span>
-<span><span class="co">#&gt; sd         1600</span></span>
+<span><span class="co">#&gt; d.1[2,8]   3000</span></span>
+<span><span class="co">#&gt; d.1[3,8]    410</span></span>
+<span><span class="co">#&gt; d.1[4,8]    960</span></span>
+<span><span class="co">#&gt; sd          530</span></span>
 <span><span class="co">#&gt; totresdev  3000</span></span>
 <span><span class="co">#&gt; deviance   3000</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -1062,7 +1040,7 @@ response, otherwise it can lead to computation error.</p>
 <span><span class="co">#&gt; and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
-<span><span class="co">#&gt; pD = 128.3 and DIC = 1220.4</span></span>
+<span><span class="co">#&gt; pD = 128.3 and DIC = 1220.1</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span></code></pre></div>
 <p>In the output from non-parametric models, <code>d.1</code> parameters
 represent the relative effect for each treatment (specific dose of a
@@ -1084,7 +1062,7 @@ Emax MBNMA on the triptans dataset:</p>
 <code class="sourceCode R"><span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
 <span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
-<span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun<span class="op">=</span><span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax<span class="op">=</span><span class="st">"rel"</span>, ed50<span class="op">=</span><span class="st">"rel"</span><span class="op">)</span><span class="op">)</span> </span>
+<span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="section level4">
@@ -1209,7 +1187,7 @@ model via informative priors.</p>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-GMD2" class="csl-entry">
 Daly, C., N. J. Welton, S. Dias, S. Anwer, and A. E. Ades. 2021.
 <span>“NICE Guideline Methodology Document 2: Meta-Analysis of
@@ -1293,7 +1271,7 @@ Meta-Analysis.”</span> Journal Article. <em>Cephalagia</em>. <a href="https://
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
 </div>
 
       </footer>
