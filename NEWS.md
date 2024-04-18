@@ -1,3 +1,9 @@
+# MBNMAdose 0.4.3
+
+## Additions/changes
+- `netmeta` added to list of suggested packages
+
+
 # MBNMAdose 0.4.2
 
 ## Additions/changes

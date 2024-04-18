@@ -1,13 +1,4 @@
 
-## Resumbission
-
-This is a resubmission. The following NOTEs have been addressed:
-
-* Fixed an invalid link in runmbnmadose-2.html
-* Functions that correspond to S3 generics/methods have been renamed where appropriate
-* Run time for examples with CPU or elapsed time >5s have been reduced
-
-
 ## Test environments
 
 * Ubuntu 22.04 GitHub Actions (release, dev, oldrel-1)
