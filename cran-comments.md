@@ -1,3 +1,9 @@
+## Resumbission
+
+This is a resubmission. The following NOTEs have been addressed:
+
+* Updated the date field in DESCRIPTION
+
 
 ## Test environments
 
