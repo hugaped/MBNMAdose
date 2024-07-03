@@ -11,7 +11,9 @@ dspline(
   beta.1 = "rel",
   beta.2 = "rel",
   beta.3 = "rel",
-  beta.4 = "rel"
+  beta.4 = "rel",
+  beta.5 = "rel",
+  beta.6 = "rel"
 )
 }
 \arguments{
@@ -34,6 +36,12 @@ assigned a numeric value (see details).}
 assigned a numeric value (see details).}
 
 \item{beta.4}{Pooling for the 4th coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
+assigned a numeric value (see details).}
+
+\item{beta.5}{Pooling for the 5th coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
+assigned a numeric value (see details).}
+
+\item{beta.6}{Pooling for the 6th coefficient. Can take \code{"rel"}, \code{"common"}, \code{"random"} or be
 assigned a numeric value (see details).}
 }
 \value{

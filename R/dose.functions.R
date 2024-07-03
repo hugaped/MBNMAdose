@@ -830,6 +830,10 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'   assigned a numeric value (see details).
 #' @param beta.4 Pooling for the 4th coefficient. Can take `"rel"`, `"common"`, `"random"` or be
 #'   assigned a numeric value (see details).
+#' @param beta.5 Pooling for the 5th coefficient. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
+#' @param beta.6 Pooling for the 6th coefficient. Can take `"rel"`, `"common"`, `"random"` or be
+#'   assigned a numeric value (see details).
 #'
 #' @return An object of `class("dosefun")`
 #'
@@ -866,16 +870,17 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'
 #' @export
 dspline <- function(type="bs", knots=1, degree=1,
-                    beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
+                    beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel",
+                    beta.5="rel", beta.6="rel") {
 
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
-  checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
+  checkmate::assertChoice(type, choices=c("bs", "ns", "ls", "is"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
-  params <- list(beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4)
+  params <- list(beta.1=beta.1, beta.2=beta.2, beta.3=beta.3, beta.4=beta.4, beta.5=beta.5, beta.6=beta.6)
   for (i in 1:degree) {
     err <- TRUE
     if (length(params[[i]])==1) {
