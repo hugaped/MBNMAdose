@@ -1513,8 +1513,8 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), bounda
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
 
-    } else if (spline=="is") {
-      splinedesign <- splines2::iSpline(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
+    # } else if (spline=="is") {
+    #   splinedesign <- splines2::iSpline(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
 
     } else if (spline=="ls") {
       splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
