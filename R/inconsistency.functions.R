@@ -1058,7 +1058,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
       trtnew <- treatments
 
       # Generate spline basis matrix if required
-      splineopt <- c("rcs", "bs", "ns", "ls")
+      splineopt <- c("rcs", "bs", "ns", "ls", "is")
       fun <- mbnma$model.arg$fun
 
       # Get indices of non-placebo agents

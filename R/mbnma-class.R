@@ -828,7 +828,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   predict.result <- list()
 
   # Add spline basis matrix
-  splineopt <- c("rcs", "bs", "ns", "ls")
+  splineopt <- c("rcs", "bs", "ns", "ls", "is")
   fun <- object$model.arg$fun
   if (any(splineopt %in% fun$name)) {
 
@@ -882,7 +882,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
 
         dose <- doses[[i]][k]
-        if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun$name)) {
+        if (any(c("rcs", "bs", "ns", "ls", "is") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
         }
 

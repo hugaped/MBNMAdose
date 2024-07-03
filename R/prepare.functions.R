@@ -666,7 +666,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     }
 
     # Generate empty spline matrix
-    splineopt <- c("rcs", "ns", "bs", "ls")
+    splineopt <- c("rcs", "ns", "bs", "ls", "is")
     if (any(splineopt %in% fun$name)) {
 
       doses <- df[, colnames(df) %in% c("agent", "dose")]
@@ -849,7 +849,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
                                                  df$arm==k])
 
         # Add spline matrix
-        if (any(c("rcs", "ns", "bs", "ls") %in% fun$name)) {
+        if (any(c("rcs", "ns", "bs", "ls", "is") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
                                              df$arm==k,
                                            grepl("spline$", colnames(df))]
@@ -1513,6 +1513,9 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), bounda
     } else if (spline=="ns") {
       splinedesign <- splines::ns(x=x0, knots=knots, Boundary.knots = boundaries)
 
+    } else if (spline=="is") {
+      splinedesign <- splines2::iSpline(x=x0, knots=knots, degree=degree, Boundary.knots = boundaries)
+
     } else if (spline=="ls") {
       splinedesign <- lspline::lspline(x=x0, knots=knots, marginal = FALSE)
     }
@@ -1525,7 +1528,7 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), bounda
       splinedesign <- matrix(splinedesign, nrow=1)
     }
 
-    if (ncol(splinedesign)>4) {
+    if (ncol(splinedesign)>6) {
       stop("splines of this complexity cannot currently be modelled using 'dspline()'...\nand your data is unlikely to be able to support it!")
     }
 
