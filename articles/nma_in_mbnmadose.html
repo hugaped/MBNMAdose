@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -124,8 +124,9 @@ medications for Chronic Obstructive Pulmonary Disease (COPD) from the
 <span><span class="co">#&gt; Loading 'netmeta' package (version 2.9-0).</span></span>
 <span><span class="co">#&gt; Type 'help("netmeta-package")' for a brief overview.</span></span>
 <span><span class="co">#&gt; Readers of 'Meta-Analysis with R (Use R!)' should install</span></span>
-<span><span class="co">#&gt; older version of 'netmeta' package: https://tinyurl.com/kyz6wjbb</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Dong2013"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; older version of 'netmeta' package: https://tinyurl.com/kyz6wjbb</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Dong2013"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Rename column names to match those used in MBNMAdose</span></span>
 <span><span class="va">Dong2013</span> <span class="op">&lt;-</span> <span class="va">Dong2013</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -141,7 +142,7 @@ and that the Placebo treatment has a dose of 0, then we can use the data
 in <code>MBNMAdose</code>, and by modelling a linear dose-response
 function we estimate parameters that are identical to a standard NMA
 model.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define agents and assign a dose of 1 to all agents</span></span>
 <span><span class="va">Dong2013</span> <span class="op">&lt;-</span> <span class="va">Dong2013</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>agent <span class="op">=</span> <span class="va">treatment</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
@@ -158,9 +159,9 @@ details of “lumping” and “splitting” and the implications of these
 assumptions can be found in <span class="citation">[@pedder2021cons]</span>.</p>
 <p>Once we have reassigned the doses within the dataset we can create an
 <code>"mbnma.network"</code> object and create a network plot:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">Dong2013</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">Dong2013</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 41 </span></span>
@@ -170,8 +171,9 @@ assumptions can be found in <span class="citation">[@pedder2021cons]</span>.</p>
 <span><span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
-<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></code></pre></div>
 <p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
 <p>We can then use a linear dose-response MBNMA to analyse the data. The
 coefficients for the linear slope of the dose-response function are
@@ -180,14 +182,14 @@ estimated in a standard NMA. Note that the results are equivalent in
 both models (allowing for Monte-Carlo error from the MCMC sampling). The
 only difference is that the placebo parameter (<code>beta.1[1]</code>)
 that is equal to zero is not given in the output.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nma.linear</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, n.iter <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.linear</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmpzgn1zM/file1f0b78ff2fab", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpLDFdx0/file1f0338ef52ef", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
@@ -205,12 +207,12 @@ that is equal to zero is not given in the output.</p>
 <span><span class="co">#&gt; DIC info (using the rule, pD = var(deviance)/2)</span></span>
 <span><span class="co">#&gt; pD = 41.8 and DIC = 456.9</span></span>
 <span><span class="co">#&gt; DIC is an estimate of expected predictive error (lower deviance is better).</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">network</span>, n.iter <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmpzgn1zM/file1f0b4028b5a2", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpLDFdx0/file1f0357fbf4aa", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;           mu.vect  sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
@@ -242,7 +244,7 @@ that is equal to zero is not given in the output.</p>
 <p>We can also show the equivalence of results using
 <code><a href="../reference/get.relative.html">get.relative()</a></code> to compare relative effects from both
 models:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rels</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.relative.html">get.relative</a></span><span class="op">(</span><span class="va">nma.linear</span>, <span class="va">nma</span><span class="op">)</span></span></code></pre></div>
 <p>Without a placebo, estimation is very similar, but requires renaming
 and recoding the network reference intervention to
@@ -252,7 +254,7 @@ include placebo (or dose=0), but it will ensure that parameter estimates
 are equivalent between the NMA and MBNMA models and will make it easier
 to estimate relative effects. We illustrate this with the Surgical Site
 Infection dataset.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Ensure that Suture-absorbable is the network reference</span></span>
 <span><span class="va">ssi</span> <span class="op">&lt;-</span> <span class="va">ssi_closure</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>agent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">trt</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Suture-absorbable"</span>, <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">ssi_closure</span><span class="op">$</span><span class="va">trt</span><span class="op">)</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -266,17 +268,18 @@ Infection dataset.</p>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
 <span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
 <span><span class="co">#&gt; Values for `class` with dose = 0 have been recoded to `Placebo`</span></span>
-<span><span class="co">#&gt; class is being recoded to enforce sequential numbering</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.plac</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt; class is being recoded to enforce sequential numbering</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.plac</span><span class="op">)</span></span></code></pre></div>
 <p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note that Suture-absorbable (the comparator) has been renamed to Placebo</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run linear MBNMA model</span></span>
 <span><span class="va">nma.linear</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network.plac</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, n.iter <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">nma.linear</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold;">========================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; Dose-response MBNMA</span></span></span>
@@ -337,7 +340,7 @@ as class effect models and node-splits to assess consistency.</p>
 <code>class.effect</code> argument in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>,
 introducing either a <code>"common"</code> or 2 class effect on the
 single linear dose-response parameter, <code>beta.1</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Random class effect model</span></span>
 <span><span class="va">nma.class</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">network.plac</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/dpoly.html">dpoly</a></span><span class="op">(</span>degree <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, class.effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>beta.1 <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span>,</span>
 <span>    n.iter <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span></span></code></pre></div>
@@ -374,7 +377,7 @@ written.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

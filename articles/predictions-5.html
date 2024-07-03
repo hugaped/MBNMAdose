@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2024-04-18</h4>
+            <h4 data-toc-skip class="date">2024-07-03</h4>
       
       
       <div class="hidden name"><code>predictions-5.Rmd</code></div>
@@ -113,8 +113,9 @@ results from an Emax MBNMA on the triptans dataset:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
-<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
-<span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
@@ -152,7 +153,7 @@ in the long format (one row per study arm) with the variables
 <code>synth</code> can be set to <code>"fixed"</code> or
 <code>"random"</code> to indicate whether this synthesis should be fixed
 or random effects.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">E0</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span> <span class="op">==</span> <span class="fl">0</span>, <span class="op">]</span></span></code></pre></div>
 <p>Additionally, it’s also necessary to specify the doses at which to
 predict responses. By default, <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> uses the maximum
@@ -168,7 +169,7 @@ specific agents using the argument <code>exact.doses</code>. As with
 correspond to agent names, but each element is a numeric vector in which
 each value within the vector is a dose at which to predict a response
 for the given agent.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Predict 20 doses for each agent, with a stochastic distribution for E0</span></span>
 <span><span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Placebo <span class="op">=</span> <span class="fl">0</span>, eletriptan <span class="op">=</span> <span class="fl">3</span>, sumatriptan <span class="op">=</span> <span class="fl">3</span>, almotriptan <span class="op">=</span> <span class="fl">3</span>, zolmitriptan <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>    naratriptan <span class="op">=</span> <span class="fl">3</span>, rizatriptan <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
@@ -180,7 +181,7 @@ for the given agent.</p>
 <span><span class="co"># Predict exact doses for two agents, and estimate E0 from the data</span></span>
 <span><span class="va">E0.data</span> <span class="op">&lt;-</span> <span class="va">triptans</span><span class="op">[</span><span class="va">triptans</span><span class="op">$</span><span class="va">dose</span> <span class="op">==</span> <span class="fl">0</span>, <span class="op">]</span></span>
 <span><span class="va">doses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eletriptan <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, sumatriptan <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0 <span class="op">=</span> <span class="va">E0.data</span>, exact.doses <span class="op">=</span> <span class="va">doses</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
 <span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span></code></pre></div>
@@ -189,7 +190,7 @@ a list of summary tables and MCMC prediction matrices for each treatment
 (combination of dose and agent). The <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> method can
 be used to print mean posterior predictions at each time point for each
 treatment.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         agent dose      mean          sd      2.5%       25%       50%</span></span>
 <span><span class="co">#&gt; 1     Placebo    0 0.1238859 0.003287582 0.1175652 0.1216980 0.1238643</span></span>
@@ -214,7 +215,7 @@ responses are joined by a line to form the dose-response curve for each
 agent predicted, with 95% credible intervals (CrI). Therefore, when
 plotting the response it is important to predict a sufficient number of
 doses (using <code>n.doses</code>) to get a smooth curve.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Predict responses using default doses up to the maximum of each agent in the</span></span>
 <span><span class="co"># dataset</span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0 <span class="op">=</span> <span class="fl">0.2</span>, n.dose <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
@@ -226,7 +227,7 @@ investigate each dose of an agent can be plotted over the 95% CrI for
 each treatment by setting <code>disp.obs = TRUE</code>, though this
 requires that the original <code>"mbnma.network"</code> object used to
 estimate the MBNMA be provided via <code>network</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, disp.obs <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 66 placebo arms in the dataset are not shown within the plots</span></span>
 <span><span class="co">#&gt; Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
@@ -245,7 +246,7 @@ can also specify if we want to perform a common or random effects NMA
 using <code>method</code>. Treatments that are only connected to the
 network via the dose-response relationship (rather than by a direct
 head-to-head comparison) will not be included.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
 <span><span class="va">alog.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">alog.emax</span>, E0 <span class="op">=</span> <span class="fl">0</span>, n.dose <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
@@ -275,7 +276,7 @@ case predictions) in order from either highest to lowest
 one of these will be included in the rankings, in order to avoid
 duplication (since the predicted response at dose = 0 is the same for
 all agents).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0 <span class="op">=</span> <span class="fl">0.2</span>, n.doses <span class="op">=</span> <span class="fl">4</span>, max.doses <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>eletriptan <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>    sumatriptan <span class="op">=</span> <span class="fl">5</span>, frovatriptan <span class="op">=</span> <span class="fl">5</span>, zolmitriptan <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -307,7 +308,7 @@ all agents).</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>

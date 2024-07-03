@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.4.4.9000</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2024-04-18</h4>
+            <h4 data-toc-skip class="date">2024-07-03</h4>
       
       
       <div class="hidden name"><code>dataexploration-1.Rmd</code></div>
@@ -117,8 +117,9 @@ using <code><a href="../reference/mbnma.network.html">mbnma.network()</a></code>
 <code class="sourceCode R"><span><span class="co"># Using the triptans dataset</span></span>
 <span><span class="va">network</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
-<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span></span>
 <span><span class="co">#&gt; Number of treatments: 23 </span></span>
@@ -223,12 +224,13 @@ more detailed edits to them.</p>
 <p>Within these network plots, vertices are automatically aligned in a
 circle (as the default) and can be tidied by shifting the label distance
 away from the nodes.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Prepare data using the triptans dataset</span></span>
 <span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
-<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">Description: Network </span></span></span>
 <span><span class="co"><span style="font-weight: bold; text-decoration: underline;">#&gt; </span>Number of studies: 70 </span></span>
 <span><span class="co">#&gt; Number of treatments: 23 </span></span>
@@ -237,8 +239,9 @@ away from the nodes.</p>
 <span><span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
-<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span></span>
+<span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># Draw network plot</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-2-1.png" width="672"></p>
@@ -246,7 +249,7 @@ away from the nodes.</p>
 through any pathway of head-to-head evidence, a warning will be given.
 The nodes that are coloured white represent these disconnected
 vertices.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Prepare data using the gout dataset</span></span>
 <span><span class="va">goutnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">gout</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">goutnet</span><span class="op">)</span></span>
@@ -259,7 +262,7 @@ vertices.</p>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt; Treatment-level network is <span style="color: #BB0000; font-weight: bold;">DISCONNECTED</span><span style="font-weight: bold;"> </span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
 <span><span class="co">#&gt; to the network reference:</span></span>
@@ -283,7 +286,7 @@ agent), many of these vertices are disconnected, at the agent level they
 are connected (via different doses of the same agent), meaning that
 <em>via the dose-response relationship</em> it is possible to estimate
 results.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot at the agent-level</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level <span class="op">=</span> <span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
@@ -295,7 +298,7 @@ results.</p>
 <em>even if they do not include placebo in a head-to-head trial</em>
 (see [Linking disconnected treatments via the dose-response
 relationship]).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Plot connections to placebo via a two-parameter dose-response function (e.g.</span></span>
 <span><span class="co"># Emax)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, level <span class="op">=</span> <span class="st">"agent"</span>, doselink <span class="op">=</span> <span class="fl">2</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
@@ -304,7 +307,7 @@ relationship]).</p>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 <p>It is also possible to plot a network at the treatment level but to
 colour the doses by the agent that they belong to.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Colour vertices by agent</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">goutnet</span>, v.color <span class="op">=</span> <span class="st">"agent"</span>, label.distance <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in check.network(g): The following treatments/agents are not connected</span></span>
@@ -340,14 +343,14 @@ assuming any dose-response relationship). The <code><a href="../reference/nma.ru
 function performs a simple NMA, and by default it drops studies that are
 disconnected at the treatment-level (since estimates for these will be
 very uncertain if included).</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run a random effect split NMA using the alogliptin dataset</span></span>
 <span><span class="va">alognet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">alog_pcfb</span><span class="op">)</span></span>
 <span><span class="va">nma.alog</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">alognet</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpcQMUnt/file1e5c7d940e0f", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpuCv4tP/file1e4b1e407c29", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
 <span><span class="co">#&gt;  n.sims = 3000 iterations saved</span></span>
 <span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
@@ -386,8 +389,9 @@ very uncertain if included).</p>
 <span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; attr(,"class")</span></span>
-<span><span class="co">#&gt; [1] "nma"</span></span>
-<span></span>
+<span><span class="co">#&gt; [1] "nma"</span></span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
 <span><span class="co"># Draw plot of NMA estimates plotted by dose</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">nma.alog</span><span class="op">)</span></span></code></pre></div>
 <p><img src="dataexploration-1_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
@@ -429,7 +433,7 @@ MBNMA may not be directly comparable.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.8.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
       </footer>
