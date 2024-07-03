@@ -755,9 +755,11 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   if (sucra==TRUE) {
     df.auc <- df %>%
       dplyr::group_by(df$Var2, df$param) %>%
-      dplyr::do(data.frame(sucra=calcauc(.)))
+      dplyr::do(data.frame(sucra=calcauc(.))) %>%
+      dplyr::ungroup()
 
-    df.auc <- dplyr::ungroup(df.auc)
+    # Normalise SUCRA values to 0,1
+    df.auc$sucra <- df.auc$sucra/nrow(df.auc)
 
     names(df.auc) <- c("agent", "parameter", "sucra")
 
