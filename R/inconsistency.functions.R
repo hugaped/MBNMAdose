@@ -350,7 +350,7 @@ inconsistency.loops <- function(df, checkindirect=TRUE, incldr=FALSE)
     g <- g + edges
 
     # Check whether there is still an indirect connection once direct evidence studies are removed
-    if (as.logical(is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+    if (as.logical(is.finite(igraph::distances(igraph::as.undirected(g),
                                                     comparisons[i,1], comparisons[i,2]))) == TRUE) {
 
       # Check if dropping 2-arm studies with both treatments and then either arm from multi-arm
@@ -533,7 +533,7 @@ drop.comp <- function(ind.df, drops, comp, start=1) {
     if (all(comp %in% temp.df$treatment)) {
       temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
 
-      connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(temp.net),
+      connectcheck <- is.finite(igraph::distances(igraph::as.undirected(temp.net),
                                                        to=comp[index+1])[
                                                          c(comp[1], comp[2])
                                                          ])
@@ -601,7 +601,7 @@ check.indirect.drops <- function(df, comp) {
     nt <- length(temp.net$treatments)
     if (nt==length(unique(df$treatment))) {
       g <- plot.invisible(temp.net, doseparam=1000)
-      connectcheck <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
+      connectcheck <- is.finite(igraph::distances(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])
                                                          ])
