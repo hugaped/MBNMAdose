@@ -606,30 +606,34 @@ mbnma.jags <- function(data.ab, model,
   close(tmps)
 
   out <- tryCatch({
-    if (parallel==FALSE) {
-      result <- do.call(R2jags::jags, c(args, list(data = jagsvars,
-                                                   model.file = tmpf)))
+    withCallingHandlers({
+      if (parallel == FALSE) {
+        result <- do.call(R2jags::jags, c(args, list(data = jagsvars, model.file = tmpf)))
 
-      # AUtomatically update
-      if (autojags==TRUE) {
-        result <- R2jags::autojags(result, Rhat=Rhat, n.update=n.update, n.iter=1000, refresh=100)
-      } else if (autojags==FALSE) {
+        # Automatically update
+        if (autojags == TRUE) {
+          result <- R2jags::autojags(result, Rhat = Rhat, n.update = n.update, n.iter = 1000, refresh = 100)
+        } else if (autojags == FALSE) {
           result <- result
         }
-    } else if (parallel==TRUE) {
-      if (autojags==TRUE) {
-        stop("autojags=TRUE cannot be used with parallel=TRUE")
-      }
+      } else if (parallel == TRUE) {
+        if (autojags == TRUE) {
+          stop("autojags=TRUE cannot be used with parallel=TRUE")
+        }
 
-      # Run jags in parallel
-      result <- do.call(R2jags::jags.parallel, c(args, list(data=jagsvars, model.file=tmpf)))
-    }
+        # Run jags in parallel
+        result <- do.call(R2jags::jags.parallel, c(args, list(data = jagsvars, model.file = tmpf)))
+      }
+    }, warning = function(w) {
+      if (grepl("specific warning text", conditionMessage(w))) {
+        invokeRestart("muffleWarning")
+      }
+    })
   },
-  error=function(cond) {
+  error = function(cond) {
     message(cond)
-    return(list(error=cond))
-  }
-  )
+    return(list(error = cond))
+  })
 
   # Gives warning if any rhat values > 1.02
   if (warn.rhat==TRUE) {
@@ -929,14 +933,19 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
   close(tmps)
 
   out <- tryCatch({
-    result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf, n.iter=n.iter,
-                                                 parameters.to.save=parameters.to.save)))
+    withCallingHandlers({
+      result <- do.call(R2jags::jags, c(args, list(data=jagsvars, model.file=tmpf, n.iter=n.iter,
+                                                   parameters.to.save=parameters.to.save)))
+    }, warning = function(w) {
+      if (grepl("missing in parameter", conditionMessage(w))) {
+        invokeRestart("muffleWarning")
+      }
+    })
   },
-  error=function(cond) {
+  error = function(cond) {
     message(cond)
-    return(list("error"=cond))
-  }
-  )
+    return(list(error = cond))
+  })
 
   # Gives warning if any rhat values > 1.02
   if (warn.rhat==TRUE) {
