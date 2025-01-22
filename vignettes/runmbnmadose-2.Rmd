@@ -119,11 +119,6 @@ that all studies estimate a separate true effect, but that each of these
 true effects vary randomly around a true mean effect. This approach
 allows for modelling of between-study heterogeneity.
 
-If relative effects (`"rel"`) are modelled on more than one
-dose-response parameter then by default, a correlation will be assumed
-between the dose-response parameters, which will typically improve
-estimation (provided the parameters are correlated...they usually are).
-This can be prevented by setting `cor=FALSE`.
 
 ## Output
 
@@ -461,10 +456,8 @@ ns <- mbnma.run(depnet, fun=dspline(type="ns", knots=c(0.25,0.5,0.75)))
 
 `mbnma.run()` can model correlation between relative effects
 dose-response parameters, allowing information on one parameter to inform the other(s). 
-This can be implemented by specifying `cor=TRUE` in `mbnma.run()`. The correlation is modeled using a vague
-Wishart prior, but this can be made more informative by specifying a
-scale matrix for the prior. This corresponds to the expectation of the
-Wishart prior. A different scale matrix can be given to the model in
+This can be implemented by specifying `cor=TRUE` in `mbnma.run()`. The correlation is modeled using a vague Wishart prior. However, note that even a vague Wishart prior may be somewhat influential, given
+that there is typically limited data to inform the dose-response parameter correlations. The prior can be made more informative by specifying a scale matrix for it. This corresponds to the expectation of the Wishart prior. A different scale matrix can be given to the model in
 `omega`. Each row of the scale matrix corresponds to the 1st, 2nd, 3rd,
 etc. dose-response parameter that has been modeled using relative
 effects (as specified in the dose-response function).
@@ -563,29 +556,10 @@ mbnma <- mbnma.run(painnet, fun=demax(emax="rel", ed50="rel"),
 
 ### pD (effective number of parameters)
 
-The default value in for `pd` in `mbnma.run()` is `"pv"`, which uses the
-value automatically calculated in the `R2jags` package as
-`pv = var(deviance)/2`. Whilst this is easy to calculate, it is
-numerically less stable than `pD` and may perform more poorly in certain
-conditions [@gelman2014].
+The default value in for `pD` in `mbnma.run()` uses the Kullback-Leibler divergence to estimate
+pD [@plummer2008]. However, since it requires running additional MCMC samples, it can be set to
+`FALSE` to force the model to estimate pV, where `pv = var(deviance)/2`. Whilst this is easy to calculate, it is numerically less stable than the Kullback-Leibler divergence estimation, and may perform more poorly in certain conditions [@gelman2014].
 
-A commonly-used approach for calculating pD is the plug-in method
-(`pd="plugin"`) [@spiegelhalter2002]. However, this can sometimes result
-in negative non-sensical values due to skewed posterior distributions
-for deviance contributions that can arise when fitting non-linear
-models.
-
-Another approach that is more reliable than the plug-in method when
-modelling non-linear effects is using the Kullback-Leibler divergence
-(`pd="pd.kl"`) [@plummer2008]. The disadvantage of this approach is that
-it requires running additional MCMC iterations, so can be slightly
-slower to calculate.
-
-Finally, pD can also be calculated using an optimism adjustment
-(`pd="popt"`) which allows for calculation of the penalized expected
-deviance [@plummer2008]. This adjustment allows for the fact that data
-used to estimate the model is the same as that used to assess its
-parsimony. It also requires running additional MCMC iterations.
 
 ### Arguments to be sent to JAGS
 
