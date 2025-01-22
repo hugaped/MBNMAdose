@@ -6,7 +6,7 @@ test_that("plot functions correctly", {
   skip_on_ci()
   skip_on_cran()
 
-  pd <- "pv"
+  pD <- FALSE
   n.iter <- 1000
 
   # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
@@ -28,24 +28,24 @@ test_that("plot functions correctly", {
       network <- mbnma.network(alldfs[[dat]])
 
       # Models
-      linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pd=pd)
+      linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD)
 
-      emax <- mbnma.run(network, fun=demax(emax="rel", ed50="rel"), method="random", n.iter=n.iter, pd=pd)
+      emax <- mbnma.run(network, fun=demax(emax="rel", ed50="rel"), method="random", n.iter=n.iter, pD=pD)
 
       if (!grepl("noplac", datanam)) {
-        nonparam <- mbnma.run(network, fun=dnonparam(direction = "increasing"), n.iter=n.iter, pd=pd)
+        nonparam <- mbnma.run(network, fun=dnonparam(direction = "increasing"), n.iter=n.iter, pD=pD)
       }
 
-      resdev <- mbnma.run(network, fun=dpoly(), parameters.to.save = "resdev", n.iter=n.iter, pd=pd)
+      resdev <- mbnma.run(network, fun=dpoly(), parameters.to.save = "resdev", n.iter=n.iter, pD=pD)
 
-      ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pd=pd)
+      ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD)
 
       mult <- dmulti(c(list(dloglin()),
                        list(dspline("bs", knots=2)),
                        list(dspline("ns", knots=0.5)),
                        rep(list(dloglin()), length(network$agents)-3)
       ))
-      multifun <- mbnma.run(network, fun=mult, n.iter=n.iter, pd=pd)
+      multifun <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD)
 
       modellist <- NULL
       modellist <- list(linear, emax, ns, multifun)

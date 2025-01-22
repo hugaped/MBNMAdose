@@ -707,10 +707,10 @@ mbnma.nodesplit <- function(network, fun=dpoly(degree=1),
     comparisons <- check.nodesplit.comparisons(data.ab, network, comparisons, trt.labs)
   }
 
-  # Set default for pd="pv" unless otherwise specified for faster running
+  # Set default for pD=FALSE unless otherwise specified for faster running
   args <- list(...)
-  if (!"pd" %in% names(args)) {
-    args[["pd"]] <- "pv"
+  if (!"pD" %in% names(args)) {
+    args[["pD"]] <- FALSE
   }
 
 

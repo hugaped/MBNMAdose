@@ -36,7 +36,7 @@ for (dat in seq_along(alldfs)) {
   }
 
 
-  pd <- "pv"
+  pD <- FALSE
   n.iter <- 1000
 
   testthat::test_that(paste0("predict.functions works correctly for: ", datanam), {
@@ -47,13 +47,13 @@ for (dat in seq_along(alldfs)) {
 
     #### Models ####
 
-    linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pd=pd)
+    linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD)
 
-    emax <- mbnma.run(network, demax(), method="random", n.iter=n.iter, pd=pd)
+    emax <- mbnma.run(network, demax(), method="random", n.iter=n.iter, pD=pD)
 
     if ("class" %in% names(dataset)) {
       emax.class <- suppressWarnings(mbnma.run(network, demax(emax="rel", ed50="random"), method="common",
-                                                class.effect=list(emax="random"), n.iter=n.iter, pd=pd))
+                                                class.effect=list(emax="random"), n.iter=n.iter, pD=pD))
     }
 
     mult <- dmulti(
@@ -63,7 +63,7 @@ for (dat in seq_along(alldfs)) {
       ))
 
     multifun <- mbnma.run(network, fun=mult,
-                          n.iter=n.iter, pd=pd)
+                          n.iter=n.iter, pD=pD)
 
 
 

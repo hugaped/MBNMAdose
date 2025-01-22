@@ -249,14 +249,10 @@ modfit.str <- function(mbnma) {
 
   # pD
   cat("Effective number of parameters:\n")
-  if (mbnma$model.arg$pd=="pv") {
+  if (mbnma$model.arg$pD==FALSE) {
     pd <- "pD (pV) calculated using the rule, pD = var(deviance)/2 ="
-  } else if (mbnma$model.arg$pd=="plugin") {
-    pd <- "pD calculated using the plug-in method ="
-  } else if (mbnma$model.arg$pd=="pd.kl") {
+  } else if (mbnma$model.arg$pD==TRUE) {
     pd <- "pD calculated using the Kullback-Leibler divergence ="
-  } else if (mbnma$model.arg$pd=="popt") {
-    pd <- "pD calculated using an optimism adjustment ="
   }
   cat(paste(pd, round(mbnma$BUGSoutput$pD,1), sep=" "))
   cat("\n\n")

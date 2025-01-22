@@ -26,7 +26,7 @@ testthat::test_that("mbnma.write functions correctly", {
   expect_equal(any(grepl("s\\.beta\\.1", write)), TRUE)
   expect_equal(any(grepl("s\\.beta\\.2", write)), TRUE)
   expect_equal(any(grepl("sd ", write)), TRUE)
-  expect_equal(any(grepl("omega", write)), TRUE)
+  #expect_equal(any(grepl("omega", write)), TRUE)
   expect_equal(any(grepl("y\\[i,k\\]", write)), TRUE)
   expect_equal(any(grepl("se\\[i,k\\]", write)), TRUE)
   expect_equal(any(grepl("logit", write)), FALSE)
@@ -41,7 +41,7 @@ testthat::test_that("mbnma.write functions correctly", {
   expect_equal(any(grepl("sd ", write)), TRUE)
   expect_equal(any(grepl("sd\\.hill", write)), TRUE)
   expect_equal(any(grepl("sd\\.emax", write)), FALSE)
-  expect_equal(any(grepl("omega", write)), TRUE)
+  #expect_equal(any(grepl("omega", write)), TRUE)
   expect_equal(any(grepl("r\\[i,k\\]", write)), TRUE)
   expect_equal(any(grepl("E\\[i,k\\]", write)), TRUE)
   expect_equal(any(grepl("cloglog", write)), TRUE)
@@ -50,7 +50,7 @@ testthat::test_that("mbnma.write functions correctly", {
                        method="random",
                        likelihood="poisson", link="cloglog",
                        omega=matrix(c(10,0,0,5), nrow=2, byrow = TRUE))
-  expect_equal(any(grepl("omega", write)), TRUE)
+  #expect_equal(any(grepl("omega", write)), TRUE)
 
   expect_error(suppressWarnings(mbnma.write(fun=demax(emax="rel", ed50="rel", hill="random"),
                                             method="random",

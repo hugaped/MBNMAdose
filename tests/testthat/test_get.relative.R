@@ -8,7 +8,7 @@ test_that(paste("get.relative functions work correctly"), {
   skip_on_cran()
 
   n.iter <- 1000
-  pd <- "pv"
+  pD <- FALSE
 
   # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
   alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
@@ -46,20 +46,20 @@ test_that(paste("get.relative functions work correctly"), {
       netclass <- mbnma.network(df)
     }
 
-    emax <- mbnma.run(network, fun=demax(), method="random", n.iter=n.iter, pd=pd)
+    emax <- mbnma.run(network, fun=demax(), method="random", n.iter=n.iter, pD=pD)
 
-    emax2 <- mbnma.run(network, fun=demax(hill=0.2), method="random", n.iter=n.iter, pd=pd)
+    emax2 <- mbnma.run(network, fun=demax(hill=0.2), method="random", n.iter=n.iter, pD=pD)
 
-    bs <- mbnma.run(network, fun=dspline(knots=2), n.iter=n.iter, pd=pd)
+    bs <- mbnma.run(network, fun=dspline(knots=2), n.iter=n.iter, pD=pD)
 
-    ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pd=pd)
+    ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD)
 
     mult <- dmulti(c(list(dloglin()),
                      list(dspline("bs", knots=2)),
                      list(dspline("ns", knots=0.5)),
                      rep(list(dloglin()), length(network$agents)-3)
     ))
-    multifun1 <- mbnma.run(network, fun=mult, n.iter=n.iter, pd=pd)
+    multifun1 <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD)
 
 
     mult <- dmulti(
@@ -69,7 +69,7 @@ test_that(paste("get.relative functions work correctly"), {
       ))
 
     multifun2 <- mbnma.run(network, fun=mult,
-                           method="random", n.iter=n.iter, pd=pd)
+                           method="random", n.iter=n.iter, pD=pD)
 
 
     test_that(paste("get.relative works correctly for:", datanam), {
