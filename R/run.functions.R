@@ -625,7 +625,7 @@ mbnma.jags <- function(data.ab, model,
         result <- do.call(R2jags::jags.parallel, c(args, list(data = jagsvars, model.file = tmpf)))
       }
     }, warning = function(w) {
-      if (grepl("specific warning text", conditionMessage(w))) {
+      if (grepl("missing in parameter", conditionMessage(w))) {
         invokeRestart("muffleWarning")
       }
     })
