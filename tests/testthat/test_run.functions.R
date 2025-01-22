@@ -44,7 +44,7 @@ for (dat in seq_along(alldfs)) {
   }
 
   n.iter=500
-  pd <- "pv"
+  pD <- FALSE
 
   test_that(paste("check.likelink function correctly for:", datanam), {
 
@@ -83,13 +83,13 @@ for (dat in seq_along(alldfs)) {
 
     # expect_warning(nma.run(network, method="random", n.iter=100, warn.rhat = TRUE))
 
-    expect_warning(nma.run(network, method="common", n.iter=n.iter, pd=pd, warn.rhat = FALSE), NA)
+    expect_warning(nma.run(network, method="common", n.iter=n.iter, pD=pD, warn.rhat = FALSE), NA)
 
-    result <- nma.run(network, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE)
+    result <- nma.run(network, method="random", n.iter=n.iter, pD=pD, warn.rhat = FALSE)
     expect_equal(names(result), c("jagsresult", "trt.labs", "UME"))
     expect_equal(all(c("d", "sd") %in% result$jagsresult$parameters.to.save), TRUE)
 
-    result <- nma.run(network, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE,
+    result <- nma.run(network, method="random", n.iter=n.iter, pD=pD, warn.rhat = FALSE,
                       UME=TRUE)
     expect_equal("d[1,1]" %in% rownames(result$jagsresult$BUGSoutput$summary), TRUE)
 
@@ -107,11 +107,11 @@ for (dat in seq_along(alldfs)) {
     fullrow <- nrow(df.num)
     network.disc <- mbnma.network(df.num)
 
-    result.1 <- nma.run(network.disc, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE,
+    result.1 <- nma.run(network.disc, method="random", n.iter=n.iter, pD=pD, warn.rhat = FALSE,
                         UME=TRUE, drop.discon = TRUE)
-    result.2 <- nma.run(network.disc, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE,
+    result.2 <- nma.run(network.disc, method="random", n.iter=n.iter, pD=pD, warn.rhat = FALSE,
                         UME=TRUE, drop.discon = FALSE)
-    result.3 <- nma.run(network.disc, method="random", n.iter=n.iter, pd=pd, warn.rhat = FALSE,
+    result.3 <- nma.run(network.disc, method="random", n.iter=n.iter, pD=pD, warn.rhat = FALSE,
                         UME=TRUE, drop.discon = TRUE)
     expect_equal(length(result.1$trt.labs)!=length(result.2$trt.labs), TRUE)
     expect_equal(length(result.1$trt.labs)==length(result.3$trt.labs), TRUE)
@@ -137,7 +137,7 @@ for (dat in seq_along(alldfs)) {
       # For binomial likelihood
       result <- mbnma.run(network, fun=dexp(), method="random",
                           parameters.to.save = c("psi", "resdev"),
-                          n.iter=n.iter, pd=pd)
+                          n.iter=n.iter, pD=pD)
 
       jagsdata <- getjagsdata(network$data.ab, likelihood = likelihood, link=link)
 
