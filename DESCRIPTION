@@ -3,7 +3,7 @@ Type: Package
 Title: Dose-Response MBNMA Models
 Version: 0.4.4.9000
 Language: en-GB
-Date: 2024-04-18
+Date: 2025-02-03
 Authors@R: c(person("Hugo", "Pedder", 
         email = "hugopedder@gmail.com", 
         role = c("aut", "cre"), 
@@ -35,10 +35,10 @@ Imports:
     checkmate (>= 1.8.5),
     Rdpack (>= 0.11-0),
     igraph (>= 2.0.1.1),
+    ggplot2 (>= 2.2.1),
     reshape2 (>= 1.4.3)
 Suggests:
     overlapping (>= 1.5.0),
-    ggplot2 (>= 2.2.1),
     RColorBrewer (>= 1.1-2),
     mcmcplots (>= 0.4.3),
     coda (>= 0.19-4),
