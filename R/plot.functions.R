@@ -739,7 +739,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
   df$Parameter <- factor(df$param)
 
   g <- ggplot2::ggplot(df, ggplot2::aes(x=Var1, y=value, linetype=Parameter, colour=Parameter), ...) +
-    ggplot2::geom_line(size=1)
+    ggplot2::geom_line(linewidth=1)
 
   g <- g + ggplot2::facet_wrap(~factor(Var2)) +
     ggplot2::xlab("Rank (1 = best)") +
