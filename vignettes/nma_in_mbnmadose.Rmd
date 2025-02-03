@@ -22,6 +22,7 @@ knitr::opts_chunk$set(
 ```{r setup, include = FALSE}
 library(MBNMAdose)
 library(dplyr)
+library(ggplot2)
 ```
 
 Although `MBNMAdose` is intended to be used for dose-response Model-Based Network Meta-Analysis (MBNMA), it can also be adapted to perform standard Network Meta-Analysis (NMA), and this allows users to take advantage of some of the additional features of `MBNMAdose`, such as modelling class effects, for use in standard NMA. As well as fitting class effect models, `MBNMAdose` also allows for nodes-splitting to check for consistency in these models.
