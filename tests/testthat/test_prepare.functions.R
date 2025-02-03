@@ -220,7 +220,7 @@ for (dat in seq_along(alldfs)) {
         }
       }
 
-      expect_error(genspline(x, spline="ns", knots=5, max.dose=max(x)), "complexity")
+      expect_error(genspline(x, spline="ns", knots=15, max.dose=max(x)), "complexity")
       expect_error(genspline(x, spline="ns", knots=c(1,2,3), max.dose=max(x)), "'probs' outside")
 
       expect_error(genspline(x, spline="badger", knots=3, max.dose=max(x)))
