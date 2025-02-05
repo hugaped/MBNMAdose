@@ -458,7 +458,7 @@ mbnma.run <- function(network,
                             n.thin=n.thin,
                             n.chains=n.chains,
                             n.burnin=n.burnin,
-                            parallel=parallel,
+                            parallel=parallel, pD=pD,
                             autojags=autojags, Rhat=Rhat, n.update=n.update,
                             ...)
   result <- result.jags[["jagsoutput"]]
