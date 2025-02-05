@@ -16,7 +16,7 @@ mbnma.run(
   cor = FALSE,
   omega = NULL,
   parameters.to.save = NULL,
-  pd = "pd.kl",
+  pD = TRUE,
   likelihood = NULL,
   link = NULL,
   priors = NULL,
@@ -83,18 +83,9 @@ is used.}
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
 
-\item{pd}{Can take either:
-\itemize{
-\item \code{pv} only pV will be reported (as automatically outputted by \code{R2jags}).
-\item \code{plugin} calculates pD by the plug-in
-method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
-non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
-will require running the model for additional iterations but is a more robust calculation for the effective
-number of parameters in non-linear models.
-\item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
-}}
+\item{pD}{logical; if \code{TRUE} (the default) then adds the computation of pD, using the method
+of \insertCite{plummer2008}{MBNMAdose}. If \code{FALSE} then uses the
+approximation of \code{pD=var(deviance) / 2} (often referred to as pV).}
 
 \item{likelihood}{A string indicating the likelihood to use in the model. Can take either \code{"binomial"},
 \code{"normal"} or \code{"poisson"}. If left as \code{NULL} the likelihood will be inferred from the data.}

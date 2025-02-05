@@ -18,7 +18,7 @@ nma.run(
   n.iter = 20000,
   drop.discon = TRUE,
   UME = FALSE,
-  pd = "pd.kl",
+  pD = TRUE,
   parameters.to.save = NULL,
   ...
 )
@@ -71,18 +71,9 @@ studies from the network.}
 that does not assume consistency and so can be used to test if the consistency
 assumption is valid.}
 
-\item{pd}{Can take either:
-\itemize{
-\item \code{pv} only pV will be reported (as automatically outputted by \code{R2jags}).
-\item \code{plugin} calculates pD by the plug-in
-method \insertCite{spiegelhalter2002}{MBNMAdose}. It is faster, but may output negative
-non-sensical values, due to skewed deviances that can arise with non-linear models.
-\item \code{pd.kl} calculates pD by the Kullback-Leibler divergence \insertCite{plummer2008}{MBNMAdose}. This
-will require running the model for additional iterations but is a more robust calculation for the effective
-number of parameters in non-linear models.
-\item \code{popt} calculates pD using an optimism adjustment which allows for calculation
-of the penalized expected deviance \insertCite{plummer2008}{MBNMAdose}.
-}}
+\item{pD}{logical; if \code{TRUE} (the default) then adds the computation of pD, using the method
+of \insertCite{plummer2008}{MBNMAdose}. If \code{FALSE} then uses the
+approximation of \code{pD=var(deviance) / 2} (often referred to as pV).}
 
 \item{parameters.to.save}{A character vector containing names of parameters
 to monitor in JAGS}
