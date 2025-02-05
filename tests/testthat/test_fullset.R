@@ -28,7 +28,8 @@ ssri <- ssri %>% dplyr::mutate(class= dplyr::case_when(grepl("pram", agent) ~ "P
 
 alldfs <- list(triptans, psoriasis90.noplac, osteopain, psoriasis75, ssri, ssri.noplac, gout)
 datanams <- c("triptans", "psoriasis90.noplac", "osteopain", "psoriasis75", "ssri", "ssri.noplac", "gout")
-
+#alldfs <- list(ssri, ssri.noplac)
+#datanams <- c("ssri", "ssri.noplac")
 
 
 for (dat in seq_along(alldfs)) {
