@@ -1642,7 +1642,7 @@ check.regress <- function(network, regress=NULL) {
 
   # Check all vars are consistent within studies
   check.df <- network$data.ab %>%
-    dplyr::select(studyID, vars) %>%
+    dplyr::select(studyID, any_of(vars)) %>%
     unique(.) %>%
     dplyr::group_by(studyID) %>%
     dplyr::mutate(dupl=dplyr::n())
