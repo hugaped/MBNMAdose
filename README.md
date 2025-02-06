@@ -6,6 +6,7 @@
 status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.org/package=MBNMAdose)
 [![R-CMD-check](https://github.com/hugaped/MBNMAdose/workflows/R-CMD-check/badge.svg)](https://github.com/hugaped/MBNMAdose/actions)
 [![DOI](https://zenodo.org/badge/195961874.svg)](https://zenodo.org/badge/latestdoi/195961874)
+[![R-CMD-check](https://github.com/hugaped/MBNMAdose/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hugaped/MBNMAdose/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 # MBNMAdose 0.4.1
@@ -77,7 +78,8 @@ functions that can be applied to objects of specific classes*
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
 
 <div id="ref-lu2004" class="csl-entry">
 
