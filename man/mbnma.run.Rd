@@ -298,15 +298,6 @@ result <- mbnma.run(network, fun=dfpoly(degree=1), method="random",
 result <- mbnma.run(network, fun=dloglin(), method="random",
               n.iter=5000, n.thin=5, n.chains=4)
 
-# Calculate effective number of parameters via plugin method
-result <- mbnma.run(network, fun=dloglin(), method="random",
-              pd="plugin")
-
-# Calculate effective number of parameters using penalized expected deviance
-result <- mbnma.run(network, fun=dloglin(), method="random",
-              pd="popt")
-
-
 ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
 
 # Density plots

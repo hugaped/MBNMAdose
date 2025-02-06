@@ -253,15 +253,6 @@
 #' result <- mbnma.run(network, fun=dloglin(), method="random",
 #'               n.iter=5000, n.thin=5, n.chains=4)
 #'
-#' # Calculate effective number of parameters via plugin method
-#' result <- mbnma.run(network, fun=dloglin(), method="random",
-#'               pd="plugin")
-#'
-#' # Calculate effective number of parameters using penalized expected deviance
-#' result <- mbnma.run(network, fun=dloglin(), method="random",
-#'               pd="popt")
-#'
-#'
 #' ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
 #'
 #' # Density plots
@@ -355,7 +346,7 @@ mbnma.run <- function(network,
     n.burnin <- n.burnin - 1
   }
 
-  # Ensure pd.kl or popt not run with parallel
+  # Ensure pd.kl not run with parallel
   parallel <- FALSE
   if (parallel==TRUE & pD==TRUE) {
     warning("pD cannot be calculated using Kullback-Leibler divergence for\nmodels run in parallel. Defaulting to pD=FALSE")
