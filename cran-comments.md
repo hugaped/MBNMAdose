@@ -1,27 +1,28 @@
-## Resumbission
+This is a new submission after the package was removed from CRAN in November 2024. 
 
-This is a resubmission. The following NOTEs have been addressed:
+There are no ERRORs
 
-* Updated the date field in DESCRIPTION
+There is one NOTE:
+
+* NOTE
+  - New submission - Package was archived on CRAN
 
 
 ## Test environments
 
-* Ubuntu 22.04 GitHub Actions (release, dev, oldrel-1)
+* Ubuntu 22.04 GitHub Actions (release)
 * Windows Server 2022 GitHub Actions (release)
-* macOS 12 GitHub Actions (release)
-* Local Windows, R 4.1.0 (devel and release)
-* Windows Server 2008 R2 SP1, R-devel, 32/64 bit (rhub)
-* Fedora Linux, R-devel, clang, gfortran (rhub)
-
+* macOS 13 GitHub Actions (release)
+* Local Windows, R 4.3.3 (devel and release)
+* ubuntu-latest on GitHub (rhub)
+* macos-latest on GitHub (rub)
+* windows-latest on GitHub (rhub)
 
 ## R CMD check results
 
-There were no ERRORs, WARNINGs or NOTEs
-
-R CMD check succeeded
+No NOTEs, ERRORs or WARNINGs
 
 
 ## Downstream dependencies
 
-There are no downstream dependencies (yet!)
+* JAGS version 4.3.1
