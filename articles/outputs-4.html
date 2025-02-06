@@ -12,14 +12,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="MBNMAdose outputs: Relative effects, forest plots and rankings">
-<meta property="og:description" content="MBNMAdose">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -45,7 +44,7 @@
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
@@ -87,7 +86,7 @@
 </div>
 <!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
@@ -97,9 +96,9 @@ plots and rankings</h1>
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2024-07-03</h4>
+            <h4 data-toc-skip class="date">2025-02-06</h4>
       
-      
+
       <div class="hidden name"><code>outputs-4.Rmd</code></div>
 
     </div>
@@ -111,9 +110,8 @@ results from an Emax MBNMA on the triptans dataset:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tripnet</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">triptans</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Values for `agent` with dose = 0 have been recoded to `Placebo`</span></span>
-<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; agent is being recoded to enforce sequential numbering</span></span>
+<span><span class="va">trip.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span>emax <span class="op">=</span> <span class="st">"rel"</span>, ed50 <span class="op">=</span> <span class="st">"rel"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `likelihood` not given by user - set to `binomial` based on data provided</span></span>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
@@ -139,7 +137,7 @@ values (if meta-regression incorporated into MBNMA model), calculation
 of 95% prediction intervals rather than 95% credible intervals (the
 default), and for the conversion of results from the log to the natural
 scale. The resulting relative effects can also be ranked (see <a href="#ranking">Ranking</a> for more details).</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Specify treatments (agents and doses) for which to estimate relative effects</span></span>
 <span><span class="va">treats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>Placebo <span class="op">=</span> <span class="fl">0</span>, eletriptan <span class="op">=</span> <span class="fl">1</span>, sumatriptan <span class="op">=</span> <span class="fl">2</span>, almotriptan <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span></span>
@@ -150,12 +148,11 @@ scale. The resulting relative effects can also be ranked (see <a href="#ranking"
 <span><span class="co"><span style="font-weight: bold;">#&gt; Relative treatment comparisons (95% credible intervals)</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; ============================================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span><span class="co">#&gt;     Placebo_0      5.4 (4.7, 6.2)     4 (3.6, 4.4)     2.4 (2.1, 2.8)  </span></span>
-<span><span class="co">#&gt;  5.4 (4.7, 6.2)     eletriptan_1    0.74 (0.64, 0.85) 0.44 (0.36, 0.53)</span></span>
-<span><span class="co">#&gt;   4 (3.6, 4.4)    0.74 (0.64, 0.85)   sumatriptan_2   0.59 (0.51, 0.7) </span></span>
-<span><span class="co">#&gt;  2.4 (2.1, 2.8)   0.44 (0.36, 0.53) 0.59 (0.51, 0.7)    almotriptan_1</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
+<span><span class="co">#&gt;     Placebo_0      5.4 (4.7, 6.2)     4 (3.6, 4.5)      2.3 (2, 2.8)   </span></span>
+<span><span class="co">#&gt;  5.4 (4.7, 6.2)     eletriptan_1    0.75 (0.64, 0.87) 0.43 (0.35, 0.54)</span></span>
+<span><span class="co">#&gt;   4 (3.6, 4.5)    0.75 (0.64, 0.87)   sumatriptan_2   0.57 (0.48, 0.7) </span></span>
+<span><span class="co">#&gt;   2.3 (2, 2.8)    0.43 (0.35, 0.54) 0.57 (0.48, 0.7)    almotriptan_1</span></span>
+<span></span>
 <span><span class="co"># Rank relative effects</span></span>
 <span><span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">rels</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -183,12 +180,10 @@ the upper right diagnoal (<code>upper.diag</code>).</p>
 <p>This can be used to compare relative effects estimated by MBNMA
 models fitted with different dose-response relationships, or to compare
 MBNMA estimates with NMA estimates.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">tripnet</span><span class="op">)</span>  <span class="co"># NMA (consistency) model</span></span>
-<span><span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># UME (inconsistency) model</span></span>
-<span><span class="co">#&gt; Warning in as.bugs.array2(sims.array, model.file = model.file, program = program, : error/missing in parameter d in parameters.to.save, </span></span>
-<span><span class="co">#&gt;    Be aware of the output results.</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<span><span class="va">ume</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nma.run.html">nma.run</a></span><span class="op">(</span><span class="va">tripnet</span>, UME <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>  <span class="co"># UME (inconsistency) model</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># MBNMA consistency and NMA consistency odds ratios compared</span></span>
 <span><span class="va">consistency</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.relative.html">get.relative</a></span><span class="op">(</span>lower.diag <span class="op">=</span> <span class="va">trip.emax</span>, upper.diag <span class="op">=</span> <span class="va">nma</span>, treatments <span class="op">=</span> <span class="va">treats</span>,</span>
 <span>    eform <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -198,9 +193,9 @@ MBNMA estimates with NMA estimates.</p>
 <span><span class="co"><span style="font-weight: bold;">#&gt; ============================================================</span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt;     Placebo_0       5.8 (5, 6.7)     4.2 (3.8, 4.7)    2.8 (2.4, 3.2)  </span></span>
-<span><span class="co">#&gt;  5.4 (4.7, 6.2)     eletriptan_1    0.73 (0.62, 0.85) 0.48 (0.39, 0.59)</span></span>
-<span><span class="co">#&gt;   4 (3.6, 4.4)    0.74 (0.64, 0.85)   sumatriptan_2   0.66 (0.55, 0.78)</span></span>
-<span><span class="co">#&gt;  2.4 (2.1, 2.8)   0.44 (0.36, 0.53) 0.59 (0.51, 0.7)    almotriptan_1</span></span></code></pre></div>
+<span><span class="co">#&gt;  5.4 (4.7, 6.2)     eletriptan_1    0.73 (0.63, 0.85) 0.48 (0.39, 0.58)</span></span>
+<span><span class="co">#&gt;   4 (3.6, 4.5)    0.75 (0.64, 0.87)   sumatriptan_2   0.66 (0.56, 0.77)</span></span>
+<span><span class="co">#&gt;   2.3 (2, 2.8)    0.43 (0.35, 0.54) 0.57 (0.48, 0.7)    almotriptan_1</span></span></code></pre></div>
 <p>It can also be used to compare NMA or MBNMA consistency models with
 Unrelated Mean Effects (UME) inconsistency models. A UME model only
 parameterises direct comparisons within the network and so can be used
@@ -208,7 +203,7 @@ to test the consistency assumption ([Checking for
 consistency][3-consistencychecking.html]). Note that if a UME model is
 fitted, comparisons for which there is no direct evidence will not have
 relative effects estimated for them.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># MBNMA consistency and NMA inconsistency log-odds ratios compared</span></span>
 <span><span class="va">inconsistency</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get.relative.html">get.relative</a></span><span class="op">(</span>lower.diag <span class="op">=</span> <span class="va">trip.emax</span>, upper.diag <span class="op">=</span> <span class="va">ume</span>, treatments <span class="op">=</span> <span class="va">treats</span>,</span>
 <span>    eform <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -219,8 +214,8 @@ relative effects estimated for them.</p>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="co">#&gt;      Placebo_0                NA                   NA                   NA         </span></span>
 <span><span class="co">#&gt;    1.7 (1.5, 1.8)        eletriptan_1              NA                0 (0, 0)      </span></span>
-<span><span class="co">#&gt;    1.4 (1.3, 1.5)    -0.31 (-0.45, -0.16)    sumatriptan_2              NA         </span></span>
-<span><span class="co">#&gt;    0.85 (0.73, 1)     -0.83 (-1, -0.64)   -0.52 (-0.67, -0.35)    almotriptan_1</span></span></code></pre></div>
+<span><span class="co">#&gt;    1.4 (1.3, 1.5)    -0.29 (-0.44, -0.14)    sumatriptan_2              NA         </span></span>
+<span><span class="co">#&gt;    0.83 (0.69, 1)     -0.85 (-1, -0.62)   -0.56 (-0.74, -0.35)    almotriptan_1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="forest-plots">Forest plots<a class="anchor" aria-label="anchor" href="#forest-plots"></a>
@@ -230,7 +225,7 @@ relative effects estimated for them.</p>
 this will plot a separate panel for each dose-response parameter in the
 model. Forest plots can only be generated for parameters which are
 modelled using relative effects and that vary by agent/class.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span></span></code></pre></div>
 <p><img src="outputs-4_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
 </div>
@@ -244,7 +239,7 @@ that varies by agent/class can be ranked. A vector of these is assigned
 to <code>params</code>. <code>lower_better</code> indicates whether
 negative responses should be ranked as “better” (<code>TRUE</code>) or
 “worse” (<code>FALSE</code>).</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">trip.emax</span>, lower_better <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -262,47 +257,46 @@ negative responses should be ranked as “better” (<code>TRUE</code>) or
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span></span>
-<span><span class="co">#&gt; |sumatriptan  | 1.23|      1|    1|     2|</span></span>
-<span><span class="co">#&gt; |zolmitriptan | 2.31|      2|    1|     4|</span></span>
-<span><span class="co">#&gt; |eletriptan   | 2.77|      3|    2|     4|</span></span>
-<span><span class="co">#&gt; |frovatriptan | 5.30|      5|    2|     7|</span></span>
-<span><span class="co">#&gt; |rizatriptan  | 5.45|      6|    2|     7|</span></span>
-<span><span class="co">#&gt; |naratriptan  | 5.45|      5|    4|     7|</span></span>
-<span><span class="co">#&gt; |almotriptan  | 5.49|      6|    4|     7|</span></span>
+<span><span class="co">#&gt; |zolmitriptan | 2.02|      2|    1|     4|</span></span>
+<span><span class="co">#&gt; |sumatriptan  | 2.48|      1|    1|     6|</span></span>
+<span><span class="co">#&gt; |eletriptan   | 2.52|      3|    1|     4|</span></span>
+<span><span class="co">#&gt; |almotriptan  | 4.84|      5|    2|     7|</span></span>
+<span><span class="co">#&gt; |naratriptan  | 4.88|      5|    3|     7|</span></span>
+<span><span class="co">#&gt; |rizatriptan  | 5.46|      6|    2|     7|</span></span>
+<span><span class="co">#&gt; |frovatriptan | 5.78|      6|    3|     7|</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; <span style="font-weight: bold; text-decoration: underline;">ed50 ranking</span> (from best to worst)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; |Treatment    | Mean| Median| 2.5%| 97.5%|</span></span>
 <span><span class="co">#&gt; |:------------|----:|------:|----:|-----:|</span></span>
-<span><span class="co">#&gt; |eletriptan   | 1.34|      1|    1|     3|</span></span>
-<span><span class="co">#&gt; |sumatriptan  | 2.23|      2|    1|     4|</span></span>
-<span><span class="co">#&gt; |zolmitriptan | 2.84|      3|    1|     4|</span></span>
-<span><span class="co">#&gt; |rizatriptan  | 4.71|      5|    1|     7|</span></span>
-<span><span class="co">#&gt; |frovatriptan | 5.15|      5|    3|     7|</span></span>
-<span><span class="co">#&gt; |almotriptan  | 5.45|      6|    4|     7|</span></span>
-<span><span class="co">#&gt; |naratriptan  | 6.28|      7|    5|     7|</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span>
+<span><span class="co">#&gt; |eletriptan   | 1.37|      1|    1|     3|</span></span>
+<span><span class="co">#&gt; |zolmitriptan | 2.62|      2|    1|     4|</span></span>
+<span><span class="co">#&gt; |sumatriptan  | 3.25|      3|    1|     7|</span></span>
+<span><span class="co">#&gt; |rizatriptan  | 4.40|      4|    1|     7|</span></span>
+<span><span class="co">#&gt; |almotriptan  | 4.99|      5|    3|     7|</span></span>
+<span><span class="co">#&gt; |frovatriptan | 5.57|      6|    3|     7|</span></span>
+<span><span class="co">#&gt; |naratriptan  | 5.81|      6|    3|     7|</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $emax</span></span>
 <span><span class="co">#&gt;     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span></span>
-<span><span class="co">#&gt; 1   eletriptan 2.767000 0.6034615    2   2   3   3     4</span></span>
-<span><span class="co">#&gt; 2  sumatriptan 1.226000 0.4556971    1   1   1   1     2</span></span>
-<span><span class="co">#&gt; 3 frovatriptan 5.301000 1.3169322    2   4   5   6     7</span></span>
-<span><span class="co">#&gt; 4  almotriptan 5.490333 1.3004372    4   4   6   7     7</span></span>
-<span><span class="co">#&gt; 5 zolmitriptan 2.314333 0.8773736    1   2   2   3     4</span></span>
-<span><span class="co">#&gt; 6  naratriptan 5.451333 0.7796372    4   5   5   6     7</span></span>
-<span><span class="co">#&gt; 7  rizatriptan 5.450000 1.5647096    2   4   6   7     7</span></span>
+<span><span class="co">#&gt; 1   eletriptan 2.524000 0.8942542    1   2   3   3     4</span></span>
+<span><span class="co">#&gt; 2  sumatriptan 2.484667 1.9055118    1   1   1   5     6</span></span>
+<span><span class="co">#&gt; 3 frovatriptan 5.782333 1.2135810    3   5   6   7     7</span></span>
+<span><span class="co">#&gt; 4  almotriptan 4.842667 1.3311036    2   4   5   6     7</span></span>
+<span><span class="co">#&gt; 5 zolmitriptan 2.023333 0.9642435    1   1   2   2     4</span></span>
+<span><span class="co">#&gt; 6  naratriptan 4.880667 1.2544391    3   4   5   6     7</span></span>
+<span><span class="co">#&gt; 7  rizatriptan 5.462333 1.6256677    2   4   6   7     7</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $ed50</span></span>
 <span><span class="co">#&gt;     rank.param     mean        sd 2.5% 25% 50% 75% 97.5%</span></span>
-<span><span class="co">#&gt; 1   eletriptan 1.338000 0.5737587    1   1   1   2     3</span></span>
-<span><span class="co">#&gt; 2  sumatriptan 2.233333 0.7310269    1   2   2   3     4</span></span>
-<span><span class="co">#&gt; 3 frovatriptan 5.147333 1.1986542    3   4   5   6     7</span></span>
-<span><span class="co">#&gt; 4  almotriptan 5.448000 1.2311788    4   4   6   7     7</span></span>
-<span><span class="co">#&gt; 5 zolmitriptan 2.843000 0.8632880    1   2   3   3     4</span></span>
-<span><span class="co">#&gt; 6  naratriptan 6.281667 0.8249590    5   6   7   7     7</span></span>
-<span><span class="co">#&gt; 7  rizatriptan 4.708667 1.4467743    1   4   5   6     7</span></span></code></pre></div>
+<span><span class="co">#&gt; 1   eletriptan 1.368000 0.6728498    1   1   1   2     3</span></span>
+<span><span class="co">#&gt; 2  sumatriptan 3.249333 1.7971021    1   2   3   5     7</span></span>
+<span><span class="co">#&gt; 3 frovatriptan 5.568333 1.2761427    3   5   6   7     7</span></span>
+<span><span class="co">#&gt; 4  almotriptan 4.990333 1.3054276    3   4   5   6     7</span></span>
+<span><span class="co">#&gt; 5 zolmitriptan 2.617667 0.9322612    1   2   2   3     4</span></span>
+<span><span class="co">#&gt; 6  naratriptan 5.805667 1.2787153    3   5   6   7     7</span></span>
+<span><span class="co">#&gt; 7  rizatriptan 4.400667 1.4904832    1   3   4   5     7</span></span></code></pre></div>
 <p>The output is an object of <code>class("mbnma.rank")</code>,
 containing a list for each ranked parameter in <code>params</code>,
 which consists of a summary table of rankings and raw information on
@@ -314,11 +308,11 @@ can be simply displayed using <code><a href="https://rdrr.io/r/base/summary.html
 stored in <code>mbnma.rank</code> and plots the number of MCMC
 iterations the parameter value for each treatment was ranked a
 particular position.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Ranking histograms for Emax</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"emax"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="outputs-4_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># Ranking histograms for ED50</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span>, params <span class="op">=</span> <span class="st">"ed50"</span><span class="op">)</span></span></code></pre></div>
@@ -328,26 +322,26 @@ plotted simultaneously so as to be able to compare the effectiveness of
 different agents on different parameters. The surface under cumulative
 ranking curve (SUCRA) for each parameter can also be estimated by
 setting <code>sucra=TRUE</code>.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Cumulative ranking plot for both dose-response parameters</span></span>
 <span><span class="fu"><a href="../reference/cumrank.html">cumrank</a></span><span class="op">(</span><span class="va">ranks</span>, sucra <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p><img src="outputs-4_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 14 × 3</span></span></span>
-<span><span class="co">#&gt;    agent        parameter  sucra</span></span>
-<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50      0.415 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax      0.338 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50      0.371 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax      0.420 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50      0.167 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax      0.156 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50      0.147 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax      0.144 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50      0.329 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax      0.364 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50      0.087<span style="text-decoration: underline;">0</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax      0.146 </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50      0.198 </span></span>
+<span><span class="co">#&gt;    agent        parameter sucra</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> eletriptan   ed50      0.412</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> eletriptan   emax      0.351</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> sumatriptan  ed50      0.298</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> sumatriptan  emax      0.339</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> frovatriptan ed50      0.138</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> frovatriptan emax      0.123</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> almotriptan  ed50      0.179</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> almotriptan  emax      0.190</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> zolmitriptan ed50      0.346</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> zolmitriptan emax      0.379</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> naratriptan  ed50      0.121</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> naratriptan  emax      0.187</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> rizatriptan  ed50      0.220</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> rizatriptan  emax      0.146</span></span></code></pre>
 </div>
 <div class="section level2">
@@ -358,9 +352,7 @@ setting <code>sucra=TRUE</code>.</p>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
-    </nav>
-</div>
+      </div>
 
 </div>
 
@@ -373,16 +365,16 @@ setting <code>sucra=TRUE</code>.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer>
 </div>
 
-  
 
 
-  
+
+
 
   </body>
 </html>

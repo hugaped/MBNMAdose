@@ -4,7 +4,7 @@ to this object.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-reference-topic">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -29,7 +29,7 @@ to this object.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Articles
-     
+
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
@@ -64,13 +64,13 @@ to this object.'><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create an mbnma.network object</h1>
-    
+
     <div class="hidden name"><code>mbnma.network.Rd</code></div>
     </div>
 
@@ -80,7 +80,7 @@ to this object.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for mbnma.network</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="co"># S3 method for class 'mbnma.network'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span>
 <span>  <span class="va">x</span>,</span>
 <span>  level <span class="op">=</span> <span class="st">"treatment"</span>,</span>
@@ -102,23 +102,25 @@ to this object.</p>
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>x</dt>
+
+
+<dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>An object of class <code>mbnma.network</code>.</p></dd>
 
 
-<dt>level</dt>
+<dt id="arg-level">level<a class="anchor" aria-label="anchor" href="#arg-level"></a></dt>
 <dd><p>A string indicating whether nodes/facets should represent <code>"treatment"</code>
 or <code>"agent"</code> in the plot. Can be used to examine the expected impact of modelling
 dose-response in terms of network connectivity.</p></dd>
 
 
-<dt>v.color</dt>
+<dt id="arg-v-color">v.color<a class="anchor" aria-label="anchor" href="#arg-v-color"></a></dt>
 <dd><p>Can take either <code>"connect"</code> (the default) to indicate that nodes should
 only be coloured if they are connected to the network reference treatment (indicates
 network connectivity) or <code>"agent"</code> to colour nodes by agent.</p></dd>
 
 
-<dt>doselink</dt>
+<dt id="arg-doselink">doselink<a class="anchor" aria-label="anchor" href="#arg-doselink"></a></dt>
 <dd><p>If given an integer value it indicates that connections via the dose-response
 relationship with placebo should be plotted. The integer represents the minimum number of doses
 from which a dose-response function could be estimated and is equivalent to the number of
@@ -126,7 +128,7 @@ parameters in the desired dose-response function plus one. If left as <code>NULL
 to placebo via dose-response relationships will not be included.</p></dd>
 
 
-<dt>layout</dt>
+<dt id="arg-layout">layout<a class="anchor" aria-label="anchor" href="#arg-layout"></a></dt>
 <dd><p>An igraph layout specification. This is a function specifying an igraph
 layout that determines the arrangement of the vertices (nodes). The default
 <code>igraph::as_circle()</code> arranged vertices in a circle. Two other useful layouts for
@@ -134,46 +136,46 @@ network plots are: <code><a href="https://r.igraph.org/reference/layout_as_star.
 in <code><a href="https://r.igraph.org/reference/layout_.html" class="external-link">layout_</a></code></p></dd>
 
 
-<dt>remove.loops</dt>
+<dt id="arg-remove-loops">remove.loops<a class="anchor" aria-label="anchor" href="#arg-remove-loops"></a></dt>
 <dd><p>A boolean value indicating whether to include loops that
 indicate comparisons within a node.</p></dd>
 
 
-<dt>edge.scale</dt>
+<dt id="arg-edge-scale">edge.scale<a class="anchor" aria-label="anchor" href="#arg-edge-scale"></a></dt>
 <dd><p>A number to scale the thickness of connecting lines
 (edges). Line thickness is proportional to the number of studies for a
 given comparison. Set to 0 to make thickness equal for all comparisons.</p></dd>
 
 
-<dt>v.scale</dt>
+<dt id="arg-v-scale">v.scale<a class="anchor" aria-label="anchor" href="#arg-v-scale"></a></dt>
 <dd><p>A number with which to scale the size of the nodes. If the variable <code>N</code>
 (to indicate the numbers of participants in each study arm) is included in the
 dataset then the size of the nodes will be proportional to the number of participants
 within a treatment/agent in the network.</p></dd>
 
 
-<dt>label.distance</dt>
+<dt id="arg-label-distance">label.distance<a class="anchor" aria-label="anchor" href="#arg-label-distance"></a></dt>
 <dd><p>A number scaling the distance of labels from the nodes
 to improve readability. The labels will be directly on top of the nodes if
 the default of 0 is used. Option only applicable if <code>layout_in_circle</code> is
 set to <code>TRUE</code>.</p></dd>
 
 
-<dt>legend</dt>
+<dt id="arg-legend">legend<a class="anchor" aria-label="anchor" href="#arg-legend"></a></dt>
 <dd><p>A boolean object to indicate whether or not to plot a legend to indicate which node colour
 corresponds to which agent if <code>v.color="agent"</code>. Default is <code>TRUE</code>.</p></dd>
 
 
-<dt>legend.x, legend.y</dt>
+<dt id="arg-legend-x-legend-y">legend.x, legend.y<a class="anchor" aria-label="anchor" href="#arg-legend-x-legend-y"></a></dt>
 <dd><p>The x and y co-ordinates to be used to position the legend. They can be specified
 by keyword or in any way which is accepted by <code>xy.coords</code>.</p></dd>
 
 
-<dt>...</dt>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Options for plotting in <code>igraph</code>.</p></dd>
 
 
-<dt>data.ab</dt>
+<dt id="arg-data-ab">data.ab<a class="anchor" aria-label="anchor" href="#arg-data-ab"></a></dt>
 <dd><p>A data frame of arm-level data in "long" format containing the columns:</p><ul><li><p><code>studyID</code> Study identifiers</p></li>
 <li><p><code>dose</code> Numeric data indicating the dose (must take positive values)</p></li>
 <li><p><code>agent</code> Agent identifiers (can be numeric, factor or character)</p></li>
@@ -194,18 +196,14 @@ treatment effects when modelling using Standardised Mean Differences (SMD).</p><
 </ul></dd>
 
 
-<dt>description</dt>
+<dt id="arg-description">description<a class="anchor" aria-label="anchor" href="#arg-description"></a></dt>
 <dd><p>Optional. Short description of the network.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    
-
-<p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: An object of <code>class("igraph")</code> - any functions from the <code>igraph</code> package
+    <p><code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code>: An object of <code>class("igraph")</code> - any functions from the <code>igraph</code> package
 can be applied to this object to change its characteristics.</p>
-
-
 <p><code>mbnma.network()</code>: An object of <code>class("mbnma.network")</code> which is a list containing:</p><ul><li><p><code>description</code> A short description of the network</p></li>
 <li><p><code>data.ab</code> A data frame containing the arm-level network data (treatment identifiers will have
 been recoded to a sequential numeric code)</p></li>
@@ -230,7 +228,7 @@ be included.</p>
     </div>
     <div id="methods-by-generic-">
     <h2>Methods (by generic)</h2>
-    
+
 <ul><li><p><code>plot(mbnma.network)</code>: Generate a network plot</p></li>
 </ul></div>
 
@@ -257,15 +255,15 @@ be included.</p>
 <span class="r-in"><span><span class="co"># Generate a network plot that includes connections via the dose-response function</span></span></span>
 <span class="r-in"><span><span class="co"># For a one parameter dose-response function (e.g. exponential)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">1</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="mbnma.network-4.png" alt="" width="700" height="433"></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dose-response connections to placebo plotted based on a dose-response</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>                    function with 0 degrees of freedom</span>
-<span class="r-plt img"><img src="mbnma.network-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># For a two parameter dose-response function (e.g. Emax)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, level<span class="op">=</span><span class="st">"treatment"</span>, doselink<span class="op">=</span><span class="fl">2</span>, remove.loops<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="mbnma.network-5.png" alt="" width="700" height="433"></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Dose-response connections to placebo plotted based on a dose-response</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span>                    function with 1 degrees of freedom</span>
-<span class="r-plt img"><img src="mbnma.network-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Arrange network plot in a star with the reference treatment in the centre</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span>, layout<span class="op">=</span><span class="fu">igraph</span><span class="fu">::</span><span class="fu"><a href="https://r.igraph.org/reference/layout_as_star.html" class="external-link">as_star</a></span><span class="op">(</span><span class="op">)</span>, label.distance<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></span>
@@ -333,15 +331,15 @@ be included.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 

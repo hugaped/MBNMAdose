@@ -1,264 +1,89 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/404.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/consistencychecking-3.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/dataexploration-1.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/mbnmadose-overview.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/metaregression-6.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/nma_in_mbnmadose.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/outputs-4.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/predictions-5.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/articles/runmbnmadose-2.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/DR.comparisons.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/MBNMAdose-package.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/add_index.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/alog_pcfb.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/calc.edx.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/changepd.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/check.network.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/cumrank.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/default.priors.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/demax.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/devdev.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/devplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dexp.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dfpoly.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/ditp.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dloglin.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dmulti.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dnonparam.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dpoly.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/drop.comp.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/drop.disconnected.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/dspline.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/duser.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/fitplot.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/gen.parameters.to.save.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/genspline.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/get.prior.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/get.relative.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/getjagsdata.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/gout.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/inconsistency.loops.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.comparisons.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.network.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.run.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.update.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.validate.data.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.write.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/nma.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/nma.run.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/norm2lnorm.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/osteopain.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/pDcalc.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/pipe.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.predict.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.rank.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/predict.mbnma.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.network.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.predict.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.rank.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.nma.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/print.relative.array.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis100.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis75.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis90.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/rank.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/rank.mbnma.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/rank.mbnma.predict.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/rank.relative.array.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/recode.agent.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/ref.synth.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/rescale.link.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/ssi_closure.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/ssri.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.network.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.predict.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.rank.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.nma.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/summary.nodesplit.html</loc>
-  </url>
-  <url>
-    <loc>https://hugaped.github.io/MBNMAdose/reference/triptans.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://hugaped.github.io/MBNMAdose/404.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/consistencychecking-3.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/dataexploration-1.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/index.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/mbnmadose-overview.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/metaregression-6.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/nma_in_mbnmadose.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/outputs-4.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/predictions-5.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/articles/runmbnmadose-2.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/authors.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/index.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/news/index.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/DR.comparisons.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/MBNMAdose-package.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/add_index.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/alog_pcfb.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/calc.edx.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/check.network.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/cumrank.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/default.priors.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/demax.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/devdev.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/devplot.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dexp.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dfpoly.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/ditp.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dloglin.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dmulti.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dnonparam.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dpoly.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/drop.comp.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/drop.disconnected.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/dspline.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/duser.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/fitplot.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/gen.parameters.to.save.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/genspline.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/get.prior.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/get.relative.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/getjagsdata.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/gout.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/inconsistency.loops.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/index.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.comparisons.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.network.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.run.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.update.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.validate.data.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/mbnma.write.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/nma.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/nma.run.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/norm2lnorm.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/osteopain.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/pDcalc.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/pipe.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.predict.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/plot.mbnma.rank.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/predict.mbnma.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.network.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.predict.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.mbnma.rank.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.nma.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/print.relative.array.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis100.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis75.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/psoriasis90.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/rank.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/rank.mbnma.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/rank.mbnma.predict.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/rank.relative.array.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/recode.agent.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/ref.synth.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/rescale.link.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/ssi_closure.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/ssri.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.network.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.predict.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.mbnma.rank.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.nma.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/summary.nodesplit.html</loc></url>
+<url><loc>https://hugaped.github.io/MBNMAdose/reference/triptans.html</loc></url>
 </urlset>
+
