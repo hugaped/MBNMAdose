@@ -56,6 +56,10 @@ jobs:
         with:
           token: ${{ secrets.RHUB_TOKEN }}
           job-config: ${{ matrix.config.job-config }}
+      - name: Install JAGS on Linux
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jags
       - uses: r-hub/actions/setup-deps@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -81,6 +85,47 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
+
+      # Install JAGS for Windows
+      - name: Install JAGS for Windows
+        if: runner.os == 'Windows'
+        run: |
+          curl.exe -L -o wjags.exe https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Windows/JAGS-4.3.1.exe/download
+          .\wjags.exe /S
+          del wjags.exe
+
+          set "PATH=%PATH%;C:\Program Files\JAGS\JAGS-4.3.1\bin"
+
+        shell: cmd
+
+      - name: Install JAGS for macOS
+        if: matrix.config.os == 'macos-latest'
+        run: |
+          set -e
+          if [[ "$(uname -m)" == "arm64" ]]; then
+            echo "Detected macOS-arm64 (Apple Silicon). Installing JAGS using .pkg file."
+
+            # Download the .pkg file
+            curl -L -o JAGS-4.3.2.pkg https://sourceforge.net/projects/mcmc-jags/files/JAGS/4.x/Mac%20OS%20X/JAGS-4.3.2.pkg/download
+
+            # Install the package
+            sudo installer -pkg JAGS-4.3.2.pkg -target /
+
+          else
+            echo "Using Homebrew for JAGS installation on macOS Intel."
+            brew update
+            brew install jags
+          fi
+
+      # Install JAGS for Ubuntu
+      - name: Install JAGS for Ubuntu
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jags
+          echo "Checking JAGS installation..."
+          jags --version || echo "JAGS installation failed!"
+
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
