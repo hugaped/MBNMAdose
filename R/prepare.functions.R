@@ -1494,6 +1494,7 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), bounda
     # Calculate quantiles for knots
     if (length(knots)==1 & knots[1]>=1) {
       p <- seq(0,1,1/(knots+1))
+      #p <- exp(seq(-3, 0, length.out = (knots+2)))
       p <- p[-c(1,length(p))]
       knots <- stats::quantile(0:max.dose, probs = p)
       names(knots) <- NULL
@@ -1528,9 +1529,9 @@ genspline <- function(x, spline="bs", knots=1, degree=1, max.dose=max(x), bounda
       splinedesign <- matrix(splinedesign, nrow=1)
     }
 
-    if (ncol(splinedesign)>6) {
-      stop("splines of this complexity cannot currently be modelled using 'dspline()'...\nand your data is unlikely to be able to support it!")
-    }
+    # if (ncol(splinedesign)>6) {
+    #   stop("splines of this complexity cannot currently be modelled using 'dspline()'...\nand your data is unlikely to be able to support it!")
+    # }
 
 
     return(splinedesign)

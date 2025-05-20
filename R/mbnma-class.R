@@ -879,7 +879,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
         tempDR <- gsub("\\[agent\\[i,k\\]\\]", "", tempDR)
         tempDR <- gsub("\\[i,k\\]", "", tempDR)
-        tempDR <- gsub("(\\[i,k,)([0-9\\])", "[\\2", tempDR) # For splines
+        tempDR <- gsub("(\\[i,k,)([0-9]+)", "[\\2", tempDR) # For splines
 
         dose <- doses[[i]][k]
         if (any(c("rcs", "bs", "ns", "ls", "is") %in% object$model.arg$fun$name)) {

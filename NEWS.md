@@ -1,3 +1,9 @@
+# MBNMAdose 0.5.1
+
+## Additions/changes
+- The number of spline parameters that can be fit is no longer limited
+
+
 # MBNMAdose 0.5.0
 
 ## Additions/changes
