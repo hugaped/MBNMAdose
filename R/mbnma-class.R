@@ -824,7 +824,6 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     addsd <- FALSE
   }
 
-
   predict.result <- list()
 
   # Add spline basis matrix
@@ -843,12 +842,22 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
       posvec <- rep(1, length(index))
     }
     for (i in seq_along(index)) {
+      check.spline <- FALSE
       if (fun$name[posvec[index[i]]] %in% splineopt) {
+        check.spline <- TRUE
+        }
+      if (dplyr::n_distinct(splinedoses[[i]])==1 & splinedoses[[i]][1]==0) {
+        check.spline <- FALSE
+      }
+
+      if (check.spline==TRUE) {
         #print(agent.num[i])
         #print((object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]]))
+
         splinedoses[[i]] <- t(genspline(splinedoses[[i]],
                                    spline = fun$name[posvec[index[i]]],
                                    knots=fun$knots[[posvec[index[i]]]],
+                                   df=fun$df[[posvec[index[i]]]],
                                    degree = fun$degree[posvec[index[i]]],
                                    max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])
                                    ))
