@@ -1471,6 +1471,10 @@ genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
   # Remove NA values
   if (!is.null(knots)) {
     knots <- knots[!is.na(knots)]
+
+    if (length(knots)==0) {
+      knots <- NULL
+    }
   }
 
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0

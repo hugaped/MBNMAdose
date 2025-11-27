@@ -892,6 +892,10 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
         dose <- doses[[i]][k]
         if (any(c("rcs", "bs", "ns", "ls", "is") %in% object$model.arg$fun$name)) {
+          # print(ncol(splinedoses[[i]]))
+          # print(k)
+          # print(i)
+          # test <<- splinedoses
           spline <- splinedoses[[i]][,k]
         }
 
