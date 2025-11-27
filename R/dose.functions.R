@@ -869,7 +869,7 @@ dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
   checkmate::reportAssertions(argcheck)
 
   # Check knots and degrees
-  x <- c(0:100)
+  x <- c(0:10000)
   x <- genspline(x, spline=type, knots = knots, df=df, degree=degree)
 
   nparam <- ncol(x)
@@ -940,7 +940,8 @@ dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
   }
 
   out <- list(name=type, fun=fun, params=paramnames,
-              nparam=nparam, df=df, knots=list(knots), degree=degree, jags=jags,
+              nparam=nparam, df=df, knots=list(ifelse(is.null(knots), NA, knots)),
+              degree=degree, jags=jags,
               apool=apool, bname=bname)
   class(out) <- "dosefun"
 
@@ -1190,6 +1191,7 @@ dmulti <- function(funs=list()) {
   bname <- vector()
   knots <- list()
   degree <- vector()
+  df <- vector()
   for (i in seq_along(univec)) {
     fun <- funs[[which(posvec==univec[i])[1]]]
     name <- append(name, fun[["name"]])
@@ -1199,6 +1201,12 @@ dmulti <- function(funs=list()) {
       degree <- append(degree, fun[["degree"]])
     } else {
       degree <- append(degree, NA)
+    }
+
+    if ("df" %in% names(fun)) {
+      df <- append(df, fun[["df"]])
+    } else {
+      df <- append(df, NA)
     }
 
     if ("knots" %in% names(fun)) {
@@ -1239,7 +1247,7 @@ dmulti <- function(funs=list()) {
   names(bname) <- params
 
   out <- list(name=name, params=params, nparam=length(params), jags=jags,
-              apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, degree=degree,
+              apool=apool, paramlist=apoollist, bname=bname, posvec=posvec, knots=knots, df=df, degree=degree,
               p.expon=p.expon,
               agents=names(funs))
   class(out) <- "dosefun"
