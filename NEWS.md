@@ -3,6 +3,10 @@
 ## Additions/changes
 - The number of spline parameters that can be fit is no longer limited
 
+## Bug fixes
+- Splines previously had an check that incorrectly limited the dimensions (and threw an error)
+if the time-span in the data substantially exceeded 0-100
+
 
 # MBNMAdose 0.5.0
 
