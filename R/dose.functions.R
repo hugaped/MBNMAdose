@@ -858,7 +858,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' # Single parameter independent of treatment estimated for 1st coefficient
 #' #with random effects
 #' dspline(type="ls", knots=c(0.1,0.5),
-#'   betas=c("random", "rel"))
+#'   betas=c("random", "rel", "rel"))
 #'
 #' @export
 dspline <- function(type="bs", knots=1, degree=1,

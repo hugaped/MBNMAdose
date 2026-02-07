@@ -451,6 +451,7 @@ mbnma.run <- function(network,
                             n.burnin=n.burnin,
                             parallel=parallel, pD=pD,
                             autojags=autojags, Rhat=Rhat, n.update=n.update,
+                            UME=UME, class.effect=class.effect,
                             ...)
   result <- result.jags[["jagsoutput"]]
   jagsdata <- result.jags[["jagsdata"]]
@@ -511,6 +512,7 @@ mbnma.jags <- function(data.ab, model,
                        nodesplit=NULL, jagsdata=NULL,
                        warn.rhat=FALSE, parallel=FALSE,
                        autojags=FALSE, Rhat=1.1, n.update=10,
+                       class.effect=NULL, UME=NULL,
                        ...) {
 
   # Run checks
@@ -539,16 +541,6 @@ mbnma.jags <- function(data.ab, model,
 
     if (!is.null(omega) & class==FALSE) {
       jagsdata[["omega"]] <- omega
-    }
-
-    # Add variable for maxtime\maxdose to jagsdata if required for non-parametric functions
-    if ("nonparam" %in% fun$name) {
-
-      # Generate monotonically increasing/decreasing initial values
-      # Check for user-defined initial values
-      if (!("inits" %in% names(args))) {
-        args$inits <- gen.inits(jagsdata, fun=fun, n.chains=args$n.chains)
-      }
     }
 
     # Add parameter to monitor for direct evidence in node-splitting
@@ -595,6 +587,11 @@ mbnma.jags <- function(data.ab, model,
     cat(paste(model, collapse="\n"),file=tmps)
   }
   close(tmps)
+
+  # Generate default initial values if not supplied
+  if (!("inits" %in% names(args)) && !is.null(class.effect) && !is.null(UME)) {
+    args$inits <- gen.inits(jagsdata, fun=fun, class.effect=class.effect, UME=UME, n.chains=args$n.chains)
+  }
 
   out <- tryCatch({
     withCallingHandlers({
@@ -647,19 +644,66 @@ mbnma.jags <- function(data.ab, model,
 #' Ensures model runs properly
 #'
 #' @noRd
-gen.inits <- function(jagsdata, fun, n.chains) {
-  if ("nonparam" %in% fun$name) {
-    inits <- list()
+gen.inits <- function(jagsdata, fun, class.effect, UME, n.chains)
+{
+    Nclass <- jagsdata$Nclass
+    Nagent <- jagsdata$Nagent
+    NS <- jagsdata$NS
+
+    inits <- vector("list", n.chains)
     for (i in 1:n.chains) {
-      inits[[length(inits)+1]] <- list("d.1"=gen.init(jagsdata, fun))
+
+        inits.i <- list(
+            mu = rep(0, jagsdata$NS)
+        )
+
+        if (fun$name == "nonparam") {
+            inits.i[["d1"]] <- gen.init(jagsdata, fun)
+        }
+        else {
+            for (j in seq_along(fun$apool)) {
+
+                pname <- names(fun$apool[j])
+
+                truncated <- (fun$p.expon == FALSE) && ((pname %in% c("ed50", "onset")) || (pname=="rate" && "itp"==fun$name))
+
+                if (fun$apool[j] == "rel") {
+
+                    if (pname %in% names(class.effect)) {
+                        ## If class effects are modelled for this parameter
+
+                        ## Initialize truncated parameters to a small positive value away from the boundary
+                        mu0 <- if (truncated) 0.001 else 0
+
+                        inits.i[[toupper(pname)]] <-  c(NA, rep(mu0, Nclass-1))
+
+                    } else {
+
+                        if (fun$apool[j] %in% c("common", "random")) {
+                            ## Scalar prior
+                            init.pname <- if (truncated) 0 else 0.001
+                        } else if (UME==FALSE) {
+                            ## Vector prior
+                            init.pname <- c(NA, rep(0, Nagent - 1))
+                        }
+                        else {
+                            ## Matrix prior
+                            init.pname <- matrix(NA, Nagent, Nagent-1)
+                            for (c in 1:(Nagent-1)) {
+                                for (k in (c+1):Nagent) { # UME priors
+                                    init.pname[k,c] <- 0
+                                }
+                            }
+                        }
+                        inits.i[[pname]] <- init.pname
+                    }
+                }
+            }
+        }
+        inits[[i]] <- inits.i
     }
-  }
-  return(inits)
+    return (inits)
 }
-
-
-
-
 
 gen.init <- function(jagsdata, fun) {
   checkmate::assert_set_equal(fun$name, "nonparam")
