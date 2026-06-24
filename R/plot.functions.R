@@ -662,7 +662,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
 
 
-
+#' @export
 plot.invisible <- function(...){
   ff <- tempfile()
   grDevices::png(filename=ff)
