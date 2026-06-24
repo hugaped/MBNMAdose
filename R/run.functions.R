@@ -255,17 +255,17 @@
 #'
 #' ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
 #'
-#' # Density plots
-#' mcmcplots::denplot(result)
+#' # Density plots (requires mcmcplots package)
+#' #mcmcplots::denplot(result)
 #'
-#' # Traceplots
-#' mcmcplots::traplot(result)
+#' # Traceplots (requires mcmcplots package)
+#' #mcmcplots::traplot(result)
 #'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "rate")
+#' # Caterpillar plots (requires mcmcplots package)
+#' #mcmcplots::caterplot(result, "rate")
 #'
-#' # Autocorrelation plots (using the coda package)
-#' coda::autocorr.plot(coda::as.mcmc(result))
+#' # Autocorrelation plots (requires coda package)
+#' #coda::autocorr.plot(coda::as.mcmc(result))
 #'
 #'####### Automatically run jags until convergence is reached #########
 #'
