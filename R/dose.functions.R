@@ -867,7 +867,7 @@ dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
   checkmate::assertChoice(type, choices=c("bs", "ns"), add=argcheck)
-  checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
+  checkmate::assertNumeric(knots, null.ok=TRUE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
   # Check knots and degrees
@@ -1234,7 +1234,9 @@ dmulti <- function(funs=list()) {
       bname <- append(bname, paste0("beta.",length(bname)+1))
 
       if (fun[["params"]][k] %in% params & grepl("beta", fun[["params"]][k])) {
-        p <- paste0("beta.", length(params)+1)
+        # Number sequentially over existing `beta.` parameters only, so non-beta
+        # parameters (e.g. `rate`) do not offset the count and leave gaps
+        p <- paste0("beta.", sum(grepl("^beta\\.", params))+1)
       } else if (fun[["params"]][k] %in% params) {
         p <- paste0(fun[["params"]][k], ".", length(params)+1)
       } else {
