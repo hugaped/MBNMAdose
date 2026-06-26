@@ -36,9 +36,9 @@ Imports:
     Rdpack (>= 0.11-0),
     igraph (>= 2.0.1.1),
     ggplot2 (>= 2.2.1),
+    overlapping (>= 1.5.0),
     reshape2 (>= 1.4.3)
 Suggests:
-    overlapping (>= 1.5.0),
     RColorBrewer (>= 1.1-2),
     mcmcplots (>= 0.4.3),
     coda (>= 0.19-4),
