@@ -7,8 +7,9 @@
 genspline(
   x,
   spline = "bs",
-  knots = 1,
-  degree = 1,
+  df = 1,
+  knots = NULL,
+  degree = 3,
   max.dose = max(x),
   boundaries = NULL
 )
@@ -19,10 +20,16 @@ genspline(
 \item{spline}{Indicates the type of spline function. Can be either a piecewise linear spline (\code{"ls"}),
 natural cubic spline (\code{"ns"}), or B-spline (\code{"bs"}).}
 
-\item{knots}{The number/location of internal knots. If a single integer is given it indicates the number of knots (they will
-be equally spaced across the range of doses \emph{for each agent}). If a numeric vector is given it indicates the quantiles of the knots as
-a proportion of the maximum dose in the dataset. For example, if the maximum dose in the dataset
-is 100mg/d, \code{knots=c(0.1,0.5)} would indicate knots should be fitted at 10mg/d and 50mg/d.}
+\item{df}{degrees of freedom.  One can supply \code{df} rather than
+    knots; \code{ns()} then chooses \code{df - 1 - intercept} knots at
+    suitably chosen quantiles of \code{x} (which will ignore missing
+    values).  The default, \code{df = NULL}, sets the number of
+    inner knots as \code{length(knots)}.}
+
+\item{knots}{A numeric vector indicating the number/location of internal knots. Values represent
+the quantiles of the knots as a proportion of the maximum dose in the dataset. For example, if
+the maximum dose in the dataset is 100mg/d for a particular agent, \code{knots=c(0.1,0.5)} would indicate
+knots should be fitted at 10mg/d and 50mg/d.}
 
 \item{degree}{a positive integer giving the degree of the polynomial from which the spline function is composed
 (e.g. \code{degree=3} represents a cubic spline).}
@@ -46,12 +53,12 @@ x <- 0:100
 genspline(x)
 
 # Generate a quadratic B-spline with 1 equally spaced internal knot
-genspline(x, spline="bs", knots=2, degree=2)
+genspline(x, spline="bs", df=2, degree=2)
 
 # Generate a natural cubic spline with 3 knots at selected quantiles
 genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 
-# Generate a piecewise linear spline with 3 equally spaced knots
-genspline(x, spline="ls", knots=3)
+# Generate a piecewise linear spline with 2 equally spaced knots
+genspline(x, spline="ls", df=3)
 
 }

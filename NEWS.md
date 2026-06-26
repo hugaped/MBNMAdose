@@ -14,6 +14,10 @@
 - `predict()` now returns an informative error message (instead of an empty `stop()`) when too few values are available to generate predictions.
 - Fixed a typo ("Ttreatment") in the `summary()` output for `mbnma.network` objects.
 
+## Bug fixes
+- Splines previously had an check that incorrectly limited the dimensions (and threw an error)
+if the time-span in the data substantially exceeded 0-100
+
 
 # MBNMAdose 0.5.0
 
