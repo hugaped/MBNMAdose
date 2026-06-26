@@ -1,7 +1,7 @@
 Package: MBNMAdose
 Type: Package
 Title: Dose-Response MBNMA Models
-Version: 0.5.0
+Version: 0.5.1
 Language: en-GB
 Date: 2025-02-06
 Authors@R: c(person("Hugo", "Pedder", 
@@ -56,6 +56,6 @@ SystemRequirements: JAGS (>= 4.3.0) (https://mcmc-jags.sourceforge.net/)
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
-RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 RdMacros: Rdpack
+Config/roxygen2/version: 8.0.0
