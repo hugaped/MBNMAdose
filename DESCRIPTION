@@ -3,7 +3,7 @@ Type: Package
 Title: Dose-Response MBNMA Models
 Version: 0.5.1
 Language: en-GB
-Date: 2025-02-06
+Date: 2026-06-24
 Authors@R: c(person("Hugo", "Pedder", 
         email = "hugopedder@gmail.com", 
         role = c("aut", "cre"), 
