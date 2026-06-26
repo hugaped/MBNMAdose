@@ -84,7 +84,7 @@ summary.mbnma.network <- function(object,...) {
   if (any(connects==FALSE)) {
     cat("Treatment-level network is", crayon::bold(crayon::red("DISCONNECTED"), "\n"))
   } else {
-    cat("Ttreatment-level network is", crayon::bold(crayon::green("CONNECTED"), "\n"))
+    cat("Treatment-level network is", crayon::bold(crayon::green("CONNECTED"), "\n"))
   }
   invisible(object)
 }

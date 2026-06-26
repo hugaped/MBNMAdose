@@ -198,7 +198,7 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
       dens <- append(dens, max(g$data[[1]]$density[g$data[[1]]$PANEL==unique(g$data[[1]]$PANEL)[i]]))
     }
     if (max(dens) > (min(dens) * 50)) {
-      density <- density + ggplot2::facet_wrap(~factor(densitydata$comp), scales="free_y")
+      density <- density + ggplot2::facet_wrap(~factor(Comparison), scales="free_y")
     }
 
     graphics::plot(density)

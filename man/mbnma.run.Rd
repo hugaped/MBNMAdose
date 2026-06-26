@@ -195,7 +195,7 @@ Built-in dose-response functions are:
 \item \code{dloglin()}: log-linear
 \item \code{dexp()}: exponential
 \item \code{demax()}: (emax with/without a Hill parameter)
-\item \code{dspline()}: splines (can fit B-splines (\code{type="bs"}), restricted cubic splines (\code{type="rcs"}), natural splines (\code{type="ns"}), or
+\item \code{dspline()}: splines (can fit B-splines (\code{type="bs"}), natural splines (\code{type="ns"}), or
 piecewise linear splines (\code{type="ls"}))
 \item \code{dfpoly()}: fractional polynomials
 \item \code{dnonparam()}: Non-parametric monotonic function (\code{direction} can be either \code{"increasing"} or \code{"decreasing"}) following the method

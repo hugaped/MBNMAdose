@@ -255,7 +255,7 @@ ditp <- function(emax="rel", rate="rel", p.expon=FALSE) {
   class(out) <- "dosefun"
 
   if (p.expon==TRUE) {
-    message("'ed50' parameters are on exponential scale to ensure they take positive values on the natural scale")
+    message("'rate' parameters are on exponential scale to ensure they take positive values on the natural scale")
   }
 
   return(out)
@@ -675,7 +675,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
   checkmate::reportAssertions(argcheck)
 
   paramscoef <- list(beta.1=beta.1, beta.2=beta.2)
-  paramspower <- list(power.1=power.1, beta.4=power.2)
+  paramspower <- list(power.1=power.1, power.2=power.2)
   for (i in 1:degree) {
     err <- TRUE
     if (length(paramscoef[[i]])==1) {
@@ -867,7 +867,7 @@ dspline <- function(type="bs", knots=1, degree=1,
   # Run checks
   argcheck <- checkmate::makeAssertCollection()
   checkmate::assertIntegerish(degree, lower=1, upper = 4, add=argcheck)
-  checkmate::assertChoice(type, choices=c("bs", "ns", "ls", "is"), add=argcheck)
+  checkmate::assertChoice(type, choices=c("bs", "ns", "ls"), add=argcheck)
   checkmate::assertNumeric(knots, null.ok=FALSE, add=argcheck)
   checkmate::reportAssertions(argcheck)
 
@@ -1105,7 +1105,7 @@ duser <- function(fun, beta.1="rel", beta.2="rel", beta.3="rel", beta.4="rel") {
   bname <- paste0("beta.", 1:nparam)
 
   names(apool) <- paramnames
-  names(bname) <- names(bname)
+  names(bname) <- paramnames
 
   if (!any("rel" %in% apool)) {
     stop("Dose-response functions must include at least one parameter modelled using relative effects ('rel')")

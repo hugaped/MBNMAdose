@@ -144,7 +144,7 @@
 #'   * `dloglin()`: log-linear
 #'   * `dexp()`: exponential
 #'   * `demax()`: (emax with/without a Hill parameter)
-#'   * `dspline()`: splines (can fit B-splines (`type="bs"`), restricted cubic splines (`type="rcs"`), natural splines (`type="ns"`), or
+#'   * `dspline()`: splines (can fit B-splines (`type="bs"`), natural splines (`type="ns"`), or
 #'   piecewise linear splines (`type="ls"`))
 #'   * `dfpoly()`: fractional polynomials
 #'   * `dnonparam()`: Non-parametric monotonic function (`direction` can be either `"increasing"` or `"decreasing"`) following the method
@@ -563,7 +563,7 @@ mbnma.jags <- function(data.ab, model,
 
   # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
-  if (all(fun$name %in% c("rcs", "ns", "bs", "ls"))) {
+  if (all(fun$name %in% c("ns", "bs", "ls"))) {
     jagsdata[["dose"]] <- NULL
   }
 
@@ -842,10 +842,6 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
     for (i in seq_along(priors)) {
       if (length(priors[[i]])>1) {
         if (!is.null(names(priors[[i]]))) { # If treatment-specific priors are named
-          if (length(class.effect)>0) {
-            warning("MBNMAdose defaults to agent-specific priors if multiple priors are specified for a parameter")
-          }
-
           priornam <- names(priors[[i]])
 
           # If at least 2 names match those in network$agents then sort priors to match network order

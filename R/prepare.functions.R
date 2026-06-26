@@ -666,7 +666,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     }
 
     # Generate empty spline matrix
-    splineopt <- c("rcs", "ns", "bs", "ls", "is")
+    splineopt <- c("ns", "bs", "ls")
     if (any(splineopt %in% fun$name)) {
 
       doses <- df[, colnames(df) %in% c("agent", "dose")]
@@ -849,7 +849,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
                                                  df$arm==k])
 
         # Add spline matrix
-        if (any(c("rcs", "ns", "bs", "ls", "is") %in% fun$name)) {
+        if (any(c("ns", "bs", "ls") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
                                              df$arm==k,
                                            grepl("spline$", colnames(df))]
@@ -1342,8 +1342,7 @@ assignfuns <- function(fun, agents, user.fun, wrapper=FALSE, knots=3) {
   }
 
   funlist <- list("linear"="slope", "exponential"="lambda",
-                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"),
-                  "rcs"=paste0("beta.", 1:knots))
+                  "emax"=c("emax", "ed50"), "emax.hill"=c("emax", "ed50", "hill"))
 
   betas <- list()
   count <- 0

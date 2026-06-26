@@ -2,6 +2,17 @@
 
 ## Additions/changes
 - The number of spline parameters that can be fit is no longer limited
+- `dspline()` spline types have been consolidated to the implemented set: `"bs"` (B-splines), `"ns"` (natural cubic splines) and `"ls"` (piecewise linear splines). The defunct `"rcs"` and `"is"` options have been removed from the documentation and argument checks.
+
+## Bug fixes
+- Fixed an error in `nma.run()` that referenced an undefined `class.effect` object when named (multi-element) `priors` were supplied.
+- `dspline(type="rcs")` previously errored despite being documented, and `dspline(type="is")` was accepted but crashed during model setup. Spline types are now consistent across the package (see above).
+- Fixed an error in `plot()` for node-split objects (`plot.nodesplit()`) that referenced an undefined object when rescaling density panels with large differences in scale.
+- `duser()` now returns a correctly named `bname` element, consistent with the other dose-response functions.
+- Corrected a mislabelled internal parameter in `dfpoly()` so that validation errors for the second power refer to `power.2` rather than `beta.4`.
+- Corrected the message emitted by `ditp(p.expon=TRUE)`, which incorrectly referred to `ed50` instead of `rate`.
+- `predict()` now returns an informative error message (instead of an empty `stop()`) when too few values are available to generate predictions.
+- Fixed a typo ("Ttreatment") in the `summary()` output for `mbnma.network` objects.
 
 
 # MBNMAdose 0.5.0
