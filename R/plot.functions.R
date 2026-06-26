@@ -418,7 +418,7 @@ devplot <- function(mbnma, plot.type="box", facet=TRUE, dev.type="resdev",
   }
 
   if (plot.type=="scatter") {
-    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean), group=groupvar) +
+    g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=fupdose, y=mean, group=groupvar)) +
       ggplot2::geom_point(...)
   } else if (plot.type=="box") {
     g <- ggplot2::ggplot(dev.df, ggplot2::aes(x=factor(fupdose), y=mean)) +
