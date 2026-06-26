@@ -186,7 +186,7 @@ rank.mbnma.predict <- function(x, lower_better=TRUE, rank.doses=NULL, ...) {
 #'   then a label for placebo **should not** be included in `agent.labs`. It will not be shown
 #'   in the final plot since placebo is the point within each plot at which dose = 0 (rather
 #'   than a separate agent).
-#' @param ... Arguments for `ggplot2`
+#' @param ... Arguments for `ggplot2` or `R2jags::jags`
 #' @inheritParams mbnma.run
 #' @inheritParams plot.mbnma.rank
 #' @inheritParams ggplot2::facet_wrap
@@ -247,6 +247,11 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
   checkmate::assertChoice(scales, c("free_x", "fixed"), add=argcheck)
   checkmate::reportAssertions(argcheck)
 
+  args <- list(...)
+  jagsformals <- methods::formalArgs(R2jags::jags)
+  R2jagsargs <- args[names(args) %in% jagsformals]
+  ggargs <- args[!names(args) %in% jagsformals]
+
   sum.pred <- summary(x)
   sum.df <- sum.pred
 
@@ -272,9 +277,12 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
 
 
   # Plot predictions
-  g <- ggplot2::ggplot(sum.df, ggplot2::aes(x=as.numeric(as.character(dose)),
-                                            y=`50%`, ymin=`2.5%`, ymax=`97.5%`), ...)
-
+  ggargs <- append(ggargs, list(
+    data=sum.df,
+    mapping = ggplot2::aes(x=as.numeric(as.character(dose)),
+                           y=`50%`, ymin=`2.5%`, ymax=`97.5%`)
+    ))
+  g <- do.call(ggplot2::ggplot, ggargs)
 
   # Plot observed data as shaded regions
   if (disp.obs==TRUE) {
@@ -307,10 +315,14 @@ plot.mbnma.predict <- function(x, disp.obs=FALSE,
       stop("`x` must include a predicted response at dose = 0 for at least one agent")
     }
 
-    g <- overlay.split(g=g, network=network, E0=x$E0, method=method,
-                       likelihood = x[["likelihood"]],
-                       link = x[["link"]],
-                       lim = x[["lim"]])
+    # Run overlay.split but allow for additional arguments specified in ...
+    g <- do.call("overlay.split", c(R2jagsargs,
+                                  list(
+                                    g=g, network=network, E0=x$E0, method=method,
+                                    likelihood = x[["likelihood"]],
+                                    link = x[["link"]],
+                                    lim = x[["lim"]])
+                                  ))
 
   }
 
