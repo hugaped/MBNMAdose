@@ -1139,21 +1139,41 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
             DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[k]][[2]][m], DR2)
           }
 
-          for (beta in seq_along(betaparams)) {
-            assign(names(betaparams)[beta], betaparams[[beta]])
+          if (length(mbnma$model.arg$fun$name)==1) {
 
-            if (length(mbnma$model.arg$fun$name)==1) {
+            for (beta in seq_along(betaparams)) {
+              assign(names(betaparams)[beta], betaparams[[beta]])
+
               if (!is.matrix(betaparams[[beta]])) {
                 DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
                 DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
               }
-            } else {
+            }
 
-              if (is.matrix(betaparams[[beta]])) {
+            chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
 
-                DRcomb <- c(DR1, DR2)
-                for (m in 1:2) {
-                  # Look for correct column index for each beta param
+          } else {
+
+            # For multiple (agent-specific) dose-response functions the DR expression
+            # for each function uses parameter names that are local to that function
+            # (beta.1, beta.2, ...), whereas betaparams is indexed by the global
+            # parameter names. Map each function's local parameters to the correct
+            # global values, substituting fresh variable names so the two sides of the
+            # comparison (which may use different functions) cannot collide.
+            evalenv <- new.env(parent=environment())
+            DRcomb <- c(DR1, DR2)
+
+            for (m in 1:2) {
+
+              # Global parameter names (in local order) for the function used by agent m
+              gparams <- names(fun$paramlist[[pos[m]]])
+
+              for (j in seq_along(gparams)) {
+                gbeta <- betaparams[[fun$bname[[gparams[j]]]]]
+
+                if (is.matrix(gbeta)) {
+                  # Relative effect: identify the column for this agent within the
+                  # function's relative-effect matrix
                   veci <- mbnma$model.arg$fun$posvec[1:agnum[m]]
                   veci <- table(veci)[names(table(veci))==pos[m]]
 
@@ -1163,23 +1183,22 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
                       veci <- veci - 1
                     }
                   }
-
-                  # Swap index in DR1 for veci
-                  DRcomb[m] <- gsub(paste0("(", names(betaparams)[beta], "\\[,)([0-9]+\\])"),
-                                    paste0("\\1", veci, "]"), DRcomb[m])
+                  valvec <- gbeta[, veci]
+                } else {
+                  valvec <- gbeta
                 }
-                DR1 <- DRcomb[1]
-                DR2 <- DRcomb[2]
 
-              } else if (is.vector(betaparams[[beta]])) {
-                # Remove indices from DR
-                DR1 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
-                DR2 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+                # Assign value and replace the local parameter (with or without an
+                # agent index) by the fresh variable name
+                varname <- paste0("drval.", m, ".", j)
+                assign(varname, valvec, envir=evalenv)
+                DRcomb[m] <- gsub(paste0("beta\\.", j, "(?![0-9])(\\[,[0-9]+\\])?"),
+                                  varname, DRcomb[m], perl=TRUE)
               }
             }
-          }
 
-          chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
+            chunk <- eval(parse(text=paste0("(",DRcomb[1], ") - (", DRcomb[2], ")")), envir=evalenv)
+          }
 
           if (!is.null(regress.vals)) {
             chunk <- chunk + (regress[,agnum.i-1] - regress[,agnum.k-1])
