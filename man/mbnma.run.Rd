@@ -300,17 +300,21 @@ result <- mbnma.run(network, fun=dloglin(), method="random",
 
 ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
 
-# Density plots
-mcmcplots::denplot(result)
+if (requireNamespace("mcmcplots")) {
+  # Density plots
+  mcmcplots::denplot(result)
 
-# Traceplots
-mcmcplots::traplot(result)
+  # Traceplots
+  mcmcplots::traplot(result)
 
-# Caterpillar plots
-mcmcplots::caterplot(result, "rate")
+  # Caterpillar plots
+  mcmcplots::caterplot(result, "rate")
+}
 
 # Autocorrelation plots (using the coda package)
-coda::autocorr.plot(coda::as.mcmc(result))
+if (requireNamespace("coda")) {
+  coda::autocorr.plot(coda::as.mcmc(result))
+}
 
 ####### Automatically run jags until convergence is reached #########
 
