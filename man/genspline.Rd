@@ -17,7 +17,7 @@ genspline(
 \arguments{
 \item{x}{A numeric vector indicating all time points available in the dataset}
 
-\item{spline}{Indicates the type of spline function. Can be either a piecewise linear spline (\code{"ls"}),
+\item{spline}{Indicates the type of spline function. Can be either a
 natural cubic spline (\code{"ns"}), or B-spline (\code{"bs"}).}
 
 \item{df}{degrees of freedom.  One can supply \code{df} rather than
@@ -60,6 +60,6 @@ genspline(x, spline="bs", df=2, degree=2)
 genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 
 # Generate a piecewise linear spline with 2 equally spaced knots
-genspline(x, spline="ls", df=3)
+genspline(x, spline="bs", degree=1, df=3)
 
 }

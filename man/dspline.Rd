@@ -8,8 +8,8 @@ dspline(type = "bs", knots = NULL, degree = 3, df = NULL, betas = "rel")
 }
 \arguments{
 \item{type}{The type of spline. Can take \code{"bs"} (\href{https://mathworld.wolfram.com/B-Spline.html}{B-spline}),
-\code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}),
-or \code{"ls"} (piecewise linear spline)}
+or \code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}).
+Piecewise linear splines can be fitted using \code{"bs"} with \code{degree=1}.}
 
 \item{knots}{Indicates the number/location of internal knots. If a single whole number \verb{>=1} is given
 it indicates the number of equally-spaced internal knots. Otherwise (a vector, or a non-integer value)
@@ -35,8 +35,8 @@ assigned a numeric value (see details).}
 An object of \code{class("dosefun")}
 }
 \description{
-Used to fit B-splines, natural cubic splines, and
-piecewise linear splines\insertCite{perperoglu2019}{MBNMAdose}.
+Used to fit B-splines and natural cubic
+splines\insertCite{perperoglu2019}{MBNMAdose}.
 }
 \section{Dose-response parameters}{
 \tabular{ll}{
@@ -63,7 +63,7 @@ dspline(type="bs", df=3, degree=3,
 # Piecewise linear spline with knots at 0.1 and 0.5 quantiles
 # Single parameter independent of treatment estimated for 1st coefficient
 #with random effects
-dspline(type="ls", knots=c(0.1,0.5),
+dspline(type="bs", degree=1, knots=c(0.1,0.5),
   betas=c("random", "rel"))
 
 }

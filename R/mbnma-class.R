@@ -710,7 +710,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     }
   } else {
     # Automatically generate doses list for treatments included in data
-    # if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun)) {
+    # if (any(c("rcs", "bs", "ns") %in% object$model.arg$fun)) {
     #   dose <- as.vector(object$model$data()$spline[,,1])
     # } else {
     #
@@ -827,7 +827,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
   predict.result <- list()
 
   # Add spline basis matrix
-  splineopt <- c("bs", "ns", "ls")
+  splineopt <- c("bs", "ns")
   fun <- object$model.arg$fun
   if (any(splineopt %in% fun$name)) {
 
@@ -891,7 +891,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         tempDR <- gsub("(\\[i,k,)([0-9]+)", "[\\2", tempDR) # For splines
 
         dose <- doses[[i]][k]
-        if (any(c("bs", "ns", "ls") %in% object$model.arg$fun$name)) {
+        if (any(c("bs", "ns") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
         }
 

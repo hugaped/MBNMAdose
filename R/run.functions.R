@@ -144,8 +144,7 @@
 #'   * `dloglin()`: log-linear
 #'   * `dexp()`: exponential
 #'   * `demax()`: (emax with/without a Hill parameter)
-#'   * `dspline()`: splines (can fit B-splines (`type="bs"`), natural splines (`type="ns"`), or
-#'   piecewise linear splines (`type="ls"`))
+#'   * `dspline()`: splines (can fit B-splines (`type="bs"`) or natural splines (`type="ns"`) of any degree
 #'   * `dfpoly()`: fractional polynomials
 #'   * `dnonparam()`: Non-parametric monotonic function (`direction` can be either `"increasing"` or `"decreasing"`) following the method
 #'   of \insertCite{owen2015;textual}{MBNMAdose}
@@ -567,7 +566,7 @@ mbnma.jags <- function(data.ab, model,
 
   # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
-  if (all(fun$name %in% c("ns", "bs", "ls"))) {
+  if (all(fun$name %in% c("ns", "bs"))) {
     jagsdata[["dose"]] <- NULL
   }
 

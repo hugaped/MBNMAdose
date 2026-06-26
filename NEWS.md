@@ -3,7 +3,7 @@
 ## Additions/changes
 - `dspline()` pooling is specified through a single vector (`betas`) argument rather than individual `beta.1`, `beta.2`, etc.
 - The number of spline parameters that can be fit is no longer limited
-- `dspline()` spline types have been consolidated to the implemented set: `"bs"` (B-splines), `"ns"` (natural cubic splines) and `"ls"` (piecewise linear splines). The defunct `"rcs"` and `"is"` options have been removed from the documentation and argument checks.
+- `dspline()` spline types have been consolidated to the implemented set: `"bs"` (B-splines) and `"ns"` (natural cubic splines). The defunct `"rcs"` and `"is"` options, and the redundant `"ls"` option (piecewise linear splines, equivalent to `"bs"` with `degree=1`), have been removed from the documentation and argument checks.
 - The `knots` argument in `dspline()` can now be specified either as a single integer (indicating the number of equally-spaced internal knots) or as a vector of quantile locations (proportions of the dose range). 
 
 

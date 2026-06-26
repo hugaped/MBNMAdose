@@ -666,7 +666,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
     }
 
     # Generate empty spline matrix
-    splineopt <- c("ns", "bs", "ls")
+    splineopt <- c("ns", "bs")
     if (any(splineopt %in% fun$name)) {
 
       doses <- df[, colnames(df) %in% c("agent", "dose")]
@@ -864,7 +864,7 @@ getjagsdata <- function(data.ab, class=FALSE, sdscale=FALSE,
                                                  df$arm==k])
 
         # Add spline matrix
-        if (any(c("ns", "bs", "ls") %in% fun$name)) {
+        if (any(c("ns", "bs") %in% fun$name)) {
           datalist[["spline"]][i,k,] <- df[as.numeric(df$studyID)==i &
                                              df$arm==k,
                                            grepl("spline$", colnames(df))]
@@ -1423,7 +1423,7 @@ check.network <- function(g, reference=1) {
 #' Generates spline basis matrices for fitting to dose-response function
 #'
 #' @param x A numeric vector indicating all time points available in the dataset
-#' @param spline Indicates the type of spline function. Can be either a piecewise linear spline (`"ls"`),
+#' @param spline Indicates the type of spline function. Can be either a
 #' natural cubic spline (`"ns"`), or B-spline (`"bs"`).
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
@@ -1454,7 +1454,7 @@ check.network <- function(g, reference=1) {
 #' genspline(x, spline="ns", knots=c(0.1, 0.5, 0.7))
 #'
 #' # Generate a piecewise linear spline with 2 equally spaced knots
-#' genspline(x, spline="ls", df=3)
+#' genspline(x, spline="bs", degree=1, df=3)
 #'
 #' @export
 genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
@@ -1535,8 +1535,6 @@ genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
       splinedesign <- splines::ns(x=x.uni, df=df, knots=knots,
                                   Boundary.knots = boundaries, intercept=FALSE)
 
-    } else if (spline=="ls") {
-      splinedesign <- lspline::lspline(x=x.uni, knots=knots, marginal = FALSE)
     }
     rownames(splinedesign) <- x.uni
 
