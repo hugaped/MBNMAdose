@@ -857,7 +857,7 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #' # Single parameter independent of treatment estimated for 1st coefficient
 #' #with random effects
 #' dspline(type="bs", degree=1, knots=c(0.1,0.5),
-#'   betas=c("random", "rel"))
+#'   betas=c("random", "rel", "rel))
 #'
 #' @export
 dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
@@ -879,7 +879,7 @@ dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
   # Assign values to all beta parameters if length(betas)==1
   if (nparam!=length(betas)) {
     if (length(betas)!=1) {
-      stop("Different betas have been specified in betas, but length(betas)!=nparam")
+      stop("Different betas have been specified in betas, but length(betas) not equal to number\nof parameters specified by spline function")
     } else if (length(betas)==1) {
       betas <- rep(betas, nparam)
     }

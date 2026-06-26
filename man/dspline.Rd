@@ -55,18 +55,6 @@ and by changing the degrees of freedom of the inverse-Wishart prior
 using the \code{priors} argument in \code{mbnma.run()}.
 }
 
-\examples{
-# Second order B spline with 2 knots
-dspline(type="bs", df=3, degree=3,
-  betas="rel")
-
-# Piecewise linear spline with knots at 0.1 and 0.5 quantiles
-# Single parameter independent of treatment estimated for 1st coefficient
-#with random effects
-dspline(type="bs", degree=1, knots=c(0.1,0.5),
-  betas=c("random", "rel"))
-
-}
 \references{
 \insertAllCited
 }
