@@ -942,7 +942,7 @@ dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
   }
 
   out <- list(name=type, fun=fun, params=paramnames,
-              nparam=nparam, df=df, knots=list(ifelse(is.null(knots), NA, knots)),
+              nparam=nparam, df=df, knots=list(if (is.null(knots)) NA else knots),
               degree=degree, jags=jags,
               apool=apool, bname=bname)
   class(out) <- "dosefun"

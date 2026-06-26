@@ -1428,10 +1428,11 @@ check.network <- function(g, reference=1) {
 #' @param degree a positive integer giving the degree of the polynomial from which the spline function is composed
 #'  (e.g. `degree=3` represents a cubic spline).
 #' @param max.dose A number indicating the maximum dose between which to calculate the spline function.
-#' @param knots A numeric vector indicating the number/location of internal knots. Values represent
-#' the quantiles of the knots as a proportion of the maximum dose in the dataset. For example, if
-#' the maximum dose in the dataset is 100mg/d for a particular agent, `knots=c(0.1,0.5)` would indicate
-#' knots should be fitted at 10mg/d and 50mg/d.
+#' @param knots Indicates the number/location of internal knots. If a single whole number `>=1` is given
+#' it indicates the number of equally-spaced internal knots. Otherwise (a vector, or a non-integer value)
+#' the values are treated as the quantile locations of the knots as a proportion of the maximum dose in the
+#' dataset. For example, if the maximum dose in the dataset is 100mg/d for a particular agent, `knots=c(0.1,0.5)`
+#' would indicate knots should be fitted at 10mg/d and 50mg/d.
 #' @param boundaries A positive numeric vector of length 2 that represents the doses at which to anchor the B-spline or natural
 #' cubic spline basis matrix. This allows data to extend beyond the boundary knots, or for the basis parameters to not depend on `x`.
 #' The default (`boundaries=NULL`) is the range of `x`.
@@ -1461,7 +1462,7 @@ genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
 
   # Run Checks
   argcheck <- checkmate::makeAssertCollection()
-  checkmate::assertNumeric(knots, add=argcheck, lower=0, upper=1, null.ok = TRUE)
+  checkmate::assertNumeric(knots, add=argcheck, lower=0, null.ok = TRUE)
   checkmate::assertIntegerish(df, add=argcheck, lower=1, null.ok = TRUE)
   checkmate::assertIntegerish(degree, lower=1, upper=3, add=argcheck)
   checkmate::assertNumeric(max.dose, null.ok = FALSE, add=argcheck)
@@ -1506,19 +1507,19 @@ genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
     x0 <- sort(x0)
     x.uni <- unique(x0)
 
-    # Calculate quantiles for knots
+    # Resolve knot specification into dose locations:
+    #  - a single whole number >= 1 indicates that many equally-spaced internal knots
+    #  - otherwise values are treated as quantile locations (proportions of the dose range)
     if (!is.null(knots)) {
-      knots <- stats::quantile(0:max.dose, probs = knots)
+      if (length(knots)==1 && knots>=1 && knots==round(knots)) {
+        p <- seq(0, 1, length.out = knots + 2)
+        p <- p[-c(1, length(p))]
+        knots <- stats::quantile(0:max.dose, probs = p)
+      } else {
+        knots <- stats::quantile(0:max.dose, probs = knots)
+      }
+      names(knots) <- NULL
     }
-    # if (length(knots)==1 & knots[1]>=1) {
-    #   p <- seq(0,1,1/(knots+1))
-    #   #p <- exp(seq(-3, 0, length.out = (knots+2)))
-    #   p <- p[-c(1,length(p))]
-    #   knots <- stats::quantile(0:max.dose, probs = p)
-    #   names(knots) <- NULL
-    # } else if (length(knots)>1 | knots[1]<1) {
-    #   knots <- stats::quantile(0:max.dose, probs = knots)
-    # }
 
     if (is.null(boundaries)) {
       boundaries <- range(x0)

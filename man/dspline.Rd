@@ -11,10 +11,11 @@ dspline(type = "bs", knots = NULL, degree = 3, df = NULL, betas = "rel")
 \code{"ns"} (\href{https://mathworld.wolfram.com/CubicSpline.html}{natural cubic spline}),
 or \code{"ls"} (piecewise linear spline)}
 
-\item{knots}{A numeric vector indicating the number/location of internal knots. Values represent
-the quantiles of the knots as a proportion of the maximum dose in the dataset. For example, if
-the maximum dose in the dataset is 100mg/d for a particular agent, \code{knots=c(0.1,0.5)} would indicate
-knots should be fitted at 10mg/d and 50mg/d.}
+\item{knots}{Indicates the number/location of internal knots. If a single whole number \verb{>=1} is given
+it indicates the number of equally-spaced internal knots. Otherwise (a vector, or a non-integer value)
+the values are treated as the quantile locations of the knots as a proportion of the maximum dose in the
+dataset. For example, if the maximum dose in the dataset is 100mg/d for a particular agent, \code{knots=c(0.1,0.5)}
+would indicate knots should be fitted at 10mg/d and 50mg/d.}
 
 \item{degree}{a positive integer giving the degree of the polynomial from which the spline function is composed
 (e.g. \code{degree=3} represents a cubic spline).}
