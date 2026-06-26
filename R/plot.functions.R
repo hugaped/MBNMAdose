@@ -663,7 +663,7 @@ fitplot <- function(mbnma, disp.obs=TRUE,
 
 
 
-plot.invisible <- function(...){
+plotinvisible <- function(...){
   ff <- tempfile()
   grDevices::png(filename=ff)
   res <- graphics::plot(...)

@@ -531,7 +531,7 @@ drop.comp <- function(ind.df, drops, comp, start=1) {
                           ind.df$treatment==comp[index+1]),]
 
     if (all(comp %in% temp.df$treatment)) {
-      temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
+      temp.net <- suppressMessages(plotinvisible(mbnma.network(temp.df), doseparam = 1000))
 
       connectcheck <- is.finite(igraph::distances(igraph::as.undirected(temp.net),
                                                        to=comp[index+1])[
@@ -600,7 +600,7 @@ check.indirect.drops <- function(df, comp) {
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(df$treatment))) {
-      g <- plot.invisible(temp.net, doseparam=1000)
+      g <- plotinvisible(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::distances(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])

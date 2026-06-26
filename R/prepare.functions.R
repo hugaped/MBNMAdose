@@ -1067,7 +1067,7 @@ drop.disconnected <- function(network, connect.dose=FALSE) {
   trt.labs <- network$treatments
 
   # Check connectivity
-  discon <- suppressMessages(suppressWarnings(check.network(plot.invisible(network, level="treatment", v.color = "connect", doselink=doselink))))
+  discon <- suppressMessages(suppressWarnings(check.network(plotinvisible(network, level="treatment", v.color = "connect", doselink=doselink))))
 
   data.ab <- network$data.ab
 

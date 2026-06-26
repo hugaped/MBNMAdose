@@ -68,7 +68,7 @@ summary.mbnma.network <- function(object,...) {
       " (", min(agentdf$ndose), ", ", max(agentdf$ndose), ")\n", sep="")
 
   # Check network is connected at agent-level
-  g <- suppressWarnings(plot.invisible(object, level="agent"))
+  g <- suppressWarnings(plotinvisible(object, level="agent"))
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=1))
   if (any(connects==FALSE)) {
@@ -78,7 +78,7 @@ summary.mbnma.network <- function(object,...) {
   }
 
   # Check network is connected at treatment-level
-  g <- suppressWarnings(plot.invisible(object, level="treatment"))
+  g <- suppressWarnings(plotinvisible(object, level="treatment"))
   connects <- is.finite(igraph::shortest.paths(igraph::as.undirected(g),
                                                to=1))
   if (any(connects==FALSE)) {
