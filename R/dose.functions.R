@@ -1205,9 +1205,10 @@ dmulti <- function(funs=list()) {
       degree <- append(degree, NA)
     }
 
-    if ("df" %in% names(fun)) {
+    if ("df" %in% names(fun) && !is.null(fun[["df"]])) {
       df <- append(df, fun[["df"]])
     } else {
+      # Use NA placeholder so df stays aligned with each function (append() drops NULL)
       df <- append(df, NA)
     }
 
@@ -1225,7 +1226,11 @@ dmulti <- function(funs=list()) {
     }
 
     for (k in seq_along(fun[["params"]])){
-      j <- gsub(paste0(fun[["bname"]][k], " "), paste0("betaswap.",length(bname)+1, " "), j)
+      # Rename each function's local JAGS parameter (s.beta.k) to a globally unique
+      # name (s.beta.<n>). `betaswap` is used as a temporary marker so renamed
+      # parameters are not matched again; it is stripped back to `beta` below.
+      j <- gsub(paste0("s\\.beta\\.", k, "(?![0-9])"),
+                paste0("s.betaswap.", length(bname)+1), j, perl=TRUE)
       bname <- append(bname, paste0("beta.",length(bname)+1))
 
       if (fun[["params"]][k] %in% params & grepl("beta", fun[["params"]][k])) {

@@ -1477,6 +1477,15 @@ genspline <- function(x, spline="bs", df=1, knots=NULL, degree=3,
     }
   }
 
+  # Treat an NA df (e.g. placeholder from a multiple dose-response function) as unspecified
+  if (!is.null(df)) {
+    df <- df[!is.na(df)]
+
+    if (length(df)==0) {
+      df <- NULL
+    }
+  }
+
   # Add 0 (for placebo) if not in original data to ensure spline incorporates x=0
   if (x[1]==0 & length(unique(x))==1) { # ...ie if agent in placebo
 

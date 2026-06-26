@@ -1154,22 +1154,22 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
 
           } else {
 
-            # For multiple (agent-specific) dose-response functions the DR expression
-            # for each function uses parameter names that are local to that function
-            # (beta.1, beta.2, ...), whereas betaparams is indexed by the global
-            # parameter names. Map each function's local parameters to the correct
-            # global values, substituting fresh variable names so the two sides of the
-            # comparison (which may use different functions) cannot collide.
+            # For multiple (agent-specific) dose-response functions each side of the
+            # comparison may use a different function. Substitute every dose-response
+            # parameter for a fresh variable holding the correct value for that agent
+            # (the relevant column of a relative-effect matrix, or the vector for
+            # common/random/fixed parameters), so the two sides cannot collide.
             evalenv <- new.env(parent=environment())
             DRcomb <- c(DR1, DR2)
 
             for (m in 1:2) {
 
-              # Global parameter names (in local order) for the function used by agent m
+              # Global parameter names for the function used by agent m
               gparams <- names(fun$paramlist[[pos[m]]])
 
               for (j in seq_along(gparams)) {
-                gbeta <- betaparams[[fun$bname[[gparams[j]]]]]
+                gname <- fun$bname[[gparams[j]]]
+                gbeta <- betaparams[[gname]]
 
                 if (is.matrix(gbeta)) {
                   # Relative effect: identify the column for this agent within the
@@ -1188,11 +1188,12 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
                   valvec <- gbeta
                 }
 
-                # Assign value and replace the local parameter (with or without an
-                # agent index) by the fresh variable name
+                # Assign value and replace the (global) parameter name, with or without
+                # an agent index, by the fresh variable name
                 varname <- paste0("drval.", m, ".", j)
                 assign(varname, valvec, envir=evalenv)
-                DRcomb[m] <- gsub(paste0("beta\\.", j, "(?![0-9])(\\[,[0-9]+\\])?"),
+                gidx <- sub("^beta\\.", "", gname)
+                DRcomb[m] <- gsub(paste0("beta\\.", gidx, "(?![0-9])(\\[,[0-9]+\\])?"),
                                   varname, DRcomb[m], perl=TRUE)
               }
             }
