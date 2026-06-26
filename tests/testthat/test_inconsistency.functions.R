@@ -12,6 +12,8 @@ for (dat in seq_along(alldats)) {
   ### Datasets ####
   network <- mbnma.network(dataset)
 
+  jags.seed <- 890421 # Set seed for reproducibility
+
   # Generate data without placebo
   noplac.df <- network$data.ab[network$data.ab$narm>2 & network$data.ab$agent!=1,]
   net.noplac <- mbnma.network(noplac.df)
@@ -54,9 +56,9 @@ for (dat in seq_along(alldats)) {
 
     if (!datanam %in% c("osteopain", "gout")) {
       split <- nma.nodesplit(network, likelihood = like, link=link,
-                             method="common", n.iter=1000)
+                             method="common", n.iter=1000, jags.seed=jags.seed)
       expect_equal(nrow(inconsistency.loops(network$data.ab)), length(split))
-      expect_equal(class(split), "nodesplit")
+      expect_s3_class(split, "nodesplit")
       expect_identical(names(split[[1]]), c("comparison",
                                             "direct", "indirect", "nma",
                                             "overlap matrix", "p.values", "quantiles",
@@ -66,10 +68,10 @@ for (dat in seq_along(alldats)) {
       expect_equal(is.numeric(split[[1]]$indirect), TRUE)
       expect_equal(is.numeric(split[[1]]$direct), TRUE)
       expect_equal(length(split[[1]]$comparison), 2)
-      expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
-      expect_identical(class(split[[1]]$density.plot), c("gg", "ggplot"))
+      expect_s3_class(split[[1]]$forest.plot, c("gg", "ggplot"))
+      expect_s3_class(split[[1]]$density.plot, c("gg", "ggplot"))
       expect_error(print(split), NA)
-      expect_equal(class(summary(split)), "data.frame")
+      expect_s3_class(summary(split), "data.frame")
 
 
       # Test comparisons
@@ -77,14 +79,15 @@ for (dat in seq_along(alldats)) {
       compsi <- c(comps$t1[1], comps$t2[1])
       split <- nma.nodesplit(network, likelihood = "binomial", link="logit",
                              method="random", n.iter=1000, drop.discon = TRUE,
-                             comparisons = rbind(compsi))
+                             comparisons = rbind(compsi), jags.seed=jags.seed)
       expect_equal(1, length(split))
       expect_error(print(split), NA)
-      expect_equal(class(summary(split)), "data.frame")
+      expect_s3_class(summary(split), "data.frame")
 
       expect_error(nma.nodesplit(network, likelihood = "binomial", link="logit",
                                  method="random", n.iter=1000, drop.discon = FALSE,
-                                 comparisons = rbind(c("badger","rizatriptan_0.5"))),
+                                 comparisons = rbind(c("badger","rizatriptan_0.5")),
+                                 jags.seed=jags.seed),
                    "Treatment names given")
 
     }
@@ -92,9 +95,9 @@ for (dat in seq_along(alldats)) {
 
     if (datanam=="triptans") {
       split <- nma.nodesplit(net.noplac, likelihood = "binomial", link="logit",
-                             method="random", n.iter=1000, drop.discon = TRUE)
+                             method="random", n.iter=1000, drop.discon = TRUE, jags.seed=jags.seed)
       expect_equal(nrow(inconsistency.loops(net.noplac$data.ab)), length(split))
-      expect_equal(class(split), "nodesplit")
+      expect_s3_class(split, "nodesplit")
       expect_identical(names(split[[1]]), c("comparison",
                                             "direct", "indirect", "nma",
                                             "overlap matrix", "p.values", "quantiles",
@@ -104,10 +107,10 @@ for (dat in seq_along(alldats)) {
       expect_equal(is.numeric(split[[2]]$indirect), TRUE)
       expect_equal(is.numeric(split[[3]]$direct), TRUE)
       expect_equal(length(split[[4]]$comparison), 2)
-      expect_identical(class(split[[1]]$forest.plot), c("gg", "ggplot"))
-      expect_identical(class(split[[2]]$density.plot), c("gg", "ggplot"))
+      expect_s3_class(split[[1]]$forest.plot, c("gg", "ggplot"))
+      expect_s3_class(split[[2]]$density.plot, c("gg", "ggplot"))
       expect_error(print(split), NA)
-      expect_equal(class(summary(split)), "data.frame")
+      expect_s3_class(summary(split), "data.frame")
     }
 
 
@@ -116,7 +119,8 @@ for (dat in seq_along(alldats)) {
                                  method="random", n.iter=1000, drop.discon = FALSE,
                                  comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                      c("zolmitriptan_4", "eletriptan_1"),
-                                                     c("naratriptan_2", "Placebo_0"))))
+                                                     c("naratriptan_2", "Placebo_0")),
+                                 jags.seed=jags.seed))
 
     }
 
@@ -142,12 +146,12 @@ for (dat in seq_along(alldats)) {
     comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
 
     split <- mbnma.nodesplit(network, fun=dspline(type="ns", knots=2), likelihood = like, link=link,
-                             method="common", n.iter=1000)
+                             method="common", n.iter=1000, jags.seed=jags.seed)
     expect_equal(nrow(comps), length(split))
     if (!datanam %in% c("osteopain", "gout")) {
       expect_equal(nrow(inconsistency.loops(network$data.ab, incldr = FALSE))==length(split), FALSE)
     }
-    expect_equal(class(split), "nodesplit")
+    expect_s3_class(split, "nodesplit")
     expect_identical(names(split[[1]]), c("comparison",
                                           "direct", "indirect", "mbnma",
                                           "overlap matrix", "p.values", "quantiles",
@@ -158,14 +162,14 @@ for (dat in seq_along(alldats)) {
     expect_equal(is.numeric(split[[3]]$direct), TRUE)
     expect_equal(length(split[[4]]$comparison), 2)
     expect_error(print(split), NA)
-    expect_equal(class(summary(split)), "data.frame")
+    expect_s3_class(summary(split), "data.frame")
 
 
     comps.noplac <- inconsistency.loops(net.noplac$data.ab, incldr = TRUE)
     split <- mbnma.nodesplit(net.noplac, fun=dexp(), likelihood = like, link=link,
-                             method="random", n.iter=1000)
+                             method="random", n.iter=1000, jags.seed=jags.seed)
     expect_equal(nrow(comps.noplac), length(split))
-    expect_equal(class(split), "nodesplit")
+    expect_s3_class(split, "nodesplit")
     expect_identical(names(split[[1]]), c("comparison",
                                           "direct", "indirect", "mbnma",
                                           "overlap matrix", "p.values", "quantiles",
@@ -176,17 +180,18 @@ for (dat in seq_along(alldats)) {
     expect_equal(is.numeric(split[[3]]$direct), TRUE)
     expect_equal(length(split[[4]]$comparison), 2)
     expect_error(print(split), NA)
-    expect_equal(class(summary(split)), "data.frame")
+    expect_s3_class(summary(split), "data.frame")
 
 
     # Test comparisons
     split <- mbnma.nodesplit(net.noplac, fun=duser(fun= ~beta.1 * dose + beta.2 * (dose^2)),
                              likelihood = like, link=link,
                              method="random", n.iter=1000,
-                             comparisons = rbind(comps.noplac[1,], comps.noplac[3,]))
+                             comparisons = rbind(comps.noplac[1,], comps.noplac[3,]),
+                             jags.seed=jags.seed+1)
     expect_equal(2, length(split))
     expect_error(print(split), NA)
-    expect_equal(class(summary(split)), "data.frame")
+    expect_s3_class(summary(split), "data.frame")
 
     mult <- dmulti(c(list(dloglin()),
                      list(dspline("bs", knots=2)),
@@ -201,14 +206,14 @@ for (dat in seq_along(alldats)) {
     #   ))
     comps <- inconsistency.loops(network$data.ab, incldr = TRUE)
     split <- mbnma.nodesplit(network, fun=mult,
-                             method="random", n.iter=1000,
+                             method="random", n.iter=1000, jags.seed=jags.seed,
                              comparisons = rbind(c(network$treatment[comps$t1[2]], network$treatment[comps$t2[2]])))
     expect_equal(1, length(split))
     expect_error(print(split), NA)
-    expect_equal(class(summary(split)), "data.frame")
+    expect_s3_class(summary(split), "data.frame")
 
     expect_error(mbnma.nodesplit(network, fun=dpoly(degree=1),
-                                 method="random", n.iter=1000,
+                                 method="random", n.iter=1000, jags.seed=jags.seed,
                                  comparisons = rbind(c("badger","rizatriptan_0.5"))),
                  "Treatment names given")
 
@@ -221,7 +226,7 @@ for (dat in seq_along(alldats)) {
 
     } else {
       expect_error(mbnma.nodesplit(network, fun=demax(),
-                                   method="random", n.iter=1000,
+                                   method="random", n.iter=1000, jags.seed=jags.seed,
                                    comparisons = rbind(c("sumatriptan_0.5","rizatriptan_0.5"),
                                                        c("zolmitriptan_4", "eletriptan_1"),
                                                        c("naratriptan_2", "Placebo_0"))),

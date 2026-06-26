@@ -25,11 +25,6 @@ for (dat in seq_along(alldfs)) {
     df.class <- dataset
   }
 
-  # df.class <- HF2PPITT
-  # df.class$class <- NA
-  # df.class$class[df.class$agent %in% c("placebo", "eletriptan")] <- 1
-  # df.class$class[is.na(df.class$class)] <- 2
-
   datalist <- list(df1, df2)
 
 
@@ -220,7 +215,8 @@ for (dat in seq_along(alldfs)) {
         }
       }
 
-      expect_error(genspline(x, spline="ns", knots=15, max.dose=max(x)), "complexity")
+      # Complex splines are no longer restricted (number of spline parameters is unlimited)
+      expect_equal(ncol(genspline(x, spline="ns", knots=15, max.dose=max(x))), 16)
       expect_error(genspline(x, spline="ns", knots=c(1,2,3), max.dose=max(x)), "'probs' outside")
 
       expect_error(genspline(x, spline="badger", knots=3, max.dose=max(x)))
@@ -238,12 +234,12 @@ for (dat in seq_along(alldfs)) {
 
     expect_error(getjagsdata(data.ab, class=FALSE, fun=demax(), nodesplit = c(1,3)), NA)
 
-    expect_error(getjagsdata(data.ab, fun=dspline(type="ns", knots=c(0.2,0.5), beta.1="common", beta.2 = "rel", beta.3="random")), NA)
+    expect_error(getjagsdata(data.ab, fun=dspline(type="ns", knots=c(0.2,0.5), betas=c("common","rel","random"))), NA)
 
 
     mult <- dmulti(
       c(rep(list(dpoly(degree=1)),2),
-        rep(list(dspline(knots = 2, type="ns", beta.1=0.2)),1),
+        rep(list(dspline(knots = 2, type="ns", betas=c(0.2,"rel","rel"))),1),
         rep(list(dfpoly(degree=2)),length(network$agents)-3)
       ))
 
@@ -252,8 +248,8 @@ for (dat in seq_along(alldfs)) {
 
     mult <- dmulti(
       c(rep(list(dpoly(degree=1)),2),
-        rep(list(dspline(knots = c(0.1,0.5), type="ns", beta.1=0.2)),1),
-        rep(list(dspline(knots = 3, type="ls", beta.2="common")),length(network$agents)-3)
+        rep(list(dspline(knots = c(0.1,0.5), type="ns", betas=c(0.2,"rel","rel"))),1),
+        rep(list(dspline(knots = 3, type="bs", degree=1, betas=c("rel","common","rel","rel"))),length(network$agents)-3)
       ))
 
     expect_error(getjagsdata(data.ab, fun=mult), NA)
