@@ -1,5 +1,6 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
 
 [![CRAN
@@ -9,7 +10,7 @@ status](https://www.r-pkg.org/badges/version/MBNMAdose)](https://CRAN.R-project.
 [![R-CMD-check](https://github.com/hugaped/MBNMAdose/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/hugaped/MBNMAdose/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-# MBNMAdose 0.4.1
+# MBNMAdose
 
 The goal of `MBNMAdose` is to provide a collection of useful commands
 that allow users to run dose-response Model-Based Network Meta-Analyses
@@ -78,8 +79,7 @@ functions that can be applied to objects of specific classes*
 
 ## References
 
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
 <div id="ref-lu2004" class="csl-entry">
 
