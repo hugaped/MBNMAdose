@@ -849,15 +849,15 @@ dfpoly <- function(degree=1, beta.1="rel", beta.2="rel",
 #'   \insertAllCited
 #'
 #' @examples
-#' # Second order B spline with 2 knots
-#' dspline(type="bs", df=3, degree=3,
+#' # Natural cubic spline with 1 knot
+#' dspline(type="bs", knots=1,
 #'   betas="rel")
 #'
-#' # Piecewise linear spline with knots at 0.1 and 0.5 quantiles
+#' # Piecewise linear B-spline with knots at 0.1 and 0.5 quantiles
 #' # Single parameter independent of treatment estimated for 1st coefficient
 #' #with random effects
 #' dspline(type="bs", degree=1, knots=c(0.1,0.5),
-#'   betas=c("random", "rel", "rel))
+#'   betas=c("random", "rel", "rel"))
 #'
 #' @export
 dspline <- function(type="bs", knots=NULL, degree=3, df=NULL,
