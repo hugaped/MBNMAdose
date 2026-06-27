@@ -816,6 +816,7 @@ forest.splits <- function(x, ...) {
     ggplot2::geom_text(ggplot2::aes(label=plab), x=Inf, hjust=1.1,
                        size=3, na.rm=TRUE) +
     ggplot2::facet_grid(Comparison ~ ., switch="y") +
+    ggplot2::scale_x_continuous(expand=ggplot2::expansion(mult=c(0.05, 0.18))) +
     ggplot2::xlab("Effect size (95% CrI)") +
     ggplot2::ylab("") +
     ggplot2::theme_bw() +
