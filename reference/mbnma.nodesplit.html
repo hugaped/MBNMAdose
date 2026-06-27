@@ -19,7 +19,7 @@ assumption required for NMA and MBNMA may violated."><!-- mathjax --><script src
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@ for a greater number of potential loops in which to check for consistency.</p></
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments to be sent to <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot()</a></code> or <code><a href="https://rdrr.io/pkg/forestplot/man/forestplot.html" class="external-link">forestplot::forestplot()</a></code></p></dd>
+<dd><p>Arguments to be sent to <code><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot2::ggplot()</a></code> or <code><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html" class="external-link">ggplot2::geom_pointrange()</a></code></p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -142,8 +142,8 @@ forest plots or <code>"density"</code> to plot posterior density plots.</p></dd>
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Plots the desired graph if <code>plot.type="forest"</code> and plots and returns an object
-of <code>class(c("gg", "ggplot"))</code> if <code>plot.type="density"</code>.</p>
+    <p>Plots and invisibly returns an object of <code>class(c("gg", "ggplot"))</code> for
+both <code>plot.type="forest"</code> and <code>plot.type="density"</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -521,7 +521,8 @@ of posterior densities for direct and indirect evidence.</p>
 <span class="r-in"><span><span class="co"># Plot results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"density"</span><span class="op">)</span> <span class="co"># Plot density plots of posterior densities</span></span></span>
 <span class="r-plt img"><img src="mbnma.nodesplit-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, txt_gp<span class="op">=</span><span class="fu">forestplot</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/forestplot/man/fpTxtGp.html" class="external-link">fpTxtGp</a></span><span class="op">(</span>cex<span class="op">=</span><span class="fl">0.5</span><span class="op">)</span><span class="op">)</span> <span class="co"># Plot forest plots (with smaller label size)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">split</span>, plot.type<span class="op">=</span><span class="st">"forest"</span><span class="op">)</span> <span class="co"># Plot forest plots</span></span></span>
+<span class="r-plt img"><img src="mbnma.nodesplit-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print and summarise results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">split</span><span class="op">)</span></span></span>
@@ -707,7 +708,7 @@ of posterior densities for direct and indirect evidence.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

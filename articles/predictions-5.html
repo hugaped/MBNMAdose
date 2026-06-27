@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2025-05-22</h4>
+            <h4 data-toc-skip class="date">2026-06-27</h4>
       
 
       <div class="hidden name"><code>predictions-5.Rmd</code></div>
@@ -219,7 +219,7 @@ doses (using <code>n.doses</code>) to get a smooth curve.</p>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">trip.emax</span>, E0 <span class="op">=</span> <span class="fl">0.2</span>, n.dose <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
-<p><img src="predictions-5_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="predictions-5_files/figure-html/unnamed-chunk-6-1.png" class="r-plt" alt="" width="672"></p>
 <p>Shaded counts of the number of studies in the original dataset that
 investigate each dose of an agent can be plotted over the 95% CrI for
 each treatment by setting <code>disp.obs = TRUE</code>, though this
@@ -230,7 +230,7 @@ estimate the MBNMA be provided via <code>network</code>.</p>
 <span><span class="co">#&gt; 66 placebo arms in the dataset are not shown within the plots</span></span>
 <span><span class="co">#&gt; Warning: No shared levels found between `names(values)` of the manual scale and the</span></span>
 <span><span class="co">#&gt; data's <span style="color: #00BB00;">fill</span> values.</span></span></code></pre></div>
-<p><img src="predictions-5_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p><img src="predictions-5_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <p>This can be used to identify any extrapolation/interpretation of the
 dose-response that might be occurring for a particular agent. As you can
 see, more observations typically leads to tighter 95% CrI for the
@@ -249,7 +249,7 @@ head-to-head comparison) will not be included.</p>
 <span><span class="va">alog.emax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.run.html">mbnma.run</a></span><span class="op">(</span><span class="va">alognet</span>, fun <span class="op">=</span> <span class="fu"><a href="../reference/demax.html">demax</a></span><span class="op">(</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">alog.emax</span>, E0 <span class="op">=</span> <span class="fl">0</span>, n.dose <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span>, overlay.split <span class="op">=</span> <span class="cn">TRUE</span>, method <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="predictions-5_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="predictions-5_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <p>By plotting these, as well as observing how responses can be
 extrapolated/interpolated, we can also see which doses are likely to be
 providing most information to the dose-response relationship. The
@@ -280,7 +280,7 @@ all agents).</p>
 <span></span>
 <span><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/rank.html">rank</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">ranks</span><span class="op">)</span></span></code></pre></div>
-<p><img src="predictions-5_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="predictions-5_files/figure-html/unnamed-chunk-9-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 </div>
 <div class="section level2">
@@ -304,7 +304,7 @@ all agents).</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -115,10 +115,10 @@ medications for Chronic Obstructive Pulmonary Disease (COPD) from the
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/guido-s/netmeta" class="external-link">netmeta</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: meta</span></span>
-<span><span class="co">#&gt; Loading required package: metadat</span></span>
-<span><span class="co">#&gt; Loading 'meta' package (version 8.1-0).</span></span>
+<span><span class="co">#&gt; Loading required package: metabook</span></span>
+<span><span class="co">#&gt; Loading 'meta' package (version 8.5-0).</span></span>
 <span><span class="co">#&gt; Type 'help(meta)' for a brief overview.</span></span>
-<span><span class="co">#&gt; Loading 'netmeta' package (version 3.2-0).</span></span>
+<span><span class="co">#&gt; Loading 'netmeta' package (version 3.6-1).</span></span>
 <span><span class="co">#&gt; Type 'help("netmeta-package")' for a brief overview.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"Dong2013"</span><span class="op">)</span></span>
 <span></span>
@@ -140,7 +140,7 @@ model.</p>
 <code class="sourceCode R"><span><span class="co"># Define agents and assign a dose of 1 to all agents</span></span>
 <span><span class="va">Dong2013</span> <span class="op">&lt;-</span> <span class="va">Dong2013</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>agent <span class="op">=</span> <span class="va">treatment</span><span class="op">)</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dose <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">agent</span> <span class="op">==</span> <span class="st">"Placebo"</span> <span class="op">~</span> <span class="fl">0</span>, <span class="va">agent</span> <span class="op">!=</span> <span class="st">"Placebo"</span> <span class="op">~</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dose <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">agent</span> <span class="op">==</span> <span class="st">"Placebo"</span> <span class="op">~</span> <span class="fl">0</span>, <span class="va">agent</span> <span class="op">!=</span> <span class="st">"Placebo"</span> <span class="op">~</span></span>
 <span>        <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Note that if there is an intervention within the dataset that has
 been administered at multiple doses, you can force the dataset to be
@@ -164,10 +164,10 @@ assumptions can be found in <span class="citation">[@pedder2021cons]</span>.</p>
 <span><span class="co">#&gt; Median (min, max) doses per agent (incl placebo): 2 (2, 2)</span></span>
 <span><span class="co">#&gt; Agent-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
-<span><span class="co">#&gt; Ttreatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
+<span><span class="co">#&gt; Treatment-level network is <span style="color: #00BB00; font-weight: bold;">CONNECTED</span><span style="font-weight: bold;"> </span></span></span>
 <span><span class="co"><span style="font-weight: bold;">#&gt; </span></span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network</span><span class="op">)</span></span></code></pre></div>
-<p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-3-1.png" width="672"></p>
+<p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-3-1.png" class="r-plt" alt="" width="672"></p>
 <p>We can then use a linear dose-response MBNMA to analyse the data. The
 coefficients for the linear slope of the dose-response function are
 mathematically equivalent to the basic treatment effect parameters
@@ -182,9 +182,9 @@ that is equal to zero is not given in the output.</p>
 <span><span class="co">#&gt; module glm loaded</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma.linear</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpqUTXTA/file23a67ec74117", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpXg82NS/file21bc734ce3a0", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
-<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 8.31 secs</span></span>
+<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 8.45 secs</span></span>
 <span><span class="co">#&gt;           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
 <span><span class="co">#&gt; beta.1[2]   0.029   0.084  -0.136  -0.027   0.028   0.085   0.195 1.001  3000</span></span>
 <span><span class="co">#&gt; beta.1[3]  -0.074   0.080  -0.228  -0.129  -0.073  -0.020   0.082 1.001  3000</span></span>
@@ -207,9 +207,9 @@ that is equal to zero is not given in the output.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nma</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $jagsresult</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpqUTXTA/file23a6429520f3", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpXg82NS/file21bc69e17834", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 50000 iterations (first 25000 discarded), n.thin = 25</span></span>
-<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 8.058 secs</span></span>
+<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 8.397 secs</span></span>
 <span><span class="co">#&gt;           mu.vect sd.vect    2.5%     25%     50%     75%   97.5%  Rhat n.eff</span></span>
 <span><span class="co">#&gt; d[1]        0.000   0.000   0.000   0.000   0.000   0.000   0.000 1.000     1</span></span>
 <span><span class="co">#&gt; d[2]        0.029   0.081  -0.134  -0.027   0.030   0.084   0.186 1.001  3000</span></span>
@@ -256,7 +256,7 @@ Infection dataset.</p>
 <span></span>
 <span><span class="co"># Set dose=0 for network reference and dose=1 for all other interventions</span></span>
 <span><span class="va">ssi.plac</span> <span class="op">&lt;-</span> <span class="va">ssi</span> <span class="op"><a href="../reference/pipe.html">%&gt;%</a></span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dose <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">trt</span> <span class="op">==</span> <span class="st">"Suture-absorbable"</span> <span class="op">~</span> <span class="fl">0</span>, <span class="cn">TRUE</span> <span class="op">~</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>dose <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">trt</span> <span class="op">==</span> <span class="st">"Suture-absorbable"</span> <span class="op">~</span> <span class="fl">0</span>, <span class="cn">TRUE</span> <span class="op">~</span></span>
 <span>        <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">network.plac</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mbnma.network.html">mbnma.network</a></span><span class="op">(</span><span class="va">ssi.plac</span><span class="op">)</span></span>
@@ -265,7 +265,7 @@ Infection dataset.</p>
 <span><span class="co">#&gt; Values for `class` with dose = 0 have been recoded to `Placebo`</span></span>
 <span><span class="co">#&gt; class is being recoded to enforce sequential numbering</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">network.plac</span><span class="op">)</span></span></code></pre></div>
-<p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="nma_in_mbnmadose_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Note that Suture-absorbable (the comparator) has been renamed to Placebo</span></span></code></pre></div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
@@ -366,7 +366,7 @@ written.</p>
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

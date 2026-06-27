@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -76,7 +76,35 @@
 <h2 class="page-header" data-toc-text="0.5.1" id="mbnmadose-051">MBNMAdose 0.5.1<a class="anchor" aria-label="anchor" href="#mbnmadose-051"></a></h2>
 <div class="section level3">
 <h3 id="additionschanges-0-5-1">Additions/changes<a class="anchor" aria-label="anchor" href="#additionschanges-0-5-1"></a></h3>
-<ul><li>The number of spline parameters that can be fit is no longer limited</li>
+<ul><li>Removed the <code>mcmcplots</code> package from <code>Suggests</code> (it has been archived from CRAN). MCMC diagnostic plots in examples and the vignette now use the <code>coda</code> package instead.</li>
+<li>
+<code><a href="../reference/dspline.html">dspline()</a></code> pooling is specified through a single vector (<code>betas</code>) argument rather than individual <code>beta.1</code>, <code>beta.2</code>, etc.</li>
+<li>The number of spline parameters that can be fit is no longer limited</li>
+<li>
+<code><a href="../reference/dspline.html">dspline()</a></code> spline types have been consolidated to the implemented set: <code>"bs"</code> (B-splines) and <code>"ns"</code> (natural cubic splines). The defunct <code>"rcs"</code> and <code>"is"</code> options, and the redundant <code>"ls"</code> option (piecewise linear splines, equivalent to <code>"bs"</code> with <code>degree=1</code>), have been removed from the documentation and argument checks.</li>
+<li>The <code>knots</code> argument in <code><a href="../reference/dspline.html">dspline()</a></code> can now be specified either as a single integer (indicating the number of equally-spaced internal knots) or as a vector of quantile locations (proportions of the dose range).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-5-1">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-1"></a></h3>
+<ul><li>Fixed a bug in <code><a href="../reference/dmulti.html">dmulti()</a></code> whereby each constituent dose-response function’s parameters were not renamed to globally unique names. This caused the functions to share (and overwrite) each other’s parameters in the JAGS model and in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code>, giving incorrect results, and could cause a JAGS <code>"Invalid parent values"</code> error for functions involving division (e.g. <code><a href="../reference/demax.html">demax()</a></code>).</li>
+<li>Fixed a bug in the JAGS code generated for <code><a href="../reference/dmulti.html">dmulti()</a></code> models whereby the reference-arm dose-response was subtracted without parentheses, so only the first term of multi-term functions (e.g. <code>dpoly(degree=2)</code>) was negated.</li>
+<li>Fixed a bug in <code><a href="../reference/dmulti.html">dmulti()</a></code> whereby the <code>df</code> (spline degrees of freedom) of constituent functions became misaligned when any function was specified via <code>knots</code> (rather than <code>df</code>), causing a subscript-out-of-bounds error in <code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> for models combining spline functions.</li>
+<li>Fixed a bug in <code><a href="../reference/get.relative.html">get.relative()</a></code> for models with multiple (agent-specific) dose-response functions, where parameters were mapped to the wrong dose-response function when constructing relative effects.</li>
+<li>Fixed a bug in <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> for predictions (<code><a href="../reference/plot.mbnma.predict.html">plot.mbnma.predict()</a></code>) with <code>overlay.split=TRUE</code>, which errored because the <code>overlay.split</code> argument masked the internal function of the same name. Additional arguments passed via <code>...</code> are now correctly routed to either <code><a href="https://rdrr.io/pkg/R2jags/man/jags.html" class="external-link">R2jags::jags()</a></code> (for the split NMA) or <code>ggplot2</code>, rather than <code>jags</code>-specific arguments (e.g. <code>jags.seed</code>) being incorrectly passed to <code>ggplot2</code>.</li>
+<li>Fixed a <code>ggplot2</code> warning in <code><a href="../reference/devplot.html">devplot()</a></code> caused by passing the <code>group</code> aesthetic outside of <code>aes()</code>.</li>
+<li>Fixed a bug in <code><a href="../reference/dspline.html">dspline()</a></code> whereby specifying multiple knots as a vector silently retained only the first knot, generating a spline basis with fewer parameters than intended (and a mismatch with the monitored dose-response parameters).</li>
+<li>Fixed an error in <code><a href="../reference/nma.run.html">nma.run()</a></code> that referenced an undefined <code>class.effect</code> object when named (multi-element) <code>priors</code> were supplied.</li>
+<li>
+<code>dspline(type="rcs")</code> previously errored despite being documented, and <code>dspline(type="is")</code> was accepted but crashed during model setup. Spline types are now consistent across the package (see above).</li>
+<li>Fixed an error in <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> for node-split objects (<code><a href="../reference/mbnma.nodesplit.html">plot.nodesplit()</a></code>) that referenced an undefined object when rescaling density panels with large differences in scale.</li>
+<li>
+<code><a href="../reference/duser.html">duser()</a></code> now returns a correctly named <code>bname</code> element, consistent with the other dose-response functions.</li>
+<li>Corrected a mislabelled internal parameter in <code><a href="../reference/dfpoly.html">dfpoly()</a></code> so that validation errors for the second power refer to <code>power.2</code> rather than <code>beta.4</code>.</li>
+<li>Corrected the message emitted by <code>ditp(p.expon=TRUE)</code>, which incorrectly referred to <code>ed50</code> instead of <code>rate</code>.</li>
+<li>
+<code><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict()</a></code> now returns an informative error message (instead of an empty <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code>) when too few values are available to generate predictions.</li>
+<li>Fixed a typo (“Ttreatment”) in the <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code> output for <code>mbnma.network</code> objects.</li>
+<li>Splines previously had a check that incorrectly limited the dimensions (and threw an error) if the time-span in the data substantially exceeded 0-100</li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -149,7 +177,7 @@
 <h2 class="page-header" data-toc-text="0.4.0" id="mbnmadose-040">MBNMAdose 0.4.0<a class="anchor" aria-label="anchor" href="#mbnmadose-040"></a></h2>
 <div class="section level3">
 <h3 id="additionschanges-0-4-0">Additions/changes<a class="anchor" aria-label="anchor" href="#additionschanges-0-4-0"></a></h3>
-<ul><li>Dose-response functions provided to <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code> are now given as <code>class("dosefun")</code> and dose-response parameters are specified within these functions. NOTE: Previous syntax of specifying a function name as a character (e.g. <code>fun="linear"</code>) along with beta parameters (e.g. <code>mbnma.run(beta.1="rel")</code>) will be removed in subsequent versions, along with wrapper functions.</li>
+<ul><li>Dose-response functions provided to <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code> are now given as <code>class("dosefun")</code> and dose-response parameters are specified within these functions. NOTE: Previous syntax of specifying a function name as a character (e.g. <code>fun="linear"</code>) along with beta parameters (e.g. <code>mbnma.run(beta.1="rel")</code>) will be removed in subsequent versions, along with wrapper functions.</li>
 <li>Added log linear dose-response function (<code><a href="../reference/dloglin.html">dloglin()</a></code>)</li>
 <li>Added spline function (<code><a href="../reference/dspline.html">dspline()</a></code>) (piecewise linear splines, B-splines, restricted cubic splines, natural splines)</li>
 <li>Added fractional polynomial function (<code><a href="../reference/dfpoly.html">dfpoly()</a></code>)</li>
@@ -313,7 +341,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -96,7 +96,7 @@ Meta-Analysis (MBNMA)</h1>
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2025-05-22</h4>
+            <h4 data-toc-skip class="date">2026-06-27</h4>
       
 
       <div class="hidden name"><code>runmbnmadose-2.Rmd</code></div>
@@ -138,17 +138,17 @@ to the agent in arm
 of study
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>.</p>
 <p><strong>Log-linear (<code><a href="../reference/dloglin.html">dloglin()</a></code>)</strong>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>λ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo>×</mo><mi>l</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} \times ln(x_{i,k} + 1)</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>λ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo>×</mo><mi>l</mi><mi>n</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\lambda_{t_{i,k}} \times ln(x_{i,k} + 1)</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>a</mi><mi>m</mi><mi>b</mi><mi>d</mi><mi>a</mi></mrow><annotation encoding="application/x-tex">lambda</annotation></semantics></math>
 controls the gradient of the dose-response relationship.</p>
 <p><strong>Exponential (<code><a href="../reference/dexp.html">dexp()</a></code>)</strong>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>E</mi><mi>m</mi><mi>a</mi><msub><mi>x</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mo>−</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=Emax_{t_{i,k}} (1 - e^{-x_{i,k}})</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>E</mi><mi>m</mi><mi>a</mi><msub><mi>x</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo stretchy="false" form="prefix">(</mo><mn>1</mn><mo>−</mo><msup><mi>e</mi><mrow><mi>−</mi><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=Emax_{t_{i,k}} (1 - e^{-x_{i,k}})</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>m</mi><mi>a</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">Emax</annotation></semantics></math>
 is the maximum efficacy of an agent.</p>
 <p><strong>Emax (<code><a href="../reference/demax.html">demax()</a></code>)</strong>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac displaystyle="true"><mrow><mi>E</mi><mi>m</mi><mi>a</mi><msub><mi>x</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo>×</mo><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup></mrow><mrow><mi>E</mi><mi>D</mi><msubsup><mn>50</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup></mrow></mfrac></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times {x_{i,k}^{\gamma_{t_{i,k}}}}} {ED50_{t_{i,k}}^{\gamma_{t_{i,k}}} + x_{i,k}^{\gamma_{t_{i,k}}}}</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mstyle displaystyle="true"><mfrac><mrow><mi>E</mi><mi>m</mi><mi>a</mi><msub><mi>x</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo>×</mo><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup></mrow><mrow><mi>E</mi><mi>D</mi><msubsup><mn>50</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup><mo>+</mo><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msubsup></mrow></mfrac></mstyle></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\dfrac{Emax_{t_{i,k}} \times {x_{i,k}^{\gamma_{t_{i,k}}}}} {ED50_{t_{i,k}}^{\gamma_{t_{i,k}}} + x_{i,k}^{\gamma_{t_{i,k}}}}</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>m</mi><mi>a</mi><mi>x</mi></mrow><annotation encoding="application/x-tex">Emax</annotation></semantics></math>
 is the maximum efficacy that can be achieved,
@@ -161,14 +161,14 @@ which
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\gamma_{t_{i,k}}=1</annotation></semantics></math>
 (<code>hill=NULL</code> in function argument).</p>
 <p><strong>Polynomial (e.g. linear) (<code><a href="../reference/dpoly.html">dpoly()</a></code>)</strong>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>β</mi><msub><mn>1</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>+</mo><msub><mi>β</mi><msub><mi>p</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><mi>p</mi></msubsup></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}+...+\beta_{p_{t_{i,k}}}x^p_{i,k}</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>β</mi><msub><mn>1</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>+</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>+</mo><msub><mi>β</mi><msub><mi>p</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><mi>p</mi></msubsup></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}+...+\beta_{p_{t_{i,k}}}x^p_{i,k}</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
 is the degree of the polynomial (e.g. 1 for linear) and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mi>p</mi></msub><annotation encoding="application/x-tex">\beta_p</annotation></semantics></math>
 are the coefficients</p>
 <p><strong>Fractional polynomial (<code><a href="../reference/dfpoly.html">dfpoly()</a></code>)</strong>
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>β</mi><msub><mn>1</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><mn>1</mn></msub></msubsup><mo>+</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>+</mo><msub><mi>β</mi><msub><mi>p</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><mi>p</mi></msub></msubsup></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k}}}x^{\gamma_p}_{i,k}</annotation></semantics></math>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><msub><mi>β</mi><msub><mn>1</mn><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><mn>1</mn></msub></msubsup><mo>+</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>+</mo><msub><mi>β</mi><msub><mi>p</mi><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub></msub><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><msub><mi>γ</mi><mi>p</mi></msub></msubsup></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k}}}x^{\gamma_p}_{i,k}</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math>
 is the degree of the polynomial,
@@ -178,15 +178,17 @@ are the coefficients, and
 is a regular power except where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>γ</mi><mi>p</mi></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma_p=0</annotation></semantics></math>
 where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mi>l</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">{x_{i,k}^{(0)}=ln(x_{i,k})}</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow><mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow></msubsup><mo>=</mo><mi>l</mi><mi>n</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">{x_{i,k}^{(0)}=ln(x_{i,k})}</annotation></semantics></math>.
 If a fractional polynomial power
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>γ</mi><mi>p</mi></msub><annotation encoding="application/x-tex">{\gamma_p}</annotation></semantics></math>
 repeats within the function it is multiplied by another
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">{ln(x_{i,k})}</annotation></semantics></math>.</p>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>n</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">{ln(x_{i,k})}</annotation></semantics></math>.</p>
 <p><strong>Spline functions (<code><a href="../reference/dspline.html">dspline()</a></code>)</strong> B-splines
-(<code>type="bs"</code>), natural cubic splines (<code>type="ns"</code>)
-and piecewise linear splines (<code>type="ls"</code>) can be fitted.
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><msub><mi>β</mi><mrow><mi>p</mi><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><msub><mi>X</mi><mrow><mi>p</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}</annotation></semantics></math>
+(<code>type="bs"</code>) and natural cubic splines
+(<code>type="ns"</code>) can be fitted. Piecewise linear splines can be
+fitted using <code>type="bs"</code> with <code>degree=1</code>
+(following deprecation of <code>type="ls"</code>).
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><msub><mi>x</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo><mo>=</mo><munderover><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>1</mn></mrow><mi>P</mi></munderover><msub><mi>β</mi><mrow><mi>p</mi><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><msub><mi>X</mi><mrow><mi>p</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}</annotation></semantics></math>
 where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>β</mi><mrow><mi>p</mi><mo>,</mo><msub><mi>t</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><annotation encoding="application/x-tex">\beta_{p,t_{i,k}}</annotation></semantics></math>
 is the regression coefficient for the
@@ -467,15 +469,14 @@ effect (e.g. mean difference).</p>
 <p>However, by specifying <code>link="log"</code> a user can model a log
 link and therefore assume a multiplicative treatment effect. For
 continuous data this models the treatment effect as a Ratio of Means
-(RoM) <span class="citation">(Friedrich, Adhikari, and Beyene
-2011)</span>. This also provides an advantage as the treatment effect is
-scale independent (i.e. studies measuring the same outcome using
-different measurement scales can be analysed simultaneously). However,
-within-study treatment effects must all be of the same direction (either
-positive or negative), and change from baseline measures must be
-adjusted so that they are also expressed as RoMs (log(follow-up) -
-log(baseline)) to avoid combining additive and multiplicative
-assumptions within the same analysis.</p>
+(RoM) <span class="citation">(Friedrich et al. 2011)</span>. This also
+provides an advantage as the treatment effect is scale independent
+(i.e. studies measuring the same outcome using different measurement
+scales can be analysed simultaneously). However, within-study treatment
+effects must all be of the same direction (either positive or negative),
+and change from baseline measures must be adjusted so that they are also
+expressed as RoMs (log(follow-up) - log(baseline)) to avoid combining
+additive and multiplicative assumptions within the same analysis.</p>
 <p>An alternative approach for modelling a measurement scale-independent
 treatment effect whilst still assuming additive treatment effects is to
 perform the analysis using Standardised Mean Differences (SMD). Whilst
@@ -704,7 +705,7 @@ the dose-response function).</p>
 <h4 id="priors">Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
 </h4>
 <p>Default vague priors for the model are as follows:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>d</mi><mrow><mi>p</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>b</mi><mi>e</mi><mi>t</mi><msub><mi>a</mi><mi>p</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mi>σ</mi><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>σ</mi><mi>p</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msub><mi>D</mi><mrow><mi>p</mi><mo>,</mo><mi>c</mi></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1000</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><msubsup><mi>σ</mi><mi>p</mi><mi>D</mi></msubsup><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>d</mi><mrow><mi>p</mi><mo>,</mo><mi>a</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mi>b</mi><mi>e</mi><mi>t</mi><msub><mi>a</mi><mi>p</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>10000</mn><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><mi>σ</mi><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="false" form="postfix">)</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">]</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>σ</mi><mi>p</mi></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="false" form="postfix">)</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">]</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msub><mi>D</mi><mrow><mi>p</mi><mo>,</mo><mi>c</mi></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1000</mn><mo stretchy="false" form="postfix">)</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd><mtd columnalign="left" style="text-align: left; padding-left: 0"><msubsup><mi>σ</mi><mi>p</mi><mi>D</mi></msubsup><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>400</mn><mo stretchy="false" form="postfix">)</mo><mrow><mspace width="0.333em"></mspace><mtext mathvariant="normal"> limited to </mtext><mspace width="0.333em"></mspace></mrow><mi>x</mi><mo>∈</mo><mo stretchy="false" form="prefix">[</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="false" form="postfix">]</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right; padding-right: 0"></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
   &amp;d_{p,a} \sim N(0,10000)\\
   &amp;beta_{p} \sim N(0,10000)\\
@@ -802,7 +803,7 @@ running additional MCMC samples, it can be set to <code>FALSE</code> to
 force the model to estimate pV, where <code>pv = var(deviance)/2</code>.
 Whilst this is easy to calculate, it is numerically less stable than the
 Kullback-Leibler divergence estimation, and may perform more poorly in
-certain conditions <span class="citation">(Gelman, Hwang, and Vehtari
+certain conditions <span class="citation">(Gelman et al.
 2014)</span>.</p>
 </div>
 <div class="section level4">
@@ -865,7 +866,7 @@ disconnect the network):</p>
 <span><span class="co">#&gt; RDEA_100</span></span>
 <span><span class="co">#&gt; RDEA_200</span></span>
 <span><span class="co">#&gt; RDEA_400</span></span></code></pre></div>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-13-1.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="672"></p>
 <p>This results in a very disconnected network, and if we were to
 conduct a conventional “split” NMA (whereby different doses of an agent
 are considered to be independent), we would only be able to estimate
@@ -880,7 +881,7 @@ and agents in the network.</p>
 <span><span class="co">#&gt; to the network reference:</span></span>
 <span><span class="co">#&gt; Arha</span></span>
 <span><span class="co">#&gt; RDEA</span></span></code></pre></div>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-14-1.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-14-1.png" class="r-plt" alt="" width="672"></p>
 <p>There are still two agents that do not connect to the network because
 they involve comparisons of different doses of the same agent. However,
 multiple doses of an agent within a study allow us to estimate the
@@ -909,7 +910,7 @@ will also add a node for placebo to illustrate the connection.</p>
 <code class="sourceCode R"><span><span class="co"># Network plot assuming connectivity via two doses Allows estimation of a</span></span>
 <span><span class="co"># single-parameter dose-response function</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">noplac.net</span>, level <span class="op">=</span> <span class="st">"agent"</span>, remove.loops <span class="op">=</span> <span class="cn">TRUE</span>, label.distance <span class="op">=</span> <span class="fl">4</span>, doselink <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="672"></p>
 <pre><code><span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
 <span><span class="co">#&gt;                    function with 1 degrees of freedom</span></span>
 <span></span>
@@ -922,7 +923,7 @@ will also add a node for placebo to illustrate the connection.</p>
 <span><span class="co">#&gt; Arha</span></span>
 <span><span class="co">#&gt; Benz</span></span>
 <span><span class="co">#&gt; Febu</span></span></code></pre>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-15-2.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-15-2.png" class="r-plt" alt="" width="672"></p>
 <pre><code><span><span class="co">#&gt; Dose-response connections to placebo plotted based on a dose-response</span></span>
 <span><span class="co">#&gt;                    function with 2 degrees of freedom</span></span></code></pre>
 <p>In this way we can fully connect up treatments in an otherwise
@@ -964,9 +965,9 @@ response, otherwise it can lead to computation error.</p>
 <span><span class="co">#&gt; `link` not given by user - set to `logit` based on assigned value for `likelihood`</span></span></code></pre></div>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">nonparam</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Inference for Bugs model at "/tmp/Rtmp1zG0eo/file245d519da058", fit using jags,</span></span>
+<span><span class="co">#&gt; Inference for Bugs model at "/tmp/RtmpmJ7Jug/file226f190ac9d", fit using jags,</span></span>
 <span><span class="co">#&gt;  3 chains, each with 20000 iterations (first 10000 discarded), n.thin = 10</span></span>
-<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 21.969 secs</span></span>
+<span><span class="co">#&gt;  n.sims = 3000 iterations saved. Running time = 22.378 secs</span></span>
 <span><span class="co">#&gt;            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span></span>
 <span><span class="co">#&gt; d.1[1,1]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
 <span><span class="co">#&gt; d.1[1,2]     0.000   0.000    0.000    0.000    0.000    0.000    0.000 1.000</span></span>
@@ -1084,7 +1085,7 @@ automatically run for additional iterations.</p>
 <span><span class="fu"><a href="../reference/devplot.html">devplot</a></span><span class="op">(</span><span class="va">trip.emax</span>, plot.type <span class="op">=</span> <span class="st">"box"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `resdev` not monitored in mbnma$parameters.to.save.</span></span>
 <span><span class="co">#&gt; additional iterations will be run in order to obtain results for `resdev`</span></span></code></pre></div>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-18-1.png" class="r-plt" alt="" width="672"></p>
 <p>From these plots we can see that whilst the model fit does not seem
 to be systematically non-linear (which would suggest an alternative
 dose-response function may be a better fit), residual deviance is high
@@ -1107,7 +1108,7 @@ this may require running additional model iterations to monitor
 <span><span class="fu"><a href="../reference/fitplot.html">fitplot</a></span><span class="op">(</span><span class="va">trip.emax</span><span class="op">)</span></span>
 <span><span class="co">#&gt; `theta` not monitored in mbnma$parameters.to.save.</span></span>
 <span><span class="co">#&gt; additional iterations will be run in order to obtain results</span></span></code></pre></div>
-<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
+<p><img src="runmbnmadose-2_files/figure-html/unnamed-chunk-19-1.png" class="r-plt" alt="" width="672"></p>
 <p>Fitted values are plotted as connecting lines and observed values in
 the original dataset are plotted as points. These plots can be used to
 identify if the model fits the data well for different agents and at
@@ -1170,9 +1171,11 @@ similar across all chains</li>
 <li>Autocorrelation plots that show low autocorrelation between
 neighbouring MCMC iterations (i.e. low correlation at higher lags)</li>
 </ul>
-<p>An HTML document with all the above convergence plots can easily be
-generated for all parameters in the model simultaneously using
-<code><a href="https://rdrr.io/pkg/mcmcplots/man/mcmcplot.html" class="external-link">mcmcplots::mcmcplot()</a></code>.</p>
+<p>Convergence plots for all parameters in the model can be generated
+using functions from the <code>coda</code> package
+(e.g. <code><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">coda::traceplot()</a></code>, <code><a href="https://rdrr.io/pkg/coda/man/densplot.html" class="external-link">coda::densplot()</a></code> and
+<code><a href="https://rdrr.io/pkg/coda/man/autocorr.plot.html" class="external-link">coda::autocorr.plot()</a></code>) applied to the model output via
+<code><a href="https://rdrr.io/pkg/coda/man/mcmc.html" class="external-link">coda::as.mcmc()</a></code>.</p>
 <p>Two steps may improve convergence when using <code>MBNMAdose</code>.
 One step is to run models for more iterations (this can be done using
 the <code>n.iter</code> argument in <code><a href="../reference/mbnma.run.html">mbnma.run()</a></code>). It can
@@ -1189,13 +1192,13 @@ model via informative priors.</p>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-GMD2" class="csl-entry">
 Daly, C., N. J. Welton, S. Dias, S. Anwer, and A. E. Ades. 2021.
-<span>“NICE Guideline Methodology Document 2: Meta-Analysis of
-Continuous Outcomes.”</span> Population Health Sciences, University of
-Bristol; Centre for Reviews; Dissemination; Centre for Health Economics,
-University of York. <a href="https://www.bristol.ac.uk/media-library/sites/social-community-medicine/documents/mpes/gmd-2-continuous-jan2021.pdf" class="external-link">https://www.bristol.ac.uk/media-library/sites/social-community-medicine/documents/mpes/gmd-2-continuous-jan2021.pdf</a>.
+<em>NICE Guideline Methodology Document 2: Meta-Analysis of Continuous
+Outcomes</em>. Population Health Sciences, University of Bristol; Centre
+for Reviews; Dissemination; Centre for Health Economics, University of
+York. <a href="https://www.bristol.ac.uk/media-library/sites/social-community-medicine/documents/mpes/gmd-2-continuous-jan2021.pdf" class="external-link">https://www.bristol.ac.uk/media-library/sites/social-community-medicine/documents/mpes/gmd-2-continuous-jan2021.pdf</a>.
 </div>
 <div id="ref-friedrich2011" class="csl-entry">
 Friedrich, J. O., N. K. J. Adhikari, and J. Beyene. 2011. <span>“Ratio
@@ -1236,15 +1239,15 @@ Comparison.”</span> Journal Article. <em>Biostatistics</em> 9 (3):
 523–39. <a href="https://pubmed.ncbi.nlm.nih.gov/18209015/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/18209015/</a>.
 </div>
 <div id="ref-sinharay" class="csl-entry">
-Sinharay, S. 2003. <span>“Assessing Convergence of the Markov Chain
-Monte Carlo Algorithms: A Review.”</span> RR-03-07. ETS Research Report
-Series. <a href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/j.2333-8504.2003.tb01899.x" class="external-link">https://onlinelibrary.wiley.com/doi/pdf/10.1002/j.2333-8504.2003.tb01899.x</a>.
+Sinharay, S. 2003. <em>Assessing Convergence of the Markov Chain Monte
+Carlo Algorithms: A Review</em>. RR-03-07. ETS Research Report Series.
+<a href="https://onlinelibrary.wiley.com/doi/pdf/10.1002/j.2333-8504.2003.tb01899.x" class="external-link">https://onlinelibrary.wiley.com/doi/pdf/10.1002/j.2333-8504.2003.tb01899.x</a>.
 </div>
 <div id="ref-thorlund2014" class="csl-entry">
-Thorlund, K., E. J. Mills, P. Wu, E. P. Ramos, A. Chatterjee, E. Druyts,
-and P. J. Godsby. 2014. <span>“Comparative Efficacy of Triptans for the
-Abortive Treatment of Migraine: A Multiple Treatment Comparison
-Meta-Analysis.”</span> Journal Article. <em>Cephalagia</em>. <a href="https://doi.org/10.1177/0333102413508661" class="external-link">https://doi.org/10.1177/0333102413508661</a>.
+Thorlund, K., E. J. Mills, P. Wu, et al. 2014. <span>“Comparative
+Efficacy of Triptans for the Abortive Treatment of Migraine: A Multiple
+Treatment Comparison Meta-Analysis.”</span> Journal Article.
+<em>Cephalagia</em>, ahead of print. <a href="https://doi.org/10.1177/0333102413508661" class="external-link">https://doi.org/10.1177/0333102413508661</a>.
 </div>
 </div>
 </div>
@@ -1266,7 +1269,7 @@ Meta-Analysis.”</span> Journal Article. <em>Cephalagia</em>. <a href="https://
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

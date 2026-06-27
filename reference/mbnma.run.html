@@ -21,7 +21,7 @@ of Mawdsley et al. (2016)
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -277,7 +277,7 @@ should match that of standard models fitted in <code>MBNMAdose</code>
     <h2>Value</h2>
     <p>An object of S3 <code>class(c("mbnma", "rjags"))</code> containing parameter
 results from the model. Can be summarized by <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> and can check
-traceplots using <code>R2jags::traceplot()</code> or various functions from the package <code>mcmcplots</code>.</p>
+traceplots using <code>R2jags::traceplot()</code> or various functions from the package <code>coda</code>.</p>
 <p>Nodes that are automatically monitored (if present in the model) have the
 following interpretation:</p><table class="table table"><tr><td><strong>Parameters(s)/Parameter Prefix</strong></td><td><strong>Interpretation</strong></td></tr><tr><td><code>&lt;named dose-response parameter&gt;</code> (e.g. <code>emax</code>)</td><td>The pooled effect for each dose-response parameter, as defined in dose-response functions. Will vary by agent if pooling is specified as <code>"rel"</code> in the dose-response function.</td></tr><tr><td><code>sd</code></td><td>The between-study SD (heterogeneity) for relative effects, reported if <code>method="random"</code></td></tr><tr><td><code>sd.&lt;named dose-response parameter&gt;</code> (e.g. <code>sd.emax</code>)</td><td>Between-study SD (heterogeneity) for absolute dose-response parameters specified as <code>"random"</code>.</td></tr><tr><td><code>&lt;named capitalized dose-response parameter&gt;</code> (e.g. <code>EMAX</code>)</td><td>The class effect within each class for a given dose-response parameter. These will be estimated by the model if specified in <code>class.effects</code> for a given dose-response parameter.</td></tr><tr><td><code>sd.&lt;named capitalized dose-response parameter&gt;</code> (e.g. <code>sd.EMAX</code>)</td><td>The within-class SD for different agents within the same class. Will be estimated by the model if any dose-response parameter in <code>class.effect</code> is set to <code>"random"</code>.</td></tr><tr><td><code>totresdev</code></td><td>The residual deviance of the model</td></tr><tr><td><code>deviance</code></td><td>The deviance of the model</td></tr></table><p>If there are errors in the JAGS model code then the object will be a list
 consisting of two elements - an error message from JAGS that can help with
@@ -309,8 +309,7 @@ help details for each of the functions below for the interpretation of specific 
 <li><p><code><a href="dloglin.html">dloglin()</a></code>: log-linear</p></li>
 <li><p><code><a href="dexp.html">dexp()</a></code>: exponential</p></li>
 <li><p><code><a href="demax.html">demax()</a></code>: (emax with/without a Hill parameter)</p></li>
-<li><p><code><a href="dspline.html">dspline()</a></code>: splines (can fit B-splines (<code>type="bs"</code>), restricted cubic splines (<code>type="rcs"</code>), natural splines (<code>type="ns"</code>), or
-piecewise linear splines (<code>type="ls"</code>))</p></li>
+<li><p><code><a href="dspline.html">dspline()</a></code>: splines (can fit B-splines (<code>type="bs"</code>) or natural splines (<code>type="ns"</code>) of any degree</p></li>
 <li><p><code><a href="dfpoly.html">dfpoly()</a></code>: fractional polynomials</p></li>
 <li><p><code><a href="dnonparam.html">dnonparam()</a></code>: Non-parametric monotonic function (<code>direction</code> can be either <code>"increasing"</code> or <code>"decreasing"</code>) following the method
 of Owen et al. (2015)</p></li>
@@ -326,15 +325,20 @@ in the network.</p></li>
 <a href="https://projecteuclid.org/journals/statistical-science/volume-7/issue-4/Inference-from-Iterative-Simulation-Using-Multiple-Sequences/10.1214/ss/1177011136.full" class="external-link">https://projecteuclid.org/journals/statistical-science/volume-7/issue-4/Inference-from-Iterative-Simulation-Using-Multiple-Sequences/10.1214/ss/1177011136.full</a>.<br><br> Mawdsley D, Bennetts M, Dias S, Boucher M, Welton NJ (2016).
 “Model-Based Network Meta-Analysis: A Framework for Evidence Synthesis of Clinical Trial Data.”
 <em>CPT Pharmacometrics Syst Pharmacol</em>, <b>5</b>(8), 393-401.
-ISSN 2163-8306 (Electronic) 2163-8306 (Linking), <a href="https://doi.org/10.1002/psp4.12091" class="external-link">doi:10.1002/psp4.12091</a>
-, <a href="https://pubmed.ncbi.nlm.nih.gov/27479782/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/27479782/</a>.<br><br> Owen RK, Tincello DG, Keith RA (2015).
+ISSN 2163-8306 (Electronic) 2163-8306 (Linking).
+<a href="https://doi.org/10.1002/psp4.12091" class="external-link">doi:10.1002/psp4.12091</a>
+.
+<a href="https://pubmed.ncbi.nlm.nih.gov/27479782/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/27479782/</a>.<br><br> Owen RK, Tincello DG, Keith RA (2015).
 “Network meta-analysis: development of a three-level hierarchical modeling approach incorporating dose-related constraints.”
 <em>Value Health</em>, <b>18</b>(1), 116-26.
-ISSN 1524-4733 (Electronic) 1098-3015 (Linking), <a href="https://doi.org/10.1016/j.jval.2014.10.006" class="external-link">doi:10.1016/j.jval.2014.10.006</a>
-, <a href="https://pubmed.ncbi.nlm.nih.gov/25595242/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/25595242/</a>.<br><br> Plummer M (2008).
+ISSN 1524-4733 (Electronic) 1098-3015 (Linking).
+<a href="https://doi.org/10.1016/j.jval.2014.10.006" class="external-link">doi:10.1016/j.jval.2014.10.006</a>
+.
+<a href="https://pubmed.ncbi.nlm.nih.gov/25595242/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/25595242/</a>.<br><br> Plummer M (2008).
 “Penalized loss functions for Bayesian model comparison.”
 <em>Biostatistics</em>, <b>9</b>(3), 523-39.
-ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nlm.nih.gov/18209015/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/18209015/</a>.<br><br> Plummer M (2017).
+ISSN 1468-4357 (Electronic) 1465-4644 (Linking).
+<a href="https://pubmed.ncbi.nlm.nih.gov/18209015/" class="external-link">https://pubmed.ncbi.nlm.nih.gov/18209015/</a>.<br><br> Plummer M (2017).
 <em>JAGS user manual</em>.
 <a href="https://people.stat.sc.edu/hansont/stat740/jags_user_manual.pdf" class="external-link">https://people.stat.sc.edu/hansont/stat740/jags_user_manual.pdf</a>.</p>
     </div>
@@ -487,14 +491,10 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Graph information:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Observed stochastic nodes: 182</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Unobserved stochastic nodes: 91</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3937</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Total graph size: 3938</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deleting model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in jags.model(model.file, data = data, inits = init.values, n.chains = n.chains,     n.adapt = 0, quiet = quiet):</span> Error in node ((delta[1,1]*dose[1,1])/(delta[1,1]+dose[1,1]))</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> Invalid parent values</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">########## Class effects ##########</span></span></span>
@@ -504,7 +504,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span> <span class="co"># Set a shared class (NSAID) only for Naproxcinod and Naproxen</span></span></span>
 <span class="r-in"><span> <span class="va">pain.df</span> <span class="op">&lt;-</span> <span class="va">pain.df</span> <span class="op"><a href="pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>                class <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NSAID"</span>,</span></span>
+<span class="r-in"><span>                class <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html" class="external-link">case_when</a></span><span class="op">(</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"NSAID"</span>,</span></span>
 <span class="r-in"><span>                        <span class="op">!</span><span class="va">agent</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Naproxcinod"</span>, <span class="st">"Naproxen"</span><span class="op">)</span> <span class="op">~</span> <span class="va">agent</span></span></span>
 <span class="r-in"><span>                        <span class="op">)</span></span></span>
 <span class="r-in"><span>                <span class="op">)</span></span></span>
@@ -596,25 +596,21 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Initializing model</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######</span></span></span>
+<span class="r-in"><span><span class="co">####### Examine MCMC diagnostics (using the coda package) #######</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Density plots</span></span></span>
-<span class="r-in"><span><span class="fu">mcmcplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mcmcplots/man/denplot.html" class="external-link">denplot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Registered S3 method overwritten by 'mcmcplots':</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   method        from  </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>   as.mcmc.rjags R2jags</span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"coda"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># Density plots</span></span></span>
+<span class="r-in"><span>  <span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/densplot.html" class="external-link">densplot</a></span><span class="op">(</span><span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/mcmc.html" class="external-link">as.mcmc</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Traceplots</span></span></span>
+<span class="r-in"><span>  <span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/traceplot.html" class="external-link">traceplot</a></span><span class="op">(</span><span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/mcmc.html" class="external-link">as.mcmc</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Autocorrelation plots</span></span></span>
+<span class="r-in"><span>  <span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/autocorr.plot.html" class="external-link">autocorr.plot</a></span><span class="op">(</span><span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/mcmc.html" class="external-link">as.mcmc</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-plt img"><img src="mbnma.run-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Traceplots</span></span></span>
-<span class="r-in"><span><span class="fu">mcmcplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mcmcplots/man/traplot.html" class="external-link">traplot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.run-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Caterpillar plots</span></span></span>
-<span class="r-in"><span><span class="fu">mcmcplots</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mcmcplots/man/caterplot.html" class="external-link">caterplot</a></span><span class="op">(</span><span class="va">result</span>, <span class="st">"rate"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.run-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Autocorrelation plots (using the coda package)</span></span></span>
-<span class="r-in"><span><span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/autocorr.plot.html" class="external-link">autocorr.plot</a></span><span class="op">(</span><span class="fu">coda</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/coda/man/mcmc.html" class="external-link">as.mcmc</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="mbnma.run-4.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="mbnma.run-5.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="mbnma.run-6.png" alt="" width="700" height="433"></span>
@@ -622,6 +618,23 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-plt img"><img src="mbnma.run-8.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="mbnma.run-9.png" alt="" width="700" height="433"></span>
 <span class="r-plt img"><img src="mbnma.run-10.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-12.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-13.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-14.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-15.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-16.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-17.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-18.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-19.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-20.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-21.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-22.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-23.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-24.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-25.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-26.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-27.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">####### Automatically run jags until convergence is reached #########</span></span></span>
 <span class="r-in"><span></span></span>
@@ -649,39 +662,39 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Print R2jags output and summary</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/RtmpUxC1JU/file1d885055f91f", fit using jags,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Inference for Bugs model at "/tmp/Rtmp6EqdyL/file1bcf301953f9", fit using jags,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  4 chains, each with 5000 iterations (first 2500 discarded), n.thin = 5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 2000 iterations saved. Running time = 7.425 secs</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  n.sims = 2000 iterations saved. Running time = 7.499 secs</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            mu.vect sd.vect     2.5%      25%      50%      75%    97.5%  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.009   0.156    1.707    1.904    2.009    2.114    2.310 1.022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.307   0.093    1.129    1.243    1.305    1.368    1.495 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.709   0.325    1.098    1.492    1.711    1.934    2.350 1.009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.339   0.192    0.984    1.206    1.342    1.466    1.720 1.007</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.442   0.151    1.139    1.341    1.442    1.537    1.753 1.009</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.732   0.287    0.161    0.540    0.726    0.919    1.301 1.010</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.299   0.183    1.951    2.175    2.295    2.418    2.664 1.010</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.370   0.045    0.288    0.340    0.367    0.399    0.464 1.022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  183.060  18.613  148.510  170.188  182.601  194.748  222.246 1.010</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1086.166  18.613 1051.616 1073.294 1085.707 1097.854 1125.352 1.010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]      2.005   0.150    1.702    1.908    1.999    2.101    2.297 1.015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]      1.307   0.087    1.143    1.248    1.307    1.365    1.475 1.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]      1.684   0.312    1.082    1.471    1.676    1.899    2.308 1.011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]      1.348   0.186    0.973    1.225    1.347    1.474    1.713 1.010</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]      1.441   0.146    1.144    1.347    1.441    1.538    1.726 1.023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]      0.736   0.283    0.198    0.544    0.732    0.923    1.329 1.006</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]      2.287   0.180    1.929    2.173    2.286    2.407    2.638 1.007</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd           0.360   0.044    0.280    0.329    0.358    0.388    0.451 1.026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev  184.137  18.857  148.566  171.383  183.944  196.633  222.575 1.015</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance  1087.243  18.857 1051.672 1074.489 1087.050 1099.739 1125.681 1.016</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>           n.eff</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]     140</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]     780</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]     270</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]     360</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     490</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]     260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]     260</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> sd          120</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   250</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    250</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[2]     190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[3]     710</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[4]     240</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[5]     300</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[6]     110</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[7]     430</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> rate[8]     380</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> sd          140</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> totresdev   170</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> deviance    160</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> For each parameter, n.eff is a crude measure of effective sample size,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> and Rhat is the potential scale reduction factor (at convergence, Rhat=1).</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule: pV = var(deviance)/2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pV = 171.4 and DIC = 1257.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pV = 174.7 and DIC = 1261.9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC info (using the rule: pD = Dbar-Dhat, computed via 'rjags::dic.samples')</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 137.0 and DIC = 1221.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> pD = 137.6 and DIC = 1225.9</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> DIC is an estimate of expected predictive error (lower deviance is better).</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">========================================</span></span>
@@ -698,7 +711,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">Parameter					Median (95%CrI)</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold;">-----------------------------------------------------------------------</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.367 (0.288, 0.464)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Between-study SD for relative effects		0.358 (0.28, 0.451)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">rate dose-response parameter results</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -706,25 +719,25 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |Agent        |Parameter | Median|   2.5%|  97.5%|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> |:------------|:---------|------:|------:|------:|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 2.0089| 1.7074| 2.3097|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3048| 1.1292| 1.4951|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.7113| 1.0981| 2.3500|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3418| 0.9838| 1.7205|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4420| 1.1387| 1.7531|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7265| 0.1610| 1.3014|</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2950| 1.9509| 2.6643|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |eletriptan   |rate[2]   | 1.9993| 1.7017| 2.2967|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |sumatriptan  |rate[3]   | 1.3074| 1.1427| 1.4745|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |frovatriptan |rate[4]   | 1.6760| 1.0817| 2.3080|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |almotriptan  |rate[5]   | 1.3474| 0.9726| 1.7133|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |zolmitriptan |rate[6]   | 1.4410| 1.1439| 1.7263|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |naratriptan  |rate[7]   | 0.7321| 0.1976| 1.3292|</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> |rizatriptan  |rate[8]   | 2.2862| 1.9291| 2.6382|</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="font-weight: bold; text-decoration: underline;">Model Fit Statistics</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1085.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 182.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1257.6 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance = 1087</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual deviance = 183.9</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Deviance Information Criterion (DIC) = 1261.9 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Plot forest plot of results</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="mbnma.run-11.png" alt="" width="700" height="433"></span>
+<span class="r-plt img"><img src="mbnma.run-28.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
@@ -741,7 +754,7 @@ ISSN 1468-4357 (Electronic) 1465-4644 (Linking), <a href="https://pubmed.ncbi.nl
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>

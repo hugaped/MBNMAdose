@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">MBNMAdose</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.5.1</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@
                         <h4 data-toc-skip class="author">Hugo
 Pedder</h4>
             
-            <h4 data-toc-skip class="date">2025-05-22</h4>
+            <h4 data-toc-skip class="date">2026-06-27</h4>
       
 
       <div class="hidden name"><code>metaregression-6.Rmd</code></div>
@@ -116,13 +116,13 @@ effect modification.</p>
 network meta-regression can be expressed as an interaction on the
 treatment effect in arms
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≥</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">\geq2</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mi>i</mi></msub><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><mo>−</mo><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\theta_{i,k}=\mu_i+(f(x,\beta_{a_{i,k}})-f(x,\beta_{a_{i,1}})) + (\psi_{1,a_{i,k}}-\psi_{1,a_{i,1}})</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><mo>=</mo><msub><mi>μ</mi><mi>i</mi></msub><mo>+</mo><mo stretchy="false" form="prefix">(</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo stretchy="false" form="postfix">)</mo><mo>−</mo><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub></msub><mo stretchy="false" form="postfix">)</mo><mo stretchy="false" form="postfix">)</mo><mo>+</mo><mo stretchy="false" form="prefix">(</mo><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><mo>−</mo><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mn>1</mn></mrow></msub></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\theta_{i,k}=\mu_i+(f(x,\beta_{a_{i,k}})-f(x,\beta_{a_{i,1}})) + (\psi_{1,a_{i,k}}-\psi_{1,a_{i,1}})</annotation></semantics></math></p>
 <p>where
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>θ</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub><annotation encoding="application/x-tex">\theta_{i,k}</annotation></semantics></math>
 is the linear predictor,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>μ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\mu_{i}</annotation></semantics></math>
 is the baseline effect on arm 1,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f(x,\beta_{a_{i,k}})</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo>,</mo><msub><mi>β</mi><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">f(x,\beta_{a_{i,k}})</annotation></semantics></math>
 is the dose-response function at dose
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
 with dose-response parameters
@@ -270,7 +270,7 @@ across the network about a common mean,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><annotation encoding="application/x-tex">\hat{\psi}</annotation></semantics></math>,
 with a between-agent standard deviation of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>τ</mi><mi>ψ</mi></msub><annotation encoding="application/x-tex">\tau_\psi</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><mo>,</mo><msubsup><mi>τ</mi><mi>ψ</mi><mn>2</mn></msubsup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\psi_{1,a_{i,k}} \sim N(\hat{\psi}, \tau^2_\psi)</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ψ</mi><mrow><mn>1</mn><mo>,</mo><msub><mi>a</mi><mrow><mi>i</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow></msub><mo>∼</mo><mi>N</mi><mo stretchy="false" form="prefix">(</mo><mover><mi>ψ</mi><mo accent="true">̂</mo></mover><mo>,</mo><msubsup><mi>τ</mi><mi>ψ</mi><mn>2</mn></msubsup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\psi_{1,a_{i,k}} \sim N(\hat{\psi}, \tau^2_\psi)</annotation></semantics></math></p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Regress for continuous weeks Random effect modification across all agents vs</span></span>
 <span><span class="co"># Placebo</span></span>
@@ -474,7 +474,7 @@ named vector of covariate values at which to make predictions.</p>
 <code class="sourceCode R"><span><span class="co"># For a continuous covariate, make predictions at 5 weeks follow-up</span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.a</span>, regress.vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>x.weeks <span class="op">=</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metaregression-6_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p><img src="metaregression-6_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="" width="672"></p>
 <p>Predictions are very uncertain for Sertraline, as studies only
 investigated this agent at 6 weeks follow-up and therefore the
 agent-specific effect modification is very poorly estimated.</p>
@@ -484,19 +484,19 @@ agent-specific effect modification is very poorly estimated.</p>
 <span></span>
 <span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">ssrimod.c</span>, regress.vals <span class="op">=</span> <span class="va">regress.p</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span></code></pre></div>
-<p><img src="metaregression-6_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="metaregression-6_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="" width="672"></p>
 <p>Note that categorical covariates are modelled as multiple binary
 dummy covariates, and so a value for each of these must be included.</p>
 </div>
 <div class="section level3">
 <h3 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h3>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-TSD3" class="csl-entry">
-Dias, S., A. J. Sutton, N. J. Welton, and A. E. Ades. 2011. <span>“NICE
-DSU Technical Support Document 3: Heterogeneity: Subgroups,
-Meta-Regression, Bias and Bias, Adjustment.”</span> Decision Support
-Unit, ScHARR, University of Sheffield. <a href="https://www.ncbi.nlm.nih.gov/books/NBK395886/pdf/Bookshelf_NBK395886.pdf" class="external-link">https://www.ncbi.nlm.nih.gov/books/NBK395886/pdf/Bookshelf_NBK395886.pdf</a>.
+Dias, S., A. J. Sutton, N. J. Welton, and A. E. Ades. 2011. <em>NICE DSU
+Technical Support Document 3: Heterogeneity: Subgroups, Meta-Regression,
+Bias and Bias, Adjustment</em>. Decision Support Unit, ScHARR,
+University of Sheffield. <a href="https://www.ncbi.nlm.nih.gov/books/NBK395886/pdf/Bookshelf_NBK395886.pdf" class="external-link">https://www.ncbi.nlm.nih.gov/books/NBK395886/pdf/Bookshelf_NBK395886.pdf</a>.
 </div>
 </div>
 </div>
@@ -518,7 +518,7 @@ Unit, ScHARR, University of Sheffield. <a href="https://www.ncbi.nlm.nih.gov/boo
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>
