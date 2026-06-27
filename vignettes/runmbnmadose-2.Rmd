@@ -813,9 +813,10 @@ evidence of it.
 -   Autocorrelation plots that show low autocorrelation between
     neighbouring MCMC iterations (i.e. low correlation at higher lags)
 
-An HTML document with all the above convergence plots can easily be
-generated for all parameters in the model simultaneously using
-`mcmcplots::mcmcplot()`.
+Convergence plots for all parameters in the model can be generated using
+functions from the `coda` package (e.g. `coda::traceplot()`,
+`coda::densplot()` and `coda::autocorr.plot()`) applied to the model
+output via `coda::as.mcmc()`.
 
 Two steps may improve convergence when using `MBNMAdose`. One step is to
 run models for more iterations (this can be done using the `n.iter`

@@ -2,6 +2,9 @@
 
 ## Additions/changes
 
+- Removed the `mcmcplots` package from `Suggests` (it has been archived
+  from CRAN). MCMC diagnostic plots in examples and the vignette now use
+  the `coda` package instead.
 - `dspline()` pooling is specified through a single vector (`betas`)
   argument rather than individual `beta.1`, `beta.2`, etc.
 - The number of spline parameters that can be fit is no longer limited

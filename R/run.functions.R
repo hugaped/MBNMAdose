@@ -99,7 +99,7 @@
 #'
 #' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
-#'   traceplots using `R2jags::traceplot()` or various functions from the package `mcmcplots`.
+#'   traceplots using `R2jags::traceplot()` or various functions from the package `coda`.
 #'
 #'   Nodes that are automatically monitored (if present in the model) have the
 #'   following interpretation:
@@ -252,21 +252,16 @@
 #' result <- mbnma.run(network, fun=dloglin(), method="random",
 #'               n.iter=5000, n.thin=5, n.chains=4)
 #'
-#' ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
+#' ####### Examine MCMC diagnostics (using the coda package) #######
 #'
-#' if (requireNamespace("mcmcplots")) {
+#' if (requireNamespace("coda")) {
 #'   # Density plots
-#'   mcmcplots::denplot(result)
+#'   coda::densplot(coda::as.mcmc(result))
 #'
 #'   # Traceplots
-#'   mcmcplots::traplot(result)
+#'   coda::traceplot(coda::as.mcmc(result))
 #'
-#'   # Caterpillar plots
-#'   mcmcplots::caterplot(result, "rate")
-#' }
-#'
-#' # Autocorrelation plots (using the coda package)
-#' if (requireNamespace("coda")) {
+#'   # Autocorrelation plots
 #'   coda::autocorr.plot(coda::as.mcmc(result))
 #' }
 #'
