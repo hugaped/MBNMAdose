@@ -35,7 +35,7 @@ may change if \code{drop.discon = TRUE}).}
 the dose-response relationship. This can be used when node-splitting in dose-response MBNMA to allow
 for a greater number of potential loops in which to check for consistency.}
 
-\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{forestplot::forestplot()}}
+\item{...}{Arguments to be sent to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} or \code{\link[ggplot2:geom_pointrange]{ggplot2::geom_pointrange()}}}
 
 \item{x}{An object of \code{class("nodesplit")}}
 
@@ -43,8 +43,8 @@ for a greater number of potential loops in which to check for consistency.}
 forest plots or \code{"density"} to plot posterior density plots.}
 }
 \value{
-Plots the desired graph if \code{plot.type="forest"} and plots and returns an object
-of \code{class(c("gg", "ggplot"))} if \code{plot.type="density"}.
+Plots and invisibly returns an object of \code{class(c("gg", "ggplot"))} for
+both \code{plot.type="forest"} and \code{plot.type="density"}.
 }
 \description{
 Splits contributions for a given set of treatment comparisons into direct and
@@ -87,7 +87,7 @@ single.split <- mbnma.nodesplit(network, fun=dexp(), likelihood = "binomial", li
 
 # Plot results
 plot(split, plot.type="density") # Plot density plots of posterior densities
-plot(split, txt_gp=forestplot::fpTxtGp(cex=0.5)) # Plot forest plots (with smaller label size)
+plot(split, plot.type="forest") # Plot forest plots
 
 # Print and summarise results
 print(split)

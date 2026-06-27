@@ -670,7 +670,7 @@ check.indirect.drops <- function(df, comp) {
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities
-#' plot(split, txt_gp=forestplot::fpTxtGp(cex=0.5)) # Plot forest plots (with smaller label size)
+#' plot(split, plot.type="forest") # Plot forest plots
 #'
 #' # Print and summarise results
 #' print(split)

@@ -776,7 +776,7 @@ cumrank <- function(x, params=NULL, sucra=TRUE, ...) {
 
 #' Returns a forest plot of nodesplit results
 #'
-#' @param ... Optional arguments to be passed to `forestplot::forestplot()`
+#' @param ... Optional arguments to be passed to `ggplot2::geom_pointrange()`
 #' @inheritParams plot.nodesplit
 #' @noRd
 forest.splits <- function(x, ...) {
@@ -791,7 +791,7 @@ forest.splits <- function(x, ...) {
 
   df$Evidence[df$Evidence %in% c("MBNMA", "NMA")] <- "Overall"
 
-  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs \n")})
+  comps <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs ")})
 
   match <- lapply(x, FUN=function(y) {paste(y$comparison, collapse=" vs ")})
 
@@ -801,30 +801,29 @@ forest.splits <- function(x, ...) {
 
   names(df)[4:5] <- c("l95", "u95")
 
-
+  # Format p-values (one label per comparison, shown on the "Indirect" row)
   df$p.value <- format(df$p.value)
   df$p.value[df$p.value=="0.000"] <- "<0.001"
+  df$plab <- ifelse(df$Evidence=="Indirect", paste0("p = ", df$p.value), NA)
 
-  # Remove surplus labels
-  df$Comparison[df$Evidence!="Direct"] <- NA
-  df$p.value[df$Evidence!="Indirect"] <- NA
+  # Order evidence rows consistently within each facet
+  df$Evidence <- factor(df$Evidence, levels=c("Overall", "Indirect", "Direct"))
 
+  g <- ggplot2::ggplot(df, ggplot2::aes(x=Median, y=Evidence,
+                                        xmin=l95, xmax=u95)) +
+    ggplot2::geom_vline(xintercept=0, linetype="dashed", colour="grey60") +
+    ggplot2::geom_pointrange(ggplot2::aes(colour=Evidence), fatten=2, ...) +
+    ggplot2::geom_text(ggplot2::aes(label=plab), x=Inf, hjust=1.1,
+                       size=3, na.rm=TRUE) +
+    ggplot2::facet_grid(Comparison ~ ., switch="y") +
+    ggplot2::xlab("Effect size (95% CrI)") +
+    ggplot2::ylab("") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(strip.text.y.left = ggplot2::element_text(angle=0),
+                   strip.placement = "outside",
+                   legend.position = "none")
 
-  # Add blank between groups
-  temp <- df[0,]
-  for (i in 1:(nrow(df)/3)) {
-    seg <- rbind(df[((i-1)*3+1):(i*3),], rep(NA,ncol(df)), rep(NA,ncol(df)))
-    temp <- rbind(temp, seg)
-  }
-  df <- temp
-
-  # Plot forest plot
-  forestplot::forestplot(labeltext=cbind(df$Comparison, df$Evidence, df$p.value),
-                         mean=df$Median, lower=df$l95, upper=df$u95,
-                         boxsize=0.2, graph.pos=3,
-                         xlab="Effect size (95% CrI)", hrzl_lines = TRUE,
-                         ...)
-
+  return(g)
 }
 
 

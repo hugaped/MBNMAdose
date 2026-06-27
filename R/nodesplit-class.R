@@ -141,14 +141,14 @@ summary.nodesplit <- function(object, ...) {
 #' @param x An object of `class("nodesplit")`
 #' @param plot.type A character string that can take the value of `"forest"` to plot
 #' forest plots or `"density"` to plot posterior density plots.
-#' @param ... Arguments to be sent to [ggplot2::ggplot()] or \code{forestplot::forestplot()}
+#' @param ... Arguments to be sent to [ggplot2::ggplot()] or [ggplot2::geom_pointrange()]
 #'
 #' @details The S3 method `plot()` on an `nodesplit` object generates either
 #' forest plots of posterior medians and 95\\% credible intervals, or density plots
 #' of posterior densities for direct and indirect evidence.
 #'
-#' @return Plots the desired graph if `plot.type="forest"` and plots and returns an object
-#' of `class(c("gg", "ggplot"))` if `plot.type="density"`.
+#' @return Plots and invisibly returns an object of `class(c("gg", "ggplot"))` for
+#' both `plot.type="forest"` and `plot.type="density"`.
 #'
 #' @export
 plot.nodesplit <- function(x, plot.type="forest", ...) {
@@ -162,6 +162,9 @@ plot.nodesplit <- function(x, plot.type="forest", ...) {
   if (plot.type == "forest") {
 
     forest <- forest.splits(x, ...)
+
+    graphics::plot(forest)
+    return(invisible(forest))
 
   } else if (plot.type == "density") {
 
