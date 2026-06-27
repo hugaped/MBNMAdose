@@ -1,18 +1,10 @@
-citHeader("To cite MBNMAdose in publications use:")
+citHeader("To cite MBNMAdose in publications please reference my thesis:")
 
 bibentry(
-  bibtype = "Article",
-  title    = "MBNMAdose: Dose-response Model-Based Network Meta-Analysis",
+  bibtype = "PhdThesis",
   author   = as.person("Hugo Pedder"),
-  journal = "The Comprehensive R Archive Network",
-  doi = "10.5281/zenodo.8221452",
-  year     = 2022,
-  url      = "https://hugaped.github.io/MBNMAdose/",
-  textVersion = paste("Hugo Pedder.",
-  "MBNMAdose: Dose-response Model-Based Network Meta-Analysis.",
-  "R package.",
-  "DOI: 10.5281/zenodo.8221452.",
-  "URL: https://hugaped.github.io/MBNMAdose/.",
-  "CRAN: https://cran.r-project.org/package=MBNMAdose"
-  )
+  title    = "Bridging the gap: using evidence synthesis to incorporate information from drug development into Health Technology Appraisal and beyond",
+  school = "University of Bristol",
+  year     = 2023,
+  url      = "https://hdl.handle.net/1983/b128cf63-9ced-4b35-84e0-20f807a7d354"
 )

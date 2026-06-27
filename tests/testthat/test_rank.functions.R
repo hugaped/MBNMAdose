@@ -33,26 +33,28 @@ test_that(paste("rank.functions work correctly"), {
 
     network <- mbnma.network(df)
 
+    jags.seed <- 890421
+
     # Make class data
     if ("class" %in% names(df)) {
       netclass <- mbnma.network(df)
 
       emax.class <- suppressWarnings(mbnma.run(netclass, demax(), method="random", n.iter=1000,
-                              class.effect = list(ed50="random")))
+                              class.effect = list(ed50="random"), jags.seed=jags.seed))
     }
 
     # Models
-    quad <- mbnma.run(network, fun=dpoly(degree=2, beta.1="rel", beta.2="random"), n.iter=1000)
+    quad <- mbnma.run(network, fun=dpoly(degree=2, beta.1="rel", beta.2="random"), n.iter=1000, jags.seed=jags.seed)
 
-    exponential <- mbnma.run(network, fun=dexp(onset="rel"), method="common", n.iter=1000)
+    exponential <- mbnma.run(network, fun=dexp(onset="rel"), method="common", n.iter=1000, jags.seed=jags.seed)
 
-    emax <- mbnma.run(network, demax(), method="random", n.iter=1000)
+    emax <- mbnma.run(network, demax(), method="random", n.iter=1000, jags.seed=jags.seed)
 
     if (!grepl("noplac", datanam)) {
-      nonparam <- mbnma.run(network, fun=dnonparam(direction="increasing"), n.iter=1000)
+      nonparam <- mbnma.run(network, fun=dnonparam(direction="increasing"), n.iter=1000, jags.seed=jags.seed)
     }
 
-    spline <- mbnma.run(network, fun=dspline(type="bs", knots=c(0.1,0.8)), n.iter=1000)
+    spline <- mbnma.run(network, fun=dspline(type="bs", knots=c(0.1,0.8)), n.iter=1000, jags.seed=jags.seed)
 
 
     mult <- dmulti(c(list(dloglin()),
@@ -60,7 +62,7 @@ test_that(paste("rank.functions work correctly"), {
                      list(dspline("ns", knots=0.5)),
                      rep(list(dloglin()), length(network$agents)-3)
     ))
-    multifun <- mbnma.run(network, fun=mult, n.iter=1000)
+    multifun <- mbnma.run(network, fun=mult, n.iter=1000, jags.seed=jags.seed)
 
 
 
@@ -69,21 +71,21 @@ test_that(paste("rank.functions work correctly"), {
       rank <- rank.mbnma(quad)
       expect_equal(names(rank), "beta.1")
       expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "cum.matrix"))
-      expect_equal(class(rank[[1]]$summary), "data.frame")
+      expect_s3_class(rank[[1]]$summary, "data.frame")
       expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
       expect_equal("matrix" %in% class(rank[[1]]$prob.matrix), TRUE)
       expect_error(print(rank), NA)
-      expect_equal(class(summary(rank)[[1]]), "data.frame")
+      expect_s3_class(summary(rank)[[1]], "data.frame")
 
 
       rank <- rank.mbnma(emax)
       expect_equal(sort(names(rank)), sort(c("emax", "ed50")))
       expect_equal(names(rank[[1]]), c("summary", "prob.matrix", "rank.matrix", "cum.matrix"))
-      expect_equal(class(rank[[2]]$summary), "data.frame")
+      expect_s3_class(rank[[2]]$summary, "data.frame")
       expect_equal("matrix" %in% class(rank[[1]]$rank.matrix), TRUE)
       expect_equal("matrix" %in% class(rank[[2]]$prob.matrix), TRUE)
       expect_error(print(rank), NA)
-      expect_equal(class(summary(rank)[[1]]), "data.frame")
+      expect_s3_class(summary(rank)[[1]], "data.frame")
 
       expect_error(rank(emax, params=c("badger", "d.ed50")), "has not been monitored by the model")
 
@@ -93,7 +95,7 @@ test_that(paste("rank.functions work correctly"), {
                      dplyr::arrange(rank$emax$summary, '50%')$rank.param[nrow(rank$emax$summary)-1:nrow(rank$emax$summary)],
                    TRUE)
       expect_error(print(rank.down), NA)
-      expect_equal(class(summary(rank)[[1]]), "data.frame")
+      expect_s3_class(summary(rank)[[1]], "data.frame")
 
       to.ranks <- c(2,4)
       rank <- rank(exponential, to.rank = to.ranks)
@@ -114,7 +116,7 @@ test_that(paste("rank.functions work correctly"), {
         rank <- rank.mbnma(emax.class, level="class")
         expect_equal(ncol(rank$ED50$rank.matrix), length(unique(dataset$class[dataset$dose>0])))
         expect_error(print(rank), NA)
-        expect_equal(class(summary(rank)[[1]]), "data.frame")
+        expect_s3_class(summary(rank)[[1]], "data.frame")
       }
 
 
@@ -130,7 +132,7 @@ test_that(paste("rank.functions work correctly"), {
       expect_equal(names(rank), c("ed50"))
       expect_error(rank.mbnma(emax, params="test"))
       expect_error(print(rank), NA)
-      expect_equal(class(summary(rank)[[1]]), "data.frame")
+      expect_s3_class(summary(rank)[[1]], "data.frame")
 
       # With multiple-dose response functions
 
@@ -145,7 +147,7 @@ test_that(paste("rank.functions work correctly"), {
       rank <- rank.mbnma.predict(pred)
       expect_equal(names(rank), "Predictions")
       expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "cum.matrix"))
-      expect_equal(class(rank$Predictions$summary), "data.frame")
+      expect_s3_class(rank$Predictions$summary, "data.frame")
       expect_equal("matrix" %in% class(rank$Predictions$rank.matrix), TRUE)
       expect_equal("matrix" %in% class(rank$Predictions$prob.matrix), TRUE)
 
@@ -159,7 +161,7 @@ test_that(paste("rank.functions work correctly"), {
       rank <- rank.mbnma.predict(pred)
       expect_equal(names(rank), "Predictions")
       expect_equal(names(rank$Predictions), c("summary", "prob.matrix", "rank.matrix", "cum.matrix"))
-      expect_equal(class(rank$Predictions$summary), "data.frame")
+      expect_s3_class(rank$Predictions$summary, "data.frame")
       expect_equal("matrix" %in% class(rank$Predictions$rank.matrix), TRUE)
       expect_equal("matrix" %in% class(rank$Predictions$prob.matrix), TRUE)
 

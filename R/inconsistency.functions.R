@@ -531,7 +531,7 @@ drop.comp <- function(ind.df, drops, comp, start=1) {
                           ind.df$treatment==comp[index+1]),]
 
     if (all(comp %in% temp.df$treatment)) {
-      temp.net <- suppressMessages(plot.invisible(mbnma.network(temp.df), doseparam = 1000))
+      temp.net <- suppressMessages(plotinvisible(mbnma.network(temp.df), doseparam = 1000))
 
       connectcheck <- is.finite(igraph::distances(igraph::as.undirected(temp.net),
                                                        to=comp[index+1])[
@@ -600,7 +600,7 @@ check.indirect.drops <- function(df, comp) {
     temp.net <- mbnma.network(temp)
     nt <- length(temp.net$treatments)
     if (nt==length(unique(df$treatment))) {
-      g <- plot.invisible(temp.net, doseparam=1000)
+      g <- plotinvisible(temp.net, doseparam=1000)
       connectcheck <- is.finite(igraph::distances(igraph::as.undirected(g),
                                                        to=1)[
                                                          c(comp[1], comp[2])
@@ -670,7 +670,7 @@ check.indirect.drops <- function(df, comp) {
 #'
 #' # Plot results
 #' plot(split, plot.type="density") # Plot density plots of posterior densities
-#' plot(split, txt_gp=forestplot::fpTxtGp(cex=0.5)) # Plot forest plots (with smaller label size)
+#' plot(split, plot.type="forest") # Plot forest plots
 #'
 #' # Print and summarise results
 #' print(split)
@@ -1058,7 +1058,7 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
       trtnew <- treatments
 
       # Generate spline basis matrix if required
-      splineopt <- c("rcs", "bs", "ns", "ls", "is")
+      splineopt <- c("bs", "ns")
       fun <- mbnma$model.arg$fun
 
       # Get indices of non-placebo agents
@@ -1139,21 +1139,41 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
             DR2 <- gsub(paste0("spline\\[i,k,", m, "\\]"), trtlist[[k]][[2]][m], DR2)
           }
 
-          for (beta in seq_along(betaparams)) {
-            assign(names(betaparams)[beta], betaparams[[beta]])
+          if (length(mbnma$model.arg$fun$name)==1) {
 
-            if (length(mbnma$model.arg$fun$name)==1) {
+            for (beta in seq_along(betaparams)) {
+              assign(names(betaparams)[beta], betaparams[[beta]])
+
               if (!is.matrix(betaparams[[beta]])) {
                 DR1 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
                 DR2 <- gsub(paste0("(",names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
               }
-            } else {
+            }
 
-              if (is.matrix(betaparams[[beta]])) {
+            chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
 
-                DRcomb <- c(DR1, DR2)
-                for (m in 1:2) {
-                  # Look for correct column index for each beta param
+          } else {
+
+            # For multiple (agent-specific) dose-response functions each side of the
+            # comparison may use a different function. Substitute every dose-response
+            # parameter for a fresh variable holding the correct value for that agent
+            # (the relevant column of a relative-effect matrix, or the vector for
+            # common/random/fixed parameters), so the two sides cannot collide.
+            evalenv <- new.env(parent=environment())
+            DRcomb <- c(DR1, DR2)
+
+            for (m in 1:2) {
+
+              # Global parameter names for the function used by agent m
+              gparams <- names(fun$paramlist[[pos[m]]])
+
+              for (j in seq_along(gparams)) {
+                gname <- fun$bname[[gparams[j]]]
+                gbeta <- betaparams[[gname]]
+
+                if (is.matrix(gbeta)) {
+                  # Relative effect: identify the column for this agent within the
+                  # function's relative-effect matrix
                   veci <- mbnma$model.arg$fun$posvec[1:agnum[m]]
                   veci <- table(veci)[names(table(veci))==pos[m]]
 
@@ -1163,23 +1183,23 @@ get.relative <- function(lower.diag, upper.diag=lower.diag, treatments=list(),
                       veci <- veci - 1
                     }
                   }
-
-                  # Swap index in DR1 for veci
-                  DRcomb[m] <- gsub(paste0("(", names(betaparams)[beta], "\\[,)([0-9]+\\])"),
-                                    paste0("\\1", veci, "]"), DRcomb[m])
+                  valvec <- gbeta[, veci]
+                } else {
+                  valvec <- gbeta
                 }
-                DR1 <- DRcomb[1]
-                DR2 <- DRcomb[2]
 
-              } else if (is.vector(betaparams[[beta]])) {
-                # Remove indices from DR
-                DR1 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR1)
-                DR2 <- gsub(paste0("(", names(betaparams)[beta], ")(\\[,[0-9]+\\])"), "\\1", DR2)
+                # Assign value and replace the (global) parameter name, with or without
+                # an agent index, by the fresh variable name
+                varname <- paste0("drval.", m, ".", j)
+                assign(varname, valvec, envir=evalenv)
+                gidx <- sub("^beta\\.", "", gname)
+                DRcomb[m] <- gsub(paste0("beta\\.", gidx, "(?![0-9])(\\[,[0-9]+\\])?"),
+                                  varname, DRcomb[m], perl=TRUE)
               }
             }
-          }
 
-          chunk <- eval(parse(text=paste0("(",DR1, ") - (", DR2, ")")))
+            chunk <- eval(parse(text=paste0("(",DRcomb[1], ") - (", DRcomb[2], ")")), envir=evalenv)
+          }
 
           if (!is.null(regress.vals)) {
             chunk <- chunk + (regress[,agnum.i-1] - regress[,agnum.k-1])

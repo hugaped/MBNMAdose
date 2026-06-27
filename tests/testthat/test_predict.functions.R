@@ -38,6 +38,7 @@ for (dat in seq_along(alldfs)) {
 
   pD <- FALSE
   n.iter <- 1000
+  jags.seed <- 260625
 
   testthat::test_that(paste0("predict.functions works correctly for: ", datanam), {
 
@@ -47,13 +48,13 @@ for (dat in seq_along(alldfs)) {
 
     #### Models ####
 
-    linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD)
+    linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-    emax <- mbnma.run(network, demax(), method="random", n.iter=n.iter, pD=pD)
+    emax <- mbnma.run(network, demax(), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
     if ("class" %in% names(dataset)) {
       emax.class <- suppressWarnings(mbnma.run(network, demax(emax="rel", ed50="random"), method="common",
-                                                class.effect=list(emax="random"), n.iter=n.iter, pD=pD))
+                                                class.effect=list(emax="random"), n.iter=n.iter, pD=pD, jags.seed=jags.seed))
     }
 
     mult <- dmulti(
@@ -63,7 +64,7 @@ for (dat in seq_along(alldfs)) {
       ))
 
     multifun <- mbnma.run(network, fun=mult,
-                          n.iter=n.iter, pD=pD)
+                          n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
 
 
@@ -132,7 +133,7 @@ for (dat in seq_along(alldfs)) {
       expect_equal(nrow(pred$predicts[[4]][[4]]), linear$BUGSoutput$n.sims)
       #expect_equal(all(pred$predicts[[2]][[2]][1] < 0), TRUE)
       expect_error(print(pred), NA)
-      expect_equal(class(summary(pred)), "data.frame")
+      expect_s3_class(summary(pred), "data.frame")
 
       # Stochastic E0 values
       expect_silent(predict(linear, E0 = "rnorm(n, 0.5,0.01)"))
@@ -155,7 +156,7 @@ for (dat in seq_along(alldfs)) {
       pred <- predict(linear, E0=0.5, n.doses = 10)
       expect_equal(length(pred$predicts[[2]]), 10)
       expect_error(print(pred), NA)
-      expect_equal(class(summary(pred)), "data.frame")
+      expect_s3_class(summary(pred), "data.frame")
 
 
       # Changing exact.doses
@@ -172,7 +173,7 @@ for (dat in seq_along(alldfs)) {
         }
 
         expect_error(print(pred), NA)
-        expect_equal(class(summary(pred)), "data.frame")
+        expect_s3_class(summary(pred), "data.frame")
 
         doses <- list(c(0,1,2,3), c(0.5,1,2))
         expect_error(predict(linear, E0=0.1, exact.doses = doses))

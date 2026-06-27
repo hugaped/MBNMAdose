@@ -9,6 +9,7 @@ test_that(paste("get.relative functions work correctly"), {
 
   n.iter <- 1000
   pD <- FALSE
+  jags.seed <- 260626
 
   # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
   alldfs <- list(triptans, psoriasis75, ssri, osteopain, gout)
@@ -46,30 +47,30 @@ test_that(paste("get.relative functions work correctly"), {
       netclass <- mbnma.network(df)
     }
 
-    emax <- mbnma.run(network, fun=demax(), method="random", n.iter=n.iter, pD=pD)
+    emax <- mbnma.run(network, fun=demax(), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-    emax2 <- mbnma.run(network, fun=demax(hill=0.2), method="random", n.iter=n.iter, pD=pD)
+    emax2 <- mbnma.run(network, fun=demax(hill=0.2), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-    bs <- mbnma.run(network, fun=dspline(knots=2), n.iter=n.iter, pD=pD)
+    bs <- mbnma.run(network, fun=dspline(knots=2), n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-    ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD)
+    ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
     mult <- dmulti(c(list(dloglin()),
                      list(dspline("bs", knots=2)),
                      list(dspline("ns", knots=0.5)),
                      rep(list(dloglin()), length(network$agents)-3)
     ))
-    multifun1 <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD)
+    multifun1 <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
 
     mult <- dmulti(
       c(rep(list(dpoly(degree=1)),2),
-        rep(list(dspline(knots = 2, type="ns", beta.1=0.2)),1),
+        rep(list(dspline(knots = 2, type="ns", betas=c(0.2,"rel","rel"))),1),
         rep(list(dfpoly(degree=2)),length(network$agents)-3)
       ))
 
     multifun2 <- mbnma.run(network, fun=mult,
-                           method="random", n.iter=n.iter, pD=pD)
+                           method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
 
     test_that(paste("get.relative works correctly for:", datanam), {

@@ -1,28 +1,32 @@
-This is a new submission after the package was removed from CRAN in November 2024. 
+## Resubmission
 
-There are no ERRORs
+This is a submission of an update to MBNMAdose (version 0.5.1).
 
-There is one NOTE:
 
-* NOTE
-  - New submission - Package was archived on CRAN
+## R CMD check results
+
+There were no ERRORs, WARNINGs or NOTEs.
 
 
 ## Test environments
 
-* Ubuntu 22.04 GitHub Actions (release)
-* Windows Server 2022 GitHub Actions (release)
-* macOS 13 GitHub Actions (release)
-* Local Windows, R 4.3.3 (devel and release)
-* ubuntu-latest on GitHub (rhub)
-* macos-latest on GitHub (rub)
-* windows-latest on GitHub (rhub)
-
-## R CMD check results
-
-No NOTEs, ERRORs or WARNINGs
-
+* Local Windows 11, R 4.6.0 (release) -- `R CMD check --as-cran`
+* win-builder, R-devel
+* win-builder, R-release
+* GitHub Actions:
+  - macOS-latest (release)
+  - Windows Server (release)
+  - Ubuntu-latest (devel, release, oldrel-1)
+* R-hub: linux, windows, macos
 
 ## Downstream dependencies
 
-* JAGS version 4.3.1
+There are currently no downstream dependencies for this package.
+
+## Notes for CRAN
+
+* This package requires the external library JAGS (>= 4.3.0,
+  https://mcmc-jags.sourceforge.net/) via the rjags / R2jags packages.
+  JAGS 4.3.1 was used for the checks above. Examples and tests that fit
+  JAGS models are wrapped so that they are skipped where JAGS is not
+  available.

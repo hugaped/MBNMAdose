@@ -710,7 +710,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     }
   } else {
     # Automatically generate doses list for treatments included in data
-    # if (any(c("rcs", "bs", "ns", "ls") %in% object$model.arg$fun)) {
+    # if (any(c("rcs", "bs", "ns") %in% object$model.arg$fun)) {
     #   dose <- as.vector(object$model$data()$spline[,,1])
     # } else {
     #
@@ -824,11 +824,10 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
     addsd <- FALSE
   }
 
-
   predict.result <- list()
 
   # Add spline basis matrix
-  splineopt <- c("rcs", "bs", "ns", "ls", "is")
+  splineopt <- c("bs", "ns")
   fun <- object$model.arg$fun
   if (any(splineopt %in% fun$name)) {
 
@@ -843,12 +842,22 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
       posvec <- rep(1, length(index))
     }
     for (i in seq_along(index)) {
+      check.spline <- FALSE
       if (fun$name[posvec[index[i]]] %in% splineopt) {
+        check.spline <- TRUE
+        }
+      if (dplyr::n_distinct(splinedoses[[i]])==1 & splinedoses[[i]][1]==0) {
+        check.spline <- FALSE
+      }
+
+      if (check.spline==TRUE) {
         #print(agent.num[i])
         #print((object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]]))
+
         splinedoses[[i]] <- t(genspline(splinedoses[[i]],
                                    spline = fun$name[posvec[index[i]]],
                                    knots=fun$knots[[posvec[index[i]]]],
+                                   df=fun$df[[posvec[index[i]]]],
                                    degree = fun$degree[posvec[index[i]]],
                                    max.dose=max(object$network$data.ab$dose[object$network$data.ab$agent==agent.num[i]])
                                    ))
@@ -882,7 +891,7 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
         tempDR <- gsub("(\\[i,k,)([0-9]+)", "[\\2", tempDR) # For splines
 
         dose <- doses[[i]][k]
-        if (any(c("rcs", "bs", "ns", "ls", "is") %in% object$model.arg$fun$name)) {
+        if (any(c("bs", "ns") %in% object$model.arg$fun$name)) {
           spline <- splinedoses[[i]][,k]
         }
 
@@ -952,7 +961,9 @@ predict.mbnma <- function(object, n.doses=30, exact.doses=NULL,
 
 
         pred <- E0 + chunk
-        if (length(pred)<=1) {stop()}
+        if (length(pred)<=1) {
+          stop("Unable to generate predictions: the dose-response calculation returned too few values (check `E0` and the prediction doses)")
+        }
       }
 
       # Convert to natural scale using link function

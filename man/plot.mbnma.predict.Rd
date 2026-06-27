@@ -44,7 +44,7 @@ than a separate agent).}
 free (\code{"free"}), or free in one dimension (\code{"free_x"},
 \code{"free_y"})?}
 
-\item{...}{Arguments for \code{ggplot2}}
+\item{...}{Arguments for \code{ggplot2} or \code{R2jags::jags}}
 }
 \description{
 Plots predicted responses on the natural scale from a dose-response MBNMA model.

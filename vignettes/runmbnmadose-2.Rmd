@@ -74,7 +74,7 @@ $$f(x_{i,k}, t_{i,k})=\beta_{1_{t_{i,k}}}x_{i,k}^{\gamma_1}+...+\beta_{p_{t_{i,k
 where $p$ is the degree of the polynomial, $\beta_p$ are the coefficients, and $x_{i,k}^{\gamma_p}$ is a regular power except where $\gamma_p=0$ where ${x_{i,k}^{(0)}=ln(x_{i,k})}$. If a fractional polynomial power ${\gamma_p}$ repeats within the function it is multiplied by another ${ln(x_{i,k})}$.
 
 **Spline functions (`dspline()`)** 
-B-splines (`type="bs"`), natural cubic splines (`type="ns"`) and piecewise linear splines (`type="ls"`) can be fitted.
+B-splines (`type="bs"`) and natural cubic splines (`type="ns"`) can be fitted. Piecewise linear splines can be fitted using `type="bs"` with `degree=1` (following deprecation of `type="ls"`).
 $$f(x_{i,k}, t_{i,k})=\sum_{p=1}^{P} \beta_{p,t_{i,k}} X_{p,i,k}$$
 where $\beta_{p,t_{i,k}}$ is the regression coefficient for the $p^{th}$ spline and $X_{1:P,i,k}$ is the basis matrix for the spline, defined by the spline type.
 
@@ -813,9 +813,10 @@ evidence of it.
 -   Autocorrelation plots that show low autocorrelation between
     neighbouring MCMC iterations (i.e. low correlation at higher lags)
 
-An HTML document with all the above convergence plots can easily be
-generated for all parameters in the model simultaneously using
-`mcmcplots::mcmcplot()`.
+Convergence plots for all parameters in the model can be generated using
+functions from the `coda` package (e.g. `coda::traceplot()`,
+`coda::densplot()` and `coda::autocorr.plot()`) applied to the model
+output via `coda::as.mcmc()`.
 
 Two steps may improve convergence when using `MBNMAdose`. One step is to
 run models for more iterations (this can be done using the `n.iter`

@@ -3,6 +3,7 @@ library(testthat)
 library(MBNMAdose)
 library(igraph)
 library(dplyr)
+library(zoo)
 
 
 datalist <- list("triptans"=triptans,
@@ -11,5 +12,4 @@ datalist <- list("triptans"=triptans,
                  "osteopain"=osteopain,
                  "gout"=gout
                  )
-
 

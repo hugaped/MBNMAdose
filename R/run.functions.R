@@ -99,7 +99,7 @@
 #'
 #' @return An object of S3 `class(c("mbnma", "rjags"))` containing parameter
 #'   results from the model. Can be summarized by `print()` and can check
-#'   traceplots using `R2jags::traceplot()` or various functions from the package `mcmcplots`.
+#'   traceplots using `R2jags::traceplot()` or various functions from the package `coda`.
 #'
 #'   Nodes that are automatically monitored (if present in the model) have the
 #'   following interpretation:
@@ -144,8 +144,7 @@
 #'   * `dloglin()`: log-linear
 #'   * `dexp()`: exponential
 #'   * `demax()`: (emax with/without a Hill parameter)
-#'   * `dspline()`: splines (can fit B-splines (`type="bs"`), restricted cubic splines (`type="rcs"`), natural splines (`type="ns"`), or
-#'   piecewise linear splines (`type="ls"`))
+#'   * `dspline()`: splines (can fit B-splines (`type="bs"`) or natural splines (`type="ns"`) of any degree
 #'   * `dfpoly()`: fractional polynomials
 #'   * `dnonparam()`: Non-parametric monotonic function (`direction` can be either `"increasing"` or `"decreasing"`) following the method
 #'   of \insertCite{owen2015;textual}{MBNMAdose}
@@ -253,19 +252,18 @@
 #' result <- mbnma.run(network, fun=dloglin(), method="random",
 #'               n.iter=5000, n.thin=5, n.chains=4)
 #'
-#' ####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
+#' ####### Examine MCMC diagnostics (using the coda package) #######
 #'
-#' # Density plots
-#' mcmcplots::denplot(result)
+#' if (requireNamespace("coda")) {
+#'   # Density plots
+#'   coda::densplot(coda::as.mcmc(result))
 #'
-#' # Traceplots
-#' mcmcplots::traplot(result)
+#'   # Traceplots
+#'   coda::traceplot(coda::as.mcmc(result))
 #'
-#' # Caterpillar plots
-#' mcmcplots::caterplot(result, "rate")
-#'
-#' # Autocorrelation plots (using the coda package)
-#' coda::autocorr.plot(coda::as.mcmc(result))
+#'   # Autocorrelation plots
+#'   coda::autocorr.plot(coda::as.mcmc(result))
+#' }
 #'
 #'####### Automatically run jags until convergence is reached #########
 #'
@@ -563,7 +561,7 @@ mbnma.jags <- function(data.ab, model,
 
   # Drop dose from jagsdata in spline models
   dosedat <- jagsdata[["dose"]]
-  if (all(fun$name %in% c("rcs", "ns", "bs", "ls"))) {
+  if (all(fun$name %in% c("ns", "bs"))) {
     jagsdata[["dose"]] <- NULL
   }
 
@@ -842,10 +840,6 @@ nma.run <- function(network, method="common", likelihood=NULL, link=NULL, priors
     for (i in seq_along(priors)) {
       if (length(priors[[i]])>1) {
         if (!is.null(names(priors[[i]]))) { # If treatment-specific priors are named
-          if (length(class.effect)>0) {
-            warning("MBNMAdose defaults to agent-specific priors if multiple priors are specified for a parameter")
-          }
-
           priornam <- names(priors[[i]])
 
           # If at least 2 names match those in network$agents then sort priors to match network order

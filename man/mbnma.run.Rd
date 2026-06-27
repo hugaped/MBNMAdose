@@ -137,7 +137,7 @@ should match that of standard models fitted in \code{MBNMAdose}
 \value{
 An object of S3 \code{class(c("mbnma", "rjags"))} containing parameter
 results from the model. Can be summarized by \code{print()} and can check
-traceplots using \code{R2jags::traceplot()} or various functions from the package \code{mcmcplots}.
+traceplots using \code{R2jags::traceplot()} or various functions from the package \code{coda}.
 
 Nodes that are automatically monitored (if present in the model) have the
 following interpretation:\tabular{ll}{
@@ -195,8 +195,7 @@ Built-in dose-response functions are:
 \item \code{dloglin()}: log-linear
 \item \code{dexp()}: exponential
 \item \code{demax()}: (emax with/without a Hill parameter)
-\item \code{dspline()}: splines (can fit B-splines (\code{type="bs"}), restricted cubic splines (\code{type="rcs"}), natural splines (\code{type="ns"}), or
-piecewise linear splines (\code{type="ls"}))
+\item \code{dspline()}: splines (can fit B-splines (\code{type="bs"}) or natural splines (\code{type="ns"}) of any degree
 \item \code{dfpoly()}: fractional polynomials
 \item \code{dnonparam()}: Non-parametric monotonic function (\code{direction} can be either \code{"increasing"} or \code{"decreasing"}) following the method
 of \insertCite{owen2015;textual}{MBNMAdose}
@@ -298,19 +297,18 @@ result <- mbnma.run(network, fun=dfpoly(degree=1), method="random",
 result <- mbnma.run(network, fun=dloglin(), method="random",
               n.iter=5000, n.thin=5, n.chains=4)
 
-####### Examine MCMC diagnostics (using mcmcplots or coda packages) #######
+####### Examine MCMC diagnostics (using the coda package) #######
 
-# Density plots
-mcmcplots::denplot(result)
+if (requireNamespace("coda")) {
+  # Density plots
+  coda::densplot(coda::as.mcmc(result))
 
-# Traceplots
-mcmcplots::traplot(result)
+  # Traceplots
+  coda::traceplot(coda::as.mcmc(result))
 
-# Caterpillar plots
-mcmcplots::caterplot(result, "rate")
-
-# Autocorrelation plots (using the coda package)
-coda::autocorr.plot(coda::as.mcmc(result))
+  # Autocorrelation plots
+  coda::autocorr.plot(coda::as.mcmc(result))
+}
 
 ####### Automatically run jags until convergence is reached #########
 

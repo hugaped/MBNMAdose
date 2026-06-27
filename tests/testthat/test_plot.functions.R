@@ -8,6 +8,7 @@ test_that("plot functions correctly", {
 
   pD <- FALSE
   n.iter <- 1000
+  jags.seed <- 890421
 
   # Tested datasets must have at least 5 agents - options are HF2PPIT, psoriasis, ssri, osteopain, gout(?)
 
@@ -28,34 +29,34 @@ test_that("plot functions correctly", {
       network <- mbnma.network(alldfs[[dat]])
 
       # Models
-      linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD)
+      linear <- mbnma.run(network, fun=dpoly(), n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-      emax <- mbnma.run(network, fun=demax(emax="rel", ed50="rel"), method="random", n.iter=n.iter, pD=pD)
+      emax <- mbnma.run(network, fun=demax(emax="rel", ed50="rel"), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
       if (!grepl("noplac", datanam)) {
-        nonparam <- mbnma.run(network, fun=dnonparam(direction = "increasing"), n.iter=n.iter, pD=pD)
+        nonparam <- mbnma.run(network, fun=dnonparam(direction = "increasing"), n.iter=n.iter, pD=pD, jags.seed=jags.seed)
       }
 
-      resdev <- mbnma.run(network, fun=dpoly(), parameters.to.save = "resdev", n.iter=n.iter, pD=pD)
+      resdev <- mbnma.run(network, fun=dpoly(), parameters.to.save = "resdev", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
-      ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD)
+      ns <- mbnma.run(network, fun=dspline(knots=c(0.5)), method="random", n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
       mult <- dmulti(c(list(dloglin()),
                        list(dspline("bs", knots=2)),
                        list(dspline("ns", knots=0.5)),
                        rep(list(dloglin()), length(network$agents)-3)
       ))
-      multifun <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD)
+      multifun <- mbnma.run(network, fun=mult, n.iter=n.iter, pD=pD, jags.seed=jags.seed)
 
       modellist <- NULL
       modellist <- list(linear, emax, ns, multifun)
 
       if ("class" %in% names(alldfs[[dat]])) {
         emax.class <- suppressWarnings(mbnma.run(network, fun=demax(emax="rel", ed50="random"), method="common",
-                                                  class.effect=list(emax="random"), n.iter=1000))
+                                                  class.effect=list(emax="random"), n.iter=1000, jags.seed=jags.seed))
 
         emax.class2 <- suppressWarnings(mbnma.run(network, demax(), method="common",
-                                                   class.effect=list(emax="random"), n.iter=1000))
+                                                   class.effect=list(emax="random"), n.iter=1000, jags.seed=jags.seed))
 
         modellist[[length(modellist)+1]] <- emax.class
       }
@@ -136,7 +137,7 @@ test_that("plot functions correctly", {
         }
 
         if (!grepl("noplac", datanam)) {
-          expect_equal("ggplot" %in% class(plot(nonparam)), TRUE)
+          expect_s3_class(plot(nonparam), "ggplot")
         }
 
         # Test number of panels is equal to number of rel effect parameters
@@ -211,35 +212,35 @@ test_that("plot functions correctly", {
         # Test overlay.split
         if (!grepl("noplac", datanam)) {
           pred <- predict(linear, E0 = 0.5)
-          expect_output(plot(pred, overlay.split = TRUE))
+          expect_output(plot(pred, overlay.split = TRUE, jags.seed=jags.seed))
 
           pred <- predict(emax, E0 = 0.5)
-          expect_output(plot(pred, overlay.split = TRUE))
+          expect_output(plot(pred, overlay.split = TRUE, jags.seed=jags.seed))
 
           doses <- list()
           doses[[network$agents[2]]] <- c(0,1,2,3)
           doses[[network$agents[5]]] <- c(0.5,1,2)
           pred <- predict(ns, E0=0.1, exact.doses = doses)
-          expect_output(suppressWarnings(plot(pred, overlay.split = TRUE)))
+          expect_output(suppressWarnings(plot(pred, overlay.split = TRUE, jags.seed=jags.seed)))
 
           doses[[network$agents[2]]] <- c(1,2,3)
           doses[[network$agents[5]]] <- c(0.5,1,2)
           pred <- predict(multifun, E0=0.1, exact.doses = doses)
-          expect_output(plot(pred, overlay.split = TRUE))
+          expect_output(plot(pred, overlay.split = TRUE, jags.seed=jags.seed))
 
 
           # Test method="common"
           pred <- predict(ns, E0 = 0.5)
-          expect_output(plot(pred, overlay.split = TRUE, method="random"),
+          expect_output(plot(pred, overlay.split = TRUE, method="random", jags.seed=jags.seed),
                         "SD")
 
           pred <- predict(emax, E0 = 0.5)
-          expect_output(plot(pred, overlay.split = TRUE, method="random"),
+          expect_output(plot(pred, overlay.split = TRUE, method="random", jags.seed=jags.seed),
                         "SD")
 
         } else {
           pred <- predict(linear, E0 = 0.5)
-          expect_error(plot(pred, overlay.split = TRUE), "Placebo required")
+          expect_error(plot(pred, overlay.split = TRUE, jags.seed=jags.seed), "Placebo required")
 
         }
 
